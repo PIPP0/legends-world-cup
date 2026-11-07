@@ -7,6 +7,7 @@ import { Home, Story } from './pages1'
 import { Compare, PlayerPage, Players, Team, Teams } from './pages2'
 import { Groups, MatchPage, Matches } from './pages3'
 import { Bracket, Simulator, Stats } from './pages4'
+import { Credits } from './credits'
 import type { AltTournament, ModelParams } from '../types'
 
 const MAIN: [string, string, string][] = [
@@ -44,6 +45,7 @@ function Page({ route }: { route: string }) {
     case 'estadisticas': return <Stats />
     case 'cuadro': return <Bracket />
     case 'simulador': return <Simulator />
+    case 'creditos': return <Credits />
     default: return <p className="note warn">Página no encontrada. <a href="#/">Volver al inicio</a></p>
   }
 }
@@ -79,7 +81,7 @@ export default function App() {
       <footer>
         <Logo />
         <p>Proyecto de ficción deportiva. Los nombres y trayectorias son históricos; las valoraciones, atributos, resultados del torneo y estadísticas son ficticios o estimados por el modelo.</p>
-        <p>Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre, enlazadas a su fuente.</p>
+        <p>Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre. <a href="#/creditos" style={{ textDecoration: 'underline' }}>Ver créditos de cada foto</a>.</p>
       </footer>
       {more && <div className="sheet-bg" onClick={() => setMore(false)} />}
       {more && (

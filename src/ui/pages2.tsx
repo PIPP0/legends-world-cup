@@ -107,7 +107,7 @@ export function PlayerPage({ id }: { id: string }) {
           <p className="ovr big">{p.ovr}<small>valoración del modelo</small></p>
         </div>
       </div>
-      {photo && <p className="credit">Foto: <a href={photo.page} target="_blank" rel="noreferrer">{photo.title}</a> · Wikipedia/Wikimedia Commons, licencia libre.</p>}
+      {photo && <p className="credit">Foto: <a href={photo.page} target="_blank" rel="noreferrer">{photo.title}</a>{photo.author ? ` · ${photo.author}` : ''} · {photo.license} · Wikimedia.</p>}
       {p.verify && <Note tone="warn">Este nombre figura en el once original pero conviene verificarlo; no se garantiza foto ni trayectoria.</Note>}
 
       <Section title="Atributos" sub="Estimaciones del modelo, no calificaciones oficiales.">

@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { PLAYER_BY_ID, TEAM_BY_ID, WIKI } from '../data/lookup'
+import { createContext, useContext, useState, type ReactNode } from 'react'
+import photoData from '../data/photos.json'
+import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import type { AltTournament, Attr, ModelParams, Player, Team } from '../types'
 
 export interface Ctx {
@@ -31,72 +32,15 @@ export function TeamLink({ id, flag = true, size = 22 }: { id?: string; flag?: b
   )
 }
 
-// ---------- fotos (Wikipedia / Wikimedia Commons, solo licencias libres) ----------
-export interface Photo { url: string; page: string; title: string }
-const PKEY = 'lwc:photo:v4:'
-const mem = new Map<string, Photo | null>()
-const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+// ---------- fotos (descargadas una vez desde Wikipedia/Wikimedia Commons, solo licencias libres) ----------
+export interface Photo { url: string; page: string; title: string; license: string; author: string }
+const PHOTOS = photoData as Record<string, { file: string; page: string; title: string; license: string; author: string }>
 
-function readCache(id: string): Photo | null | undefined {
-  if (mem.has(id)) return mem.get(id)
-  try {
-    const v = localStorage.getItem(PKEY + id)
-    if (v !== null) { const j = v === 'null' ? null : (JSON.parse(v) as Photo); mem.set(id, j); return j }
-  } catch { /* sin almacenamiento */ }
-  return undefined
+export function photoOf(p: Player): Photo | null {
+  const e = PHOTOS[p.id]
+  return e ? { url: import.meta.env.BASE_URL + e.file, page: e.page, title: e.title, license: e.license, author: e.author } : null
 }
-
-// Cola con poca concurrencia para no saturar la API de Wikipedia.
-let running = 0
-const waiting: (() => void)[] = []
-async function throttled<T>(fn: () => Promise<T>): Promise<T> {
-  if (running >= 3) await new Promise<void>((r) => waiting.push(r))
-  running++
-  try { return await fn() } finally { running--; waiting.shift()?.() }
-}
-
-// Solo se acepta una foto si el título del artículo contiene TODAS las palabras del nombre,
-// la descripción dice que es futbolista y la imagen tiene licencia libre. Si no, se usa la tarjeta alternativa.
-export async function fetchPhoto(p: Player): Promise<Photo | null | undefined> {
-  const hint = WIKI[p.name]
-  const q = (hint ?? p.name) + ' footballer'
-  const url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=4&prop=pageimages%7Cdescription&piprop=thumbnail&pithumbsize=360&pilicense=free&gsrsearch=' + encodeURIComponent(q)
-  try {
-    let r = await throttled(() => fetch(url))
-    for (let k = 1; !r.ok && k <= 3; k++) {
-      await new Promise((res) => setTimeout(res, 1500 * k))
-      r = await throttled(() => fetch(url))
-    }
-    if (!r.ok) return undefined
-    const j = await r.json()
-    const pages = Object.values(j?.query?.pages ?? {}) as { index: number; title: string; description?: string; thumbnail?: { source: string } }[]
-    pages.sort((a, b) => a.index - b.index)
-    const words = (s: string) => norm(s.replace(/\(.*\)/, '')).split(/[\s\-.]+/).filter((t) => t.length > 1).sort().join(' ')
-    const expected = words(hint ?? p.name)
-    // el título debe tener exactamente las mismas palabras (evita homónimos y familiares: «Diego Maradona Jr.»)
-    const hit = pages.find((pg) =>
-      !!pg.thumbnail && /(footballer|soccer (player|manager)|football (player|manager|coach))/i.test(pg.description ?? '') && words(pg.title) === expected)
-    if (!hit) return null
-    return { url: hit.thumbnail!.source, page: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(hit.title.replace(/ /g, '_')), title: hit.title }
-  } catch { return undefined }
-}
-
-export function usePhoto(p: Player): Photo | null | undefined {
-  const [s, setS] = useState<Photo | null | undefined>(() => readCache(p.id))
-  useEffect(() => {
-    setS(readCache(p.id))
-    if (readCache(p.id) !== undefined) return
-    let dead = false
-    fetchPhoto(p).then((r) => {
-      if (r === undefined) return
-      mem.set(p.id, r)
-      try { localStorage.setItem(PKEY + p.id, r ? JSON.stringify(r) : 'null') } catch { /* sin almacenamiento */ }
-      if (!dead) setS(r)
-    })
-    return () => { dead = true }
-  }, [p.id])
-  return s
-}
+export const usePhoto = photoOf
 
 const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 
