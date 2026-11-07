@@ -5,7 +5,8 @@ import { DEFAULT_PARAMS, profile, strengthRank } from '../engine/model'
 import { declaredStats, teamStats } from '../engine/stats'
 import { teamBlurb } from '../engine/narrative'
 import { groupTable } from '../engine/standings'
-import { Avatar, Bar, Flag, Note, Pitch, PlayerCard, Radar, Section, TeamLink, usePhoto, go } from './common'
+import { Avatar, Bar, Flag, Note, PlayerCard, Radar, Section, TeamLink, usePhoto, go } from './common'
+import { FutCard, Pitch, TeamCard } from './visual'
 import { MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import type { Player } from '../types'
@@ -29,12 +30,7 @@ export function Teams() {
         {list.map((t) => {
           const star = [...t.xi].sort((a, b) => b.ovr - a.ovr)[0]
           return (
-            <a key={t.id} className="tcard" href={`#/equipo/${t.id}`}>
-              <Avatar p={star} size={56} />
-              <span className="tc-n"><Flag id={t.id} size={18} /> {t.name}</span>
-              <em>{star.name}</em>
-              <small className="muted">Gr. {t.group} · {t.formation} · #{rank.indexOf(t.id) + 1} del modelo</small>
-            </a>
+            <TeamCard key={t.id} t={t} star={star} extra={<small>Gr. {t.group} · {t.formation} · #{rank.indexOf(t.id) + 1} del modelo</small>} />
           )
         })}
       </div>
@@ -104,7 +100,7 @@ export function PlayerPage({ id }: { id: string }) {
   return (
     <>
       <div className="phead">
-        <Avatar p={p} size={120} rounded={false} />
+        <FutCard p={p} size="lg" />
         <div>
           <h1>{p.name}</h1>
           <p><TeamLink id={p.teamId} /> · <span className="pos">{p.pos}</span> · {t.formation}</p>
@@ -154,7 +150,7 @@ export function Players() {
         </select>
         <a className="btn" href="#/comparar">Comparar jugadores</a>
       </div>
-      <div className="grid g3">{list.map((p) => <PlayerCard key={p.id} p={p} />)}</div>
+      <div className="grid futgrid">{list.map((p) => <FutCard key={p.id} p={p} />)}</div>
       {list.length === 60 && <p className="muted small">Mostrando los 60 mejor valorados de la búsqueda.</p>}
     </Section>
   )

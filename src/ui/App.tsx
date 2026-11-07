@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react'
 import { DEFAULT_PARAMS } from '../engine/model'
 import { AppCtx, useLocalState } from './common'
+import { ICONS } from './visual'
 import { Home, Story } from './pages1'
 import { Compare, PlayerPage, Players, Team, Teams } from './pages2'
 import { Groups, MatchPage, Matches } from './pages3'
 import { Bracket, Simulator, Stats } from './pages4'
 import type { AltTournament, ModelParams } from '../types'
 
-const NAV: [string, string][] = [
-  ['/', 'Inicio'], ['/historia', 'Historia'], ['/selecciones', 'Selecciones'], ['/grupos', 'Grupos'], ['/partidos', 'Partidos'],
-  ['/cuadro', 'Cuadro'], ['/estadisticas', 'Estadísticas'], ['/jugadores', 'Jugadores'], ['/simulador', 'Simulador'],
+const MAIN: [string, string, string][] = [
+  ['/', 'Inicio', 'home'], ['/selecciones', 'Selecciones', 'teams'], ['/partidos', 'Partidos', 'ball'], ['/cuadro', 'Cuadro', 'bracket'],
+]
+const MORE: [string, string, string][] = [
+  ['/historia', 'Historia', 'story'], ['/grupos', 'Grupos', 'groups'], ['/estadisticas', 'Estadísticas', 'stats'],
+  ['/jugadores', 'Jugadores', 'players'], ['/simulador', 'Simulador', 'sim'],
 ]
 
 function useRoute() {
@@ -43,25 +47,48 @@ function Page({ route }: { route: string }) {
   }
 }
 
+const Logo = () => (
+  <a className="logo" href="#/" aria-label="Legends World Cup, inicio">
+    <svg viewBox="0 0 32 32" aria-hidden><circle cx="16" cy="16" r="15" fill="#c6ff3d" /><path d="M16 6l5.5 4v6.5L16 21l-5.5-4.5V10z" fill="#0a0d08" /><path d="M16 21v5M10.5 16.5L6 18M21.5 16.5L26 18M16 6V3" stroke="#0a0d08" strokeWidth="1.6" strokeLinecap="round" /></svg>
+    <span><b>LEGENDS</b> WORLD CUP</span>
+  </a>
+)
+
 export default function App() {
   const route = useRoute()
   const [params, setParams] = useLocalState<ModelParams>('lwc:params:v1', DEFAULT_PARAMS)
   const [alt, setAlt] = useLocalState<AltTournament | null>('lwc:alt:v1', null)
+  const [more, setMore] = useState(false)
+  useEffect(() => setMore(false), [route])
   const root = '/' + (route.split('/')[1] ?? '')
   const active = ({ '/equipo': '/selecciones', '/jugador': '/jugadores', '/comparar': '/jugadores', '/partido': '/partidos' } as Record<string, string>)[root] ?? root
+  const moreActive = MORE.some(([p]) => p === active)
   return (
     <AppCtx.Provider value={{ params, setParams, alt, setAlt }}>
       <header className="top">
-        <a className="logo" href="#/"><span className="ball" aria-hidden>⚽</span><b>LEGENDS</b> WORLD CUP</a>
-        <nav aria-label="Principal">
-          {NAV.map(([p, l]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''} aria-current={active === p ? 'page' : undefined}>{l}</a>)}
-        </nav>
+        <div className="top-in">
+          <Logo />
+          <nav className="dnav" aria-label="Principal">
+            {[...MAIN, ...MORE].map(([p, l]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''} aria-current={active === p ? 'page' : undefined}>{l}</a>)}
+          </nav>
+        </div>
       </header>
-      <main><Page route={route} /></main>
+      <main key={route.split('/').slice(0, 3).join('/')}><Page route={route} /></main>
       <footer>
-        <p>Legends World Cup es un proyecto de ficción deportiva. Los nombres y trayectorias son históricos; las valoraciones, atributos, resultados del torneo y estadísticas son ficticios o estimados por el modelo.</p>
-        <p>Banderas: flagcdn.com. Fotografías: Wikipedia/Wikimedia Commons con licencia libre, con enlace a su fuente.</p>
+        <Logo />
+        <p>Proyecto de ficción deportiva. Los nombres y trayectorias son históricos; las valoraciones, atributos, resultados del torneo y estadísticas son ficticios o estimados por el modelo.</p>
+        <p>Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre, enlazadas a su fuente.</p>
       </footer>
+      {more && <div className="sheet-bg" onClick={() => setMore(false)} />}
+      {more && (
+        <div className="sheet" role="dialog" aria-label="Más secciones">
+          {MORE.map(([p, l, i]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''}>{ICONS[i]}<span>{l}</span></a>)}
+        </div>
+      )}
+      <nav className="bnav" aria-label="Navegación móvil">
+        {MAIN.map(([p, l, i]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''}>{ICONS[i]}<span>{l}</span></a>)}
+        <button className={moreActive || more ? 'on' : ''} onClick={() => setMore(!more)} aria-expanded={more}>{ICONS.more}<span>Más</span></button>
+      </nav>
     </AppCtx.Provider>
   )
 }
