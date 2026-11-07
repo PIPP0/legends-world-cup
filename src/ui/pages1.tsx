@@ -7,12 +7,12 @@ import { groupTable } from '../engine/standings'
 import { matchStory } from '../engine/narrative'
 import { Avatar, Flag, Note, Section, TeamLink } from './common'
 import { FutCard, TeamCard } from './visual'
+import { ChampionPicker, Count, Hero } from './hero'
 import { MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 
 const totalGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
 
-const FAN = ['bra-pele', 'por-cristiano-ronaldo', 'arg-diego-maradona']
 
 export function Home() {
   const top = useMemo(() => declaredStats().filter((s) => s.goals >= 3).sort((a, b) => b.goals - a.goals), [])
@@ -25,27 +25,16 @@ export function Home() {
   )
   return (
     <>
-      <div className="hero">
-        <div className="hero-t">
-          <p className="kicker">El Mundial Imposible</p>
-          <h1>32 selecciones.<br />Las mayores leyendas.<br /><span>Un solo campeón.</span></h1>
-          <p className="lead">¿Qué selección ganaría un Mundial con sus mejores once de toda la historia, todos a los 27 años?</p>
-          <div className="cta">
-            <a className="btn pri" href="#/historia">Vivir la historia</a>
-            <a className="btn" href="#/simulador">Simular un partido</a>
-          </div>
-        </div>
-        <div className="fan" aria-hidden={false}>
-          {FAN.map((id, i) => <div key={id} className={`fan-c f${i}`}><FutCard p={PLAYER_BY_ID[id]} size="lg" /></div>)}
-        </div>
-      </div>
+      <Hero />
 
       <div className="stats3">
-        <div><b>32</b><span>selecciones</span></div>
-        <div><b>{STORY_MATCHES.length}</b><span>partidos jugados</span></div>
-        <div><b>{totalGoals}</b><span>goles</span></div>
+        <div><b><Count to={32} /></b><span>selecciones</span></div>
+        <div><b><Count to={STORY_MATCHES.length} /></b><span>partidos jugados</span></div>
+        <div><b><Count to={totalGoals} /></b><span>goles</span></div>
         <div className="live"><b><i />Octavos</b><span>próxima fase</span></div>
       </div>
+
+      <ChampionPicker />
 
       <Section title="Partido inaugural" sub="Grupo A · Fecha 1" action={<a className="more" href={`#/partido/${featured.id}`}>Ver partido →</a>}>
         <a className="feature" href={`#/partido/${featured.id}`} style={{ ['--fa' as string]: 'url(https://flagcdn.com/w320/br.png)', ['--fb' as string]: 'url(https://flagcdn.com/w320/gb-eng.png)' }}>

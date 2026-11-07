@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { DEFAULT_PARAMS } from '../engine/model'
 import { AppCtx, useLocalState } from './common'
 import { ICONS } from './visual'
+import { Ticker } from './hero'
 import { Home, Story } from './pages1'
 import { Compare, PlayerPage, Players, Team, Teams } from './pages2'
 import { Groups, MatchPage, Matches } from './pages3'
@@ -49,7 +50,7 @@ function Page({ route }: { route: string }) {
 
 const Logo = () => (
   <a className="logo" href="#/" aria-label="Legends World Cup, inicio">
-    <svg viewBox="0 0 32 32" aria-hidden><circle cx="16" cy="16" r="15" fill="#c6ff3d" /><path d="M16 6l5.5 4v6.5L16 21l-5.5-4.5V10z" fill="#0a0d08" /><path d="M16 21v5M10.5 16.5L6 18M21.5 16.5L26 18M16 6V3" stroke="#0a0d08" strokeWidth="1.6" strokeLinecap="round" /></svg>
+    <svg viewBox="0 0 32 32" aria-hidden><circle cx="16" cy="16" r="15" fill="#00e5ff" /><path d="M16 6l5.5 4v6.5L16 21l-5.5-4.5V10z" fill="#050a1c" /><path d="M16 21v5M10.5 16.5L6 18M21.5 16.5L26 18M16 6V3" stroke="#050a1c" strokeWidth="1.6" strokeLinecap="round" /></svg>
     <span><b>LEGENDS</b> WORLD CUP</span>
   </a>
 )
@@ -65,6 +66,7 @@ export default function App() {
   const moreActive = MORE.some(([p]) => p === active)
   return (
     <AppCtx.Provider value={{ params, setParams, alt, setAlt }}>
+      <Ticker />
       <header className="top">
         <div className="top-in">
           <Logo />

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TEAM_BY_ID, PLAYER_BY_ID } from '../data/lookup'
 import { STORY_MATCHES } from '../data'
 import { DECLARED_R16 } from '../data/raw'
@@ -101,6 +101,38 @@ function TeamSelect({ value, onChange, label }: { value: string; onChange: (v: s
   return <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}>{[...TEAMS].sort((a, b) => a.name.localeCompare(b.name)).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
 }
 
+function LiveReplay({ a, b, res, onSkip }: { a: string; b: string; res: ReturnType<typeof simulateMatch>; onSkip: () => void }) {
+  const end = res.et ? 120 : 90
+  const [min, setMin] = useState(0)
+  useEffect(() => {
+    setMin(0)
+    const t = setInterval(() => setMin((m) => { if (m >= end) { clearInterval(t); return m } return m + 1 }), 140)
+    return () => clearInterval(t)
+  }, [res, end])
+  const shown = res.goals.filter((g) => g.minute <= min)
+  const ga = shown.filter((g) => g.teamId === a).length
+  const gb = shown.filter((g) => g.teamId === b).length
+  const last = shown[shown.length - 1]
+  const done = min >= end
+  const flash = last && min - last.minute < 5 && !done
+  return (
+    <div className="liveb" aria-live="polite">
+      <div className="lv-bar">
+        <span className="lv-min">{done ? 'FIN' : `${min}'`}</span>
+        <span className="lv-t"><Flag id={a} size={26} />{TEAM_BY_ID[a].name.toUpperCase()}</span>
+        <b className="lv-s">{ga} – {gb}</b>
+        <span className="lv-t r">{TEAM_BY_ID[b].name.toUpperCase()}<Flag id={b} size={26} /></span>
+        <span className={`lv-st ${done ? '' : 'on'}`}>{done ? 'FINAL' : '● EN VIVO'}</span>
+      </div>
+      <div className="lv-prog"><i style={{ width: `${(min / end) * 100}%` }} /></div>
+      {flash && <div className="lv-goal" key={last.minute + last.scorerId}>¡GOL! {PLAYER_BY_ID[last.scorerId].name} · {TEAM_BY_ID[last.teamId].name} · {last.minute}'</div>}
+      <Events goals={shown} home={a} away={b} />
+      {done && res.pens && <p className="center">Penales {res.pens[0]}–{res.pens[1]} · avanza <b>{TEAM_BY_ID[res.winner!].name}</b></p>}
+      {!done && <button className="btn ghost" onClick={onSkip}>Saltar al final</button>}
+    </div>
+  )
+}
+
 function FreeMatch() {
   const { params } = useApp()
   const [a, setA] = useState('chi')
@@ -109,11 +141,12 @@ function FreeMatch() {
   const [seed, setSeed] = useState('legends-1')
   const [n, setN] = useState(0)
   const [res, setRes] = useState<ReturnType<typeof simulateMatch> | null>(null)
+  const [live, setLive] = useState(false)
   const pr = probabilities(a, b, params)
   const A = profile(a, params), B = profile(b, params)
   const comps: [string, 'quality' | 'balance' | 'attack' | 'defense' | 'experience'][] = [['Calidad', 'quality'], ['Equilibrio', 'balance'], ['Ataque', 'attack'], ['Defensa', 'defense'], ['Experiencia', 'experience']]
   const run = (s: string) => setRes(simulateMatch(a, b, makeRng(s), params, ko))
-  const again = () => { const s = `${seed}#${n + 1}`; setN(n + 1); run(s) }
+  const again = () => { const s = `${seed}#${n + 1}`; setN(n + 1); setLive(true); run(s) }
   return (
     <Section title="Partido libre">
       <div className="filters"><TeamSelect value={a} onChange={(v) => { setA(v); setRes(null) }} label="Selección A" /><TeamSelect value={b} onChange={(v) => { setB(v); setRes(null) }} label="Selección B" /></div>
@@ -128,8 +161,9 @@ function FreeMatch() {
             <div key={k} className="cmp"><b className={A[k] >= B[k] ? 'win' : ''}>{A[k].toFixed(1)}</b><span>{l}</span><b className={B[k] >= A[k] ? 'win' : ''}>{B[k].toFixed(1)}</b></div>
           ))}</div>
           <div className="two">{[a, b].map((id) => <div key={id}><h4 className="sub"><TeamLink id={id} /></h4><ol className="xi">{TEAM_BY_ID[id].xi.map((p) => <li key={p.id}><a href={`#/jugador/${p.id}`}>{p.name}</a><b>{p.ovr}</b></li>)}</ol></div>)}</div>
-          <div className="cta"><button className="btn pri" onClick={() => { setN(0); run(seed) }}>Simular</button><button className="btn" onClick={again} disabled={!res}>Repetir partido</button></div>
-          {res && (
+          <div className="cta"><button className="btn pri" onClick={() => { setN(0); setLive(true); run(seed) }}>Ver en vivo</button><button className="btn" onClick={() => { setN(0); setLive(false); run(seed) }}>Resultado directo</button><button className="btn" onClick={again} disabled={!res}>Repetir partido</button></div>
+          {res && live && <LiveReplay key={`${seed}-${n}-${a}-${b}`} a={a} b={b} res={res} onSkip={() => setLive(false)} />}
+          {res && !live && (
             <div className="result">
               <div className="mh"><span><Flag id={a} size={40} /> {TEAM_BY_ID[a].name}</span><div className="mscore">{res.ga}<i>–</i>{res.gb}</div><span>{TEAM_BY_ID[b].name} <Flag id={b} size={40} /></span></div>
               {res.pens && <p className="center muted">Penales {res.pens[0]}–{res.pens[1]}</p>}

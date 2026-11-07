@@ -14,7 +14,14 @@ export function FutCard({ p, size = 'md' }: { p: Player; size?: 'sm' | 'md' | 'l
   const t = TEAM_BY_ID[p.teamId]
   const shown = photo && !bad
   return (
-    <a className={`fut ${tierOf(p.ovr)} ${size}`} href={`#/jugador/${p.id}`} aria-label={`${p.name}, ${t.name}, valoración ${p.ovr}`}>
+    <a className={`fut ${tierOf(p.ovr)} ${size}`} href={`#/jugador/${p.id}`} aria-label={`${p.name}, ${t.name}, valoración ${p.ovr}`}
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect()
+        const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5
+        e.currentTarget.style.setProperty('--rx', `${(-y * 12).toFixed(1)}deg`)
+        e.currentTarget.style.setProperty('--ry', `${(x * 14).toFixed(1)}deg`)
+      }}
+      onMouseLeave={(e) => { e.currentTarget.style.setProperty('--rx', '0deg'); e.currentTarget.style.setProperty('--ry', '0deg') }}>
       <div className="fut-l">
         <b className="fo">{p.ovr}</b>
         <span className="fp">{p.pos}</span>
