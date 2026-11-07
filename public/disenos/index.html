@@ -1,183 +1,194 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Legends World Cup — 4 direcciones de diseño</title>
+<title>Legends World Cup — 4 diseños web</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Barlow+Condensed:ital,wght@0,600;0,800;1,800&family=Bowlby+One&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#14161a;color:#eee;font:15px/1.5 Inter,sans-serif;padding:28px 16px 60px}
-.wrap{max-width:1500px;margin:0 auto}
-h1{font:800 34px 'Barlow Condensed';text-transform:uppercase;letter-spacing:1px}
-.sub{color:#9aa3ad;margin:6px 0 28px;max-width:720px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:36px 24px;justify-items:center}
-.item{width:340px}
-.cap{margin-bottom:14px}.cap b{display:block;font:800 22px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.5px}
-.cap span{color:#9aa3ad;font-size:13px;display:block}.cap em{font-style:normal;color:#c6ff3d;font-size:12px}
-.phone{width:340px;height:700px;border-radius:40px;border:7px solid #272a30;overflow:hidden;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.6);isolation:isolate}
-.phone .scr{position:absolute;inset:0;overflow:hidden}
-img.fl{display:inline-block;object-fit:cover;vertical-align:middle}
-.ph{background-size:cover;background-position:50% 15%}
+body{background:#101215;color:#eee;font:15px/1.5 Inter,sans-serif;padding:32px 20px 80px}
+.wrap{max-width:1240px;margin:0 auto}
+h1.t{font:800 38px 'Barlow Condensed';text-transform:uppercase;letter-spacing:1px}
+.lead0{color:#9aa3ad;margin:6px 0 20px;max-width:760px}
+.tabsx{position:sticky;top:0;z-index:50;background:#101215;padding:10px 0;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid #23272d;margin-bottom:26px}
+.tabsx a{padding:8px 16px;border-radius:99px;background:#1b1f25;color:#cfd6dd;text-decoration:none;font-weight:600;font-size:14px}
+.tabsx a:hover{background:#c6ff3d;color:#0b1200}
+.cap{margin:44px 0 14px}.cap b{font:800 28px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.5px;display:block}.cap span{color:#9aa3ad;font-size:14px}.cap em{font-style:normal;color:#c6ff3d;font-size:13px;display:block;margin-top:2px}
+.frame{border-radius:14px;overflow:hidden;border:1px solid #2b3037;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.chrome{background:#23272d;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.chrome i{width:11px;height:11px;border-radius:50%;background:#555}.chrome i:nth-child(1){background:#ff5f57}.chrome i:nth-child(2){background:#febc2e}.chrome i:nth-child(3){background:#28c840}
+.chrome span{margin-left:14px;background:#14171b;border-radius:8px;padding:3px 16px;font-size:12px;color:#8b95a1;flex:0 1 420px}
+.site{min-height:760px;position:relative;overflow:hidden}
+.fl{display:inline-block;object-fit:cover;vertical-align:middle;border-radius:3px}
+.ph{background-size:cover;background-position:50% 14%}
+.hd{display:flex;align-items:center;justify-content:space-between;padding:0 36px;height:64px}
+.hd nav{display:flex;gap:22px;font-size:14px}
+.cols{display:grid;grid-template-columns:1.05fr 1fr;gap:30px;align-items:center;padding:34px 36px 20px}
+.row3{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:20px;padding:0 36px 36px}
+.tbl div{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:14px}.tbl b{margin-left:auto}
+.btns{display:flex;gap:12px;margin-top:22px}
 
-/* ============ A — ÁLBUM ============ */
-.A{background:#f3e7cf;color:#1d3557;font-family:'Baloo 2',sans-serif;background-image:radial-gradient(#e4d3b0 1.2px,transparent 1.2px);background-size:14px 14px}
-.A .bar{background:#e63946;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font:800 18px 'Baloo 2';letter-spacing:.5px;border-bottom:4px solid #1d3557}
-.A .bar i{background:#ffd23f;color:#1d3557;border-radius:99px;padding:1px 10px;font-style:normal;font-size:12px}
-.A .pad{padding:14px}
-.A h2{font:800 34px/1 'Baloo 2';color:#1d3557;margin:6px 0 4px;text-transform:uppercase}
-.A h2 span{color:#e63946}
-.A p{font-weight:600;font-size:13.5px;color:#46506a}
-.A .page{margin-top:12px;background:#fffaf0;border:3px solid #1d3557;border-radius:16px;padding:12px;box-shadow:5px 5px 0 #1d3557}
-.A .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.A .stk{aspect-ratio:3/4;border-radius:8px;background:#fff;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9.5px;font-weight:800;text-transform:uppercase;transform:rotate(var(--r))}
-.A .stk .fb{width:100%;flex:1;border-radius:4px;background-size:cover;background-position:center}
-.A .stk.empty{background:transparent;border:2px dashed #b9a98a;box-shadow:none;color:#b9a98a;font-size:18px}
-.A .foil{margin-top:14px;display:flex;gap:12px;align-items:center}
-.A .foilc{width:118px;height:158px;flex:none;border-radius:12px;padding:5px;background:linear-gradient(135deg,#ff6ec7,#ffd23f,#48e5c2,#6ea8ff,#ff6ec7);background-size:300% 300%;animation:foil 5s linear infinite;box-shadow:0 6px 16px rgba(0,0,0,.35);transform:rotate(-4deg)}
+/* ===== A ===== */
+.A{background:#f3e7cf;background-image:radial-gradient(#e4d3b0 1.3px,transparent 1.3px);background-size:16px 16px;color:#1d3557;font-family:'Baloo 2',sans-serif}
+.A .hd{background:#e63946;color:#fff;border-bottom:5px solid #1d3557}
+.A .logo{font:800 24px 'Baloo 2';letter-spacing:.5px}.A .logo i{background:#ffd23f;color:#1d3557;font-style:normal;font-size:12px;border-radius:99px;padding:1px 10px;margin-left:8px}
+.A nav a{font-weight:800;color:#fff}.A nav a.on{background:#ffd23f;color:#1d3557;padding:4px 12px;border-radius:99px;margin:-4px 0}
+.A h1{font:800 76px/.95 'Baloo 2';text-transform:uppercase}.A h1 span{color:#e63946}
+.A p.l{font-weight:600;font-size:18px;color:#46506a;max-width:480px;margin-top:12px}
+.A .b1,.A .b2{font:800 16px 'Baloo 2';padding:12px 26px;border-radius:14px;border:3px solid #1d3557;box-shadow:4px 4px 0 #1d3557}
+.A .b1{background:#ffd23f}.A .b2{background:#fff}
+.A .page{background:#fffaf0;border:4px solid #1d3557;border-radius:20px;padding:18px;box-shadow:8px 8px 0 #1d3557;position:relative}
+.A .slots{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.A .stk{aspect-ratio:3/4;border-radius:10px;background:#fff;border:4px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:5px;font-weight:800;font-size:12px;text-align:center;transform:rotate(var(--r))}
+.A .stk .fb{flex:1;border-radius:5px;background-size:cover;background-position:center}
+.A .stk.e{background:transparent;border:3px dashed #b9a98a;box-shadow:none;color:#b9a98a;font-size:26px;justify-content:center}
+.A .foilc{position:absolute;right:-18px;bottom:-34px;width:170px;height:228px;border-radius:14px;padding:6px;background:linear-gradient(135deg,#ff6ec7,#ffd23f,#48e5c2,#6ea8ff,#ff6ec7);background-size:300% 300%;animation:foil 5s linear infinite;box-shadow:0 12px 26px rgba(0,0,0,.4);transform:rotate(5deg)}
 @keyframes foil{to{background-position:300% 300%}}
-.A .foilc div{height:100%;border-radius:8px;background:#fff;overflow:hidden;position:relative}
-.A .foilc .ph{height:78%}.A .foilc b{position:absolute;left:0;right:0;bottom:0;background:#1d3557;color:#fff;text-align:center;font:800 13px 'Baloo 2';padding:2px 0}
-.A .ticket{margin-top:14px;background:#ffd23f;border:3px solid #1d3557;border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:relative}
-.A .ticket::before,.A .ticket::after{content:'';position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:#f3e7cf;border:3px solid #1d3557;transform:translateY(-50%)}
-.A .ticket::before{left:-12px}.A .ticket::after{right:-12px}
-.A .ticket .s{font:800 32px 'Baloo 2'}
-.A .nav{position:absolute;bottom:0;left:0;right:0;background:#1d3557;display:flex;justify-content:space-around;padding:10px 0 14px;color:#fff;font-size:11px;font-weight:800}
-.A .nav span{display:flex;flex-direction:column;align-items:center;gap:2px}.A .nav .on{color:#ffd23f}
+.A .foilc div{height:100%;border-radius:9px;background:#fff;overflow:hidden;position:relative}.A .foilc .ph{height:80%}.A .foilc b{position:absolute;left:0;right:0;bottom:0;background:#1d3557;color:#fff;text-align:center;padding:3px;font-size:16px}
+.A .card{background:#fffaf0;border:3px solid #1d3557;border-radius:18px;padding:16px;box-shadow:6px 6px 0 #1d3557}
+.A .card h3{font:800 20px 'Baloo 2';text-transform:uppercase;margin-bottom:6px;color:#e63946}
+.A .ticket{background:#ffd23f;border:3px solid #1d3557;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;position:relative;height:100%}
+.A .ticket::before,.A .ticket::after{content:'';position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:#f3e7cf;border:3px solid #1d3557;transform:translateY(-50%)}.A .ticket::before{left:-13px}.A .ticket::after{right:-13px}
+.A .ticket .s{font:800 52px 'Baloo 2'}
 
-/* ============ B — TRANSMISIÓN ============ */
-.B{background:radial-gradient(500px 300px at 90% 0,rgba(255,46,136,.28),transparent 60%),radial-gradient(500px 400px at 0 30%,rgba(0,229,255,.2),transparent 60%),#050a1c;color:#fff;font-family:'Barlow Condensed',sans-serif}
-.B .score{display:flex;align-items:stretch;margin:12px;border-radius:8px;overflow:hidden;font-weight:800;text-transform:uppercase;box-shadow:0 8px 24px rgba(0,0,0,.5)}
-.B .score .l{background:#ff2e88;padding:6px 10px;font-size:13px;letter-spacing:1px;display:flex;align-items:center}
-.B .score .t{flex:1;background:#0d1533;display:flex;align-items:center;justify-content:center;gap:8px;font-size:20px}
-.B .score .t b{background:#fff;color:#050a1c;padding:0 10px;border-radius:3px;font-size:22px}
-.B .score .r{background:#00e5ff;color:#050a1c;padding:6px 10px;font-size:13px;display:flex;align-items:center}
-.B .hero{padding:8px 16px 0;position:relative}
-.B h2{font:italic 800 56px/.88 'Barlow Condensed';text-transform:uppercase;transform:skewX(-8deg);letter-spacing:-.5px}
-.B h2 span{color:transparent;-webkit-text-stroke:2px #00e5ff}
-.B .sub2{font:600 13px Inter;color:#a8b5d6;margin-top:10px;max-width:260px}
-.B .cut{position:absolute;right:-30px;top:20px;width:150px;height:230px;transform:skewX(-8deg);overflow:hidden;border-left:4px solid #ff2e88;opacity:.95}
-.B .low{margin:26px 12px 0;display:flex;font-weight:800;text-transform:uppercase}
-.B .low .a{background:#00e5ff;color:#050a1c;padding:4px 12px;font-size:34px;line-height:1.1;clip-path:polygon(0 0,100% 0,92% 100%,0 100%)}
-.B .low .b{background:#0d1533;padding:8px 16px 8px 22px;margin-left:-14px;flex:1;clip-path:polygon(8% 0,100% 0,100% 100%,0 100%);font-size:13px;letter-spacing:1px;color:#a8b5d6}
-.B .stat{margin:10px 12px;display:grid;gap:7px}
-.B .stat div{display:grid;grid-template-columns:70px 1fr 30px;align-items:center;gap:8px;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#a8b5d6}
-.B .stat i{height:8px;background:#0d1533;border-radius:2px;position:relative;overflow:hidden}.B .stat i::after{content:'';position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#ff2e88,#00e5ff)}
-.B .stat b{color:#fff;font-size:16px}
-.B .match{margin:12px;background:rgba(13,21,51,.9);border:1px solid #1e2b5e;border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;font-size:17px;font-weight:800;text-transform:uppercase}
-.B .match .m{background:#ff2e88;padding:0 10px;border-radius:3px;font-size:20px}
-.B .tick{position:absolute;left:0;right:0;bottom:0;background:#ff2e88;color:#fff;font:800 13px 'Barlow Condensed';letter-spacing:1px;text-transform:uppercase;padding:9px 0;white-space:nowrap;overflow:hidden}
-.B .tick span{display:inline-block;animation:tk 14s linear infinite;padding-left:100%}
+/* ===== B ===== */
+.B{background:radial-gradient(700px 420px at 92% 0,rgba(255,46,136,.3),transparent 60%),radial-gradient(700px 520px at 0 40%,rgba(0,229,255,.2),transparent 60%),#050a1c;color:#fff;font-family:'Barlow Condensed',sans-serif}
+.B .score{display:flex;font-weight:800;text-transform:uppercase;font-size:16px;letter-spacing:1px}
+.B .score .l{background:#ff2e88;padding:7px 16px;display:flex;align-items:center;gap:10px}
+.B .score .t{flex:1;background:#0d1533;display:flex;align-items:center;justify-content:center;gap:16px;font-size:20px}.B .score .t b{background:#fff;color:#050a1c;padding:0 12px;border-radius:3px;font-size:22px}
+.B .score .r{background:#00e5ff;color:#050a1c;padding:7px 18px;display:flex;align-items:center}
+.B .hd{border-bottom:1px solid #1e2b5e}.B .logo{font:800 26px 'Barlow Condensed';letter-spacing:2px;text-transform:uppercase}.B .logo b{color:#00e5ff}
+.B nav a{text-transform:uppercase;font-weight:700;letter-spacing:1px;color:#a8b5d6;font-size:15px}.B nav a.on{color:#00e5ff;border-bottom:3px solid #ff2e88;padding-bottom:4px}
+.B h1{font:italic 800 112px/.84 'Barlow Condensed';text-transform:uppercase;transform:skewX(-8deg);letter-spacing:-1px}.B h1 span{color:transparent;-webkit-text-stroke:3px #00e5ff}
+.B p.l{font:500 17px Inter;color:#a8b5d6;max-width:470px;margin-top:20px}
+.B .b1,.B .b2{font:800 18px 'Barlow Condensed';text-transform:uppercase;letter-spacing:1.5px;padding:13px 28px;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.B .b1{background:#00e5ff;color:#050a1c}.B .b2{background:#1a2550;color:#fff}
+.B .vis{position:relative;height:430px}
+.B .cut{position:absolute;right:20px;top:0;width:330px;height:420px;transform:skewX(-8deg);overflow:hidden;border-left:6px solid #ff2e88;box-shadow:-30px 30px 0 rgba(0,229,255,.12)}
+.B .cut .ph{position:absolute;inset:-10px -30px}
+.B .low{position:absolute;left:0;bottom:0;display:flex;text-transform:uppercase;font-weight:800;width:420px}
+.B .low .a{background:#00e5ff;color:#050a1c;padding:4px 18px;font-size:42px;line-height:1.1;clip-path:polygon(0 0,100% 0,93% 100%,0 100%)}
+.B .low .b{background:#0d1533;padding:12px 20px 12px 30px;margin-left:-18px;flex:1;clip-path:polygon(8% 0,100% 0,100% 100%,0 100%);font-size:15px;letter-spacing:1px;color:#a8b5d6}
+.B .card{background:rgba(13,21,51,.9);border:1px solid #1e2b5e;border-top:4px solid #ff2e88;padding:16px 18px}
+.B .card h3{font:800 18px 'Barlow Condensed';text-transform:uppercase;letter-spacing:2px;color:#00e5ff;margin-bottom:8px}
+.B .mm{display:flex;justify-content:space-between;align-items:center;font:800 24px 'Barlow Condensed';text-transform:uppercase}.B .mm b{background:#ff2e88;padding:0 14px;border-radius:3px;font-size:30px}
+.B .stat div{display:grid;grid-template-columns:72px 1fr 32px;align-items:center;gap:10px;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:#a8b5d6;margin:7px 0}
+.B .stat i{height:9px;background:#0a1130;position:relative;overflow:hidden}.B .stat i::after{content:'';position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#ff2e88,#00e5ff)}.B .stat b{color:#fff;font-size:18px}
+.B .tick{background:#ff2e88;font:800 14px 'Barlow Condensed';letter-spacing:1.5px;text-transform:uppercase;padding:9px 0;white-space:nowrap;overflow:hidden}.B .tick span{display:inline-block;animation:tk 22s linear infinite;padding-left:100%}
 @keyframes tk{to{transform:translateX(-100%)}}
+.B .tbl{color:#a8b5d6}.B .tbl b{color:#fff}
 
-/* ============ C — AFICHE RETRO ============ */
+/* ===== C ===== */
 .C{background:#f2e2c0;color:#2b1a12;font-family:'Bowlby One',sans-serif}
-.C .sun{position:absolute;width:420px;height:420px;border-radius:50%;left:50%;top:-150px;transform:translateX(-50%);background:repeating-radial-gradient(circle,#ef6a2b 0 26px,#f2e2c0 26px 34px,#1f8a8a 34px 56px,#f2e2c0 56px 62px,#f2b632 62px 90px,#f2e2c0 90px 96px)}
-.C .in{position:relative;padding:14px}
-.C .top{display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px}
-.C .title{margin-top:150px;text-align:center}
-.C h2{font:400 44px/.95 'Bowlby One';text-transform:uppercase;color:#2b1a12;text-shadow:3px 3px 0 #ef6a2b}
-.C .tag{display:inline-block;margin-top:10px;background:#2b1a12;color:#f2e2c0;padding:5px 14px;border-radius:99px;font:400 11px 'Bowlby One';letter-spacing:1.5px}
-.C .stripes{height:26px;margin:16px -14px 0;background:linear-gradient(#ef6a2b 0 33%,#f2b632 33% 66%,#1f8a8a 66%)}
-.C .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;font-family:Inter}
-.C .badge{background:#fff7e4;border:3px solid #2b1a12;border-radius:14px;padding:8px;text-align:center;box-shadow:4px 4px 0 #2b1a12;font-weight:700}
-.C .badge .ph{height:96px;border-radius:8px;border:2px solid #2b1a12;filter:sepia(.35) contrast(1.05)}
-.C .badge b{display:block;font:400 14px 'Bowlby One';margin-top:6px;text-transform:uppercase}
-.C .badge small{font-size:10.5px;color:#7a5b45}
-.C .res{margin-top:14px;background:#1f8a8a;color:#fff7e4;border:3px solid #2b1a12;border-radius:14px;padding:10px 14px;box-shadow:4px 4px 0 #2b1a12;display:flex;justify-content:space-between;align-items:center}
-.C .res span{font-size:13px}.C .res b{font:400 30px 'Bowlby One'}
-.C .nav{position:absolute;bottom:0;left:0;right:0;background:#2b1a12;color:#f2e2c0;display:flex;justify-content:space-around;padding:12px 0 16px;font:400 10px 'Bowlby One';letter-spacing:.5px}.C .nav .on{color:#f2b632}
+.C .hd{background:#2b1a12;color:#f2e2c0}.C .logo{font-size:20px;letter-spacing:1px}.C nav{font-size:11px;letter-spacing:1px}.C nav a.on{color:#f2b632}
+.C .cols{position:relative}
+.C h1{font:400 84px/.92 'Bowlby One';text-transform:uppercase;text-shadow:5px 5px 0 #ef6a2b}
+.C p.l{font:500 17px Inter;color:#6a4a36;max-width:470px;margin-top:20px}
+.C .b1,.C .b2{font:400 14px 'Bowlby One';padding:13px 26px;border-radius:99px;border:3px solid #2b1a12;box-shadow:4px 4px 0 #2b1a12}
+.C .b1{background:#ef6a2b;color:#fff7e4}.C .b2{background:#fff7e4}
+.C .sun{position:relative;height:440px;display:grid;place-items:center}
+.C .sun::before{content:'';position:absolute;width:440px;height:440px;border-radius:50%;background:repeating-radial-gradient(circle,#ef6a2b 0 28px,#f2e2c0 28px 36px,#1f8a8a 36px 60px,#f2e2c0 60px 66px,#f2b632 66px 96px,#f2e2c0 96px 102px)}
+.C .bd{position:absolute;background:#fff7e4;border:4px solid #2b1a12;border-radius:16px;padding:8px;box-shadow:6px 6px 0 #2b1a12;text-align:center;width:170px;font-family:Inter;font-weight:700}
+.C .bd .ph{height:150px;border-radius:9px;border:3px solid #2b1a12;filter:sepia(.35) contrast(1.05)}.C .bd b{display:block;font:400 17px 'Bowlby One';margin-top:8px;text-transform:uppercase}.C .bd small{color:#7a5b45}
+.C .stripes{height:30px;background:linear-gradient(#ef6a2b 0 33%,#f2b632 33% 66%,#1f8a8a 66%)}
+.C .card{background:#fff7e4;border:4px solid #2b1a12;border-radius:18px;padding:16px;box-shadow:6px 6px 0 #2b1a12;font-family:Inter;font-weight:600}
+.C .card h3{font:400 16px 'Bowlby One';text-transform:uppercase;color:#ef6a2b;margin-bottom:8px}
+.C .res{background:#1f8a8a;color:#fff7e4}.C .res h3{color:#f2b632}.C .res .s{font:400 56px 'Bowlby One'}
 
-/* ============ D — SALÓN DE LA FAMA ============ */
+/* ===== D ===== */
 .D{background:#0a0a0a;color:#f1ead8;font-family:Inter,sans-serif}
 .D .gold{background:linear-gradient(120deg,#f6e27a,#c99a2e 45%,#f6e27a 70%,#a87a1c);-webkit-background-clip:text;background-clip:text;color:transparent}
-.D .head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid #2a2418;font:600 11px Inter;letter-spacing:3px;text-transform:uppercase;color:#c99a2e}
-.D .head b{font:600 18px 'Playfair Display';letter-spacing:1px;text-transform:none;color:#f1ead8}
-.D .big{position:relative;height:330px}
-.D .big .ph{position:absolute;inset:0;filter:grayscale(1) contrast(1.15) brightness(.8)}
-.D .big::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.3),#0a0a0a 92%)}
-.D .big .t{position:absolute;left:18px;right:18px;bottom:14px;z-index:2}
-.D .big small{letter-spacing:4px;font-size:10px;color:#c99a2e;text-transform:uppercase}
-.D h2{font:800 38px/1.02 'Playfair Display';margin-top:8px}
-.D h2 i{font-weight:600}
-.D .lead{padding:6px 18px 0;font:italic 600 15px/1.45 'Playfair Display';color:#cfc6ad}
-.D .ch{margin:16px 18px 0;border-top:1px solid #3a3018;padding-top:12px;display:grid;grid-template-columns:40px 1fr;gap:6px}
-.D .ch b{font:600 24px 'Playfair Display';color:#c99a2e}
-.D .ch div strong{font:600 16px 'Playfair Display'}.D .ch div p{font-size:12.5px;color:#9d957f}
-.D .plaque{margin:16px 18px 0;border:1px solid #c99a2e;padding:12px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#17130a,#0a0a0a)}
-.D .plaque span{font:italic 600 14px 'Playfair Display'}.D .plaque b{font:800 30px 'Playfair Display'}
-.D .nav{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:12px 0 16px;border-top:1px solid #2a2418;background:#0a0a0a;font:600 10px Inter;letter-spacing:2px;text-transform:uppercase;color:#7b735f}.D .nav .on{color:#c99a2e}
-.note{max-width:1200px;margin:36px auto 0;color:#9aa3ad;font-size:13px}
+.D .hd{border-bottom:1px solid #2a2418}.D .logo{font:600 28px 'Playfair Display';letter-spacing:1px}
+.D nav{font:600 11px Inter;letter-spacing:3px;text-transform:uppercase;color:#7b735f}.D nav a.on{color:#c99a2e}
+.D .cols{grid-template-columns:1fr 1fr;gap:0;padding:0;align-items:stretch}
+.D .tx{padding:70px 44px 30px 56px;display:flex;flex-direction:column;justify-content:center}
+.D .tx small{letter-spacing:5px;font-size:11px;color:#c99a2e;text-transform:uppercase}
+.D h1{font:800 70px/1.02 'Playfair Display';margin-top:14px}.D h1 i{font-weight:600}
+.D p.l{font:italic 600 20px/1.5 'Playfair Display';color:#cfc6ad;max-width:480px;margin-top:20px}
+.D .b1,.D .b2{font:600 12px Inter;letter-spacing:3px;text-transform:uppercase;padding:15px 28px;border:1px solid #c99a2e}.D .b1{background:#c99a2e;color:#0a0a0a}
+.D .big{position:relative;min-height:520px}.D .big .ph{position:absolute;inset:0;filter:grayscale(1) contrast(1.15) brightness(.85)}.D .big::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0a0a0a,rgba(10,10,10,0) 40%),linear-gradient(0deg,#0a0a0a,rgba(10,10,10,0) 30%)}
+.D .big .cap2{position:absolute;right:30px;bottom:26px;z-index:2;text-align:right;font:italic 600 14px 'Playfair Display';color:#cfc6ad}
+.D .row3{padding:10px 56px 50px;gap:30px}
+.D .card{border-top:1px solid #c99a2e;padding-top:16px}.D .card h3{font:600 13px Inter;letter-spacing:3px;text-transform:uppercase;color:#c99a2e;margin-bottom:10px}
+.D .card .num{font:600 40px 'Playfair Display'}
+.D .plaque{border:1px solid #c99a2e;padding:16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#17130a,#0a0a0a)}.D .plaque b{font:800 44px 'Playfair Display'}
+.D .tbl{color:#cfc6ad}
+.D .ch{display:grid;grid-template-columns:44px 1fr;gap:8px;margin-top:12px}.D .ch b{font:600 28px 'Playfair Display';color:#c99a2e}.D .ch p{font-size:13px;color:#9d957f}
 </style></head>
 <body><div class="wrap">
-<h1>Legends World Cup — 4 direcciones de diseño</h1>
-<p class="sub">Cuatro formas de contar el mismo torneo, cada una para un público distinto. Misma información (inicio, partido, leyenda); cambia la personalidad completa. Las fotos son reales (Wikipedia, licencia libre).</p>
-<div class="grid">
+<h1 class="t">Legends World Cup — 4 diseños web</h1>
+<p class="lead0">Mismo sitio, cuatro personalidades, ahora en formato web de escritorio: cabecera, portada, partido, leyenda y tabla de grupo. Fotos reales (Wikipedia, licencia libre). Se ven igual en celular al achicar la ventana.</p>
+<div class="tabsx"><a href="#A">A · Álbum</a><a href="#B">B · Transmisión</a><a href="#C">C · Afiche retro</a><a href="#D">D · Salón de la Fama</a></div>
 
-<div class="item"><div class="cap"><b>A · Álbum de láminas</b><span>Nostalgia y juego: pegar las 32 selecciones.</span><em>Público: familias, coleccionistas, redes sociales</em></div>
-<div class="phone"><div class="scr A">
- <div class="bar"><span>ÁLBUM LEYENDAS</span><i>Pega 32</i></div>
- <div class="pad">
-  <h2>El Mundial <span>Imposible</span></h2><p>Completa el álbum con las mayores leyendas de la historia.</p>
+<!-- A -->
+<div class="cap" id="A"><b>A · Álbum de láminas</b><span>Nostalgia y juego: completar el álbum con las 32 selecciones.</span><em>Público: familias, coleccionistas, redes sociales</em></div>
+<div class="frame"><div class="chrome"><i></i><i></i><i></i><span>legendsworldcup.com</span></div>
+<div class="site A">
+ <div class="hd"><div class="logo">ÁLBUM LEYENDAS<i>Pega 32</i></div><nav><a class="on">Inicio</a><a>Historia</a><a>Selecciones</a><a>Grupos</a><a>Partidos</a><a>Cuadro</a><a>Simulador</a></nav></div>
+ <div class="cols"><div><h1>El Mundial <span>Imposible</span></h1><p class="l">Completa el álbum con las mayores leyendas de la historia. 32 selecciones, 352 láminas, un solo campeón.</p><div class="btns"><a class="b1">Abrir el álbum</a><a class="b2">Simular un partido</a></div></div>
   <div class="page"><div class="slots">
-   <div class="stk" style="--r:-3deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/br.png)"></div>BRA</div>
-   <div class="stk" style="--r:2deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/ar.png)"></div>ARG</div>
-   <div class="stk" style="--r:-2deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/fr.png)"></div>FRA</div>
-   <div class="stk" style="--r:3deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/de.png)"></div>ALE</div>
-   <div class="stk" style="--r:2deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/cl.png)"></div>CHI</div>
-   <div class="stk empty">+</div><div class="stk empty">+</div><div class="stk empty">+</div>
-  </div></div>
-  <div class="foil"><div class="foilc"><div><div class="ph" data-p="Pelé"></div><b>PELÉ</b></div></div>
-   <div><p style="font-size:11px;letter-spacing:1px;color:#e63946;font-weight:800">LÁMINA BRILLANTE</p><p style="font:800 20px/1.1 'Baloo 2'">Pelé<br>99 · Delantero</p><p>Brasil</p></div></div>
-  <div class="ticket"><span><img class="fl" src="https://flagcdn.com/w40/br.png" width="26"> BRA</span><span class="s">2 – 1</span><span>ING <img class="fl" src="https://flagcdn.com/w40/gb-eng.png" width="26"></span></div>
- </div>
- <div class="nav"><span class="on">◉<br>Álbum</span><span>◎<br>Equipos</span><span>◎<br>Partidos</span><span>◎<br>Cuadro</span></div>
-</div></div></div>
+   <div class="stk" style="--r:-3deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/br.png)"></div>BRASIL</div>
+   <div class="stk" style="--r:2deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/ar.png)"></div>ARGENTINA</div>
+   <div class="stk" style="--r:-2deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/fr.png)"></div>FRANCIA</div>
+   <div class="stk" style="--r:3deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/de.png)"></div>ALEMANIA</div>
+   <div class="stk" style="--r:-2deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/cl.png)"></div>CHILE</div>
+   <div class="stk" style="--r:2deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/es.png)"></div>ESPAÑA</div>
+   <div class="stk" style="--r:-3deg"><div class="fb" style="background-image:url(https://flagcdn.com/w160/pt.png)"></div>PORTUGAL</div>
+   <div class="stk e">+</div><div class="stk e">+</div><div class="stk e">+</div></div>
+   <div class="foilc"><div><div class="ph" data-p="Pelé"></div><b>PELÉ · 99</b></div></div></div></div>
+ <div class="row3"><div><div class="ticket"><span style="display:flex;align-items:center;gap:8px;font-weight:800"><img class="fl" src="https://flagcdn.com/w80/br.png" width="40"> BRASIL</span><span class="s">2 – 1</span><span style="display:flex;align-items:center;gap:8px;font-weight:800">INGLATERRA <img class="fl" src="https://flagcdn.com/w80/gb-eng.png" width="40"></span></div></div>
+  <div class="card"><h3>Lámina del día</h3><p style="font-weight:600">Diego Maradona · Argentina<br>Valoración 98 · Enganche</p></div>
+  <div class="card"><h3>Grupo A</h3><div class="tbl"><div><img class="fl" src="https://flagcdn.com/w40/br.png" width="24">Brasil<b>9</b></div><div><img class="fl" src="https://flagcdn.com/w40/gb-eng.png" width="24">Inglaterra<b>6</b></div><div><img class="fl" src="https://flagcdn.com/w40/ro.png" width="24">Rumania<b>1</b></div><div><img class="fl" src="https://flagcdn.com/w40/jp.png" width="24">Japón<b>1</b></div></div></div></div>
+</div></div>
 
-<div class="item"><div class="cap"><b>B · Transmisión en vivo</b><span>Gráficos de TV: marcador, tercio inferior, ticker.</span><em>Público: hinchas, quienes siguen fútbol a diario</em></div>
-<div class="phone"><div class="scr B">
- <div class="score"><div class="l">GRUPO A</div><div class="t"><img class="fl" src="https://flagcdn.com/w40/br.png" width="22"> BRA <b>2 – 1</b> ENG <img class="fl" src="https://flagcdn.com/w40/gb-eng.png" width="22"></div><div class="r">FIN</div></div>
- <div class="hero"><h2>Mundial<br><span>Imposible</span></h2><p class="sub2">32 selecciones, las mayores leyendas, un solo campeón.</p><div class="cut ph" data-p="Cristiano Ronaldo"></div></div>
- <div class="low"><div class="a">C. RONALDO</div><div class="b">PORTUGAL · DELANTERO · 97</div></div>
- <div class="stat"><div>Ritmo<i style="--w:92%"></i><b>92</b></div><div>Disparo<i style="--w:96%"></i><b>96</b></div><div>Pase<i style="--w:88%"></i><b>88</b></div><div>Regate<i style="--w:94%"></i><b>94</b></div></div>
- <div class="match"><span>Italia</span><span class="m">1 – 2</span><span>Hungría</span></div>
- <div class="tick"><span>BRA 2-1 ING · ITA 1-2 HUN · NED 2-2 CHI · ARG 2-1 CRO · FRA 2-1 BEL · ESP 2-1 SUE · POR 2-1 POL ·</span></div>
-</div></div></div>
+<!-- B -->
+<div class="cap" id="B"><b>B · Transmisión en vivo</b><span>Gráficos de TV: marcador, recuadros, barras de atributos y ticker.</span><em>Público: hinchas, quienes siguen fútbol a diario</em></div>
+<div class="frame"><div class="chrome"><i></i><i></i><i></i><span>legendsworldcup.com</span></div>
+<div class="site B">
+ <div class="score"><div class="l">GRUPO A · FECHA 1</div><div class="t"><img class="fl" src="https://flagcdn.com/w40/br.png" width="26"> BRA <b>2 – 1</b> ENG <img class="fl" src="https://flagcdn.com/w40/gb-eng.png" width="26"></div><div class="r">FINAL</div></div>
+ <div class="hd"><div class="logo"><b>Legends</b> World Cup</div><nav><a class="on">Inicio</a><a>Historia</a><a>Selecciones</a><a>Grupos</a><a>Partidos</a><a>Cuadro</a><a>Simulador</a></nav></div>
+ <div class="cols"><div><h1>Mundial<br><span>Imposible</span></h1><p class="l">32 selecciones, las mayores leyendas de la historia, un solo campeón. Sigue cada partido como si fuera en vivo.</p><div class="btns"><a class="b1">Ver el torneo</a><a class="b2">Simular partido</a></div></div>
+  <div class="vis"><div class="cut"><div class="ph" data-p="Cristiano Ronaldo"></div></div><div class="low"><div class="a">C. RONALDO</div><div class="b">PORTUGAL · DELANTERO · 97</div></div></div></div>
+ <div class="row3"><div class="card"><h3>Partido destacado</h3><div class="mm"><span>Italia</span><b>1 – 2</b><span>Hungría</span></div><p style="font:500 13px Inter;color:#a8b5d6;margin-top:10px">Una de las primeras grandes sorpresas del campeonato.</p></div>
+  <div class="card stat"><h3>Atributos · C. Ronaldo</h3><div>Ritmo<i style="--w:92%"></i><b>92</b></div><div>Disparo<i style="--w:96%"></i><b>96</b></div><div>Pase<i style="--w:88%"></i><b>88</b></div><div>Regate<i style="--w:94%"></i><b>94</b></div></div>
+  <div class="card"><h3>Grupo A</h3><div class="tbl"><div><img class="fl" src="https://flagcdn.com/w40/br.png" width="24">Brasil<b>9</b></div><div><img class="fl" src="https://flagcdn.com/w40/gb-eng.png" width="24">Inglaterra<b>6</b></div><div><img class="fl" src="https://flagcdn.com/w40/ro.png" width="24">Rumania<b>1</b></div><div><img class="fl" src="https://flagcdn.com/w40/jp.png" width="24">Japón<b>1</b></div></div></div></div>
+ <div class="tick"><span>BRA 2-1 ING · ITA 1-2 HUN · NED 2-2 CHI · ARG 2-1 CRO · FRA 2-1 BEL · ESP 2-1 SUE · POR 2-1 POL · ALE 2-2 URU · CHI 2-1 SEN ·</span></div>
+</div></div>
 
-<div class="item"><div class="cap"><b>C · Afiche retro</b><span>Póster de Mundial clásico: color plano, formas, sellos.</span><em>Público: nostálgicos, merchandising, compartir en redes</em></div>
-<div class="phone"><div class="scr C">
- <div class="sun"></div>
- <div class="in"><div class="top"><span>N.º 001</span><span>LEGENDS WORLD CUP</span></div>
-  <div class="title"><h2>El Mundial<br>Imposible</h2><span class="tag">32 SELECCIONES · 1 CAMPEÓN</span></div>
-  <div class="stripes"></div>
-  <div class="cards">
-   <div class="badge"><div class="ph" data-p="Diego Maradona"></div><b>Maradona</b><small>Argentina · 98</small></div>
-   <div class="badge"><div class="ph" data-p="Ronaldo (Brazilian footballer)"></div><b>Ronaldo</b><small>Brasil · 97</small></div>
-  </div>
-  <div class="res"><span>Grupo D · Fecha 1<br><strong style="font:400 14px 'Bowlby One'">ITALIA — HUNGRÍA</strong></span><b>1–2</b></div>
- </div>
- <div class="nav"><span class="on">INICIO</span><span>EQUIPOS</span><span>PARTIDOS</span><span>CUADRO</span></div>
-</div></div></div>
+<!-- C -->
+<div class="cap" id="C"><b>C · Afiche retro</b><span>Póster de Mundial clásico: color plano, círculos, sellos con sombra dura.</span><em>Público: nostálgicos, merchandising, compartir en redes</em></div>
+<div class="frame"><div class="chrome"><i></i><i></i><i></i><span>legendsworldcup.com</span></div>
+<div class="site C">
+ <div class="hd"><div class="logo">LEGENDS WORLD CUP</div><nav style="display:flex;gap:22px"><a class="on">INICIO</a><a>HISTORIA</a><a>SELECCIONES</a><a>GRUPOS</a><a>PARTIDOS</a><a>CUADRO</a><a>SIMULADOR</a></nav></div>
+ <div class="cols"><div><h1>El Mundial<br>Imposible</h1><p class="l">32 selecciones, las mayores leyendas de todos los tiempos y un solo campeón. Un torneo que nunca existió.</p><div class="btns"><a class="b1">VIVIR LA HISTORIA</a><a class="b2">SIMULAR</a></div></div>
+  <div class="sun"><div class="bd" style="left:10px;top:30px;transform:rotate(-5deg)"><div class="ph" data-p="Diego Maradona"></div><b>Maradona</b><small>Argentina · 98</small></div><div class="bd" style="right:10px;bottom:20px;transform:rotate(4deg)"><div class="ph" data-p="Ronaldo (Brazilian footballer)"></div><b>Ronaldo</b><small>Brasil · 97</small></div></div></div>
+ <div class="stripes"></div>
+ <div class="row3" style="padding-top:26px"><div class="card res"><h3>Grupo D · Fecha 1</h3><div style="display:flex;justify-content:space-between;align-items:center"><span style="font:400 20px 'Bowlby One'">ITALIA<br>HUNGRÍA</span><span class="s">1–2</span></div></div>
+  <div class="card"><h3>Leyenda del día</h3><p>Pelé · Brasil<br>Valoración 99 · Delantero</p></div>
+  <div class="card"><h3>Grupo A</h3><div class="tbl"><div><img class="fl" src="https://flagcdn.com/w40/br.png" width="24">Brasil<b>9</b></div><div><img class="fl" src="https://flagcdn.com/w40/gb-eng.png" width="24">Inglaterra<b>6</b></div><div><img class="fl" src="https://flagcdn.com/w40/ro.png" width="24">Rumania<b>1</b></div><div><img class="fl" src="https://flagcdn.com/w40/jp.png" width="24">Japón<b>1</b></div></div></div></div>
+</div></div>
 
-<div class="item"><div class="cap"><b>D · Salón de la Fama</b><span>Revista de lujo: negro y oro, fotos grandes, capítulos.</span><em>Público: lectores de historia, prensa, patrocinadores</em></div>
-<div class="phone"><div class="scr D">
- <div class="head"><b class="gold">Legends</b><span>World Cup · MMXXVI</span></div>
- <div class="big"><div class="ph" data-p="Pelé"></div><div class="t"><small>El Mundial Imposible</small><h2>32 selecciones.<br><i class="gold">Un solo campeón.</i></h2></div></div>
- <p class="lead">¿Qué selección ganaría un Mundial con sus mejores once de toda la historia?</p>
- <div class="ch"><b>I</b><div><strong>El sueño imposible</strong><p>Cómo nació el torneo que nunca existió.</p></div></div>
- <div class="ch"><b>II</b><div><strong>Los 32 elegidos</strong><p>Once leyendas por país, en su mejor versión.</p></div></div>
- <div class="plaque"><span>Brasil <img class="fl" src="https://flagcdn.com/w40/br.png" width="20"> — <img class="fl" src="https://flagcdn.com/w40/gb-eng.png" width="20"> Inglaterra</span><b class="gold">2 – 1</b></div>
- <div class="nav"><span class="on">Inicio</span><span>Historia</span><span>Leyendas</span><span>Torneo</span></div>
-</div></div></div>
+<!-- D -->
+<div class="cap" id="D"><b>D · Salón de la Fama</b><span>Revista de lujo: negro y oro, fotografía grande en blanco y negro, capítulos.</span><em>Público: lectores de historia, prensa, patrocinadores</em></div>
+<div class="frame"><div class="chrome"><i></i><i></i><i></i><span>legendsworldcup.com</span></div>
+<div class="site D">
+ <div class="hd"><div class="logo gold">Legends</div><nav style="display:flex;gap:26px"><a class="on">Inicio</a><a>Historia</a><a>Selecciones</a><a>Grupos</a><a>Partidos</a><a>Cuadro</a><a>Simulador</a></nav></div>
+ <div class="cols"><div class="tx"><small>El Mundial Imposible · MMXXVI</small><h1>32 selecciones.<br><i class="gold">Un solo campeón.</i></h1><p class="l">¿Qué selección ganaría un Mundial con sus mejores once de toda la historia, todos en su mejor momento?</p><div class="btns"><a class="b1">Entrar al salón</a><a class="b2">Simular</a></div></div>
+  <div class="big"><div class="ph" data-p="Pelé"></div><div class="cap2">Pelé — Brasil, 99</div></div></div>
+ <div class="row3" style="grid-template-columns:1.2fr 1fr 1fr"><div class="card"><h3>Capítulo IV · Comienza la historia</h3><div class="plaque"><span style="font:italic 600 16px 'Playfair Display'">Brasil — Inglaterra</span><b class="gold">2 – 1</b></div>
+   <div class="ch"><b>I</b><div><strong style="font:600 16px 'Playfair Display'">El sueño imposible</strong><p>Cómo nació el torneo que nunca existió.</p></div></div></div>
+  <div class="card"><h3>Valoración del modelo</h3><div class="num gold">99</div><p style="color:#9d957f;font-size:13px">Pelé · Delantero · Brasil</p></div>
+  <div class="card"><h3>Grupo A</h3><div class="tbl"><div><img class="fl" src="https://flagcdn.com/w40/br.png" width="24">Brasil<b>9</b></div><div><img class="fl" src="https://flagcdn.com/w40/gb-eng.png" width="24">Inglaterra<b>6</b></div><div><img class="fl" src="https://flagcdn.com/w40/ro.png" width="24">Rumania<b>1</b></div><div><img class="fl" src="https://flagcdn.com/w40/jp.png" width="24">Japón<b>1</b></div></div></div></div>
+</div></div>
 
-</div>
-<p class="note">Todas funcionan en móvil y escritorio, y reutilizan los mismos datos y el mismo motor de simulación: solo cambia la capa visual.</p>
+<p style="color:#7d8792;font-size:13px;margin-top:40px">Versión celular de estas mismas direcciones: <a style="color:#c6ff3d" href="movil.html">ver maquetas móviles</a>.</p>
 </div>
 <script>
 async function photo(q,el){
-  const hint={'Pelé':'Pelé','Ronaldo (Brazilian footballer)':'Ronaldo (Brazilian footballer)'};
-  const url='https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=4&prop=pageimages%7Cdescription&piprop=thumbnail&pithumbsize=500&pilicense=free&gsrsearch='+encodeURIComponent(q+' footballer');
-  try{const j=await (await fetch(url)).json();const ps=Object.values(j.query.pages).sort((a,b)=>a.index-b.index);
+  const url='https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=4&prop=pageimages%7Cdescription&piprop=thumbnail&pithumbsize=700&pilicense=free&gsrsearch='+encodeURIComponent(q+' footballer');
+  for(let k=0;k<6;k++){try{const r=await fetch(url);if(!r.ok){await new Promise(s=>setTimeout(s,1500*(k+1)));continue}
+   const j=await r.json();const ps=Object.values(j.query.pages).sort((a,b)=>a.index-b.index);
    const w=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\(.*\)/,'').toLowerCase().split(/\s+/).filter(Boolean).sort().join(' ');
    const hit=ps.find(p=>p.thumbnail&&/footballer/i.test(p.description||'')&&w(p.title)===w(q));
-   if(hit)el.style.backgroundImage='url('+hit.thumbnail.source+')'}catch(e){}
+   if(hit)el.style.backgroundImage='url('+hit.thumbnail.source+')';return}catch(e){}}
 }
-document.querySelectorAll('[data-p]').forEach((e,i)=>setTimeout(()=>photo(e.dataset.p,e),i*500));
+document.querySelectorAll('[data-p]').forEach((e,i)=>setTimeout(()=>photo(e.dataset.p,e),i*1100));
 </script></body></html>
