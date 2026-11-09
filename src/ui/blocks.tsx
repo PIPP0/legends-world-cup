@@ -50,6 +50,8 @@ export function Events({ goals, home, away }: { goals: Goal[]; home: string; awa
   )
 }
 
+import { CtxLine } from './world'
+
 export function KoCard({ m, label }: { m: KoMatch; label?: string }) {
   const played = m.winner !== undefined
   const side = (id: string | undefined, g: number | undefined, win: boolean) => (
@@ -63,6 +65,7 @@ export function KoCard({ m, label }: { m: KoMatch; label?: string }) {
       {label && <span className="klabel">{label}</span>}
       {side(m.a, m.ga, m.winner === m.a)}
       {side(m.b, m.gb, m.winner === m.b)}
+      {played && m.ctx && <CtxLine ctx={m.ctx} />}
       {played && (m.et || m.pens) && <span className="kfoot">{m.pens ? `Penales ${m.pens[0]}–${m.pens[1]}` : 'Prórroga'}</span>}
       {played && m.goals && m.goals.length > 0 && m.a && m.b && (
         <details><summary>Goles</summary><Events goals={m.goals} home={m.a} away={m.b} /></details>

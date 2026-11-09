@@ -1,5 +1,7 @@
 import { TEAM_BY_ID, PLAYER_BY_ID } from '../data'
 import { lambdas, modalScore, probabilities, profile, type SimOutcome } from './model'
+import { adjustments, type Env } from './world'
+import { VENUE_BY_ID, HOST_OF_VENUE } from '../data/world'
 import type { ModelParams } from '../types'
 
 export interface Factor { label: string; a: number; b: number; edge: 'a' | 'b' | 'eq'; note: string }
@@ -19,12 +21,12 @@ const f1 = (n: number) => n.toFixed(1)
 const pct = (n: number) => `${Math.round(n * 100)} %`
 
 // Justificación de un partido a partir de los mismos datos que usa el modelo (valoraciones del once).
-export function explain(a: string, b: string, params: ModelParams, res?: SimOutcome): Explanation {
+export function explain(a: string, b: string, params: ModelParams, res?: SimOutcome, env?: Env): Explanation {
   const A = profile(a, params), B = profile(b, params)
   const TA = TEAM_BY_ID[a], TB = TEAM_BY_ID[b]
-  const pr = probabilities(a, b, params)
-  const [la, lb] = lambdas(a, b, params)
-  const modal = modalScore(a, b, params)
+  const pr = probabilities(a, b, params, env)
+  const [la, lb] = lambdas(a, b, params, env)
+  const modal = modalScore(a, b, params, env)
   const favorite = pr.win >= pr.loss ? a : b
   const favP = Math.max(pr.win, pr.loss)
 
@@ -49,6 +51,16 @@ export function explain(a: string, b: string, params: ModelParams, res?: SimOutc
   else reasons.push(`${nameOf(strong)} tiene más fuerza global: ${f1(Math.max(A.strength, B.strength))} contra ${f1(Math.min(A.strength, B.strength))} de ${nameOf(weak)}, una diferencia de ${f1(Math.abs(gap))} puntos.`)
   const best = [...factors].filter((x) => x.edge !== 'eq').sort((x, y) => Math.abs(y.a - y.b) - Math.abs(x.a - x.b))[0]
   if (best) reasons.push(`La mayor diferencia está en «${best.label.toLowerCase()}»: ${nameOf(best.edge === 'a' ? a : b)} ${f1(Math.max(best.a, best.b))} frente a ${f1(Math.min(best.a, best.b))}.`)
+  if (env?.ctx) {
+    const vn = VENUE_BY_ID[env.ctx.venueId]
+    const c = env.ctx
+    reasons.push(`Sede: ${vn.name} (${vn.city}, ${HOST_OF_VENUE[vn.id].name}), ${c.roof ? 'techado y climatizado' : `${Math.round(c.temp)} °C${c.rain > 0 ? `, lluvia ${c.rain > 0.66 ? 'fuerte' : 'ligera'}` : ', sin lluvia'}`}, ${vn.alt} m de altitud.`)
+    for (const id of [a, b]) {
+      const ad = adjustments(id, env)
+      if (ad.parts.length) reasons.push(`${nameOf(id)}: ${ad.parts.map((p) => `${p.label} (${p.v > 0 ? '+' : ''}${(p.v * 100).toFixed(1)} %)`).join('; ')}.`)
+      else reasons.push(`${nameOf(id)}: sin ventajas ni desventajas de lugar o clima.`)
+    }
+  }
   const ta = top(a), tb = top(b)
   reasons.push(`Figuras: ${ta.name} (${ta.ovr}) por ${TA.name} y ${tb.name} (${tb.ovr}) por ${TB.name}.`)
   reasons.push(`Con eso el modelo espera ${f1(la)} goles de ${TA.name} y ${f1(lb)} de ${TB.name}; el marcador más probable es ${modal.ga}-${modal.gb} (${pct(modal.p)} de probabilidad por sí solo).`)

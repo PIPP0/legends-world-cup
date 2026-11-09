@@ -56,3 +56,34 @@ describe('motor', () => {
     expect(b.qf[0].a).toBe(b.r16[0].winner)
   })
 })
+
+import { lambdas } from './model'
+import { contextFor } from './world'
+import type { WorldConfig } from '../types'
+
+describe('mundial personalizado', () => {
+  const w = (hostId: string, finalVenue: string): WorldConfig => ({ hostId, season: 'verano', finalVenue, history: {} })
+  it('el local gana ventaja y el visitante en altura la pierde', () => {
+    const ctx = { venueId: 'azteca', temp: 22, rain: 0 }
+    const [neutral] = lambdas('mex', 'bra', DEFAULT_PARAMS)
+    const [casa] = lambdas('mex', 'bra', DEFAULT_PARAMS, { ctx, world: w('mex', 'azteca') })
+    expect(casa).toBeGreaterThan(neutral)
+    const [, brNeutral] = lambdas('mex', 'bra', DEFAULT_PARAMS)
+    const [, brAltura] = lambdas('mex', 'bra', DEFAULT_PARAMS, { ctx, world: w('mex', 'azteca') })
+    expect(brAltura).toBeLessThan(brNeutral)
+  })
+  it('la lluvia baja los goles esperados', () => {
+    const base = { venueId: 'wembley', temp: 15, rain: 0 }
+    const [x] = lambdas('eng', 'ger', DEFAULT_PARAMS, { ctx: base })
+    const [y] = lambdas('eng', 'ger', DEFAULT_PARAMS, { ctx: { ...base, rain: 1 } })
+    expect(y).toBeLessThan(x)
+  })
+  it('estadio y clima son deterministas por semilla y distintos entre semillas', () => {
+    const world = w('bra', 'maracana')
+    expect(contextFor(world, 's1', 'A1')).toEqual(contextFor(world, 's1', 'A1'))
+    expect(contextFor(world, 's1', 'F').venueId).toBe('maracana')
+    const g1 = simulateGroups('s1', DEFAULT_PARAMS, world).map((m) => `${m.hg}${m.ag}`).join()
+    const g2 = simulateGroups('s2', DEFAULT_PARAMS, world).map((m) => `${m.hg}${m.ag}`).join()
+    expect(g1).not.toBe(g2)
+  })
+})

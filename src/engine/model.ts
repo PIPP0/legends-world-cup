@@ -1,7 +1,8 @@
 import { TEAMS, TEAM_BY_ID, PLAYER_BY_ID, GROUPS, teamsOfGroup } from '../data'
 import { makeRng, normal, pickWeighted, poisson, type Rng } from './rng'
 import { qualifiers, r16Pairs, groupTable } from './standings'
-import type { AltTournament, Bracket, Goal, KoMatch, Match, ModelParams, Player, Team, TeamProfile, Weights } from '../types'
+import { adjustments, contextFor, weatherFactor, type Env } from './world'
+import type { AltTournament, Bracket, Goal, KoMatch, Match, ModelParams, Player, Team, TeamProfile, Weights, WorldConfig } from '../types'
 
 export const DEFAULT_PARAMS: ModelParams = {
   weights: { quality: 0.3, balance: 0.25, attack: 0.2, defense: 0.15, experience: 0.1 },
@@ -54,18 +55,21 @@ export function profile(teamId: string, params: ModelParams = DEFAULT_PARAMS): T
   return { ...b, strength: strengthOf(b, params.weights) }
 }
 
-export function lambdas(a: string, b: string, params: ModelParams): [number, number] {
+export function lambdas(a: string, b: string, params: ModelParams, env?: Env): [number, number] {
   const A = profile(a, params), B = profile(b, params)
   const ex = (x: TeamProfile, y: TeamProfile) =>
     params.sensitivity * (params.matchup * (x.attack - y.defense) + (1 - params.matchup) * (x.strength - y.strength))
   const cl = (v: number) => Math.min(4.5, Math.max(0.15, v))
-  return [cl(params.goalBase * Math.exp(ex(A, B))), cl(params.goalBase * Math.exp(ex(B, A)))]
+  const adjA = adjustments(a, env).total, adjB = adjustments(b, env).total
+  const wf = weatherFactor(env?.ctx).goals
+  // el lugar favorece al equipo cómodo y perjudica al incómodo (la mitad del efecto del rival se traslada al otro)
+  return [cl(params.goalBase * wf * Math.exp(ex(A, B) + adjA - 0.5 * adjB)), cl(params.goalBase * wf * Math.exp(ex(B, A) + adjB - 0.5 * adjA))]
 }
 
 export const pois = (k: number, l: number) => { let f = 1; for (let i = 2; i <= k; i++) f *= i; return Math.exp(-l) * l ** k / f }
 
-export function probabilities(a: string, b: string, params: ModelParams) {
-  const [la, lb] = lambdas(a, b, params)
+export function probabilities(a: string, b: string, params: ModelParams, env?: Env) {
+  const [la, lb] = lambdas(a, b, params, env)
   let win = 0, draw = 0, loss = 0
   for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) {
     const p = pois(i, la) * pois(j, lb)
@@ -76,8 +80,8 @@ export function probabilities(a: string, b: string, params: ModelParams) {
 }
 
 // Marcador más probable (moda de la distribución conjunta de Poisson) y matriz de marcadores.
-export function modalScore(a: string, b: string, params: ModelParams) {
-  const [la, lb] = lambdas(a, b, params)
+export function modalScore(a: string, b: string, params: ModelParams, env?: Env) {
+  const [la, lb] = lambdas(a, b, params, env)
   let best = { ga: 0, gb: 0, p: -1 }
   for (let i = 0; i <= 8; i++) for (let j = 0; j <= 8; j++) {
     const p = pois(i, la) * pois(j, lb)
@@ -103,11 +107,12 @@ function assignGoals(team: Team, n: number, rng: Rng, minuteMax: number, minuteM
 
 export interface SimOutcome { ga: number; gb: number; goals: Goal[]; et: boolean; pens?: [number, number]; winner?: string }
 
-export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParams, knockout: boolean): SimOutcome {
-  const [la0, lb0] = lambdas(a, b, params)
-  const shock = normal(rng) * params.variance // día inspirado/gris del partido
+export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParams, knockout: boolean, env?: Env): SimOutcome {
+  const [la0, lb0] = lambdas(a, b, params, env)
+  const vr = params.variance * weatherFactor(env?.ctx).variance // con lluvia hay más imprevistos
+  const shock = normal(rng) * vr // día inspirado/gris del partido
   const ga = poisson(la0 * Math.exp(shock), rng)
-  const gb = poisson(lb0 * Math.exp(-shock * 0.5 + normal(rng) * params.variance), rng)
+  const gb = poisson(lb0 * Math.exp(-shock * 0.5 + normal(rng) * vr), rng)
   let A = ga, B = gb
   const goals = [...assignGoals(TEAM_BY_ID[a], ga, rng, 90, 1, 'reg'), ...assignGoals(TEAM_BY_ID[b], gb, rng, 90, 1, 'reg')]
   let et = false
@@ -133,7 +138,7 @@ export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParam
   return { ga: A, gb: B, goals, et, pens, winner }
 }
 
-export function simulateGroups(seed: string, params: ModelParams): Match[] {
+export function simulateGroups(seed: string, params: ModelParams, world?: WorldConfig): Match[] {
   const rng = makeRng(seed + ':grupos')
   const out: Match[] = []
   for (const g of GROUPS) {
@@ -141,8 +146,10 @@ export function simulateGroups(seed: string, params: ModelParams): Match[] {
     // mismo calendario que la historia original: (1v2, 3v4) (1v3, 2v4) (1v4, 2v3)
     const fx: [string, string][] = [[t1, t2], [t3, t4], [t1, t3], [t2, t4], [t1, t4], [t2, t3]]
     fx.forEach(([h, a], i) => {
-      const r = simulateMatch(h, a, rng, params, false)
-      out.push({ id: `${g}${i + 1}`, group: g, matchday: (Math.floor(i / 2) + 1) as 1 | 2 | 3, home: h, away: a, hg: r.ga, ag: r.gb, goals: r.goals })
+      const id = `${g}${i + 1}`
+      const ctx = world ? contextFor(world, seed, id) : undefined
+      const r = simulateMatch(h, a, rng, params, false, ctx ? { ctx, world } : undefined)
+      out.push({ id, group: g, matchday: (Math.floor(i / 2) + 1) as 1 | 2 | 3, home: h, away: a, hg: r.ga, ag: r.gb, goals: r.goals, ctx })
     })
   }
   return out
@@ -160,9 +167,10 @@ export function emptyBracket(pairs: [string, string][]): Bracket {
   }
 }
 
-function play(m: KoMatch, rng: Rng, params: ModelParams): KoMatch {
-  const r = simulateMatch(m.a!, m.b!, rng, params, true)
-  return { ...m, ga: r.ga, gb: r.gb, et: r.et, pens: r.pens, winner: r.winner, goals: r.goals }
+function play(m: KoMatch, rng: Rng, params: ModelParams, seed: string, world?: WorldConfig): KoMatch {
+  const ctx = world ? contextFor(world, seed, m.id) : undefined
+  const r = simulateMatch(m.a!, m.b!, rng, params, true, ctx ? { ctx, world } : undefined)
+  return { ...m, ga: r.ga, gb: r.gb, et: r.et, pens: r.pens, winner: r.winner, goals: r.goals, ctx }
 }
 
 export type Phase = 'r16' | 'qf' | 'sf' | 'final' | 'done'
@@ -174,37 +182,37 @@ export function nextPhase(br: Bracket): Phase {
   return 'done'
 }
 
-export function advance(br: Bracket, seed: string, params: ModelParams): Bracket {
+export function advance(br: Bracket, seed: string, params: ModelParams, world?: WorldConfig): Bracket {
   const ph = nextPhase(br)
   const rng = makeRng(`${seed}:${ph}`)
   const next: Bracket = JSON.parse(JSON.stringify(br))
   const loser = (m: KoMatch) => (m.winner === m.a ? m.b : m.a)
   if (ph === 'r16') {
-    next.r16 = br.r16.map((m) => play(m, rng, params))
+    next.r16 = br.r16.map((m) => play(m, rng, params, seed, world))
     next.qf = next.qf.map((m, i) => ({ ...m, a: next.r16[2 * i].winner, b: next.r16[2 * i + 1].winner }))
   } else if (ph === 'qf') {
-    next.qf = br.qf.map((m) => play(m, rng, params))
+    next.qf = br.qf.map((m) => play(m, rng, params, seed, world))
     next.sf = next.sf.map((m, i) => ({ ...m, a: next.qf[2 * i].winner, b: next.qf[2 * i + 1].winner }))
   } else if (ph === 'sf') {
-    next.sf = br.sf.map((m) => play(m, rng, params))
+    next.sf = br.sf.map((m) => play(m, rng, params, seed, world))
     next.third = { ...next.third, a: loser(next.sf[0]), b: loser(next.sf[1]) }
     next.final = { ...next.final, a: next.sf[0].winner, b: next.sf[1].winner }
   } else if (ph === 'final') {
-    next.third = play(next.third, rng, params)
-    next.final = play(next.final, rng, params)
+    next.third = play(next.third, rng, params, seed, world)
+    next.final = play(next.final, rng, params, seed, world)
     next.champion = next.final.winner
   }
   return next
 }
 
-export function newAlt(seed: string, mode: 'octavos' | 'completo', storyMatches: Match[], params: ModelParams): AltTournament {
-  const groupMatches = mode === 'completo' ? simulateGroups(seed, params) : storyMatches
-  return { seed, mode, groupMatches, bracket: emptyBracket(r16Pairs(qualifiers(groupMatches))) }
+export function newAlt(seed: string, mode: 'octavos' | 'completo', storyMatches: Match[], params: ModelParams, world?: WorldConfig): AltTournament {
+  const groupMatches = mode === 'completo' ? simulateGroups(seed, params, world) : storyMatches
+  return { seed, mode, groupMatches, bracket: emptyBracket(r16Pairs(qualifiers(groupMatches))), world }
 }
 
 export function runAll(t: AltTournament, params: ModelParams): AltTournament {
   let br = t.bracket
-  while (nextPhase(br) !== 'done') br = advance(br, t.seed, params)
+  while (nextPhase(br) !== 'done') br = advance(br, t.seed, params, t.world)
   return { ...t, bracket: br }
 }
 

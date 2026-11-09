@@ -34,6 +34,18 @@ export interface Goal {
   phase?: 'reg' | 'et'
 }
 
+// Condiciones en que se jugó un partido simulado con mundial personalizado.
+export interface MatchCtx { venueId: string; temp: number; rain: number; roof?: boolean }
+
+export type Season = 'verano' | 'templado' | 'invierno'
+export interface WorldConfig {
+  hostId: string
+  season: Season
+  finalVenue: string
+  history: Record<string, { n: number; gd: number }> // "equipo|estadio" → partidos y diferencia de gol acumulados
+  receipt?: string // comprobante del pago simulado
+}
+
 export interface Match {
   id: string
   group: string
@@ -43,6 +55,7 @@ export interface Match {
   hg: number
   ag: number
   goals?: Goal[]
+  ctx?: MatchCtx
 }
 
 export interface TableRow {
@@ -90,6 +103,7 @@ export interface KoMatch {
   pens?: [number, number]
   winner?: string
   goals?: Goal[]
+  ctx?: MatchCtx
 }
 
 export interface Bracket {
@@ -106,4 +120,6 @@ export interface AltTournament {
   mode: 'octavos' | 'completo'
   groupMatches: Match[]
   bracket: Bracket
+  world?: WorldConfig
+  recorded?: boolean
 }

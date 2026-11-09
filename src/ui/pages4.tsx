@@ -9,8 +9,12 @@ import { explain } from '../engine/explain'
 import { validate } from '../engine/validate'
 import { Avatar, Bar, Flag, Note, ProbBar, Section, Tabs, TeamLink, useApp, useLocalState } from './common'
 import { Events, KoCard } from './blocks'
+import { WorldBuilder, WorldSummary, GroupResults, newSeed } from './world'
+import { recordHistory, loadHistory } from '../engine/world'
+import { HOSTS, HOST_OF_VENUE, SEASONS, VENUE_BY_ID } from '../data/world'
+import { contextFor } from '../engine/world'
 import { TEAMS } from '../data'
-import type { Weights } from '../types'
+import type { Season, Weights } from '../types'
 
 // ---------------- Estadísticas ----------------
 export function Stats() {
@@ -139,21 +143,30 @@ function FreeMatch() {
   const [a, setA] = useState('chi')
   const [b, setB] = useState('bra')
   const [ko, setKo] = useState(false)
-  const [seed, setSeed] = useState('legends-1')
+  const [seed, setSeed] = useState(newSeed)
+  const [venue, setVenue] = useState('')
+  const [season, setSeason] = useState<Season>('templado')
   const [n, setN] = useState(0)
   const [res, setRes] = useState<ReturnType<typeof simulateMatch> | null>(null)
   const [live, setLive] = useState(false)
-  const pr = probabilities(a, b, params)
+  const env = venue ? (() => { const w = { hostId: HOST_OF_VENUE[venue].id, season, finalVenue: venue, history: loadHistory() }; return { ctx: contextFor(w, seed + (n ? `#${n}` : ''), 'F'), world: w } })() : undefined
+  const pr = probabilities(a, b, params, env)
   const A = profile(a, params), B = profile(b, params)
-  const ex = a !== b ? explain(a, b, params, res ?? undefined) : null
+  const ex = a !== b ? explain(a, b, params, res ?? undefined, env) : null
   const comps: [string, 'quality' | 'balance' | 'attack' | 'defense' | 'experience'][] = [['Calidad', 'quality'], ['Equilibrio', 'balance'], ['Ataque', 'attack'], ['Defensa', 'defense'], ['Experiencia', 'experience']]
-  const run = (s: string) => setRes(simulateMatch(a, b, makeRng(s), params, ko))
+  const run = (s: string) => setRes(simulateMatch(a, b, makeRng(s), params, ko, env))
   const again = () => { const s = `${seed}#${n + 1}`; setN(n + 1); setLive(true); run(s) }
   return (
     <Section title="Partido libre">
       <div className="filters"><TeamSelect value={a} onChange={(v) => { setA(v); setRes(null) }} label="Selección A" /><TeamSelect value={b} onChange={(v) => { setB(v); setRes(null) }} label="Selección B" /></div>
       <div className="filters">
         <label className="seed">Semilla <input value={seed} onChange={(e) => { setSeed(e.target.value); setN(0) }} /></label>
+        <label className="seed">Estadio
+          <select value={venue} onChange={(e) => { setVenue(e.target.value); setRes(null) }}>
+            <option value="">Neutral (sin sede)</option>
+            {HOSTS.map((h) => <optgroup key={h.id} label={h.name}>{h.venues.map((x) => <option key={x.id} value={x.id}>{x.name} · {x.city}</option>)}</optgroup>)}
+          </select></label>
+        {venue && <label className="seed">Época <select value={season} onChange={(e) => { setSeason(e.target.value as Season); setRes(null) }}>{Object.entries(SEASONS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>}
         <label className="chk"><input type="checkbox" checked={ko} onChange={(e) => setKo(e.target.checked)} /> Eliminatoria (prórroga y penales)</label>
       </div>
       {a === b ? <Note tone="warn">Elige dos selecciones distintas.</Note> : (
@@ -205,9 +218,14 @@ function AltTour({ alt, setAlt }: { alt: ReturnType<typeof useApp>['alt']; setAl
   const [mode, setMode] = useState<'octavos' | 'completo'>('octavos')
   const [odds, setOdds] = useState<Record<string, number> | null>(null)
   const phase = alt ? nextPhase(alt.bracket) : null
+  const commit = (t: typeof alt) => {
+    if (t && t.world && t.bracket.champion && !t.recorded) { recordHistory(t); t = { ...t, recorded: true } }
+    setAlt(t)
+  }
   return (
     <>
-      <Section title="Torneo alternativo" sub="Se guarda solo en este navegador y es independiente de la historia.">
+      <WorldBuilder setAlt={commit} />
+      <Section title="Torneo alternativo" sub="Sin sede ni clima (campo neutral). Se guarda solo en este navegador y es independiente de la historia.">
         <div className="filters">
           <label className="seed">Semilla <input value={seed} onChange={(e) => setSeed(e.target.value)} /></label>
           <select value={mode} onChange={(e) => setMode(e.target.value as 'octavos' | 'completo')} aria-label="Modo">
@@ -216,14 +234,16 @@ function AltTour({ alt, setAlt }: { alt: ReturnType<typeof useApp>['alt']; setAl
         </div>
         <div className="cta">
           <button className="btn pri" onClick={() => setAlt(newAlt(seed, mode, STORY_MATCHES, params))}>{alt ? 'Reiniciar torneo' : 'Crear torneo'}</button>
-          {alt && phase !== 'done' && <button className="btn" onClick={() => setAlt({ ...alt, bracket: advance(alt.bracket, alt.seed, params) })}>Simular {PHASE_LABEL[phase!]}</button>}
-          {alt && phase !== 'done' && <button className="btn" onClick={() => setAlt(runAll(alt, params))}>Simular todo hasta el campeón</button>}
+          {alt && phase !== 'done' && <button className="btn" onClick={() => commit({ ...alt, bracket: advance(alt.bracket, alt.seed, params, alt.world) })}>Simular {PHASE_LABEL[phase!]}</button>}
+          {alt && phase !== 'done' && <button className="btn" onClick={() => commit(runAll(alt, params))}>Simular todo hasta el campeón</button>}
           {alt && <button className="btn ghost" onClick={() => setAlt(null)}>Borrar torneo alternativo</button>}
         </div>
+        {alt && <WorldSummary alt={alt} />}
         {alt && <p className="small muted">Semilla «{alt.seed}» · {alt.mode === 'completo' ? 'grupos simulados' : 'grupos oficiales'} · siguiente fase: {PHASE_LABEL[phase!]}.</p>}
         {alt?.bracket.champion && <div className="champ big"><Flag id={alt.bracket.champion} size={64} /><div><span className="muted">Campeón del torneo alternativo</span><b>{TEAM_BY_ID[alt.bracket.champion].name}</b></div></div>}
       </Section>
       {alt && <Section title="Cuadro"><BracketView view="alt" /></Section>}
+      {alt && <GroupResults alt={alt} />}
       <Section title="¿Quién gana desde octavos?" sub="Estimación con 300 torneos simulados sobre los cruces oficiales.">
         <button className="btn" onClick={() => setOdds(championOdds(DECLARED_R16, params, 300, 'odds'))}>Calcular probabilidades</button>
         {odds && Object.entries(odds).sort((a, b) => b[1] - a[1]).map(([id, v]) => <Bar key={id} label={TEAM_BY_ID[id].name} v={v * 100} min={0} max={Math.max(...Object.values(odds)) * 100} right={`${(v * 100).toFixed(1)}%`} />)}
