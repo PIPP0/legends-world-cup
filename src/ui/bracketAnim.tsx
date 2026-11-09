@@ -31,46 +31,67 @@ export function maskAt(full: Bracket, from: number, revealed: Set<string>, moved
   }
 }
 
-interface Paso { t: 'm' | 'a'; r: number }
+interface Vista { revealed: Set<string>; moved: Set<number>; avanzan: Set<string>; hechas: Set<string>; pop: Set<string>; estado: string }
 interface Props { full: Bracket; from: number; to: number; speed: number; onEnd: () => void; skipKey: number }
+const copia = (v: Vista): Vista => ({ revealed: new Set(v.revealed), moved: new Set(v.moved), avanzan: new Set(v.avanzan), hechas: new Set(v.hechas), pop: new Set(v.pop), estado: v.estado })
 
-// Animación por fases: 1) se marcan los ganadores de la ronda, 2) las líneas avanzan y los equipos llegan a la siguiente ronda.
-export function BracketAnimado({ full, from, to, speed, onEnd, skipKey }: Props) {
-  const rondas = useMemo(() => rondasDe(full), [full])
-  const pasos = useMemo<Paso[]>(() => { const p: Paso[] = []; for (let r = from; r < to; r++) p.push({ t: 'm', r }, { t: 'a', r }); return p }, [from, to])
-  const [paso, setPaso] = useState(0)
-  const [k, setK] = useState(0) // partidos ya marcados dentro de la fase de marcar
-  const finalMomento = to >= 4
-  useEffect(() => { if (skipKey > 0) { setPaso(pasos.length); setK(0) } }, [skipKey, pasos.length])
+// Línea de tiempo continua: 1) se encienden los bordes de los ganadores de la ronda; 2) una línea avanza a la siguiente ronda y los equipos llegan;
+// 3) en esa ronda se enciende el borde del ganador; y así hasta la final y el campeón. Todo se calcula de antemano y se reproduce sin pausas muertas.
+function construir(full: Bracket, from: number, to: number): { eventos: { t: number; v: Vista }[]; fin: number } {
+  const rondas = rondasDe(full)
+  const eventos: { t: number; v: Vista }[] = []
+  let cur: Vista = { revealed: new Set(), moved: new Set(), avanzan: new Set(), hechas: new Set(), pop: new Set(), estado: '' }
+  let t = 0
+  const push = () => eventos.push({ t, v: copia(cur) })
+  const marcar = (r: number) => {
+    cur.pop = new Set(); cur.avanzan = new Set([...cur.avanzan].filter(() => false))
+    const ms = rondas[r]
+    ms.forEach((m, j) => {
+      const esFinal = r === 3 && m.id === 'F'
+      t += esFinal ? 2600 : j === 0 ? 600 : r === 0 ? 240 : 320 // suspenso antes de la gran final
+      cur.revealed.add(m.id); cur.pop.add(m.id)
+      cur.estado = esFinal ? 'La gran final…' : `Ganadores de ${NOMBRES[r].toLowerCase()}`
+      push()
+    })
+  }
+  const avanzar = (r: number) => {
+    t += 700
+    cur.pop = new Set(); cur.moved.add(r); cur.avanzan = new Set(rondas[r].map((m) => m.id))
+    cur.estado = r === 3 ? 'El campeón llega a la cima' : `Los ganadores avanzan a ${NOMBRES[r + 1].toLowerCase()}`
+    push()
+    t += r === 3 ? 1600 : 1850 // lo que tarda la línea en dibujarse y los equipos en llegar
+    cur.avanzan = new Set(); rondas[r].forEach((m) => cur.hechas.add(m.id))
+  }
+  for (let r = from; r < to; r++) {
+    if (r === from) marcar(r)
+    avanzar(r)
+    if (r + 1 < to) marcar(r + 1)
+  }
+  cur.estado = to >= 4 ? '🏆 ¡Ya hay campeón!' : 'Avance completo'
+  t += 200; push()
+  return { eventos, fin: t + (to >= 4 ? 2600 : 600) }
+}
+
+// Animación: se reproduce la línea de tiempo en un solo hilo de temporizadores (sin saltos entre fases).
+export function BracketAnimado({ full, from, to, onEnd, skipKey }: Props) {
+  const plan = useMemo(() => construir(full, from, to), [full, from, to])
+  const vacia = useMemo<Vista>(() => ({ revealed: new Set(), moved: new Set(), avanzan: new Set(), hechas: new Set(), pop: new Set(), estado: 'Preparando el cuadro…' }), [])
+  const [v, setV] = useState<Vista>(vacia)
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   useEffect(() => {
-    if (paso >= pasos.length) { const t = setTimeout(onEnd, finalMomento ? 2800 : 700); return () => clearTimeout(t) }
-    const s = pasos[paso], ms = rondas[s.r]
-    let t: ReturnType<typeof setTimeout>
-    if (s.t === 'm') {
-      if (k < ms.length) {
-        const suspenso = s.r === 3 && k === ms.length - 1 && finalMomento
-        t = setTimeout(() => setK((x) => x + 1), suspenso ? 2800 : k === 0 ? 800 : speed)
-      } else t = setTimeout(() => { setPaso((p) => p + 1); setK(0) }, 1100) // pausa con todos los ganadores marcados
-    } else t = setTimeout(() => { setPaso((p) => p + 1); setK(0) }, s.r === 3 ? 3400 : 2900) // la línea avanza y los equipos llegan
-    return () => clearTimeout(t)
-  }, [paso, k, pasos, rondas, speed, finalMomento, onEnd])
-
-  const actual = paso < pasos.length ? pasos[paso] : null
-  const revealed = new Set<string>(), moved = new Set<number>(), hechas = new Set<string>()
-  pasos.forEach((s, i) => {
-    if (i < paso) { if (s.t === 'm') rondas[s.r].forEach((m) => revealed.add(m.id)); else { moved.add(s.r); rondas[s.r].forEach((m) => hechas.add(m.id)) } }
-  })
-  const pop = new Set<string>(), avanzan = new Set<string>()
-  if (actual?.t === 'm') rondas[actual.r].slice(0, k).forEach((m) => { revealed.add(m.id); pop.add(m.id) }) // todos los marcados en esta fase conservan su animación
-  if (actual?.t === 'a') { rondas[actual.r].forEach((m) => { revealed.add(m.id); avanzan.add(m.id) }); moved.add(actual.r) }
-  const br = maskAt(full, from, revealed, moved)
-  const estado = !actual ? (finalMomento ? '🏆 ¡Ya hay campeón!' : 'Avance completo')
-    : actual.t === 'm' ? `▶ Se marcan los ganadores: ${NOMBRES[actual.r]}${actual.r === 3 && k >= rondas[3].length - 1 ? '…' : ''}`
-      : actual.r === 3 ? '▶ El campeón llega a la cima…' : `▶ Los ganadores avanzan a ${NOMBRES[actual.r + 1].toLowerCase()}`
+    timers.current = plan.eventos.map((e) => setTimeout(() => setV(e.v), e.t))
+    timers.current.push(setTimeout(onEnd, plan.fin))
+    return () => timers.current.forEach(clearTimeout)
+  }, [plan, onEnd])
+  useEffect(() => {
+    if (skipKey > 0) { timers.current.forEach(clearTimeout); setV(plan.eventos[plan.eventos.length - 1].v); timers.current = [setTimeout(onEnd, 300)] }
+  }, [skipKey, plan, onEnd])
+  const br = maskAt(full, from, v.revealed, v.moved)
+  const finalizado = v.estado.startsWith('🏆')
   return (
     <>
-      <p className="anim-estado" aria-live="polite">{estado}</p>
-      <Grid br={br} pop={pop} avanzan={avanzan} hechas={hechas} full={full} camino={!actual && finalMomento ? full.champion : undefined} />
+      <p className="anim-estado" aria-live="polite">{v.estado ? `▶ ${v.estado}` : ''}</p>
+      <Grid br={br} pop={v.pop} avanzan={v.avanzan} hechas={v.hechas} full={full} camino={finalizado && to >= 4 ? full.champion : undefined} />
     </>
   )
 }
