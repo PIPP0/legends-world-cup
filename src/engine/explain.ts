@@ -1,5 +1,5 @@
 import { TEAM_BY_ID, PLAYER_BY_ID } from '../data'
-import { lambdas, modalScore, probabilities, profile, type SimOutcome } from './model'
+import { modalScore, probabilities, profile, type SimOutcome } from './model'
 import { adjustments, type Env } from './world'
 import { VENUE_BY_ID, HOST_OF_VENUE } from '../data/world'
 import type { ModelParams } from '../types'
@@ -25,7 +25,7 @@ export function explain(a: string, b: string, params: ModelParams, res?: SimOutc
   const A = profile(a, params, env), B = profile(b, params, env)
   const TA = TEAM_BY_ID[a], TB = TEAM_BY_ID[b]
   const pr = probabilities(a, b, params, env)
-  const [la, lb] = lambdas(a, b, params, env)
+  const la = pr.expA, lb = pr.expB
   const modal = modalScore(a, b, params, env)
   const favorite = pr.win >= pr.loss ? a : b
   const favP = Math.max(pr.win, pr.loss)

@@ -3932,5 +3932,166 @@
   "title": "Sebastian Prödl",
   "license": "CC BY-SA 4.0",
   "author": "Werner100359"
+ },
+ "aut-kevin-danso": {
+  "file": "photos/aut-kevin-danso.png",
+  "page": "https://en.wikipedia.org/wiki/Kevin_Danso",
+  "title": "Kevin Danso",
+  "license": "CC BY-SA 4.0",
+  "author": "Timmy96"
+ },
+ "aut-ernst-ocwirk": {
+  "file": "photos/aut-ernst-ocwirk.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ernst_Ocwirk",
+  "title": "Ernst Ocwirk",
+  "license": "CC BY-SA 3.0 nl",
+  "author": "Noske, J.D."
+ },
+ "aut-herbert-prohaska": {
+  "file": "photos/aut-herbert-prohaska.jpg",
+  "page": "https://en.wikipedia.org/wiki/Herbert_Prohaska",
+  "title": "Herbert Prohaska",
+  "license": "CC BY-SA 4.0",
+  "author": "Granada"
+ },
+ "aut-konrad-laimer": {
+  "file": "photos/aut-konrad-laimer.jpg",
+  "page": "https://en.wikipedia.org/wiki/Konrad_Laimer",
+  "title": "Konrad Laimer",
+  "license": "CC BY-SA 4.0",
+  "author": "Steffen Prößdorf"
+ },
+ "aut-marko-arnautovic": {
+  "file": "photos/aut-marko-arnautovic.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marko_Arnautovi%C4%87",
+  "title": "Marko Arnautović",
+  "license": "CC BY-SA 4.0",
+  "author": "Granada"
+ },
+ "aut-walter-schachner": {
+  "file": "photos/aut-walter-schachner.jpg",
+  "page": "https://en.wikipedia.org/wiki/Walter_Schachner",
+  "title": "Walter Schachner",
+  "license": "CC BY-SA 3.0",
+  "author": "Steindy (talk) 01:22, 10 August 2009 (UTC)"
+ },
+ "aut-ivica-vastic": {
+  "file": "photos/aut-ivica-vastic.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ivica_Vasti%C4%87",
+  "title": "Ivica Vastić",
+  "license": "GFDL 1.2",
+  "author": "Steindy (talk) 17:16, 23 August 2015 (UTC)"
+ },
+ "par-justo-villar": {
+  "file": "photos/par-justo-villar.jpg",
+  "page": "https://en.wikipedia.org/wiki/Justo_Villar",
+  "title": "Justo Villar",
+  "license": "CC BY-SA 2.0",
+  "author": "Agencia de Noticias ANDES"
+ },
+ "par-roberto-fernandez": {
+  "file": "photos/par-roberto-fernandez.jpg",
+  "page": "https://en.wikipedia.org/wiki/Roberto_Fern%C3%A1ndez_(footballer%2C_born_2000)",
+  "title": "Roberto Fernández (footballer, born 2000)",
+  "license": "CC BY-SA 3.0",
+  "author": "Екатерина Лаут"
+ },
+ "par-francisco-arce": {
+  "file": "photos/par-francisco-arce.jpg",
+  "page": "https://en.wikipedia.org/wiki/Francisco_Arce",
+  "title": "Francisco Arce",
+  "license": "CC BY-SA 3.0",
+  "author": "Julian Morinigo"
+ },
+ "par-julio-cesar-caceres": {
+  "file": "photos/par-julio-cesar-caceres.png",
+  "page": "https://en.wikipedia.org/wiki/Julio_C%C3%A9sar_C%C3%A1ceres",
+  "title": "Julio César Cáceres",
+  "license": "CC BY 3.0",
+  "author": "Diario Última Hora"
+ },
+ "par-fabian-balbuena": {
+  "file": "photos/par-fabian-balbuena.jpg",
+  "page": "https://en.wikipedia.org/wiki/Fabi%C3%A1n_Balbuena",
+  "title": "Fabián Balbuena",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "par-roberto-acuna": {
+  "file": "photos/par-roberto-acuna.jpg",
+  "page": "https://en.wikipedia.org/wiki/Roberto_Acu%C3%B1a",
+  "title": "Roberto Acuña",
+  "license": "CC0",
+  "author": "Agencia de Noticias ANDES"
+ },
+ "par-edgar-barreto": {
+  "file": "photos/par-edgar-barreto.jpg",
+  "page": "https://en.wikipedia.org/wiki/%C3%89dgar_Barreto",
+  "title": "Édgar Barreto",
+  "license": "Public domain",
+  "author": "Slash88 at Italian Wikipedia"
+ },
+ "par-salvador-cabanas": {
+  "file": "photos/par-salvador-cabanas.jpg",
+  "page": "https://en.wikipedia.org/wiki/Salvador_Caba%C3%B1as",
+  "title": "Salvador Cabañas",
+  "license": "CC BY-SA 2.0",
+  "author": "Agencia de Noticias ANDES"
+ },
+ "par-oscar-cardozo": {
+  "file": "photos/par-oscar-cardozo.jpg",
+  "page": "https://en.wikipedia.org/wiki/%C3%93scar_Cardozo",
+  "title": "Óscar Cardozo",
+  "license": "CC BY-SA 4.0",
+  "author": "TrabzonsporGazetesi"
+ },
+ "ned-hans-van-breukelen": {
+  "file": "photos/ned-hans-van-breukelen.jpg",
+  "page": "https://en.wikipedia.org/wiki/Hans_van_Breukelen",
+  "title": "Hans van Breukelen",
+  "license": "CC BY-SA 2.0",
+  "author": "ING Nederland"
+ },
+ "ned-jan-jongbloed": {
+  "file": "photos/ned-jan-jongbloed.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jan_Jongbloed",
+  "title": "Jan Jongbloed",
+  "license": "CC BY-SA 3.0 nl",
+  "author": "Hans Peters for Anefo"
+ },
+ "ned-jaap-stam": {
+  "file": "photos/ned-jaap-stam.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jaap_Stam",
+  "title": "Jaap Stam",
+  "license": "CC BY 2.5",
+  "author": "Paul Blank"
+ },
+ "ned-frank-de-boer": {
+  "file": "photos/ned-frank-de-boer.jpg",
+  "page": "https://en.wikipedia.org/wiki/Frank_de_Boer",
+  "title": "Frank de Boer",
+  "license": "CC BY-SA 1.0",
+  "author": "Yulia Novikova"
+ },
+ "ned-danny-blind": {
+  "file": "photos/ned-danny-blind.jpg",
+  "page": "https://en.wikipedia.org/wiki/Danny_Blind",
+  "title": "Danny Blind",
+  "license": "CC BY 2.5",
+  "author": "Paul Blank"
+ },
+ "ned-denzel-dumfries": {
+  "file": "photos/ned-denzel-dumfries.jpg",
+  "page": "https://en.wikipedia.org/wiki/Denzel_Dumfries",
+  "title": "Denzel Dumfries",
+  "license": "CC BY-SA 4.0",
+  "author": "Erjonallaraj"
+ },
+ "ned-dennis-bergkamp": {
+  "file": "photos/ned-dennis-bergkamp.jpg",
+  "page": "https://en.wikipedia.org/wiki/Dennis_Bergkamp",
+  "title": "Dennis Bergkamp",
+  "license": "CC BY 2.0",
+  "author": "Kieran Clarke"
  }
 }

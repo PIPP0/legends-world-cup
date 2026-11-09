@@ -69,27 +69,47 @@ export function lambdas(a: string, b: string, params: ModelParams, env?: Env): [
   return [cl(params.goalBase * wf * Math.exp(ex(A, B) + adjA - 0.5 * adjB)), cl(params.goalBase * wf * Math.exp(ex(B, A) + adjB - 0.5 * adjA))]
 }
 
+// Estado del partido: el que va ganando por 2 o más baja el ritmo y el que pierde arriesga un poco más.
+export const stateFactor = (lead: number): number => (lead >= 3 ? 0.4 : lead >= 2 ? 0.7 : lead <= -2 ? 1.1 : 1)
+
 export const pois = (k: number, l: number) => { let f = 1; for (let i = 2; i <= k; i++) f *= i; return Math.exp(-l) * l ** k / f }
+
+// Distribución exacta de marcadores en 90 minutos con el mismo modelo por tramos que usa la simulación.
+export function scoreMatrix(la: number, lb: number, max = 10): number[][] {
+  let M = Array.from({ length: max + 1 }, () => new Array<number>(max + 1).fill(0))
+  M[0][0] = 1
+  for (let c = 0; c < 6; c++) {
+    const N = Array.from({ length: max + 1 }, () => new Array<number>(max + 1).fill(0))
+    for (let i = 0; i <= max; i++) for (let j = 0; j <= max; j++) {
+      const m = M[i][j]
+      if (m < 1e-12) continue
+      const ra = (la / 6) * stateFactor(i - j), rb = (lb / 6) * stateFactor(j - i)
+      for (let x = 0; i + x <= max; x++) {
+        const px = pois(x, ra)
+        if (px < 1e-12) break
+        for (let y = 0; j + y <= max; y++) { const py = pois(y, rb); if (py < 1e-12) break; N[i + x][j + y] += m * px * py }
+      }
+    }
+    M = N
+  }
+  const t = M.flat().reduce((u, v) => u + v, 0)
+  return M.map((r) => r.map((v) => v / t))
+}
 
 export function probabilities(a: string, b: string, params: ModelParams, env?: Env) {
   const [la, lb] = lambdas(a, b, params, env)
-  let win = 0, draw = 0, loss = 0
-  for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) {
-    const p = pois(i, la) * pois(j, lb)
-    if (i > j) win += p; else if (i === j) draw += p; else loss += p
-  }
-  const t = win + draw + loss
-  return { win: win / t, draw: draw / t, loss: loss / t, expA: la, expB: lb }
+  const M = scoreMatrix(la, lb)
+  let win = 0, draw = 0, loss = 0, expA = 0, expB = 0
+  M.forEach((row, i) => row.forEach((p, j) => { expA += i * p; expB += j * p; if (i > j) win += p; else if (i === j) draw += p; else loss += p }))
+  return { win, draw, loss, expA, expB }
 }
 
 // Marcador más probable (moda de la distribución conjunta de Poisson) y matriz de marcadores.
 export function modalScore(a: string, b: string, params: ModelParams, env?: Env) {
   const [la, lb] = lambdas(a, b, params, env)
+  const M = scoreMatrix(la, lb)
   let best = { ga: 0, gb: 0, p: -1 }
-  for (let i = 0; i <= 8; i++) for (let j = 0; j <= 8; j++) {
-    const p = pois(i, la) * pois(j, lb)
-    if (p > best.p) best = { ga: i, gb: j, p }
-  }
+  M.forEach((row, i) => row.forEach((p, j) => { if (p > best.p) best = { ga: i, gb: j, p } }))
   return best
 }
 
@@ -126,8 +146,7 @@ export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParam
   let ga = 0, gb = 0
   for (let c = 0; c < 6; c++) {
     const lead = ga - gb
-    const fa = lead >= 3 ? 0.4 : lead >= 2 ? 0.7 : lead <= -2 ? 1.1 : 1
-    const fb = lead <= -3 ? 0.4 : lead <= -2 ? 0.7 : lead >= 2 ? 1.1 : 1
+    const fa = stateFactor(lead), fb = stateFactor(-lead)
     const na = poisson((ma / 6) * fa, rng), nb = poisson((mb / 6) * fb, rng)
     ga += na; gb += nb
     goals.push(...assignGoals(TEAM_BY_ID[a], na, rng, (c + 1) * 15, c * 15 + 1, 'reg'), ...assignGoals(TEAM_BY_ID[b], nb, rng, (c + 1) * 15, c * 15 + 1, 'reg'))

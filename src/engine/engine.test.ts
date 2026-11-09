@@ -146,3 +146,26 @@ describe('anfitrión', () => {
     }
   })
 })
+
+import { scoreMatrix } from './model'
+describe('probabilidades coherentes con la simulación', () => {
+  it('la matriz de marcadores suma 1 y coincide con la frecuencia simulada', () => {
+    const P0 = { ...DEFAULT_PARAMS, variance: 0 }
+    const pr = probabilities('chi', 'bra', P0)
+    expect(scoreMatrix(1.2, 1.5).flat().reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6)
+    let w = 0, d = 0, l = 0
+    const N = 12000
+    for (let i = 0; i < N; i++) {
+      const r = simulateMatch('chi', 'bra', makeRng('q' + i), P0, false)
+      if (r.ga > r.gb) w++; else if (r.ga === r.gb) d++; else l++
+    }
+    expect(Math.abs(w / N - pr.win)).toBeLessThan(0.02)
+    expect(Math.abs(d / N - pr.draw)).toBeLessThan(0.02)
+    expect(Math.abs(l / N - pr.loss)).toBeLessThan(0.02)
+  })
+  it('las goleadas de 6 o más goles son muy raras', () => {
+    let big = 0
+    for (let i = 0; i < 6000; i++) { const r = simulateMatch('chi', 'bra', makeRng('g' + i), DEFAULT_PARAMS, false); if (r.ga >= 6 || r.gb >= 6) big++ }
+    expect(big / 6000).toBeLessThan(0.01)
+  })
+})
