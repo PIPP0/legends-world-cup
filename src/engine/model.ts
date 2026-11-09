@@ -147,13 +147,19 @@ export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParam
 }
 
 // Sorteo de grupos con 4 bombos por fuerza (como un mundial real): un equipo de cada bombo por grupo.
-export function drawGroups(seed: string, params: ModelParams = DEFAULT_PARAMS): Record<string, string[]> {
+// Si el país anfitrión juega el torneo, siempre es cabeza de serie del Grupo A (primero de ese grupo y local en el partido inaugural).
+export function drawGroups(seed: string, params: ModelParams = DEFAULT_PARAMS, hostTeamId?: string): Record<string, string[]> {
   const rng = makeRng(seed + ':sorteo')
-  const ranked = strengthRank(params).map((p) => p.teamId)
+  const host = hostTeamId && TEAM_BY_ID[hostTeamId] ? hostTeamId : undefined
+  const ranked = strengthRank(params).map((p) => p.teamId).filter((id) => id !== host)
   const out: Record<string, string[]> = Object.fromEntries(GROUPS.map((g) => [g, [] as string[]]))
-  for (let pot = 0; pot < 4; pot++) {
-    const teams = ranked.slice(pot * 8, pot * 8 + 8)
-    for (let i = teams.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [teams[i], teams[j]] = [teams[j], teams[i]] }
+  const shuffle = (xs: string[]) => { for (let i = xs.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]] } return xs }
+  // bombo 1: el anfitrión (si hay) ocupa el Grupo A y los siete mejores restantes los otros grupos
+  const pot1 = host ? [host, ...shuffle(ranked.slice(0, 7))] : shuffle(ranked.slice(0, 8))
+  GROUPS.forEach((g, i) => out[g].push(pot1[i]))
+  const rest = host ? ranked.slice(7) : ranked.slice(8)
+  for (let pot = 0; pot < 3; pot++) {
+    const teams = shuffle(rest.slice(pot * 8, pot * 8 + 8))
     GROUPS.forEach((g, i) => out[g].push(teams[i]))
   }
   return out

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { GROUPS } from '../data'
+import { HOST_BY_ID } from '../data/world'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { table } from '../engine/standings'
 import { recordHistory } from '../engine/world'
@@ -36,13 +37,13 @@ function useSteps(n: number, ms: number, onDone: () => void) {
   return [k, () => setK(n + 1)] as const
 }
 
-function DrawGroups({ groups, onDone }: { groups: Record<string, string[]>; onDone: () => void }) {
+function DrawGroups({ groups, hostTeam, onDone }: { groups: Record<string, string[]>; hostTeam?: string; onDone: () => void }) {
   const [k, skip] = useSteps(32, 420, onDone)
   return (
     <>
       <div className="drawgrid">
         {GROUPS.map((g, gi) => (
-          <div key={g} className="dgroup"><h5>Grupo {g}</h5>
+          <div key={g} className="dgroup"><h5>Grupo {g}{g === 'A' && hostTeam && groups.A[0] === hostTeam ? ' · anfitrión' : ''}</h5>
             {[0, 1, 2, 3].map((p) => { const idx = p * 8 + gi; return <Slot key={p} id={groups[g][p]} state={idx < k ? 'done' : idx === k ? 'spin' : 'empty'} /> })}
           </div>
         ))}
@@ -174,7 +175,7 @@ export function Vivo() {
   }
   const body = () => {
     switch (step.kind) {
-      case 'draw': return <DrawGroups key="d" groups={t.groups!} onDone={done} />
+      case 'draw': return <DrawGroups key="d" groups={t.groups!} hostTeam={t.world ? HOST_BY_ID[t.world.hostId]?.teamId : undefined} onDone={done} />
       case 'md': {
         const ms = t.groupMatches.filter((m) => m.matchday === step.n)
         const items: Item[] = ms.map((m) => ({ id: m.id, a: m.home, b: m.away, goals: m.goals ?? [], ga: m.hg, gb: m.ag, ctx: m.ctx, tag: `Grupo ${m.group}` }))

@@ -55,7 +55,7 @@ export function Mundial() {
     try {
       const rec = await pay(`Mundial en ${host!.name} · ${MONTHS[month - 1]}`)
       const w = { ...world(), finalVenue: finalVenue || host!.venues[0].id, receipt: rec.id }
-      const groups = mode === 'completo' ? drawGroups(seed, params) : undefined
+      const groups = mode === 'completo' ? drawGroups(seed, params, host!.teamId) : undefined
       startExperience(runAll(newAlt(seed, mode, STORY_MATCHES, params, w, groups), params))
     } finally { setPaying(false) }
   }

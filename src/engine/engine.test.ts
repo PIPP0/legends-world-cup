@@ -133,3 +133,16 @@ describe('planteles de 23', () => {
     }
   })
 })
+
+describe('anfitrión', () => {
+  it('el país anfitrión siempre es primero del Grupo A y el sorteo sigue siendo válido', () => {
+    for (const host of ['chi', 'mex', 'bra', 'jpn']) {
+      for (const seed of ['a', 'b', 'c']) {
+        const g = drawGroups(seed, DEFAULT_PARAMS, host)
+        expect(g.A[0]).toBe(host)
+        expect(new Set(Object.values(g).flat()).size).toBe(32)
+        expect(Object.values(g).every((x) => x.length === 4)).toBe(true)
+      }
+    }
+  })
+})
