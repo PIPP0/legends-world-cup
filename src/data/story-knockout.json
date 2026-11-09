@@ -1,5 +1,5 @@
 {
- "version": 1,
+ "version": 2,
  "seed": "historia-oficial-1",
  "bracket": {
   "r16": [
@@ -152,16 +152,16 @@
     "round": "r16",
     "a": "arg",
     "b": "eng",
-    "ga": 0,
-    "gb": 1,
+    "ga": 1,
+    "gb": 0,
     "et": false,
-    "winner": "eng",
+    "winner": "arg",
     "goals": [
      {
       "minute": 21,
-      "teamId": "eng",
-      "scorerId": "eng-steven-gerrard",
-      "assistId": "eng-wayne-rooney",
+      "teamId": "arg",
+      "scorerId": "arg-lionel-messi",
+      "assistId": "arg-diego-maradona",
       "phase": "reg"
      }
     ]
@@ -291,7 +291,7 @@
    {
     "id": "C3",
     "round": "qf",
-    "a": "eng",
+    "a": "arg",
     "b": "hun",
     "ga": 0,
     "gb": 0,
@@ -516,5 +516,11 @@
    ]
   },
   "champion": "por"
- }
+ },
+ "ediciones": [
+  {
+   "que": "Octavos Argentina-Inglaterra: cambia de Inglaterra 1-0 a Argentina 1-0 (pedido del autor). Argentina ocupa el lugar de Inglaterra en cuartos; el resto de los resultados no se tocó.",
+   "goles": "gol de Messi (21'), asistencia de Maradona"
+  }
+ ]
 }

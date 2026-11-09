@@ -19,6 +19,12 @@ describe('eliminatorias congeladas', () => {
   it('los octavos son exactamente los cruces oficiales', () => {
     expect(b.r16.map((m) => [m.a, m.b])).toEqual(DECLARED_R16)
   })
+  it('Argentina le gana 1-0 a Inglaterra en octavos y sigue en cuartos (edición del autor)', () => {
+    const o5 = b.r16[4]
+    expect([o5.a, o5.b, o5.ga, o5.gb, o5.winner]).toEqual(['arg', 'eng', 1, 0, 'arg'])
+    expect(b.qf[2].a).toBe('arg')
+    expect(b.qf[2].winner).toBe('hun')
+  })
   it('cada partido está completo y es coherente', () => {
     for (const m of all) {
       expect(m.a && m.b && m.winner).toBeTruthy()
