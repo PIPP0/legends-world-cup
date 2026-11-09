@@ -42,7 +42,7 @@ export function Stats() {
     <Section title="Estadísticas" sub={useAlt ? 'Torneo alternativo, calculado desde los eventos.' : 'Historia original.'}>
       {alt && <Tabs value={src} onChange={setSrc} items={[['story', 'Historia original'], ['alt', 'Torneo alternativo']]} />}
       <Tabs value={tab} onChange={setTab} items={[['g', 'Goleadores'], ['a', 'Asistencias'], ['ga', 'Goles + asist.'], ['t', 'Selecciones']]} />
-      {!useAlt && <Note tone="est">Fase de grupos: goles declarados por la simulación original (lista parcial) y asistencias <b>estimadas</b>. {level > 0 ? <>Eliminatorias: calculadas desde los eventos de cada partido, hasta la fase que ya avanzaste ({phaseLabel(level)}). Los penales cuentan como empate.</> : <>Las eliminatorias se suman a medida que avanzas fase por fase en <a href="#/cuadro">Eliminatorias</a>.</>}</Note>}
+      {!useAlt && <Note tone="est"><b>Total del torneo:</b> goles de la fase de grupos (declarados por la simulación original, lista parcial) más los de las eliminatorias; asistencias <b>estimadas</b> en grupos. {level > 0 ? <>Eliminatorias: calculadas desde los eventos de cada partido, hasta la fase que ya avanzaste ({phaseLabel(level)}). Los penales cuentan como empate.</> : <>Las eliminatorias se suman a medida que avanzas fase por fase en <a href="#/cuadro">Eliminatorias</a>.</>}</Note>}
       {tab === 'g' && rowsP(players((s) => s.goals), (s) => s.goals, 'Goles')}
       {tab === 'a' && rowsP(players((s) => s.assists), (s) => s.assists, useAlt ? 'Asist.' : 'Asist. (est.)')}
       {tab === 'ga' && rowsP(players((s) => s.goals + s.assists), (s) => s.goals + s.assists, 'G+A')}
@@ -126,9 +126,10 @@ function CampeonDetalle() {
       </div>
       <h3 className="sub">El camino de {TEAM_BY_ID[champion].name}</h3>
       <div className="list">{camino.map((m) => <KoRow key={m.id} m={m} />)}</div>
-      <h3 className="sub">Goleadores de las eliminatorias</h3>
+      <h3 className="sub">Goleadores de las eliminatorias (desde octavos de final)</h3>
+      <p className="small muted">Solo cuenta los goles de octavos, cuartos, semifinales, tercer puesto y final. No incluye la fase de grupos. El total del torneo está en Estadísticas.</p>
       <ol className="rules">{top.map(([id, n]) => <li key={id}><a href={`#/jugador/${id}`}>{PLAYER_BY_ID[id].name}</a> ({TEAM_BY_ID[PLAYER_BY_ID[id].teamId].name}) · {n} gol{n > 1 ? 'es' : ''}</li>)}</ol>
-      <p className="small muted">Las estadísticas, los partidos, las selecciones y los jugadores ya incluyen estos resultados.</p>
+      <p className="small muted">Las estadísticas, los partidos, las selecciones y los jugadores ya incluyen estos resultados. En Estadísticas, los goles son del torneo completo: fase de grupos más estas eliminatorias.</p>
     </Section>
   )
 }
