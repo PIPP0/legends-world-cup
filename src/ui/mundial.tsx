@@ -6,7 +6,8 @@ import { drawGroups, newAlt, runAll } from '../engine/model'
 import { startExperience } from './pending'
 import { explain } from '../engine/explain'
 import { MAX_PRIMES, PRIME_BOOST, adjustments, loadHistory } from '../engine/world'
-import { PRICE_USD, pay } from '../engine/payment'
+import { PRICE_USD } from '../engine/payment'
+import { PayBox } from './paybox'
 import { Avatar, Flag, Section, useApp } from './common'
 import { BracketView } from './pages4'
 import { GroupResults, WorldSummary, newSeed } from './world'
@@ -51,11 +52,10 @@ export function Mundial() {
   }, [q])
   const toggle = (id: string) => setPrimes((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length < MAX_PRIMES ? [...c, id] : c))
 
-  const go = async () => {
+  const go = (receiptId: string) => {
     setPaying(true)
     try {
-      const rec = await pay(`Mundial en ${host!.name} · ${MONTHS[month - 1]}`)
-      const w = { ...world(), finalVenue: finalVenue || host!.venues[0].id, receipt: rec.id }
+      const w = { ...world(), finalVenue: finalVenue || host!.venues[0].id, receipt: receiptId }
       const groups = mode === 'completo' ? drawGroups(seed, params, host!.teamId) : undefined
       startExperience(runAll(newAlt(seed, mode, STORY_MATCHES, params, w, groups), params))
     } finally { setPaying(false) }
@@ -144,8 +144,7 @@ export function Mundial() {
               <label className="seed">Formato <select value={mode} onChange={(e) => setMode(e.target.value as 'octavos' | 'completo')}><option value="completo">Mundial completo</option><option value="octavos">Desde octavos</option></select></label>
               <label className="seed">Semilla <input value={seed} onChange={(e) => setSeed(e.target.value)} /></label>
             </div>
-            <p className="note warn">Pago simulado de demostración: no se cobra nada ni se piden datos de tarjeta.</p>
-            <div className="cta"><button className="btn pri" disabled={paying} onClick={go}>{paying ? 'Procesando pago…' : `Pagar US$ ${PRICE_USD}.00 y vivir el mundial`}</button></div>
+            <PayBox what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onPaid={go} disabled={paying} />
           </>
         )}
 
@@ -160,7 +159,6 @@ export function Mundial() {
         <div className="modal-bg" role="dialog" aria-modal="true" aria-label="Pago rápido simulado" onClick={() => !paying && setQuick(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Pago rápido</h3>
-            <p className="note warn">Modo de demostración: no se cobra nada ni se piden datos de tarjeta.</p>
             <ul className="why">
               <li>Sede: <b>{host.name}</b>{host.teamId && ` (${TEAM_BY_ID[host.teamId].name} juega de local)`}</li>
               <li>Fecha: <b>{MONTHS[month - 1]}</b> · clima: <b>{CLIMATES.find((c) => c[0] === climate)![1]}</b></li>
@@ -168,10 +166,8 @@ export function Mundial() {
               <li>Total: <b>US$ {PRICE_USD}.00</b></li>
             </ul>
             <p className="small muted">Lo que no elegiste usa valores por defecto. Puedes cerrar y personalizar fecha, clima y leyendas antes de pagar.</p>
-            <div className="cta">
-              <button className="btn pri" disabled={paying} onClick={go}>{paying ? 'Procesando pago…' : `Pagar US$ ${PRICE_USD}.00 (simulado)`}</button>
-              <button className="btn ghost" disabled={paying} onClick={() => setQuick(false)}>Personalizar</button>
-            </div>
+            <PayBox what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onPaid={go} disabled={paying} />
+            <div className="cta"><button className="btn ghost" disabled={paying} onClick={() => setQuick(false)}>Personalizar</button></div>
           </div>
         </div>
       )}

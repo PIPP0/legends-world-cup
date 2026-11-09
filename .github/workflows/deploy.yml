@@ -20,6 +20,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+        env:
+          VITE_PAYPAL_CLIENT_ID: ${{ vars.PAYPAL_CLIENT_ID }}
+          VITE_PAYMENT_API: ${{ vars.PAYMENT_API }}
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }
   deploy:

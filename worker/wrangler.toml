@@ -1,0 +1,10 @@
+name = "legends-pagos"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+[vars]
+# Valores públicos (no son secretos). PAYPAL_ENV = "sandbox" para pruebas, "live" para cobrar de verdad.
+PAYPAL_ENV = "sandbox"
+ALLOWED_ORIGIN = "https://pipp0.github.io"
+PAYPAL_CLIENT_ID = ""
+# Secretos (se cargan con `npx wrangler secret put NOMBRE`, nunca aquí): PAYPAL_SECRET, SIGNING_KEY
