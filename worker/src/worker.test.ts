@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from 'vitest'
-import worker, { type Env } from './index'
+import worker, { type Env, type KV } from './index'
 
 const env: Env = { PAYPAL_CLIENT_ID: 'id', PAYPAL_SECRET: 's', PAYPAL_ENV: 'sandbox', SIGNING_KEY: 'k', ALLOWED_ORIGIN: 'https://pipp0.github.io' }
 const post = (path: string, body?: unknown) => new Request('https://w.test' + path, { method: 'POST', headers: { Origin: 'https://pipp0.github.io', 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined })
@@ -46,5 +46,31 @@ describe('worker de pagos', () => {
   it('CORS solo para el sitio permitido', async () => {
     const r = await worker.fetch(new Request('https://w.test/api/order', { method: 'OPTIONS', headers: { Origin: 'https://malo.example' } }), env)
     expect(r.headers.get('Access-Control-Allow-Origin')).toBe('https://pipp0.github.io')
+  })
+})
+
+const memKV = (): KV & { data: Map<string, { v: string; m?: unknown }> } => {
+  const data = new Map<string, { v: string; m?: unknown }>()
+  return { data, get: async (k) => data.get(k)?.v ?? null, put: async (k, v, o) => { data.set(k, { v, m: o?.metadata }) }, list: async (o) => ({ keys: [...data.entries()].filter(([k]) => k.startsWith(o?.prefix ?? '')).map(([name, x]) => ({ name, metadata: x.m })), list_complete: true }) }
+}
+describe('encuestas', () => {
+  const e2: Env = { ...env, ENCUESTAS: memKV(), ADMIN_KEY: 'admin-secreta' }
+  const enviar = (body: unknown, ip = '1.1.1.1') => worker.fetch(new Request('https://w.test/api/encuesta', { method: 'POST', headers: { Origin: 'https://pipp0.github.io', 'CF-Connecting-IP': ip, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }), e2)
+  it('guarda una respuesta válida y limita a una por minuto por conexión', async () => {
+    expect((await enviar({ tipo: 'general', estrellas: 5, comentario: 'Muy bueno' })).status).toBe(200)
+    expect((await enviar({ tipo: 'general', estrellas: 4 })).status).toBe(429)
+    expect((await enviar({ tipo: 'mundial', estrellas: 4, estrellas2: 3, datos: 'Chile · junio' }, '2.2.2.2')).status).toBe(200)
+  })
+  it('rechaza datos inválidos', async () => {
+    expect((await enviar({ tipo: 'otra', estrellas: 5 }, '3.3.3.3')).status).toBe(400)
+    expect((await enviar({ tipo: 'general', estrellas: 9 }, '4.4.4.4')).status).toBe(400)
+  })
+  it('solo el administrador puede leer las respuestas', async () => {
+    const leer = (k?: string) => worker.fetch(new Request('https://w.test/api/encuestas', { headers: k ? { Authorization: `Bearer ${k}`, Origin: 'https://pipp0.github.io' } : {} }), e2)
+    expect((await leer()).status).toBe(401)
+    expect((await leer('mala')).status).toBe(401)
+    const ok = await (await leer('admin-secreta')).json()
+    expect(ok.respuestas.length).toBe(2)
+    expect(ok.respuestas[0].t).toBeDefined()
   })
 })

@@ -8,3 +8,5 @@ PAYPAL_ENV = "sandbox"
 ALLOWED_ORIGIN = "https://pipp0.github.io"
 PAYPAL_CLIENT_ID = ""
 # Secretos (se cargan con `npx wrangler secret put NOMBRE`, nunca aquí): PAYPAL_SECRET, SIGNING_KEY
+
+# Las encuestas usan un KV y el secreto ADMIN_KEY: `bash worker/encuestas.sh` los crea y agrega el bloque [[kv_namespaces]] aquí.

@@ -9,6 +9,7 @@ import { MAX_PRIMES, PRIME_BOOST, adjustments, loadHistory } from '../engine/wor
 import { COBRO_ACTIVO, PRICE_USD, PRODUCTS, type ProductId } from '../engine/payment'
 import { addCredits, consumeCredit, getBalance } from '../engine/credits'
 import { DonateBox, PayBox } from './paybox'
+import { EncuestaMundial } from './encuesta'
 import { Avatar, Flag, Section, useApp } from './common'
 import { BracketView } from './pages4'
 import { GroupResults, WorldSummary, newSeed } from './world'
@@ -216,6 +217,7 @@ export function Reveal({ t, onAgain }: { t: AltTournament; onAgain: () => void }
         <p className="center">Final: <b>{TEAM_BY_ID[f.a!].name} {f.ga}–{f.gb} {TEAM_BY_ID[f.b!].name}</b>{f.pens ? ` (penales ${f.pens[0]}–${f.pens[1]})` : f.et ? ' (prórroga)' : ''}</p>
         <div className="why-box"><h4>¿Qué influyó en la final?</h4><p>{why.verdictText}</p><ul className="why">{why.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul></div>
         {!COBRO_ACTIVO && <DonateBox />}
+        <EncuestaMundial seed={t.seed} datos={`${t.world ? HOST_BY_ID[t.world.hostId].name : 'neutral'} · ${t.world?.month ? MONTHS[t.world.month - 1] : ''} · campeón ${TEAM_BY_ID[champ].name}`.slice(0, 120)} />
         <div className="cta"><button className="btn pri" onClick={onAgain}>Simular otro mundial</button><a className="btn" href="#/cuadro">Ver en Eliminatorias</a></div>
       </Section>
       <Section title="Cuadro"><BracketView view="alt" /></Section>

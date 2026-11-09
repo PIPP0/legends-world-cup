@@ -45,3 +45,6 @@ Además, con US$ 1 las comisiones fijas de PayPal se llevan una parte grande del
 ## Precios y paquetes
 Los productos están en `worker/src/index.ts` (`PRODUCTS`) y se muestran desde `src/engine/payment.ts`. Hoy: 1 mundial US$ 1, pack de 5 por US$ 3 y pack de 10 por US$ 5. El servidor valida siempre el precio real; si cambias uno, cámbialo en los dos archivos y vuelve a ejecutar `npx wrangler deploy` desde `worker/`.
 El saldo de mundiales se guarda en el navegador del comprador (se pierde si borra los datos del sitio).
+
+## Encuestas (icono del header y fin de «Simula tu mundial»)
+Las respuestas se guardan en el navegador de quien contesta y se envían a un Worker de Cloudflare con almacén KV. Para activarlo: `bash worker/encuestas.sh` (crea el almacén, genera una clave de administrador que se muestra una sola vez en tu terminal, sube el Worker y conecta la web). Las respuestas se leen en `#/encuestas` del sitio con esa clave. Mientras no esté activado, las respuestas quedan en cola en el navegador y se envían solas cuando exista el servidor.

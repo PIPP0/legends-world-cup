@@ -10,6 +10,7 @@ import { Bracket, Simulator, Stats } from './pages4'
 import { Credits } from './credits'
 import { Mundial } from './mundial'
 import { Vivo } from './vivo'
+import { EncuestaHeader, EncuestasAdmin } from './encuesta'
 import type { AltTournament, ModelParams } from '../types'
 
 const MAIN: [string, string, string][] = [
@@ -50,6 +51,7 @@ function Page({ route }: { route: string }) {
     case 'creditos': return <Credits />
     case 'mundial': return <Mundial />
     case 'vivo': return <Vivo />
+    case 'encuestas': return <EncuestasAdmin />
     default: return <p className="note warn">Página no encontrada. <a href="#/">Volver al inicio</a></p>
   }
 }
@@ -79,6 +81,7 @@ export default function App() {
           <nav className="dnav" aria-label="Principal">
             {[...MAIN, ...MORE].map(([p, l]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''} aria-current={active === p ? 'page' : undefined}>{l}</a>)}
           </nav>
+          <EncuestaHeader pantalla={route.split('/')[1] || 'inicio'} />
         </div>
       </header>
       <main key={route.split('/').slice(0, 3).join('/')}><Page route={route} /></main>
