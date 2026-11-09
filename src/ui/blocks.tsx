@@ -68,6 +68,7 @@ export function KoCard({ m, label, entra }: { m: KoMatch; label?: string; entra?
   const played = m.winner !== undefined
   const side = (id: string | undefined, g: number | undefined, win: boolean) => (
     <div className={`kside ${win ? 'win' : played && id ? 'lose' : ''} ${id && entra?.includes(id) ? 'llega' : ''}`}>
+      {id && entra?.includes(id) && <span className="ghost-pd">Por definir</span>}
       {id ? <><Flag id={id} size={22} /><span className="kn">{TEAM_BY_ID[id].name}</span></> : <span className="kn muted">Por definir</span>}
       <b>{played ? g : ''}</b>
     </div>
