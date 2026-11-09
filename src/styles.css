@@ -364,9 +364,7 @@ footer .logo{margin-bottom:10px}
 .bgrid{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));grid-template-rows:auto repeat(8,minmax(96px,auto));gap:10px 28px;min-width:1000px;position:relative}
 .bh{margin:0;color:var(--cy);font:800 17px 'Barlow Condensed';letter-spacing:3px;text-transform:uppercase}
 .bcell{align-self:center;position:relative;min-width:0}.bcell h4{margin:0 0 6px;color:var(--mut);font:700 13px 'Barlow Condensed';letter-spacing:2px;text-transform:uppercase}
-.bcell.c1::after,.bcell.c2::after,.bcell.c3::after{content:'';position:absolute;right:-28px;top:50%;width:28px;border-top:2px solid var(--line)}
 .bcell.c4.trofeo{align-self:end}.bcell.camino .kcard{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 22px rgba(255,207,74,.35)}
-.bcell.camino::after{border-top-color:var(--gold)!important}
 .bcell .kcard{margin:0}.bcell.pop .kcard{animation:bpop .7s cubic-bezier(.2,1.4,.4,1);border-color:var(--cy);box-shadow:0 0 24px rgba(0,229,255,.45)}
 @keyframes bpop{0%{transform:scale(.88);opacity:.3}60%{transform:scale(1.05)}100%{transform:none;opacity:1}}
 .bcell .kside b{animation:bnum .5s ease-out both}@keyframes bnum{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -374,3 +372,16 @@ footer .logo{margin-bottom:10px}
 .anim-estado{margin:6px 0;font:800 18px 'Barlow Condensed';letter-spacing:2px;text-transform:uppercase;color:var(--cy)}
 .trofeo .champ.big{margin:0;animation:bpop 1s cubic-bezier(.2,1.4,.4,1)}.trofeo .champ.big b{font-size:30px}.trofeo .champ{font-size:18px}
 @media(max-width:700px){.bgrid{min-width:900px}}
+
+/* Ganador: nombre encerrado en recuadro dorado de bordes redondos */
+.kside.win{border:2px solid var(--gold);border-radius:999px;padding:4px 14px;margin:2px 0;background:rgba(255,207,74,.10);box-shadow:0 0 14px rgba(255,207,74,.25)}
+.bcell.pop .kside.win{animation:oro .9s ease-out both}@keyframes oro{0%{transform:scale(.9);box-shadow:0 0 0 rgba(255,207,74,0)}55%{transform:scale(1.04);box-shadow:0 0 26px rgba(255,207,74,.7)}100%{transform:none}}
+/* Líneas que avanzan hacia la siguiente ronda */
+.bconn{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:0}.bgrid>*:not(.bconn){position:relative;z-index:1}
+.bconn .lin{fill:none;stroke:var(--line);stroke-width:2;stroke-linejoin:round;stroke-dasharray:6 6;opacity:.55}
+.bconn .lin.hecho{stroke:var(--gold);stroke-dasharray:none;opacity:1;filter:drop-shadow(0 0 4px rgba(255,207,74,.55))}
+.bconn .lin.avanza{stroke-dasharray:1;stroke-dashoffset:1;animation:avanza .9s ease-out .35s forwards}
+@keyframes avanza{to{stroke-dashoffset:0}}
+.bconn .lin.oro{stroke:#ffe08a;stroke-width:3}
+/* El equipo llega a la siguiente ronda por la línea */
+.kside.llega{animation:llega 1s ease-out 1s both}@keyframes llega{0%{opacity:0;transform:translateX(-46px)}60%{opacity:1;box-shadow:0 0 18px rgba(255,207,74,.8)}100%{opacity:1;transform:none}}

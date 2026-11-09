@@ -64,10 +64,10 @@ export function Events({ goals, home, away }: { goals: Goal[]; home: string; awa
 
 import { CtxLine } from './world'
 
-export function KoCard({ m, label }: { m: KoMatch; label?: string }) {
+export function KoCard({ m, label, entra }: { m: KoMatch; label?: string; entra?: string }) {
   const played = m.winner !== undefined
   const side = (id: string | undefined, g: number | undefined, win: boolean) => (
-    <div className={`kside ${win ? 'win' : ''}`}>
+    <div className={`kside ${win ? 'win' : ''} ${id && entra === id ? 'llega' : ''}`}>
       {id ? <><Flag id={id} size={22} /><span className="kn">{TEAM_BY_ID[id].name}</span></> : <span className="kn muted">Por definir</span>}
       <b>{played ? g : ''}</b>
     </div>
@@ -75,8 +75,8 @@ export function KoCard({ m, label }: { m: KoMatch; label?: string }) {
   return (
     <div className="kcard">
       {label && <span className="klabel">{label}</span>}
-      {side(m.a, m.ga, m.winner === m.a)}
-      {side(m.b, m.gb, m.winner === m.b)}
+      {side(m.a, m.ga, played && !!m.a && m.winner === m.a)}
+      {side(m.b, m.gb, played && !!m.b && m.winner === m.b)}
       {played && m.ctx && <CtxLine ctx={m.ctx} />}
       {played && (m.et || m.pens) && <span className="kfoot">{m.pens ? `Penales ${m.pens[0]}–${m.pens[1]}` : 'Prórroga'}</span>}
       {played && m.goals && m.goals.length > 0 && m.a && m.b && (
