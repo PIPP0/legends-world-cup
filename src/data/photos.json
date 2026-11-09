@@ -4842,5 +4842,19 @@
   "title": "Francisco Silva (footballer, born 1986)",
   "license": "CC BY-SA 3.0",
   "author": "Дмитрий Садовников"
+ },
+ "cmr-eric-maxim-choupo-moting": {
+  "file": "photos/cmr-eric-maxim-choupo-moting.jpg",
+  "page": "https://en.wikipedia.org/wiki/Eric_Maxim_Choupo-Moting",
+  "title": "Eric Maxim Choupo-Moting",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "cmr-pierre-webo": {
+  "file": "photos/cmr-pierre-webo.jpg",
+  "page": "https://en.wikipedia.org/wiki/Pierre_Web%C3%B3",
+  "title": "Pierre Webó",
+  "license": "CC BY-SA 3.0",
+  "author": "Ultraslansi"
  }
 }
