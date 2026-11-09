@@ -146,6 +146,8 @@ export function Vivo() {
     s.push({ kind: 'pair', r: 'r16' }, { kind: 'play', r: 'r16' }, { kind: 'pair', r: 'qf' }, { kind: 'play', r: 'qf' }, { kind: 'pair', r: 'sf' }, { kind: 'play', r: 'sf' }, { kind: 'pair', r: 'final' }, { kind: 'third' }, { kind: 'final' }, { kind: 'end' })
     return s
   }, [t])
+  const resThird = useMemo(() => (t ? toRes(t.bracket.third) : null), [t])
+  const resFinal = useMemo(() => (t ? toRes(t.bracket.final) : null), [t])
   const [i, setI] = useState(0)
   const [ready, setReady] = useState(false)
   const saved = useRef(false)
@@ -183,8 +185,8 @@ export function Vivo() {
         return <PairDraw key={`p${step.r}`} pairs={ms.map((m) => ({ a: m.a!, b: m.b!, ctx: m.ctx, label: m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined }))} onDone={done} />
       }
       case 'play': return <Board key={`b${step.r}`} items={br[step.r].map((m) => toItem(m))} tick={60} onDone={done} />
-      case 'third': return <><LiveReplay key="t" a={br.third.a!} b={br.third.b!} res={toRes(br.third)} onSkip={done} onDone={done} /><CtxLine ctx={br.third.ctx} /></>
-      default: return <div className="finalbox"><p className="gf">GRAN FINAL</p><LiveReplay key="f" a={br.final.a!} b={br.final.b!} res={toRes(br.final)} onSkip={done} onDone={done} /><CtxLine ctx={br.final.ctx} /></div>
+      case 'third': return <><LiveReplay key="t" a={br.third.a!} b={br.third.b!} res={resThird!} onSkip={done} onDone={done} /><CtxLine ctx={br.third.ctx} /></>
+      default: return <div className="finalbox"><p className="gf">GRAN FINAL</p><LiveReplay key="f" a={br.final.a!} b={br.final.b!} res={resFinal!} onSkip={done} onDone={done} /><CtxLine ctx={br.final.ctx} /></div>
     }
   }
   const last = step.kind === 'final'
