@@ -2826,5 +2826,208 @@
   "title": "Igor Štimac",
   "license": "CC BY 4.0",
   "author": "Ali Khodaei"
+ },
+ "cro-sime-vrsaljko": {
+  "file": "photos/cro-sime-vrsaljko.jpg",
+  "page": "https://en.wikipedia.org/wiki/%C5%A0ime_Vrsaljko",
+  "title": "Šime Vrsaljko",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "cro-vedran-corluka": {
+  "file": "photos/cro-vedran-corluka.jpg",
+  "page": "https://en.wikipedia.org/wiki/Vedran_%C4%86orluka",
+  "title": "Vedran Ćorluka",
+  "license": "CC BY-SA 3.0",
+  "author": "Эдгар Брещанов"
+ },
+ "cro-zvonimir-boban": {
+  "file": "photos/cro-zvonimir-boban.jpg",
+  "page": "https://en.wikipedia.org/wiki/Zvonimir_Boban",
+  "title": "Zvonimir Boban",
+  "license": "CC BY 4.0",
+  "author": "Russian Presidential Press and Information Office"
+ },
+ "cro-robert-prosinecki": {
+  "file": "photos/cro-robert-prosinecki.jpg",
+  "page": "https://en.wikipedia.org/wiki/Robert_Prosine%C4%8Dki",
+  "title": "Robert Prosinečki",
+  "license": "CC BY 3.0",
+  "author": "Kyrgyz Sport TV @kyrgyzsporttv312 YouTube video (screenshot)"
+ },
+ "cro-marcelo-brozovic": {
+  "file": "photos/cro-marcelo-brozovic.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marcelo_Brozovi%C4%87",
+  "title": "Marcelo Brozović",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "cro-andrej-kramaric": {
+  "file": "photos/cro-andrej-kramaric.jpg",
+  "page": "https://en.wikipedia.org/wiki/Andrej_Kramari%C4%87",
+  "title": "Andrej Kramarić",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "cro-ivica-olic": {
+  "file": "photos/cro-ivica-olic.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ivica_Oli%C4%87",
+  "title": "Ivica Olić",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "mex-jorge-campos": {
+  "file": "photos/mex-jorge-campos.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jorge_Campos",
+  "title": "Jorge Campos",
+  "license": "CC BY 4.0",
+  "author": "Biser Todorov"
+ },
+ "mex-antonio-carbajal": {
+  "file": "photos/mex-antonio-carbajal.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Antonio_Carbajal,_Estadio,_1952-04-26_(467).jpg",
+  "title": "File:Antonio Carbajal, Estadio, 1952-04-26 (467).jpg",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "mex-claudio-suarez": {
+  "file": "photos/mex-claudio-suarez.jpg",
+  "page": "https://en.wikipedia.org/wiki/Claudio_Su%C3%A1rez",
+  "title": "Claudio Suárez",
+  "license": "CC BY 2.0",
+  "author": "Hefebreo"
+ },
+ "mex-jesus-gallardo": {
+  "file": "photos/mex-jesus-gallardo.png",
+  "page": "https://en.wikipedia.org/wiki/Jes%C3%BAs_Gallardo",
+  "title": "Jesús Gallardo",
+  "license": "CC BY 3.0",
+  "author": "Selección Nacional de México"
+ },
+ "mex-nestor-araujo": {
+  "file": "photos/mex-nestor-araujo.jpg",
+  "page": "https://en.wikipedia.org/wiki/N%C3%A9stor_Araujo",
+  "title": "Néstor Araujo",
+  "license": "CC BY-SA 4.0",
+  "author": "Harpagornis"
+ },
+ "mex-alberto-garcia-aspe": {
+  "file": "photos/mex-alberto-garcia-aspe.jpg",
+  "page": "https://en.wikipedia.org/wiki/Alberto_Garc%C3%ADa_Aspe",
+  "title": "Alberto García Aspe",
+  "license": "CC0",
+  "author": "Gobierno CDMX"
+ },
+ "mex-edson-alvarez": {
+  "file": "photos/mex-edson-alvarez.png",
+  "page": "https://en.wikipedia.org/wiki/Edson_%C3%81lvarez",
+  "title": "Edson Álvarez",
+  "license": "CC BY 3.0",
+  "author": "Selección Nacional de México"
+ },
+ "mex-gerardo-torrado": {
+  "file": "photos/mex-gerardo-torrado.jpg",
+  "page": "https://en.wikipedia.org/wiki/Gerardo_Torrado",
+  "title": "Gerardo Torrado",
+  "license": "CC BY 2.0",
+  "author": "Celso FLORES from Paris, Fr"
+ },
+ "mex-jared-borgetti": {
+  "file": "photos/mex-jared-borgetti.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jared_Borgetti",
+  "title": "Jared Borgetti",
+  "license": "CC BY 3.0",
+  "author": "Wjarrettc (talk)"
+ },
+ "mex-raul-jimenez": {
+  "file": "photos/mex-raul-jimenez.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ra%C3%BAl_Jim%C3%A9nez",
+  "title": "Raúl Jiménez",
+  "license": "CC0",
+  "author": "Timmy96"
+ },
+ "mex-luis-hernandez": {
+  "file": "photos/mex-luis-hernandez.jpg",
+  "page": "https://en.wikipedia.org/wiki/Luis_Hern%C3%A1ndez_(footballer%2C_born_1968)",
+  "title": "Luis Hernández (footballer, born 1968)",
+  "license": "CC BY 3.0",
+  "author": "Fifasticos"
+ },
+ "mar-medhi-benatia": {
+  "file": "photos/mar-medhi-benatia.jpg",
+  "page": "https://en.wikipedia.org/wiki/Medhi_Benatia",
+  "title": "Medhi Benatia",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "mar-noureddine-naybet": {
+  "file": "photos/mar-noureddine-naybet.jpg",
+  "page": "https://en.wikipedia.org/wiki/Noureddine_Naybet",
+  "title": "Noureddine Naybet",
+  "license": "CC BY-SA 4.0",
+  "author": "Aldar.ma الدار"
+ },
+ "mar-walid-regragui": {
+  "file": "photos/mar-walid-regragui.jpg",
+  "page": "https://en.wikipedia.org/wiki/Walid_Regragui",
+  "title": "Walid Regragui",
+  "license": "CC BY-SA 4.0",
+  "author": "Nawfel Ajari"
+ },
+ "mar-adam-masina": {
+  "file": "photos/mar-adam-masina.jpg",
+  "page": "https://en.wikipedia.org/wiki/Adam_Masina",
+  "title": "Adam Masina",
+  "license": "CC BY 4.0",
+  "author": "Laloumance"
+ },
+ "mar-mustapha-hadji": {
+  "file": "photos/mar-mustapha-hadji.jpg",
+  "page": "https://en.wikipedia.org/wiki/Mustapha_Hadji",
+  "title": "Mustapha Hadji",
+  "license": "CC BY 2.0",
+  "author": "Doha Stadium Plus Qatar"
+ },
+ "mar-younes-belhanda": {
+  "file": "photos/mar-younes-belhanda.jpg",
+  "page": "https://en.wikipedia.org/wiki/Youn%C3%A8s_Belhanda",
+  "title": "Younès Belhanda",
+  "license": "CC BY 2.0",
+  "author": "Antalyaspor A.Ş."
+ },
+ "mar-ahmed-faras": {
+  "file": "photos/mar-ahmed-faras.png",
+  "page": "https://en.wikipedia.org/wiki/Ahmed_Faras",
+  "title": "Ahmed Faras",
+  "license": "Public domain",
+  "author": "Panini"
+ },
+ "mar-salaheddine-bassir": {
+  "file": "photos/mar-salaheddine-bassir.jpg",
+  "page": "https://en.wikipedia.org/wiki/Salaheddine_Bassir",
+  "title": "Salaheddine Bassir",
+  "license": "CC BY-SA 4.0",
+  "author": "Le360Live"
+ },
+ "ger-oliver-kahn": {
+  "file": "photos/ger-oliver-kahn.jpg",
+  "page": "https://en.wikipedia.org/wiki/Oliver_Kahn",
+  "title": "Oliver Kahn",
+  "license": "CC BY-SA 4.0",
+  "author": "Steffen Prößdorf"
+ },
+ "ger-sepp-maier": {
+  "file": "photos/ger-sepp-maier.jpg",
+  "page": "https://en.wikipedia.org/wiki/Sepp_Maier",
+  "title": "Sepp Maier",
+  "license": "CC BY-SA 3.0 de",
+  "author": "Udo Grimberg"
+ },
+ "ger-paul-breitner": {
+  "file": "photos/ger-paul-breitner.jpg",
+  "page": "https://en.wikipedia.org/wiki/Paul_Breitner",
+  "title": "Paul Breitner",
+  "license": "Public domain",
+  "author": "Alexander Grüner at German Wikipedia"
  }
 }

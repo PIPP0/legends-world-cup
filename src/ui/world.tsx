@@ -102,7 +102,7 @@ export function WorldSummary({ alt }: { alt: AltTournament }) {
   const h = HOST_BY_ID[w.hostId]
   return (
     <p className="small muted">
-      Mundial en <b>{h.name}</b> · {w.month ? MONTHS[w.month - 1] : SEASONS[w.season]}{w.climate && w.climate !== 'normal' ? ` (${w.climate === 'calor' ? 'ola de calor' : w.climate === 'lluvia' ? 'año lluvioso' : 'año frío'})` : ''}{w.primes?.length ? ` · en su prime: ${w.primes.filter((id) => PLAYER_BY_ID[id]).map((id) => PLAYER_BY_ID[id].name).join(', ')}` : ''} · final en {VENUE_BY_ID[w.finalVenue].name}{w.receipt ? ` · comprobante simulado ${w.receipt}` : ''}.
+      Mundial en <b>{h.name}</b> · {w.month ? MONTHS[w.month - 1] : SEASONS[w.season]}{w.climate && w.climate !== 'normal' ? ` (${w.climate === 'calor' ? 'ola de calor' : w.climate === 'lluvia' ? 'año lluvioso' : 'año frío'})` : ''}{w.primes?.length ? ` · en su prime: ${w.primes.filter((id) => PLAYER_BY_ID[id]).map((id) => PLAYER_BY_ID[id].name).join(', ')}` : ''} · final en {VENUE_BY_ID[w.finalVenue].name}{` · semilla «${alt.seed}»`}{w.receipt ? ` · comprobante simulado ${w.receipt}` : ''}.
     </p>
   )
 }

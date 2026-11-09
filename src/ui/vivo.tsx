@@ -3,6 +3,7 @@ import { GROUPS } from '../data'
 import { HOST_BY_ID } from '../data/world'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { table } from '../engine/standings'
+import { probabilities } from '../engine/model'
 import { recordHistory } from '../engine/world'
 import { Flag, Section, useApp } from './common'
 import { CtxLine } from './world'
@@ -75,7 +76,7 @@ function PairDraw({ pairs, onDone }: { pairs: Pair[]; onDone: () => void }) {
   )
 }
 
-interface Item { id: string; a: string; b: string; goals: Goal[]; ga: number; gb: number; et?: boolean; pens?: [number, number]; winner?: string; ctx?: MatchCtx; tag?: string }
+interface Item { id: string; a: string; b: string; goals: Goal[]; ga: number; gb: number; et?: boolean; pens?: [number, number]; winner?: string; ctx?: MatchCtx; tag?: string; pr?: [number, number, number] }
 function Board({ items, tick, onDone }: { items: Item[]; tick: number; onDone: () => void }) {
   const end = Math.max(...items.map((i) => (i.et ? 120 : 90)))
   const [min, setMin] = useState(0)
@@ -104,6 +105,8 @@ function Board({ items, tick, onDone }: { items: Item[]; tick: number; onDone: (
               {hot && <p className="mc-g">⚽ {PLAYER_BY_ID[last.scorerId].name} {last.minute}'</p>}
               {fin && it.pens && <p className="mc-p">Penales {it.pens[0]}–{it.pens[1]}</p>}
               {fin && it.et && !it.pens && <p className="mc-p">Prórroga</p>}
+              {it.pr && <p className="mc-pr">Antes del partido: {TEAM_BY_ID[it.a].name} {Math.round(it.pr[0] * 100)} % · Empate {Math.round(it.pr[1] * 100)} % · {TEAM_BY_ID[it.b].name} {Math.round(it.pr[2] * 100)} %</p>}
+              {fin && it.pr && ((sa > sb && it.pr[0] < 0.25) || (sb > sa && it.pr[2] < 0.25)) && <p className="mc-s">⚡ Sorpresa: ganó con solo {Math.round((sa > sb ? it.pr[0] : it.pr[2]) * 100)} % de probabilidad</p>}
               <CtxLine ctx={it.ctx} />
             </div>
           )
@@ -138,7 +141,7 @@ const toItem = (m: KoMatch, tag?: string): Item => ({ id: m.id, a: m.a!, b: m.b!
 const toRes = (m: KoMatch) => ({ ga: m.ga!, gb: m.gb!, goals: m.goals ?? [], et: !!m.et, pens: m.pens, winner: m.winner })
 
 export function Vivo() {
-  const { setAlt } = useApp()
+  const { setAlt, params } = useApp()
   const t = useMemo(() => takePending(), [])
   const steps = useMemo<Step[]>(() => {
     if (!t) return []
@@ -155,6 +158,7 @@ export function Vivo() {
   const step = steps[i]
   const next = () => { setReady(false); setI((x) => x + 1); window.scrollTo(0, 0) }
   const done = useRef(() => setReady(true)).current
+  const prOf = (a: string, b: string, ctx?: MatchCtx): [number, number, number] => { const p = probabilities(a, b, params, ctx && t ? { ctx, world: t.world } : undefined); return [p.win, p.draw, p.loss] }
   useEffect(() => {
     if (step?.kind === 'end' && t && !saved.current) { saved.current = true; recordHistory(t); setAlt({ ...t, recorded: true }) }
   }, [step, t, setAlt])
@@ -178,21 +182,21 @@ export function Vivo() {
       case 'draw': return <DrawGroups key="d" groups={t.groups!} hostTeam={t.world ? HOST_BY_ID[t.world.hostId]?.teamId : undefined} onDone={done} />
       case 'md': {
         const ms = t.groupMatches.filter((m) => m.matchday === step.n)
-        const items: Item[] = ms.map((m) => ({ id: m.id, a: m.home, b: m.away, goals: m.goals ?? [], ga: m.hg, gb: m.ag, ctx: m.ctx, tag: `Grupo ${m.group}` }))
+        const items: Item[] = ms.map((m) => ({ id: m.id, a: m.home, b: m.away, goals: m.goals ?? [], ga: m.hg, gb: m.ag, ctx: m.ctx, tag: `Grupo ${m.group}`, pr: prOf(m.home, m.away, m.ctx) }))
         return <><Board key={`md${step.n}`} items={items} tick={55} onDone={done} />{ready && <><h4 className="sub">Así quedan los grupos</h4><Tables t={t} upTo={step.n} /></>}</>
       }
       case 'pair': {
         const ms = step.r === 'final' ? [br.third, br.final] : br[step.r]
         return <PairDraw key={`p${step.r}`} pairs={ms.map((m) => ({ a: m.a!, b: m.b!, ctx: m.ctx, label: m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined }))} onDone={done} />
       }
-      case 'play': return <Board key={`b${step.r}`} items={br[step.r].map((m) => toItem(m))} tick={60} onDone={done} />
+      case 'play': return <Board key={`b${step.r}`} items={br[step.r].map((m) => ({ ...toItem(m), pr: prOf(m.a!, m.b!, m.ctx) }))} tick={60} onDone={done} />
       case 'third': return <><LiveReplay key="t" a={br.third.a!} b={br.third.b!} res={resThird!} onSkip={done} onDone={done} /><CtxLine ctx={br.third.ctx} /></>
       default: return <div className="finalbox"><p className="gf">GRAN FINAL</p><LiveReplay key="f" a={br.final.a!} b={br.final.b!} res={resFinal!} onSkip={done} onDone={done} /><CtxLine ctx={br.final.ctx} /></div>
     }
   }
   const last = step.kind === 'final'
   return (
-    <Section title={`Paso ${i + 1} de ${steps.length - 1}`} sub={stageTitle()}>
+    <Section title={`Paso ${i + 1} de ${steps.length - 1}`} sub={`${stageTitle()} · semilla «${t.seed}»`}>
       <div className="vprog"><i style={{ width: `${(i / (steps.length - 1)) * 100}%` }} /></div>
       {body()}
       <div className="cta wiz"><span />{ready && <button className="btn pri" onClick={next}>{last ? 'Conocer al campeón' : 'Continuar'}</button>}</div>
