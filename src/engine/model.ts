@@ -119,10 +119,20 @@ export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParam
   const [la0, lb0] = lambdas(a, b, params, env)
   const vr = params.variance * weatherFactor(env?.ctx).variance // con lluvia hay más imprevistos
   const shock = normal(rng) * vr // día inspirado/gris del partido
-  const ga = poisson(la0 * Math.exp(shock), rng)
-  const gb = poisson(lb0 * Math.exp(-shock * 0.5 + normal(rng) * vr), rng)
+  const ma = la0 * Math.exp(shock), mb = lb0 * Math.exp(-shock * 0.5 + normal(rng) * vr)
+  // Los goles se sortean por tramos de 15 minutos con «estado del partido»: el que va ganando por 2 o más baja el ritmo
+  // y el que pierde arriesga un poco más. Así las goleadas extremas (6-2) son tan raras como en el fútbol real.
+  const goals: Goal[] = []
+  let ga = 0, gb = 0
+  for (let c = 0; c < 6; c++) {
+    const lead = ga - gb
+    const fa = lead >= 3 ? 0.4 : lead >= 2 ? 0.7 : lead <= -2 ? 1.1 : 1
+    const fb = lead <= -3 ? 0.4 : lead <= -2 ? 0.7 : lead >= 2 ? 1.1 : 1
+    const na = poisson((ma / 6) * fa, rng), nb = poisson((mb / 6) * fb, rng)
+    ga += na; gb += nb
+    goals.push(...assignGoals(TEAM_BY_ID[a], na, rng, (c + 1) * 15, c * 15 + 1, 'reg'), ...assignGoals(TEAM_BY_ID[b], nb, rng, (c + 1) * 15, c * 15 + 1, 'reg'))
+  }
   let A = ga, B = gb
-  const goals = [...assignGoals(TEAM_BY_ID[a], ga, rng, 90, 1, 'reg'), ...assignGoals(TEAM_BY_ID[b], gb, rng, 90, 1, 'reg')]
   let et = false
   let pens: [number, number] | undefined
   let winner: string | undefined = A > B ? a : B > A ? b : undefined

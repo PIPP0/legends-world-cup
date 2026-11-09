@@ -3407,5 +3407,530 @@
   "title": "Ogenyi Onazi",
   "license": "CC BY-SA 3.0",
   "author": "Станислав Ведмидь"
+ },
+ "nga-emmanuel-amunike": {
+  "file": "photos/nga-emmanuel-amunike.jpg",
+  "page": "https://en.wikipedia.org/wiki/Emmanuel_Amunike",
+  "title": "Emmanuel Amunike",
+  "license": "CC BY-SA 4.0",
+  "author": "PB84"
+ },
+ "fra-fabien-barthez": {
+  "file": "photos/fra-fabien-barthez.jpg",
+  "page": "https://en.wikipedia.org/wiki/Fabien_Barthez",
+  "title": "Fabien Barthez",
+  "license": "CC BY-SA 3.0",
+  "author": "Unknown authorUnknown author"
+ },
+ "fra-mike-maignan": {
+  "file": "photos/fra-mike-maignan.jpg",
+  "page": "https://en.wikipedia.org/wiki/Mike_Maignan",
+  "title": "Mike Maignan",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "fra-raphael-varane": {
+  "file": "photos/fra-raphael-varane.jpg",
+  "page": "https://en.wikipedia.org/wiki/Rapha%C3%ABl_Varane",
+  "title": "Raphaël Varane",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "fra-bixente-lizarazu": {
+  "file": "photos/fra-bixente-lizarazu.jpg",
+  "page": "https://en.wikipedia.org/wiki/Bixente_Lizarazu",
+  "title": "Bixente Lizarazu",
+  "license": "CC BY-SA 2.0",
+  "author": "Oscar Alonso Algote"
+ },
+ "fra-marius-tresor": {
+  "file": "photos/fra-marius-tresor.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marius_Tr%C3%A9sor",
+  "title": "Marius Trésor",
+  "license": "Public domain",
+  "author": "Panini"
+ },
+ "fra-willy-sagnol": {
+  "file": "photos/fra-willy-sagnol.jpg",
+  "page": "https://en.wikipedia.org/wiki/Willy_Sagnol",
+  "title": "Willy Sagnol",
+  "license": "CC0",
+  "author": "Lapahafffe"
+ },
+ "fra-michel-platini": {
+  "file": "photos/fra-michel-platini.jpg",
+  "page": "https://en.wikipedia.org/wiki/Michel_Platini",
+  "title": "Michel Platini",
+  "license": "GFDL 1.2",
+  "author": "Chancellery of the President of the Republic of Poland"
+ },
+ "fra-n-golo-kante": {
+  "file": "photos/fra-n-golo-kante.jpg",
+  "page": "https://en.wikipedia.org/wiki/N'Golo_Kant%C3%A9",
+  "title": "N'Golo Kanté",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "fra-didier-deschamps": {
+  "file": "photos/fra-didier-deschamps.jpg",
+  "page": "https://en.wikipedia.org/wiki/Didier_Deschamps",
+  "title": "Didier Deschamps",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "fra-karim-benzema": {
+  "file": "photos/fra-karim-benzema.jpg",
+  "page": "https://en.wikipedia.org/wiki/Karim_Benzema",
+  "title": "Karim Benzema",
+  "license": "CC BY 2.0",
+  "author": "Chris Deahr"
+ },
+ "fra-just-fontaine": {
+  "file": "photos/fra-just-fontaine.jpg",
+  "page": "https://en.wikipedia.org/wiki/Just_Fontaine",
+  "title": "Just Fontaine",
+  "license": "Public domain",
+  "author": "Panini"
+ },
+ "fra-antoine-griezmann": {
+  "file": "photos/fra-antoine-griezmann.jpg",
+  "page": "https://en.wikipedia.org/wiki/Antoine_Griezmann",
+  "title": "Antoine Griezmann",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "bel-jean-marie-pfaff": {
+  "file": "photos/bel-jean-marie-pfaff.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jean-Marie_Pfaff",
+  "title": "Jean-Marie Pfaff",
+  "license": "CC BY-SA 2.0",
+  "author": "Jean-Marie_Pfaff_at_Runa_Ralley_2007.jpg: Tim Dobbelaere from Ieper, Belgium\nderivative work: Huhbakker (talk)"
+ },
+ "bel-simon-mignolet": {
+  "file": "photos/bel-simon-mignolet.jpg",
+  "page": "https://en.wikipedia.org/wiki/Simon_Mignolet",
+  "title": "Simon Mignolet",
+  "license": "CC BY-SA 3.0",
+  "author": "Эдгар Брещанов"
+ },
+ "bel-eric-gerets": {
+  "file": "photos/bel-eric-gerets.jpg",
+  "page": "https://en.wikipedia.org/wiki/Eric_Gerets",
+  "title": "Eric Gerets",
+  "license": "CC BY 2.0",
+  "author": "Doha Stadium Plus Qatar"
+ },
+ "bel-daniel-van-buyten": {
+  "file": "photos/bel-daniel-van-buyten.jpg",
+  "page": "https://en.wikipedia.org/wiki/Daniel_Van_Buyten",
+  "title": "Daniel Van Buyten",
+  "license": "CC BY-SA 3.0",
+  "author": "Harald Bischoff"
+ },
+ "bel-michel-renquin": {
+  "file": "photos/bel-michel-renquin.jpg",
+  "page": "https://en.wikipedia.org/wiki/Michel_Renquin",
+  "title": "Michel Renquin",
+  "license": "CC0",
+  "author": "Hans Peters for Anefo"
+ },
+ "bel-arthur-theate": {
+  "file": "photos/bel-arthur-theate.jpg",
+  "page": "https://en.wikipedia.org/wiki/Arthur_Theate",
+  "title": "Arthur Theate",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "bel-enzo-scifo": {
+  "file": "photos/bel-enzo-scifo.jpg",
+  "page": "https://en.wikipedia.org/wiki/Enzo_Scifo",
+  "title": "Enzo Scifo",
+  "license": "Public domain",
+  "author": "Panini S.p.A."
+ },
+ "bel-jan-ceulemans": {
+  "file": "photos/bel-jan-ceulemans.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jan_Ceulemans",
+  "title": "Jan Ceulemans",
+  "license": "CC0",
+  "author": "Hans van Dijk for Anefo \n\nNationaal Archief, Den Haag, Rijksfotoarchief\nFotocollectie Algemeen Nederlands Fotopersbureau"
+ },
+ "bel-marouane-fellaini": {
+  "file": "photos/bel-marouane-fellaini.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marouane_Fellaini",
+  "title": "Marouane Fellaini",
+  "license": "CC BY-SA 3.0",
+  "author": "Кирилл Венедиктов"
+ },
+ "bel-paul-van-himst": {
+  "file": "photos/bel-paul-van-himst.jpg",
+  "page": "https://en.wikipedia.org/wiki/Paul_Van_Himst",
+  "title": "Paul Van Himst",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "bel-marc-wilmots": {
+  "file": "photos/bel-marc-wilmots.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marc_Wilmots",
+  "title": "Marc Wilmots",
+  "license": "CC BY 4.0",
+  "author": "Mohammad Ali Mohammadian"
+ },
+ "bel-jeremy-doku": {
+  "file": "photos/bel-jeremy-doku.jpg",
+  "page": "https://en.wikipedia.org/wiki/J%C3%A9r%C3%A9my_Doku",
+  "title": "Jérémy Doku",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "per-ramon-quiroga": {
+  "file": "photos/per-ramon-quiroga.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ram%C3%B3n_Quiroga",
+  "title": "Ramón Quiroga",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "per-jose-carvallo": {
+  "file": "photos/per-jose-carvallo.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jos%C3%A9_Carvallo",
+  "title": "José Carvallo",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "per-aldo-corzo": {
+  "file": "photos/per-aldo-corzo.jpg",
+  "page": "https://en.wikipedia.org/wiki/Aldo_Corzo",
+  "title": "Aldo Corzo",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "per-santiago-acasiete": {
+  "file": "photos/per-santiago-acasiete.png",
+  "page": "https://en.wikipedia.org/wiki/Santiago_Acasiete",
+  "title": "Santiago Acasiete",
+  "license": "CC BY 3.0",
+  "author": "Libero TV"
+ },
+ "per-luis-abram": {
+  "file": "photos/per-luis-abram.jpg",
+  "page": "https://en.wikipedia.org/wiki/Luis_Abram",
+  "title": "Luis Abram",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "per-miguel-trauco": {
+  "file": "photos/per-miguel-trauco.jpg",
+  "page": "https://en.wikipedia.org/wiki/Miguel_Trauco",
+  "title": "Miguel Trauco",
+  "license": "CC BY-SA 2.0",
+  "author": "Agencia de Noticias ANDES"
+ },
+ "per-nolberto-solano": {
+  "file": "photos/per-nolberto-solano.jpg",
+  "page": "https://en.wikipedia.org/wiki/Nolberto_Solano",
+  "title": "Nolberto Solano",
+  "license": "CC BY-SA 3.0",
+  "author": "Jcswayne"
+ },
+ "per-roberto-palacios": {
+  "file": "photos/per-roberto-palacios.jpg",
+  "page": "https://en.wikipedia.org/wiki/Roberto_Palacios",
+  "title": "Roberto Palacios",
+  "license": "CC BY-SA 4.0",
+  "author": "Lamder"
+ },
+ "per-yoshimar-yotun": {
+  "file": "photos/per-yoshimar-yotun.jpg",
+  "page": "https://en.wikipedia.org/wiki/Yoshimar_Yot%C3%BAn",
+  "title": "Yoshimar Yotún",
+  "license": "CC BY 2.0",
+  "author": "Anders Henrikson"
+ },
+ "per-teodoro-fernandez": {
+  "file": "photos/per-teodoro-fernandez.jpg",
+  "page": "https://en.wikipedia.org/wiki/Teodoro_Fern%C3%A1ndez",
+  "title": "Teodoro Fernández",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "per-hugo-sotil": {
+  "file": "photos/per-hugo-sotil.jpg",
+  "page": "https://en.wikipedia.org/wiki/Hugo_Sotil",
+  "title": "Hugo Sotil",
+  "license": "Public domain",
+  "author": "Horacio Seguí López"
+ },
+ "per-oswaldo-ramirez": {
+  "file": "photos/per-oswaldo-ramirez.png",
+  "page": "https://en.wikipedia.org/wiki/Oswaldo_Ram%C3%ADrez",
+  "title": "Oswaldo Ramírez",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "usa-brad-friedel": {
+  "file": "photos/usa-brad-friedel.jpg",
+  "page": "https://en.wikipedia.org/wiki/Brad_Friedel",
+  "title": "Brad Friedel",
+  "license": "CC BY 2.0",
+  "author": "James Boyes"
+ },
+ "usa-kasey-keller": {
+  "file": "photos/usa-kasey-keller.jpg",
+  "page": "https://en.wikipedia.org/wiki/Kasey_Keller",
+  "title": "Kasey Keller",
+  "license": "CC BY 2.0",
+  "author": "Albumen"
+ },
+ "usa-steve-cherundolo": {
+  "file": "photos/usa-steve-cherundolo.jpg",
+  "page": "https://en.wikipedia.org/wiki/Steve_Cherundolo",
+  "title": "Steve Cherundolo",
+  "license": "CC BY 3.0",
+  "author": "Jeollo von http://www.vfb-exklusiv.de"
+ },
+ "usa-eddie-pope": {
+  "file": "photos/usa-eddie-pope.jpg",
+  "page": "https://en.wikipedia.org/wiki/Eddie_Pope",
+  "title": "Eddie Pope",
+  "license": "Public domain",
+  "author": "United States Congressman Zach Wamp"
+ },
+ "usa-geoff-cameron": {
+  "file": "photos/usa-geoff-cameron.jpg",
+  "page": "https://en.wikipedia.org/wiki/Geoff_Cameron",
+  "title": "Geoff Cameron",
+  "license": "CC BY-SA 3.0",
+  "author": "Steindy (talk) 21:41, 22 November 2013 (UTC)"
+ },
+ "usa-fabian-johnson": {
+  "file": "photos/usa-fabian-johnson.jpg",
+  "page": "https://en.wikipedia.org/wiki/Fabian_Johnson",
+  "title": "Fabian Johnson",
+  "license": "CC BY-SA 2.0",
+  "author": "IIJ Events"
+ },
+ "usa-claudio-reyna": {
+  "file": "photos/usa-claudio-reyna.jpg",
+  "page": "https://en.wikipedia.org/wiki/Claudio_Reyna",
+  "title": "Claudio Reyna",
+  "license": "CC BY 2.0",
+  "author": "Diego Valenzuela from NYC, USA"
+ },
+ "usa-weston-mckennie": {
+  "file": "photos/usa-weston-mckennie.jpg",
+  "page": "https://en.wikipedia.org/wiki/Weston_McKennie",
+  "title": "Weston McKennie",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "usa-tab-ramos": {
+  "file": "photos/usa-tab-ramos.jpg",
+  "page": "https://en.wikipedia.org/wiki/Tab_Ramos",
+  "title": "Tab Ramos",
+  "license": "Public domain",
+  "author": "US Embassy from New Zealand"
+ },
+ "usa-brian-mcbride": {
+  "file": "photos/usa-brian-mcbride.jpg",
+  "page": "https://en.wikipedia.org/wiki/Brian_McBride",
+  "title": "Brian McBride",
+  "license": "CC BY-SA 4.0",
+  "author": "JamesGrantGroup"
+ },
+ "usa-eric-wynalda": {
+  "file": "photos/usa-eric-wynalda.jpg",
+  "page": "https://en.wikipedia.org/wiki/Eric_Wynalda",
+  "title": "Eric Wynalda",
+  "license": "CC BY-SA 4.0",
+  "author": "Eric.Jason.Cross"
+ },
+ "usa-timothy-weah": {
+  "file": "photos/usa-timothy-weah.jpg",
+  "page": "https://en.wikipedia.org/wiki/Timothy_Weah",
+  "title": "Timothy Weah",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "esp-luis-arconada": {
+  "file": "photos/esp-luis-arconada.jpg",
+  "page": "https://en.wikipedia.org/wiki/Luis_Arconada",
+  "title": "Luis Arconada",
+  "license": "CC BY-SA 2.0",
+  "author": "DONOSTIA KULTURA"
+ },
+ "esp-pepe-reina": {
+  "file": "photos/esp-pepe-reina.jpg",
+  "page": "https://en.wikipedia.org/wiki/Pepe_Reina",
+  "title": "Pepe Reina",
+  "license": "CC BY-SA 3.0",
+  "author": "Кирилл Венедиктов"
+ },
+ "esp-fernando-hierro": {
+  "file": "photos/esp-fernando-hierro.jpg",
+  "page": "https://en.wikipedia.org/wiki/Fernando_Hierro",
+  "title": "Fernando Hierro",
+  "license": "CC BY 4.0",
+  "author": "Meghdad Madadi"
+ },
+ "esp-gerard-pique": {
+  "file": "photos/esp-gerard-pique.jpg",
+  "page": "https://en.wikipedia.org/wiki/Gerard_Piqu%C3%A9",
+  "title": "Gerard Piqué",
+  "license": "CC BY-SA 3.0",
+  "author": "Дмитрий Неймырок"
+ },
+ "esp-cesar-azpilicueta": {
+  "file": "photos/esp-cesar-azpilicueta.jpg",
+  "page": "https://en.wikipedia.org/wiki/C%C3%A9sar_Azpilicueta",
+  "title": "César Azpilicueta",
+  "license": "CC BY 4.0",
+  "author": "محمد امین انصاری"
+ },
+ "esp-joan-capdevila": {
+  "file": "photos/esp-joan-capdevila.jpg",
+  "page": "https://en.wikipedia.org/wiki/Joan_Capdevila",
+  "title": "Joan Capdevila",
+  "license": "CC BY-SA 2.0",
+  "author": "Xavier Rondón Medina"
+ },
+ "esp-xabi-alonso": {
+  "file": "photos/esp-xabi-alonso.jpg",
+  "page": "https://en.wikipedia.org/wiki/Xabi_Alonso",
+  "title": "Xabi Alonso",
+  "license": "CC BY-SA 2.0",
+  "author": "DONOSTIA KULTURA"
+ },
+ "esp-cesc-fabregas": {
+  "file": "photos/esp-cesc-fabregas.jpg",
+  "page": "https://en.wikipedia.org/wiki/Cesc_F%C3%A0bregas",
+  "title": "Cesc Fàbregas",
+  "license": "CC BY 2.0",
+  "author": "Web Summit"
+ },
+ "esp-pedri": {
+  "file": "photos/esp-pedri.jpg",
+  "page": "https://en.wikipedia.org/wiki/Pedri",
+  "title": "Pedri",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "esp-emilio-butragueno": {
+  "file": "photos/esp-emilio-butragueno.jpg",
+  "page": "https://en.wikipedia.org/wiki/Emilio_Butrague%C3%B1o",
+  "title": "Emilio Butragueño",
+  "license": "CC BY-SA 4.0",
+  "author": "Barcex"
+ },
+ "swe-thomas-ravelli": {
+  "file": "photos/swe-thomas-ravelli.jpg",
+  "page": "https://en.wikipedia.org/wiki/Thomas_Ravelli",
+  "title": "Thomas Ravelli",
+  "license": "CC BY-SA 4.0",
+  "author": "Frankie Fouganthin"
+ },
+ "swe-robin-olsen": {
+  "file": "photos/swe-robin-olsen.jpg",
+  "page": "https://en.wikipedia.org/wiki/Robin_Olsen",
+  "title": "Robin Olsen",
+  "license": "CC BY-SA 3.0",
+  "author": "Кирилл Венедиктов"
+ },
+ "swe-victor-lindelof": {
+  "file": "photos/swe-victor-lindelof.jpg",
+  "page": "https://en.wikipedia.org/wiki/Victor_Lindel%C3%B6f",
+  "title": "Victor Lindelöf",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "swe-roland-nilsson": {
+  "file": "photos/swe-roland-nilsson.jpg",
+  "page": "https://en.wikipedia.org/wiki/Roland_Nilsson",
+  "title": "Roland Nilsson",
+  "license": "CC BY-SA 3.0",
+  "author": "Олег Дубина"
+ },
+ "swe-patrik-andersson": {
+  "file": "photos/swe-patrik-andersson.jpg",
+  "page": "https://en.wikipedia.org/wiki/Patrik_Andersson",
+  "title": "Patrik Andersson",
+  "license": "CC BY-SA 3.0",
+  "author": "Frankie Fouganthin"
+ },
+ "swe-ludwig-augustinsson": {
+  "file": "photos/swe-ludwig-augustinsson.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ludwig_Augustinsson",
+  "title": "Ludwig Augustinsson",
+  "license": "CC BY-SA 4.0",
+  "author": "Rolandhino1"
+ },
+ "swe-gunnar-gren": {
+  "file": "photos/swe-gunnar-gren.jpg",
+  "page": "https://en.wikipedia.org/wiki/Gunnar_Gren",
+  "title": "Gunnar Gren",
+  "license": "Public domain",
+  "author": "Emilio Ronchini (Mondadori Publishers)"
+ },
+ "swe-dejan-kulusevski": {
+  "file": "photos/swe-dejan-kulusevski.jpg",
+  "page": "https://en.wikipedia.org/wiki/Dejan_Kulusevski",
+  "title": "Dejan Kulusevski",
+  "license": "CC BY-SA 4.0",
+  "author": "Original:  Rolandhino1 / Derivative work:  Danyele"
+ },
+ "swe-anders-svensson": {
+  "file": "photos/swe-anders-svensson.jpg",
+  "page": "https://en.wikipedia.org/wiki/Anders_Svensson",
+  "title": "Anders Svensson",
+  "license": "CC BY 2.0",
+  "author": "Anders Henrikson"
+ },
+ "swe-gunnar-nordahl": {
+  "file": "photos/swe-gunnar-nordahl.jpg",
+  "page": "https://en.wikipedia.org/wiki/Gunnar_Nordahl",
+  "title": "Gunnar Nordahl",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "swe-tomas-brolin": {
+  "file": "photos/swe-tomas-brolin.jpg",
+  "page": "https://en.wikipedia.org/wiki/Tomas_Brolin",
+  "title": "Tomas Brolin",
+  "license": "CC BY-SA 3.0",
+  "author": "Frankie Fouganthin"
+ },
+ "swe-kennet-andersson": {
+  "file": "photos/swe-kennet-andersson.jpg",
+  "page": "https://en.wikipedia.org/wiki/Kennet_Andersson",
+  "title": "Kennet Andersson",
+  "license": "CC BY-SA 4.0",
+  "author": "Frankie Fouganthin"
+ },
+ "aut-heinz-lindner": {
+  "file": "photos/aut-heinz-lindner.jpg",
+  "page": "https://en.wikipedia.org/wiki/Heinz_Lindner",
+  "title": "Heinz Lindner",
+  "license": "CC BY-SA 3.0",
+  "author": "Steindy (talk) 20:54, 10 September 2015 (UTC)"
+ },
+ "aut-ernst-happel": {
+  "file": "photos/aut-ernst-happel.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ernst_Happel",
+  "title": "Ernst Happel",
+  "license": "Public domain",
+  "author": "Priwo"
+ },
+ "aut-christian-fuchs": {
+  "file": "photos/aut-christian-fuchs.jpg",
+  "page": "https://en.wikipedia.org/wiki/Christian_Fuchs",
+  "title": "Christian Fuchs",
+  "license": "CC BY-SA 3.0",
+  "author": "Steindy (talk) 21:33, 10 April 2016 (UTC)"
+ },
+ "aut-sebastian-prodl": {
+  "file": "photos/aut-sebastian-prodl.jpg",
+  "page": "https://en.wikipedia.org/wiki/Sebastian_Pr%C3%B6dl",
+  "title": "Sebastian Prödl",
+  "license": "CC BY-SA 4.0",
+  "author": "Werner100359"
  }
 }
