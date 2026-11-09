@@ -9,6 +9,7 @@ import { Groups, MatchPage, Matches } from './pages3'
 import { Bracket, Simulator, Stats } from './pages4'
 import { Credits } from './credits'
 import { Mundial } from './mundial'
+import { Vivo } from './vivo'
 import type { AltTournament, ModelParams } from '../types'
 
 const MAIN: [string, string, string][] = [
@@ -48,6 +49,7 @@ function Page({ route }: { route: string }) {
     case 'simulador': return <Simulator />
     case 'creditos': return <Credits />
     case 'mundial': return <Mundial />
+    case 'vivo': return <Vivo />
     default: return <p className="note warn">Página no encontrada. <a href="#/">Volver al inicio</a></p>
   }
 }

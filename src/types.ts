@@ -124,5 +124,6 @@ export interface AltTournament {
   groupMatches: Match[]
   bracket: Bracket
   world?: WorldConfig
+  groups?: Record<string, string[]> // grupos sorteados (si no hay, se usan los oficiales)
   recorded?: boolean
 }

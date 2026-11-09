@@ -141,11 +141,24 @@ export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParam
   return { ga: A, gb: B, goals, et, pens, winner }
 }
 
-export function simulateGroups(seed: string, params: ModelParams, world?: WorldConfig): Match[] {
+// Sorteo de grupos con 4 bombos por fuerza (como un mundial real): un equipo de cada bombo por grupo.
+export function drawGroups(seed: string, params: ModelParams = DEFAULT_PARAMS): Record<string, string[]> {
+  const rng = makeRng(seed + ':sorteo')
+  const ranked = strengthRank(params).map((p) => p.teamId)
+  const out: Record<string, string[]> = Object.fromEntries(GROUPS.map((g) => [g, [] as string[]]))
+  for (let pot = 0; pot < 4; pot++) {
+    const teams = ranked.slice(pot * 8, pot * 8 + 8)
+    for (let i = teams.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [teams[i], teams[j]] = [teams[j], teams[i]] }
+    GROUPS.forEach((g, i) => out[g].push(teams[i]))
+  }
+  return out
+}
+
+export function simulateGroups(seed: string, params: ModelParams, world?: WorldConfig, groups?: Record<string, string[]>): Match[] {
   const rng = makeRng(seed + ':grupos')
   const out: Match[] = []
   for (const g of GROUPS) {
-    const [t1, t2, t3, t4] = teamsOfGroup(g)
+    const [t1, t2, t3, t4] = groups ? groups[g] : teamsOfGroup(g)
     // mismo calendario que la historia original: (1v2, 3v4) (1v3, 2v4) (1v4, 2v3)
     const fx: [string, string][] = [[t1, t2], [t3, t4], [t1, t3], [t2, t4], [t1, t4], [t2, t3]]
     fx.forEach(([h, a], i) => {
@@ -208,9 +221,9 @@ export function advance(br: Bracket, seed: string, params: ModelParams, world?: 
   return next
 }
 
-export function newAlt(seed: string, mode: 'octavos' | 'completo', storyMatches: Match[], params: ModelParams, world?: WorldConfig): AltTournament {
-  const groupMatches = mode === 'completo' ? simulateGroups(seed, params, world) : storyMatches
-  return { seed, mode, groupMatches, bracket: emptyBracket(r16Pairs(qualifiers(groupMatches))), world }
+export function newAlt(seed: string, mode: 'octavos' | 'completo', storyMatches: Match[], params: ModelParams, world?: WorldConfig, groups?: Record<string, string[]>): AltTournament {
+  const groupMatches = mode === 'completo' ? simulateGroups(seed, params, world, groups) : storyMatches
+  return { seed, mode, groupMatches, bracket: emptyBracket(r16Pairs(qualifiers(groupMatches, groups))), world, groups }
 }
 
 export function runAll(t: AltTournament, params: ModelParams): AltTournament {

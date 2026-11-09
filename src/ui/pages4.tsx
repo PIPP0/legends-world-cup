@@ -9,6 +9,8 @@ import { explain } from '../engine/explain'
 import { validate } from '../engine/validate'
 import { Avatar, Bar, Flag, Note, ProbBar, Section, Tabs, TeamLink, useApp, useLocalState } from './common'
 import { Events, KoCard } from './blocks'
+import { startExperience } from './pending'
+import { drawGroups } from '../engine/model'
 import { WorldBuilder, WorldSummary, GroupResults, newSeed } from './world'
 import { recordHistory, loadHistory } from '../engine/world'
 import { HOSTS, HOST_OF_VENUE, SEASONS, VENUE_BY_ID } from '../data/world'
@@ -106,7 +108,7 @@ function TeamSelect({ value, onChange, label }: { value: string; onChange: (v: s
   return <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}>{[...TEAMS].sort((a, b) => a.name.localeCompare(b.name)).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
 }
 
-function LiveReplay({ a, b, res, onSkip }: { a: string; b: string; res: ReturnType<typeof simulateMatch>; onSkip: () => void }) {
+export function LiveReplay({ a, b, res, onSkip, onDone }: { a: string; b: string; res: ReturnType<typeof simulateMatch>; onSkip: () => void; onDone?: () => void }) {
   const end = res.et ? 120 : 90
   const [min, setMin] = useState(0)
   useEffect(() => {
@@ -119,6 +121,7 @@ function LiveReplay({ a, b, res, onSkip }: { a: string; b: string; res: ReturnTy
   const gb = shown.filter((g) => g.teamId === b).length
   const last = shown[shown.length - 1]
   const done = min >= end
+  useEffect(() => { if (done) onDone?.() }, [done]) // eslint-disable-line react-hooks/exhaustive-deps
   const flash = last && min - last.minute < 5 && !done
   return (
     <div className="liveb" aria-live="polite">
@@ -133,7 +136,7 @@ function LiveReplay({ a, b, res, onSkip }: { a: string; b: string; res: ReturnTy
       {flash && <div className="lv-goal" key={last.minute + last.scorerId}>¡GOL! {PLAYER_BY_ID[last.scorerId].name} · {TEAM_BY_ID[last.teamId].name} · {last.minute}'</div>}
       <Events goals={shown} home={a} away={b} />
       {done && res.pens && <p className="center">Penales {res.pens[0]}–{res.pens[1]} · avanza <b>{TEAM_BY_ID[res.winner!].name}</b></p>}
-      {!done && <button className="btn ghost" onClick={onSkip}>Saltar al final</button>}
+      {!done && <button className="btn ghost" onClick={() => { setMin(end); onSkip() }}>Saltar al final</button>}
     </div>
   )
 }
@@ -214,7 +217,7 @@ const PHASE_LABEL = { r16: 'octavos', qf: 'cuartos', sf: 'semifinales', final: '
 
 function AltTour({ alt, setAlt }: { alt: ReturnType<typeof useApp>['alt']; setAlt: (a: ReturnType<typeof useApp>['alt']) => void }) {
   const { params } = useApp()
-  const [seed, setSeed] = useLocalState('lwc:seed', 'torneo-1')
+  const [seed, setSeed] = useLocalState('lwc:seed', newSeed())
   const [mode, setMode] = useState<'octavos' | 'completo'>('octavos')
   const [odds, setOdds] = useState<Record<string, number> | null>(null)
   const phase = alt ? nextPhase(alt.bracket) : null
@@ -233,7 +236,8 @@ function AltTour({ alt, setAlt }: { alt: ReturnType<typeof useApp>['alt']; setAl
           </select>
         </div>
         <div className="cta">
-          <button className="btn pri" onClick={() => setAlt(newAlt(seed, mode, STORY_MATCHES, params))}>{alt ? 'Reiniciar torneo' : 'Crear torneo'}</button>
+          <button className="btn pri" onClick={() => startExperience(runAll(newAlt(seed, mode, STORY_MATCHES, params, undefined, mode === 'completo' ? drawGroups(seed, params) : undefined), params))}>Vivir el torneo (sorteo, grupos y eliminatorias en vivo)</button>
+          <button className="btn" onClick={() => setAlt(newAlt(seed, mode, STORY_MATCHES, params))}>{alt ? 'Reiniciar torneo' : 'Crear torneo'}</button>
           {alt && phase !== 'done' && <button className="btn" onClick={() => commit({ ...alt, bracket: advance(alt.bracket, alt.seed, params, alt.world) })}>Simular {PHASE_LABEL[phase!]}</button>}
           {alt && phase !== 'done' && <button className="btn" onClick={() => commit(runAll(alt, params))}>Simular todo hasta el campeón</button>}
           {alt && <button className="btn ghost" onClick={() => setAlt(null)}>Borrar torneo alternativo</button>}

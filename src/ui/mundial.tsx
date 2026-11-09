@@ -2,9 +2,10 @@ import { useMemo, useState } from 'react'
 import { HOSTS, HOST_BY_ID, MONTHS, monthTemp, seasonOfMonth } from '../data/world'
 import { PLAYERS, STORY_MATCHES } from '../data'
 import { TEAM_BY_ID } from '../data/lookup'
-import { newAlt, runAll } from '../engine/model'
+import { drawGroups, newAlt, runAll } from '../engine/model'
+import { startExperience } from './pending'
 import { explain } from '../engine/explain'
-import { MAX_PRIMES, PRIME_BOOST, adjustments, loadHistory, recordHistory } from '../engine/world'
+import { MAX_PRIMES, PRIME_BOOST, adjustments, loadHistory } from '../engine/world'
 import { PRICE_USD, pay } from '../engine/payment'
 import { Avatar, Flag, Section, useApp } from './common'
 import { BracketView } from './pages4'
@@ -16,7 +17,7 @@ const CLIMATES: [Climate, string, string][] = [['normal', 'Normal', 'Lo típico 
 const STEPS = ['Sede', 'Fecha', 'Clima', 'Leyendas en su prime', 'Pagar y jugar']
 
 export function Mundial() {
-  const { params, setAlt } = useApp()
+  const { params } = useApp()
   const [step, setStep] = useState(0)
   const [hostId, setHostId] = useState('')
   const [month, setMonth] = useState(6)
@@ -26,7 +27,6 @@ export function Mundial() {
   const [mode, setMode] = useState<'octavos' | 'completo'>('completo')
   const [seed, setSeed] = useState(newSeed)
   const [paying, setPaying] = useState(false)
-  const [done, setDone] = useState<AltTournament | null>(null)
   const host = hostId ? HOST_BY_ID[hostId] : null
   const dT = climate === 'calor' ? 6 : climate === 'frio' ? -6 : 0
 
@@ -55,13 +55,11 @@ export function Mundial() {
     try {
       const rec = await pay(`Mundial en ${host!.name} · ${MONTHS[month - 1]}`)
       const w = { ...world(), finalVenue: finalVenue || host!.venues[0].id, receipt: rec.id }
-      let t = runAll(newAlt(seed, mode, STORY_MATCHES, params, w), params)
-      recordHistory(t); t = { ...t, recorded: true }
-      setAlt(t); setDone(t)
+      const groups = mode === 'completo' ? drawGroups(seed, params) : undefined
+      startExperience(runAll(newAlt(seed, mode, STORY_MATCHES, params, w, groups), params))
     } finally { setPaying(false) }
   }
 
-  if (done) return <Reveal t={done} onAgain={() => { setDone(null); setStep(0); setSeed(newSeed()) }} />
 
   const canNext = step === 0 ? !!host : true
   return (
@@ -146,7 +144,7 @@ export function Mundial() {
               <label className="seed">Semilla <input value={seed} onChange={(e) => setSeed(e.target.value)} /></label>
             </div>
             <p className="note warn">Pago simulado de demostración: no se cobra nada ni se piden datos de tarjeta.</p>
-            <div className="cta"><button className="btn pri" disabled={paying} onClick={go}>{paying ? 'Procesando pago…' : `Pagar US$ ${PRICE_USD}.00 y simular`}</button></div>
+            <div className="cta"><button className="btn pri" disabled={paying} onClick={go}>{paying ? 'Procesando pago…' : `Pagar US$ ${PRICE_USD}.00 y vivir el mundial`}</button></div>
           </>
         )}
 
@@ -159,7 +157,7 @@ export function Mundial() {
   )
 }
 
-function Reveal({ t, onAgain }: { t: AltTournament; onAgain: () => void }) {
+export function Reveal({ t, onAgain }: { t: AltTournament; onAgain: () => void }) {
   const { params } = useApp()
   const f = t.bracket.final
   const champ = t.bracket.champion!

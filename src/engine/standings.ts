@@ -48,10 +48,10 @@ export function groupTable(group: string, matches: Match[], upToMatchday = 3): T
   return table(ids, matches.filter((m) => m.group === group && m.matchday <= upToMatchday))
 }
 
-export function qualifiers(matches: Match[]): Record<string, [string, string]> {
+export function qualifiers(matches: Match[], groups?: Record<string, string[]>): Record<string, [string, string]> {
   const out: Record<string, [string, string]> = {}
   for (const g of 'ABCDEFGH') {
-    const t = groupTable(g, matches)
+    const t = groups ? table(groups[g], matches.filter((m) => m.group === g)) : groupTable(g, matches)
     out[g] = [t[0].teamId, t[1].teamId]
   }
   return out

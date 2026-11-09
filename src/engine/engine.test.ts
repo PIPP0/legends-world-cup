@@ -101,3 +101,21 @@ describe('prime y fecha', () => {
     expect(jan.temp).toBeGreaterThan(jul.temp)
   })
 })
+
+import { drawGroups } from './model'
+describe('sorteo', () => {
+  it('reparte 32 equipos en 8 grupos de 4, uno por bombo, y es reproducible', () => {
+    const g = drawGroups('s1')
+    const all = Object.values(g).flat()
+    expect(new Set(all).size).toBe(32)
+    expect(Object.values(g).every((x) => x.length === 4)).toBe(true)
+    expect(drawGroups('s1')).toEqual(g)
+    expect(drawGroups('s2')).not.toEqual(g)
+  })
+  it('un mundial con grupos sorteados llega a campeón', () => {
+    const g = drawGroups('z')
+    const t = runAll(newAlt('z', 'completo', [], DEFAULT_PARAMS, undefined, g), DEFAULT_PARAMS)
+    expect(t.bracket.champion).toBeTruthy()
+    expect(t.groupMatches.length).toBe(48)
+  })
+})

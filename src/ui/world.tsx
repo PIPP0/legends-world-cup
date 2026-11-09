@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { HOSTS, HOST_BY_ID, HOST_OF_VENUE, MONTHS, SEASONS, VENUE_BY_ID } from '../data/world'
 import { STORY_MATCHES } from '../data'
-import { newAlt } from '../engine/model'
+import { drawGroups, newAlt, runAll } from '../engine/model'
+import { startExperience } from './pending'
 import { loadHistory } from '../engine/world'
 import { PRICE_USD, loadReceipts, pay } from '../engine/payment'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
@@ -40,7 +41,7 @@ export function WorldBuilder({ setAlt }: { setAlt: (a: AltTournament | null) => 
     try {
       const rec = await pay(`Mundial en ${host.name}`)
       const world: WorldConfig = { hostId, season, finalVenue, history: loadHistory(), receipt: rec.id }
-      setAlt(newAlt(seed, mode, STORY_MATCHES, params, world))
+      startExperience(runAll(newAlt(seed, mode, STORY_MATCHES, params, world, mode === 'completo' ? drawGroups(seed, params) : undefined), params))
       setSeed(newSeed())
       setStep('config')
     } catch { setErr('No se pudo completar el pago simulado. Intenta de nuevo.'); setStep('pay') }
