@@ -19,16 +19,19 @@ describe('eliminatorias congeladas', () => {
   it('los octavos son exactamente los cruces oficiales', () => {
     expect(b.r16.map((m) => [m.a, m.b])).toEqual(DECLARED_R16)
   })
-  it('Argentina le gana 1-0 a Inglaterra en octavos y sigue en cuartos (edición del autor)', () => {
-    const o5 = b.r16[4]
+  it('octavos editados por el autor: Argentina 1-0 Inglaterra y España 2-1 Bélgica', () => {
+    const o5 = b.r16[4], o7 = b.r16[6]
     expect([o5.a, o5.b, o5.ga, o5.gb, o5.winner]).toEqual(['arg', 'eng', 1, 0, 'arg'])
-    expect(b.qf[2].a).toBe('arg')
-    expect(b.qf[2].winner).toBe('hun')
-  })
-  it('España le gana 2-1 a Bélgica en octavos y sigue en cuartos (edición del autor)', () => {
-    const o7 = b.r16[6]
     expect([o7.a, o7.b, o7.ga, o7.gb, o7.winner, o7.et, o7.pens]).toEqual(['esp', 'bel', 2, 1, 'esp', false, undefined])
-    expect([b.qf[3].a, b.qf[3].b, b.qf[3].ga, b.qf[3].gb, b.qf[3].winner]).toEqual(['esp', 'por', 2, 3, 'por'])
+  })
+  it('cuartos definidos por el autor', () => {
+    const q = b.qf.map((m) => [m.a, m.b, m.ga, m.gb, m.winner, m.pens ?? null])
+    expect(q).toEqual([
+      ['bra', 'ita', 2, 1, 'bra', null],
+      ['fra', 'ned', 2, 2, 'fra', [4, 3]],
+      ['arg', 'hun', 3, 1, 'arg', null],
+      ['esp', 'por', 3, 3, 'esp', [5, 4]],
+    ])
   })
   it('cada partido está completo y es coherente', () => {
     for (const m of all) {

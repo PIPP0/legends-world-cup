@@ -1,5 +1,5 @@
 {
- "version": 3,
+ "version": 4,
  "seed": "historia-oficial-1",
  "bracket": {
   "r16": [
@@ -252,16 +252,29 @@
     "round": "qf",
     "a": "bra",
     "b": "ita",
-    "ga": 1,
-    "gb": 0,
+    "ga": 2,
+    "gb": 1,
     "et": false,
     "winner": "bra",
     "goals": [
      {
-      "minute": 39,
+      "minute": 18,
       "teamId": "bra",
-      "scorerId": "bra-ronaldo-nazario",
-      "assistId": "bra-ronaldinho",
+      "scorerId": "bra-garrincha",
+      "phase": "reg",
+      "assistId": "bra-pele"
+     },
+     {
+      "minute": 55,
+      "teamId": "ita",
+      "scorerId": "ita-alessandro-del-piero",
+      "phase": "reg",
+      "assistId": "ita-paolo-maldini"
+     },
+     {
+      "minute": 77,
+      "teamId": "bra",
+      "scorerId": "bra-pele",
       "phase": "reg"
      }
     ]
@@ -271,24 +284,42 @@
     "round": "qf",
     "a": "fra",
     "b": "ned",
-    "ga": 0,
+    "ga": 2,
     "gb": 2,
-    "et": false,
-    "winner": "ned",
+    "et": true,
+    "winner": "fra",
     "goals": [
      {
-      "minute": 15,
-      "teamId": "ned",
-      "scorerId": "ned-wesley-sneijder",
-      "assistId": "ned-johan-cruyff",
-      "phase": "reg"
+      "minute": 12,
+      "teamId": "fra",
+      "scorerId": "fra-zinedine-zidane",
+      "phase": "reg",
+      "assistId": "fra-franck-ribery"
      },
      {
-      "minute": 74,
+      "minute": 34,
       "teamId": "ned",
       "scorerId": "ned-arjen-robben",
+      "phase": "reg",
+      "assistId": "ned-wesley-sneijder"
+     },
+     {
+      "minute": 61,
+      "teamId": "fra",
+      "scorerId": "fra-didier-deschamps",
+      "phase": "reg",
+      "assistId": "fra-zinedine-zidane"
+     },
+     {
+      "minute": 83,
+      "teamId": "ned",
+      "scorerId": "ned-johan-cruyff",
       "phase": "reg"
      }
+    ],
+    "pens": [
+     4,
+     3
     ]
    },
    {
@@ -296,59 +327,94 @@
     "round": "qf",
     "a": "arg",
     "b": "hun",
-    "ga": 0,
-    "gb": 0,
-    "et": true,
-    "pens": [
-     5,
-     6
-    ],
-    "winner": "hun",
-    "goals": []
+    "ga": 3,
+    "gb": 1,
+    "et": false,
+    "winner": "arg",
+    "goals": [
+     {
+      "minute": 9,
+      "teamId": "arg",
+      "scorerId": "arg-diego-maradona",
+      "phase": "reg",
+      "assistId": "arg-javier-mascherano"
+     },
+     {
+      "minute": 38,
+      "teamId": "hun",
+      "scorerId": "hun-florian-albert",
+      "phase": "reg"
+     },
+     {
+      "minute": 52,
+      "teamId": "arg",
+      "scorerId": "arg-roberto-ayala",
+      "phase": "reg",
+      "assistId": "arg-fernando-redondo"
+     },
+     {
+      "minute": 79,
+      "teamId": "arg",
+      "scorerId": "arg-lionel-messi",
+      "phase": "reg"
+     }
+    ]
    },
    {
     "id": "C4",
     "round": "qf",
     "a": "esp",
     "b": "por",
-    "ga": 2,
+    "ga": 3,
     "gb": 3,
-    "et": false,
-    "winner": "por",
+    "et": true,
+    "winner": "esp",
     "goals": [
      {
-      "minute": 44,
-      "teamId": "por",
-      "scorerId": "por-eusebio",
-      "assistId": "por-cristiano-ronaldo",
-      "phase": "reg"
-     },
-     {
-      "minute": 48,
+      "minute": 14,
       "teamId": "esp",
       "scorerId": "esp-david-villa",
-      "assistId": "esp-andres-iniesta",
       "phase": "reg"
      },
      {
-      "minute": 58,
+      "minute": 31,
+      "teamId": "por",
+      "scorerId": "por-eusebio",
+      "phase": "reg",
+      "assistId": "por-cristiano-ronaldo"
+     },
+     {
+      "minute": 50,
+      "teamId": "esp",
+      "scorerId": "esp-david-villa",
+      "phase": "reg",
+      "assistId": "esp-david-silva"
+     },
+     {
+      "minute": 66,
+      "teamId": "por",
+      "scorerId": "por-eusebio",
+      "phase": "reg",
+      "assistId": "por-rafael-leao"
+     },
+     {
+      "minute": 79,
       "teamId": "esp",
       "scorerId": "esp-david-silva",
-      "assistId": "esp-xavi-hernandez",
-      "phase": "reg"
-     },
-     {
-      "minute": 60,
-      "teamId": "por",
-      "scorerId": "por-paulo-sousa",
-      "phase": "reg"
+      "phase": "reg",
+      "assistId": "esp-francisco-gento"
      },
      {
       "minute": 90,
       "teamId": "por",
-      "scorerId": "por-ruben-dias",
-      "phase": "reg"
+      "scorerId": "por-eusebio",
+      "phase": "reg",
+      "assistId": "por-joao-moutinho"
      }
+    ],
+    "pens": [
+     5,
+     4
     ]
    }
   ],
@@ -357,63 +423,61 @@
     "id": "S1",
     "round": "sf",
     "a": "bra",
-    "b": "ned",
+    "b": "fra",
     "ga": 0,
     "gb": 1,
     "et": false,
-    "winner": "ned",
+    "winner": "fra",
     "goals": [
      {
       "minute": 62,
-      "teamId": "ned",
-      "scorerId": "ned-arjen-robben",
-      "assistId": "ned-wesley-sneijder",
-      "phase": "reg"
+      "teamId": "fra",
+      "scorerId": "fra-michel-platini",
+      "phase": "reg",
+      "assistId": "fra-didier-deschamps"
      }
     ]
    },
    {
     "id": "S2",
     "round": "sf",
-    "a": "hun",
-    "b": "por",
+    "a": "arg",
+    "b": "esp",
     "ga": 2,
     "gb": 3,
     "et": false,
-    "winner": "por",
+    "winner": "esp",
     "goals": [
      {
       "minute": 5,
-      "teamId": "hun",
-      "scorerId": "hun-florian-albert",
-      "assistId": "hun-sandor-kocsis",
-      "phase": "reg"
+      "teamId": "arg",
+      "scorerId": "arg-javier-mascherano",
+      "phase": "reg",
+      "assistId": "arg-daniel-passarella"
      },
      {
       "minute": 12,
-      "teamId": "por",
-      "scorerId": "por-eusebio",
-      "assistId": "por-bernardo-silva",
+      "teamId": "esp",
+      "scorerId": "esp-david-villa",
       "phase": "reg"
      },
      {
       "minute": 21,
-      "teamId": "hun",
-      "scorerId": "hun-sandor-kocsis",
-      "assistId": "hun-florian-albert",
-      "phase": "reg"
+      "teamId": "arg",
+      "scorerId": "arg-lionel-messi",
+      "phase": "reg",
+      "assistId": "arg-javier-zanetti"
      },
      {
       "minute": 51,
-      "teamId": "por",
-      "scorerId": "por-eusebio",
+      "teamId": "esp",
+      "scorerId": "esp-xavi-hernandez",
       "phase": "reg"
      },
      {
       "minute": 74,
-      "teamId": "por",
-      "scorerId": "por-bernardo-silva",
-      "assistId": "por-luis-figo",
+      "teamId": "esp",
+      "scorerId": "esp-sergio-busquets",
       "phase": "reg"
      }
     ]
@@ -423,7 +487,7 @@
    "id": "T",
    "round": "third",
    "a": "bra",
-   "b": "hun",
+   "b": "arg",
    "ga": 4,
    "gb": 2,
    "et": false,
@@ -445,9 +509,8 @@
     },
     {
      "minute": 38,
-     "teamId": "hun",
-     "scorerId": "hun-florian-albert",
-     "assistId": "hun-jozsef-bozsik",
+     "teamId": "arg",
+     "scorerId": "arg-lionel-messi",
      "phase": "reg"
     },
     {
@@ -466,9 +529,8 @@
     },
     {
      "minute": 51,
-     "teamId": "hun",
-     "scorerId": "hun-florian-albert",
-     "assistId": "hun-jozsef-bozsik",
+     "teamId": "arg",
+     "scorerId": "arg-fernando-redondo",
      "phase": "reg"
     }
    ]
@@ -476,49 +538,50 @@
   "final": {
    "id": "F",
    "round": "final",
-   "a": "ned",
-   "b": "por",
+   "a": "fra",
+   "b": "esp",
    "ga": 2,
    "gb": 3,
    "et": true,
-   "winner": "por",
+   "winner": "esp",
    "goals": [
     {
      "minute": 24,
-     "teamId": "por",
-     "scorerId": "por-deco",
-     "phase": "reg"
+     "teamId": "esp",
+     "scorerId": "esp-andres-iniesta",
+     "phase": "reg",
+     "assistId": "esp-xavi-hernandez"
     },
     {
      "minute": 34,
-     "teamId": "ned",
-     "scorerId": "ned-johan-cruyff",
-     "phase": "reg"
+     "teamId": "fra",
+     "scorerId": "fra-zinedine-zidane",
+     "phase": "reg",
+     "assistId": "fra-franck-ribery"
     },
     {
      "minute": 54,
-     "teamId": "por",
-     "scorerId": "por-luis-figo",
-     "assistId": "por-bruno-fernandes",
-     "phase": "reg"
+     "teamId": "esp",
+     "scorerId": "esp-david-villa",
+     "phase": "reg",
+     "assistId": "esp-jordi-alba"
     },
     {
      "minute": 86,
-     "teamId": "ned",
-     "scorerId": "ned-robin-van-persie",
-     "assistId": "ned-johan-cruyff",
+     "teamId": "fra",
+     "scorerId": "fra-thierry-henry",
      "phase": "reg"
     },
     {
      "minute": 113,
-     "teamId": "por",
-     "scorerId": "por-eusebio",
-     "assistId": "por-luis-figo",
-     "phase": "et"
+     "teamId": "esp",
+     "scorerId": "esp-david-villa",
+     "phase": "et",
+     "assistId": "esp-cesc-fabregas"
     }
    ]
   },
-  "champion": "por"
+  "champion": "esp"
  },
  "ediciones": [
   {
@@ -528,6 +591,10 @@
   {
    "que": "Octavos España-Bélgica: cambia de Bélgica (penales 5-4) a España 2-1 en los 90 minutos (pedido del autor). España ocupa el lugar de Bélgica en cuartos (sigue 2-3 ante Portugal); el resto no se tocó.",
    "goles": "octavos: Torres 25', Villa 62', Doku 88'; cuartos: Villa 48', Silva 58'"
+  },
+  {
+   "que": "Cuartos definidos por el autor: Brasil 2-1 Italia; Francia 2-2 Países Bajos (penales 4-3, pasa Francia); Argentina 3-1 Hungría; España 3-3 Portugal (penales 5-4, pasa España). Semifinales, tercer puesto y final conservan su marcador anterior con los equipos nuevos (Brasil-Francia 0-1; Argentina-España 2-3; tercer puesto Brasil 4-2 Argentina; final Francia 2-3 España en prórroga). Los penales 5-4 de España son un valor elegido, no dado por el autor.",
+   "goles": "goleadores reasignados por jugadores de cada equipo con sorteo de semilla fija"
   }
  ]
 }
