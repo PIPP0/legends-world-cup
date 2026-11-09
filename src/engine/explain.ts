@@ -22,7 +22,7 @@ const pct = (n: number) => `${Math.round(n * 100)} %`
 
 // Justificación de un partido a partir de los mismos datos que usa el modelo (valoraciones del once).
 export function explain(a: string, b: string, params: ModelParams, res?: SimOutcome, env?: Env): Explanation {
-  const A = profile(a, params), B = profile(b, params)
+  const A = profile(a, params, env), B = profile(b, params, env)
   const TA = TEAM_BY_ID[a], TB = TEAM_BY_ID[b]
   const pr = probabilities(a, b, params, env)
   const [la, lb] = lambdas(a, b, params, env)
@@ -61,6 +61,8 @@ export function explain(a: string, b: string, params: ModelParams, res?: SimOutc
       else reasons.push(`${nameOf(id)}: sin ventajas ni desventajas de lugar o clima.`)
     }
   }
+  const pr3 = (env?.world?.primes ?? []).filter((id) => PLAYER_BY_ID[id] && (PLAYER_BY_ID[id].teamId === a || PLAYER_BY_ID[id].teamId === b))
+  if (pr3.length) reasons.push(`En su prime (+4 de valoración): ${pr3.map((id) => `${PLAYER_BY_ID[id].name} (${TEAM_BY_ID[PLAYER_BY_ID[id].teamId].name})`).join(', ')}.`)
   const ta = top(a), tb = top(b)
   reasons.push(`Figuras: ${ta.name} (${ta.ovr}) por ${TA.name} y ${tb.name} (${tb.ovr}) por ${TB.name}.`)
   reasons.push(`Con eso el modelo espera ${f1(la)} goles de ${TA.name} y ${f1(lb)} de ${TB.name}; el marcador más probable es ${modal.ga}-${modal.gb} (${pct(modal.p)} de probabilidad por sí solo).`)

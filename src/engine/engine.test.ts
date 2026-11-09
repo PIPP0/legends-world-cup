@@ -87,3 +87,17 @@ describe('mundial personalizado', () => {
     expect(g1).not.toBe(g2)
   })
 })
+
+describe('prime y fecha', () => {
+  it('un jugador en su prime sube la fuerza de su equipo', () => {
+    const w: WorldConfig = { hostId: 'bra', season: 'verano', finalVenue: 'maracana', history: {}, primes: ['chi-elias-figueroa'] }
+    const base = lambdas('chi', 'bra', DEFAULT_PARAMS)[0]
+    const prime = lambdas('chi', 'bra', DEFAULT_PARAMS, { world: w })[0]
+    expect(prime).toBeGreaterThan(base)
+  })
+  it('el mes cambia la temperatura (hemisferio sur invertido)', () => {
+    const jan = contextFor({ hostId: 'chi', season: 'verano', month: 1, finalVenue: 'nacional', history: {} }, 'x', 'A1')
+    const jul = contextFor({ hostId: 'chi', season: 'verano', month: 7, finalVenue: 'nacional', history: {} }, 'x', 'A1')
+    expect(jan.temp).toBeGreaterThan(jul.temp)
+  })
+})

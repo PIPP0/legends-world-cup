@@ -11,7 +11,7 @@ export interface Venue {
   rain: number // probabilidad de lluvia en un partido (0–1)
   roof?: boolean // techo/climatizado: anula clima
 }
-export interface Host { id: string; name: string; iso: string; teamId?: string; venues: Venue[] }
+export interface Host { id: string; name: string; iso: string; teamId?: string; south?: boolean; venues: Venue[] }
 
 const v = (id: string, name: string, city: string, alt: number, warm: number, cold: number, hum: number, rain: number, roof?: boolean): Venue =>
   ({ id, name, city, alt, warm, cold, hum, rain, roof })
@@ -21,13 +21,13 @@ export const HOSTS: Host[] = [
     v('azteca', 'Estadio Azteca', 'Ciudad de México', 2240, 22, 14, 0.5, 0.45), v('akron', 'Estadio Akron', 'Guadalajara', 1560, 27, 19, 0.5, 0.4), v('bbva', 'Estadio BBVA', 'Monterrey', 540, 34, 17, 0.55, 0.15)] },
   { id: 'usa', name: 'Estados Unidos', iso: 'us', teamId: 'usa', venues: [
     v('metlife', 'MetLife Stadium', 'Nueva Jersey', 10, 28, 5, 0.65, 0.25), v('rosebowl', 'Rose Bowl', 'Pasadena', 250, 31, 15, 0.35, 0.05), v('att', 'AT&T Stadium', 'Dallas', 140, 24, 24, 0.5, 0, true)] },
-  { id: 'bra', name: 'Brasil', iso: 'br', teamId: 'bra', venues: [
+  { id: 'bra', south: true, name: 'Brasil', iso: 'br', teamId: 'bra', venues: [
     v('maracana', 'Maracanã', 'Río de Janeiro', 10, 31, 23, 0.75, 0.35), v('corinthians', 'Neo Química Arena', 'São Paulo', 760, 27, 17, 0.7, 0.4), v('mane', 'Mané Garrincha', 'Brasilia', 1170, 29, 24, 0.5, 0.25)] },
-  { id: 'arg', name: 'Argentina', iso: 'ar', teamId: 'arg', venues: [
+  { id: 'arg', south: true, name: 'Argentina', iso: 'ar', teamId: 'arg', venues: [
     v('monumental', 'Estadio Monumental', 'Buenos Aires', 25, 28, 11, 0.65, 0.25), v('kempes', 'Mario Alberto Kempes', 'Córdoba', 400, 28, 11, 0.55, 0.25)] },
-  { id: 'chi', name: 'Chile', iso: 'cl', teamId: 'chi', venues: [
+  { id: 'chi', south: true, name: 'Chile', iso: 'cl', teamId: 'chi', venues: [
     v('nacional', 'Estadio Nacional', 'Santiago', 520, 29, 9, 0.45, 0.15), v('sausalito', 'Sausalito', 'Viña del Mar', 30, 22, 11, 0.7, 0.15), v('esteroa', 'Ester Roa', 'Concepción', 10, 23, 9, 0.75, 0.45)] },
-  { id: 'uru', name: 'Uruguay', iso: 'uy', teamId: 'uru', venues: [v('centenario', 'Estadio Centenario', 'Montevideo', 20, 27, 10, 0.7, 0.3)] },
+  { id: 'uru', south: true, name: 'Uruguay', iso: 'uy', teamId: 'uru', venues: [v('centenario', 'Estadio Centenario', 'Montevideo', 20, 27, 10, 0.7, 0.3)] },
   { id: 'esp', name: 'España', iso: 'es', teamId: 'esp', venues: [
     v('bernabeu', 'Santiago Bernabéu', 'Madrid', 650, 33, 9, 0.35, 0.08), v('campnou', 'Camp Nou', 'Barcelona', 10, 29, 10, 0.65, 0.15), v('cartuja', 'La Cartuja', 'Sevilla', 10, 37, 14, 0.35, 0.05)] },
   { id: 'ita', name: 'Italia', iso: 'it', teamId: 'ita', venues: [
@@ -42,7 +42,7 @@ export const HOSTS: Host[] = [
     v('saitama', 'Estadio Saitama', 'Saitama', 10, 31, 8, 0.7, 0.3), v('yokohama', 'Estadio Internacional', 'Yokohama', 10, 30, 9, 0.7, 0.3), v('osaka', 'Panasonic Stadium', 'Osaka', 10, 32, 8, 0.65, 0.25)] },
   { id: 'kor', name: 'Corea del Sur', iso: 'kr', teamId: 'kor', venues: [v('seul', 'Estadio Mundialista', 'Seúl', 40, 30, 0, 0.65, 0.3), v('busan', 'Asiad Main Stadium', 'Busan', 10, 28, 4, 0.7, 0.3)] },
   { id: 'qat', name: 'Catar', iso: 'qa', venues: [v('lusail', 'Estadio Lusail', 'Lusail', 10, 24, 24, 0.5, 0, true), v('albayt', 'Estadio Al Bayt', 'Al Khor', 10, 24, 24, 0.5, 0, true)] },
-  { id: 'rsa', name: 'Sudáfrica', iso: 'za', venues: [
+  { id: 'rsa', south: true, name: 'Sudáfrica', iso: 'za', venues: [
     v('soccercity', 'Soccer City', 'Johannesburgo', 1750, 26, 13, 0.4, 0.2), v('greenpoint', 'Cape Town Stadium', 'Ciudad del Cabo', 5, 27, 12, 0.6, 0.3), v('durban', 'Moses Mabhida', 'Durban', 30, 28, 18, 0.75, 0.25)] },
   { id: 'rus', name: 'Rusia', iso: 'ru', venues: [v('luzhniki', 'Luzhniki', 'Moscú', 150, 24, -3, 0.65, 0.25), v('krestovsky', 'Krestovsky', 'San Petersburgo', 10, 20, -4, 0.75, 0.3)] },
 ]
@@ -54,6 +54,17 @@ export const SEASONS: Record<Season, string> = { verano: 'Verano (calor)', templ
 
 export function venueTemp(vn: Venue, season: Season): number {
   return season === 'verano' ? vn.warm : season === 'invierno' ? vn.cold : (vn.warm + vn.cold) / 2
+}
+
+export const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+// Temperatura típica de un mes: onda anual entre la temperatura cálida y la fría (pico en julio al norte, enero al sur).
+export function monthTemp(vn: Venue, month: number, south?: boolean): number {
+  const peak = south ? 1 : 7
+  return (vn.warm + vn.cold) / 2 + ((vn.warm - vn.cold) / 2) * Math.cos((2 * Math.PI * (month - peak)) / 12)
+}
+export function seasonOfMonth(month: number, south?: boolean): Season {
+  const c = Math.cos((2 * Math.PI * (month - (south ? 1 : 7))) / 12)
+  return c > 0.5 ? 'verano' : c < -0.5 ? 'invierno' : 'templado'
 }
 
 // Clima en que suele jugar cada selección (temperatura °C, humedad 0–1, altitud m). Aproximación por país.

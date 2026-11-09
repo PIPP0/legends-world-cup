@@ -42,6 +42,9 @@ export interface WorldConfig {
   hostId: string
   season: Season
   finalVenue: string
+  month?: number // 1–12; si existe, manda sobre `season` para la temperatura
+  climate?: 'normal' | 'calor' | 'lluvia' | 'frio' // año atípico elegido por el usuario
+  primes?: string[] // hasta 3 jugadores en su mejor momento (+PRIME_BOOST de valoración)
   history: Record<string, { n: number; gd: number }> // "equipo|estadio" → partidos y diferencia de gol acumulados
   receipt?: string // comprobante del pago simulado
 }

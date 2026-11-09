@@ -1,4 +1,4 @@
-import { HOST_BY_ID, HOST_OF_VENUE, TEAM_HOME, VENUE_BY_ID, venueTemp } from '../data/world'
+import { HOST_BY_ID, HOST_OF_VENUE, TEAM_HOME, VENUE_BY_ID, monthTemp, seasonOfMonth, venueTemp } from '../data/world'
 import { TEAM_BY_ID } from '../data'
 import { hashString, makeRng, normal } from './rng'
 import type { AltTournament, MatchCtx, WorldConfig } from '../types'
@@ -45,8 +45,12 @@ export function contextFor(world: WorldConfig, seed: string, matchId: string): M
   const rng = makeRng(`${seed}:${matchId}:ctx`)
   const vn = matchId === 'F' ? VENUE_BY_ID[world.finalVenue] : host.venues[hashString(`${seed}:${matchId}`) % host.venues.length]
   if (vn.roof) return { venueId: vn.id, temp: 24, rain: 0, roof: true }
-  const temp = venueTemp(vn, world.season) + normal(rng) * 2.5
-  const rain = rng() < vn.rain * (world.season === 'verano' ? 0.8 : world.season === 'invierno' ? 1.2 : 1) ? 0.3 + rng() * 0.7 : 0
+  const season = world.month ? seasonOfMonth(world.month, host.south) : world.season
+  const base = world.month ? monthTemp(vn, world.month, host.south) : venueTemp(vn, season)
+  const cl = world.climate ?? 'normal'
+  const temp = base + normal(rng) * 2.5 + (cl === 'calor' ? 6 : cl === 'frio' ? -6 : 0)
+  const rainP = vn.rain * (season === 'verano' ? 0.8 : season === 'invierno' ? 1.2 : 1) * (cl === 'lluvia' ? 2 : 1)
+  const rain = rng() < rainP ? 0.3 + rng() * 0.7 : 0
   return { venueId: vn.id, temp: Math.round(temp * 10) / 10, rain: Math.round(rain * 100) / 100 }
 }
 
@@ -70,3 +74,8 @@ export function recordHistory(t: AltTournament): void {
   try { localStorage.setItem(KEY, JSON.stringify(h)) } catch { /* sin almacenamiento */ }
 }
 export const teamName = (id: string) => TEAM_BY_ID[id].name
+
+export const PRIME_BOOST = 4
+export const MAX_PRIMES = 3
+// Valoración efectiva de un jugador en este mundial (los elegidos «en su prime» rinden a su mejor nivel).
+export const boostOf = (playerId: string, world?: WorldConfig) => (world?.primes?.includes(playerId) ? PRIME_BOOST : 0)

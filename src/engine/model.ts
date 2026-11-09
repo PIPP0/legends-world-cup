@@ -1,7 +1,7 @@
 import { TEAMS, TEAM_BY_ID, PLAYER_BY_ID, GROUPS, teamsOfGroup } from '../data'
 import { makeRng, normal, pickWeighted, poisson, type Rng } from './rng'
 import { qualifiers, r16Pairs, groupTable } from './standings'
-import { adjustments, contextFor, weatherFactor, type Env } from './world'
+import { PRIME_BOOST, adjustments, contextFor, weatherFactor, type Env } from './world'
 import type { AltTournament, Bracket, Goal, KoMatch, Match, ModelParams, Player, Team, TeamProfile, Weights, WorldConfig } from '../types'
 
 export const DEFAULT_PARAMS: ModelParams = {
@@ -27,10 +27,11 @@ const stdev = (xs: number[]) => { const m = mean(xs); return Math.sqrt(mean(xs.m
 //  ataque       = promedio ponderado por rol ofensivo
 //  defensa      = promedio ponderado por rol defensivo (portero ×2)
 //  experiencia  = proxy: promedio de los cinco mejores del once
-export function baseProfile(team: Team): Omit<TeamProfile, 'strength'> {
-  const o = team.xi.map((p) => p.ovr)
+export function baseProfile(team: Team, primes: string[] = []): Omit<TeamProfile, 'strength'> {
+  const boost = (p: Player) => (primes.includes(p.id) ? PRIME_BOOST : 0)
+  const o = team.xi.map((p) => p.ovr + boost(p))
   const hasDM = team.xi.some((p) => p.pos === 'MCD')
-  const by = (line: string) => team.xi.filter((p) => p.line === line).map((p) => p.ovr)
+  const by = (line: string) => team.xi.filter((p) => p.line === line).map((p) => p.ovr + boost(p))
   return {
     teamId: team.id,
     quality: mean(o),
@@ -38,7 +39,7 @@ export function baseProfile(team: Team): Omit<TeamProfile, 'strength'> {
     attack: wavg(o, team.xi.map((p) => ATT_W[p.pos])),
     defense: wavg(o, team.xi.map((p) => DEF_W[p.pos])),
     experience: mean([...o].sort((a, b) => b - a).slice(0, 5)),
-    gk: team.xi[0].ovr,
+    gk: o[0],
     lines: { gk: by('GK')[0], def: mean(by('DEF')), mid: mean(by('MID')), att: mean(by('ATT')) },
   }
 }
@@ -49,14 +50,16 @@ export function strengthOf(p: Omit<TeamProfile, 'strength'>, w: Weights): number
 }
 
 const profileCache = new Map<string, Omit<TeamProfile, 'strength'>>()
-export function profile(teamId: string, params: ModelParams = DEFAULT_PARAMS): TeamProfile {
+export function profile(teamId: string, params: ModelParams = DEFAULT_PARAMS, env?: Env): TeamProfile {
+  const primes = (env?.world?.primes ?? []).filter((id) => PLAYER_BY_ID[id]?.teamId === teamId)
+  if (primes.length) { const pb = baseProfile(TEAM_BY_ID[teamId], primes); return { ...pb, strength: strengthOf(pb, params.weights) } }
   let b = profileCache.get(teamId)
   if (!b) { b = baseProfile(TEAM_BY_ID[teamId]); profileCache.set(teamId, b) }
   return { ...b, strength: strengthOf(b, params.weights) }
 }
 
 export function lambdas(a: string, b: string, params: ModelParams, env?: Env): [number, number] {
-  const A = profile(a, params), B = profile(b, params)
+  const A = profile(a, params, env), B = profile(b, params, env)
   const ex = (x: TeamProfile, y: TeamProfile) =>
     params.sensitivity * (params.matchup * (x.attack - y.defense) + (1 - params.matchup) * (x.strength - y.strength))
   const cl = (v: number) => Math.min(4.5, Math.max(0.15, v))
@@ -125,8 +128,8 @@ export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParam
     goals.push(...assignGoals(TEAM_BY_ID[a], ea, rng, 120, 91, 'et'), ...assignGoals(TEAM_BY_ID[b], eb, rng, 120, 91, 'et'))
     if (A !== B) winner = A > B ? a : b
     else {
-      const pa = Math.min(0.82, Math.max(0.68, 0.75 + (profile(a, params).gk - profile(b, params).gk) * 0.002))
-      const pb = Math.min(0.82, Math.max(0.68, 0.75 + (profile(b, params).gk - profile(a, params).gk) * 0.002))
+      const pa = Math.min(0.82, Math.max(0.68, 0.75 + (profile(a, params, env).gk - profile(b, params, env).gk) * 0.002))
+      const pb = Math.min(0.82, Math.max(0.68, 0.75 + (profile(b, params, env).gk - profile(a, params, env).gk) * 0.002))
       let x = 0, y = 0
       for (let i = 0; i < 5; i++) { if (rng() < pa) x++; if (rng() < pb) y++ }
       while (x === y) { if (rng() < pa) x++; if (rng() < pb) y++ }

@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { HOSTS, HOST_BY_ID, HOST_OF_VENUE, SEASONS, VENUE_BY_ID } from '../data/world'
+import { HOSTS, HOST_BY_ID, HOST_OF_VENUE, MONTHS, SEASONS, VENUE_BY_ID } from '../data/world'
 import { STORY_MATCHES } from '../data'
 import { newAlt } from '../engine/model'
 import { loadHistory } from '../engine/world'
 import { PRICE_USD, loadReceipts, pay } from '../engine/payment'
-import { TEAM_BY_ID } from '../data/lookup'
+import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { Flag, Section, useApp } from './common'
 import type { AltTournament, MatchCtx, Season, WorldConfig } from '../types'
 
@@ -101,7 +101,7 @@ export function WorldSummary({ alt }: { alt: AltTournament }) {
   const h = HOST_BY_ID[w.hostId]
   return (
     <p className="small muted">
-      Mundial en <b>{h.name}</b> · {SEASONS[w.season]} · final en {VENUE_BY_ID[w.finalVenue].name}{w.receipt ? ` · comprobante simulado ${w.receipt}` : ''}.
+      Mundial en <b>{h.name}</b> · {w.month ? MONTHS[w.month - 1] : SEASONS[w.season]}{w.climate && w.climate !== 'normal' ? ` (${w.climate === 'calor' ? 'ola de calor' : w.climate === 'lluvia' ? 'año lluvioso' : 'año frío'})` : ''}{w.primes?.length ? ` · en su prime: ${w.primes.map((id) => PLAYER_BY_ID[id].name).join(', ')}` : ''} · final en {VENUE_BY_ID[w.finalVenue].name}{w.receipt ? ` · comprobante simulado ${w.receipt}` : ''}.
     </p>
   )
 }

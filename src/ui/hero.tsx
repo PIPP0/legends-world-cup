@@ -31,6 +31,7 @@ export function Hero() {
         <p className="lead">32 selecciones, las mayores leyendas de la historia, todos a los 27 años. Un solo campeón. Sigue cada partido como si fuera en vivo.</p>
         <div className="cta">
           <a className="btn pri" href="#/historia">Ver el torneo</a>
+          <a className="btn hot" href="#/mundial">Simula tu mundial</a>
           <a className="btn" href="#/simulador">Simular un partido</a>
         </div>
       </div>
