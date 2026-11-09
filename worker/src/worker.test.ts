@@ -14,25 +14,34 @@ afterEach(() => vi.unstubAllGlobals())
 describe('worker de pagos', () => {
   it('crea una orden de US$ 1.00', async () => {
     const f = paypal(null); vi.stubGlobal('fetch', f)
-    const r = await worker.fetch(post('/api/order'), env)
+    const r = await worker.fetch(post('/api/order', { product: 'uno' }), env)
     expect((await r.json()).id).toBe('ORDER12345')
     const call = f.mock.calls.find((c) => String(c[0]).endsWith('/checkout/orders'))!
     expect(JSON.parse((call[1] as RequestInit).body as string).purchase_units[0].amount).toEqual({ currency_code: 'USD', value: '1.00' })
   })
   it('confirma solo si PayPal capturó exactamente US$ 1.00', async () => {
-    const ok = { status: 'COMPLETED', purchase_units: [{ payments: { captures: [{ status: 'COMPLETED', amount: { value: '1.00', currency_code: 'USD' } }] } }] }
+    const ok = { status: 'COMPLETED', purchase_units: [{ reference_id: 'uno', payments: { captures: [{ status: 'COMPLETED', amount: { value: '1.00', currency_code: 'USD' } }] } }] }
     vi.stubGlobal('fetch', paypal(ok))
     const r = await worker.fetch(post('/api/capture', { orderID: 'ORDER12345' }), env)
     const d = await r.json()
-    expect(d.ok).toBe(true); expect(d.token).toContain('.')
+    expect(d.ok).toBe(true); expect(d.token).toContain('.'); expect(d.credits).toBe(1)
   })
   it('rechaza montos distintos, pagos incompletos y órdenes inválidas', async () => {
-    const low = { status: 'COMPLETED', purchase_units: [{ payments: { captures: [{ status: 'COMPLETED', amount: { value: '0.01', currency_code: 'USD' } }] } }] }
+    const low = { status: 'COMPLETED', purchase_units: [{ reference_id: 'uno', payments: { captures: [{ status: 'COMPLETED', amount: { value: '0.01', currency_code: 'USD' } }] } }] }
     vi.stubGlobal('fetch', paypal(low))
     expect((await worker.fetch(post('/api/capture', { orderID: 'ORDER12345' }), env)).status).toBe(402)
     vi.stubGlobal('fetch', paypal({ status: 'PENDING' }))
     expect((await worker.fetch(post('/api/capture', { orderID: 'ORDER12345' }), env)).status).toBe(402)
     expect((await worker.fetch(post('/api/capture', { orderID: '../x' }), env)).status).toBe(400)
+  })
+  it('los paquetes validan su precio y entregan sus mundiales', async () => {
+    const cap = (value: string) => ({ status: 'COMPLETED', purchase_units: [{ reference_id: 'pack5', payments: { captures: [{ status: 'COMPLETED', amount: { value, currency_code: 'USD' } }] } }] })
+    vi.stubGlobal('fetch', paypal(cap('3.00')))
+    const ok = await (await worker.fetch(post('/api/capture', { orderID: 'ORDER12345' }), env)).json()
+    expect(ok.ok).toBe(true); expect(ok.credits).toBe(5)
+    vi.stubGlobal('fetch', paypal(cap('1.00')))
+    expect((await worker.fetch(post('/api/capture', { orderID: 'ORDER12345' }), env)).status).toBe(402)
+    expect((await worker.fetch(post('/api/order', { product: 'gratis' }), env)).status).toBe(400)
   })
   it('CORS solo para el sitio permitido', async () => {
     const r = await worker.fetch(new Request('https://w.test/api/order', { method: 'OPTIONS', headers: { Origin: 'https://malo.example' } }), env)

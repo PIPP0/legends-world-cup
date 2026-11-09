@@ -8,8 +8,13 @@ export interface Env {
   ALLOWED_ORIGIN: string // p. ej. https://pipp0.github.io
 }
 
-const PRICE = '1.00'
 const CURRENCY = 'USD'
+// El precio de cada producto lo manda SIEMPRE el servidor (el navegador solo dice cuál quiere). Cambia aquí los precios.
+export const PRODUCTS: Record<string, { usd: string; credits: number; name: string }> = {
+  uno: { usd: '1.00', credits: 1, name: '1 mundial' },
+  pack5: { usd: '3.00', credits: 5, name: 'Pack de 5 mundiales' },
+  pack10: { usd: '5.00', credits: 10, name: 'Pack de 10 mundiales' },
+}
 const base = (env: Env) => (env.PAYPAL_ENV === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com')
 
 const cors = (env: Env, req: Request): Record<string, string> => {
@@ -38,11 +43,14 @@ export async function sign(env: Env, payload: object): Promise<string> {
 }
 
 async function createOrder(env: Env, req: Request): Promise<Response> {
+  const { product = 'uno' } = (await req.json().catch(() => ({}))) as { product?: string }
+  const prod = PRODUCTS[product]
+  if (!prod) return json(env, req, { ok: false, error: 'bad-product' }, 400)
   const t = await accessToken(env)
   const r = await fetch(`${base(env)}/v2/checkout/orders`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${t}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ intent: 'CAPTURE', purchase_units: [{ description: 'Legends World Cup · Simula tu mundial', amount: { currency_code: CURRENCY, value: PRICE } }] }),
+    body: JSON.stringify({ intent: 'CAPTURE', purchase_units: [{ reference_id: product, description: `Legends World Cup · ${prod.name}`, amount: { currency_code: CURRENCY, value: prod.usd } }] }),
   })
   const d = (await r.json()) as { id?: string }
   if (!r.ok || !d.id) return json(env, req, { ok: false, error: 'no-order' }, 502)
@@ -57,12 +65,13 @@ async function captureOrder(env: Env, req: Request): Promise<Response> {
     method: 'POST',
     headers: { Authorization: `Bearer ${t}`, 'Content-Type': 'application/json', 'PayPal-Request-Id': `lwc-${orderID}` },
   })
-  const d = (await r.json()) as { status?: string; purchase_units?: { payments?: { captures?: { status?: string; amount?: { value?: string; currency_code?: string } }[] } }[] }
+  const d = (await r.json()) as { status?: string; purchase_units?: { reference_id?: string; payments?: { captures?: { status?: string; amount?: { value?: string; currency_code?: string } }[] } }[] }
   const cap = d.purchase_units?.[0]?.payments?.captures?.[0]
-  // solo se confirma si PayPal capturó exactamente US$ 1.00
-  if (!(d.status === 'COMPLETED' && cap?.status === 'COMPLETED' && cap.amount?.value === PRICE && cap.amount?.currency_code === CURRENCY)) return json(env, req, { ok: false, error: 'not-paid' }, 402)
-  const token = await sign(env, { o: orderID, exp: Date.now() + 24 * 3600 * 1000 })
-  return json(env, req, { ok: true, receipt: orderID, token })
+  const prod = PRODUCTS[d.purchase_units?.[0]?.reference_id ?? '']
+  // solo se confirma si PayPal capturó exactamente el precio del producto
+  if (!(prod && d.status === 'COMPLETED' && cap?.status === 'COMPLETED' && cap.amount?.value === prod.usd && cap.amount?.currency_code === CURRENCY)) return json(env, req, { ok: false, error: 'not-paid' }, 402)
+  const token = await sign(env, { o: orderID, c: prod.credits, exp: Date.now() + 24 * 3600 * 1000 })
+  return json(env, req, { ok: true, receipt: orderID, credits: prod.credits, token })
 }
 
 export default {

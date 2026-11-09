@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { PAYMENTS_LIVE, PAYMENT_API, PAYPAL_CLIENT_ID, PRICE_USD, pay, saveReceipt } from '../engine/payment'
+import { PAYMENTS_LIVE, PAYMENT_API, PAYPAL_CLIENT_ID, PRODUCTS, pay, saveReceipt, type ProductId } from '../engine/payment'
 
 declare global { interface Window { paypal?: { Buttons: (o: unknown) => { render: (el: HTMLElement) => Promise<void>; close: () => void } } } }
 
@@ -13,7 +13,8 @@ const loadSdk = () => (sdk ??= new Promise<void>((res, rej) => {
 }))
 
 // Botón de pago: real con PayPal si está configurado; si no, pago simulado de demostración.
-export function PayBox({ what, onPaid, disabled }: { what: string; onPaid: (receiptId: string) => void; disabled?: boolean }) {
+export function PayBox({ what, product, onPaid, disabled }: { what: string; product: ProductId; onPaid: (receiptId: string, credits: number) => void; disabled?: boolean }) {
+  const prod = PRODUCTS.find((p) => p.id === product)!
   const ref = useRef<HTMLDivElement>(null)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
@@ -28,7 +29,7 @@ export function PayBox({ what, onPaid, disabled }: { what: string; onPaid: (rece
       const b = window.paypal.Buttons({
         style: { layout: 'vertical', shape: 'rect', label: 'pay' },
         createOrder: async () => {
-          const r = await fetch(`${PAYMENT_API}/api/order`, { method: 'POST' })
+          const r = await fetch(`${PAYMENT_API}/api/order`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product }) })
           const d = (await r.json()) as { ok: boolean; id?: string }
           if (!d.ok || !d.id) throw new Error('order')
           return d.id
@@ -36,11 +37,11 @@ export function PayBox({ what, onPaid, disabled }: { what: string; onPaid: (rece
         onApprove: async (data: { orderID: string }) => {
           setBusy(true)
           const r = await fetch(`${PAYMENT_API}/api/capture`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderID: data.orderID }) })
-          const d = (await r.json()) as { ok: boolean; receipt?: string }
+          const d = (await r.json()) as { ok: boolean; receipt?: string; credits?: number }
           setBusy(false)
           if (!d.ok || !d.receipt) { setErr('El pago no pudo confirmarse. Si PayPal te cobró, escríbenos con el número de orden: ' + data.orderID); return }
           saveReceipt(d.receipt, what, false)
-          paid.current(d.receipt)
+          paid.current(d.receipt, d.credits ?? prod.credits)
         },
         onCancel: () => setErr('Cancelaste el pago. No se cobró nada.'),
         onError: () => setErr('No se pudo iniciar el pago. Intenta de nuevo.'),
@@ -49,21 +50,21 @@ export function PayBox({ what, onPaid, disabled }: { what: string; onPaid: (rece
       void b.render(ref.current)
     }).catch(() => setErr('No se pudo cargar PayPal. Revisa tu conexión e intenta de nuevo.'))
     return () => { dead = true; btn?.close() }
-  }, [what])
+  }, [what, product])
 
   if (!PAYMENTS_LIVE) {
     return (
       <>
         <p className="note warn">Modo de demostración: no se cobra nada ni se piden datos de tarjeta.</p>
-        <button className="btn pri" disabled={busy || disabled} onClick={async () => { setBusy(true); const r = await pay(what); setBusy(false); paid.current(r.id) }}>
-          {busy ? 'Procesando pago…' : `Pagar US$ ${PRICE_USD}.00 (simulado)`}
+        <button className="btn pri" disabled={busy || disabled} onClick={async () => { setBusy(true); const r = await pay(what); setBusy(false); paid.current(r.id, prod.credits) }}>
+          {busy ? 'Procesando pago…' : `Pagar US$ ${prod.usd}.00 (simulado)`}
         </button>
       </>
     )
   }
   return (
     <>
-      <p className="small muted">Pago seguro con PayPal (tarjeta o cuenta PayPal). Esta web no ve ni guarda tus datos de pago. Total: US$ {PRICE_USD}.00.</p>
+      <p className="small muted">Pago seguro con PayPal (tarjeta o cuenta PayPal). Esta web no ve ni guarda tus datos de pago. Total: US$ {prod.usd}.00 por {prod.name.toLowerCase()}.</p>
       <div ref={ref} aria-busy={busy} style={{ minHeight: 48, maxWidth: 360 }} />
       {busy && <p className="small muted">Confirmando el pago…</p>}
       {err && <p className="note warn">{err}</p>}

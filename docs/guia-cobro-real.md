@@ -35,3 +35,7 @@ Con la cuenta verificada: crea la app **Live** en PayPal, cambia `PAYPAL_ENV = "
 ## Limitación honesta
 La simulación corre en el navegador (sitio estático). El pago se confirma en el servidor, pero alguien con conocimientos podría saltarse el cobro modificando el código en su equipo. Para cerrar eso del todo habría que ejecutar la simulación en el servidor.
 Además, con US$ 1 las comisiones fijas de PayPal se llevan una parte grande del cobro.
+
+## Precios y paquetes
+Los productos están en `worker/src/index.ts` (`PRODUCTS`) y se muestran desde `src/engine/payment.ts`. Hoy: 1 mundial US$ 1, pack de 5 por US$ 3 y pack de 10 por US$ 5. El servidor valida siempre el precio real; si cambias uno, cámbialo en los dos archivos y vuelve a ejecutar `npx wrangler deploy` desde `worker/`.
+El saldo de mundiales se guarda en el navegador del comprador (se pierde si borra los datos del sitio).

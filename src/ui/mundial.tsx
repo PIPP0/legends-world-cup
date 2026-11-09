@@ -6,12 +6,38 @@ import { drawGroups, newAlt, runAll } from '../engine/model'
 import { startExperience } from './pending'
 import { explain } from '../engine/explain'
 import { MAX_PRIMES, PRIME_BOOST, adjustments, loadHistory } from '../engine/world'
-import { PRICE_USD } from '../engine/payment'
+import { PRICE_USD, PRODUCTS, type ProductId } from '../engine/payment'
+import { addCredits, consumeCredit, getBalance } from '../engine/credits'
 import { PayBox } from './paybox'
 import { Avatar, Flag, Section, useApp } from './common'
 import { BracketView } from './pages4'
 import { GroupResults, WorldSummary, newSeed } from './world'
 import type { AltTournament, WorldConfig } from '../types'
+
+function PaySection({ what, onGo, disabled }: { what: string; onGo: (receipt: string) => void; disabled?: boolean }) {
+  const [product, setProduct] = useState<ProductId>('pack5')
+  const [bal, setBal] = useState(getBalance)
+  return (
+    <>
+      {bal > 0 && (
+        <div className="note">
+          Tienes <b>{bal}</b> mundial{bal > 1 ? 'es' : ''} disponible{bal > 1 ? 's' : ''}.{' '}
+          <button className="btn pri" disabled={disabled} onClick={() => { if (consumeCredit()) { setBal(getBalance()); onGo('credito') } }}>Usar 1 mundial y jugar</button>
+        </div>
+      )}
+      <p className="small muted">{bal > 0 ? 'O compra más:' : 'Elige cuántos mundiales quieres:'}</p>
+      <div className="chips">
+        {PRODUCTS.map((p) => (
+          <button key={p.id} className={`chip ${product === p.id ? 'on' : ''}`} onClick={() => setProduct(p.id)}>
+            <b>US$ {p.usd}</b><span>{p.name}{p.credits > 1 ? ` · US$ ${(p.usd / p.credits).toFixed(2)} c/u` : ''}</span>
+          </button>
+        ))}
+      </div>
+      <PayBox what={`${what} · ${PRODUCTS.find((p) => p.id === product)!.name}`} product={product} disabled={disabled}
+        onPaid={(receipt, credits) => { addCredits(receipt, credits); if (consumeCredit()) { setBal(getBalance()); onGo(receipt) } }} />
+    </>
+  )
+}
 
 type Climate = NonNullable<WorldConfig['climate']>
 const CLIMATES: [Climate, string, string][] = [['normal', 'Normal', 'Lo típico de la época'], ['calor', 'Ola de calor', '+6 °C'], ['lluvia', 'Año lluvioso', 'El doble de lluvia'], ['frio', 'Año frío', '−6 °C']]
@@ -144,13 +170,13 @@ export function Mundial() {
               <label className="seed">Formato <select value={mode} onChange={(e) => setMode(e.target.value as 'octavos' | 'completo')}><option value="completo">Mundial completo</option><option value="octavos">Desde octavos</option></select></label>
               <label className="seed">Semilla <input value={seed} onChange={(e) => setSeed(e.target.value)} /></label>
             </div>
-            <PayBox what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onPaid={go} disabled={paying} />
+            <PaySection what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onGo={go} disabled={paying} />
           </>
         )}
 
         <div className="cta wiz">
           <button className="btn ghost" disabled={step === 0} onClick={() => setStep(step - 1)}>Atrás</button>
-          {step < 4 && <button className="btn hot" disabled={!host} onClick={() => setQuick(true)} title="Paga y simula con lo que ya elegiste">⚡ Pagar US$ {PRICE_USD}.00 y jugar ya</button>}
+          {step < 4 && <button className="btn hot" disabled={!host} onClick={() => setQuick(true)} title="Paga y simula con lo que ya elegiste">⚡ Pagar desde US$ {PRICE_USD}.00 y jugar ya</button>}
           {step < 4 && <button className="btn pri" disabled={!canNext} onClick={() => setStep(step + 1)}>{step === 3 && primes.length === 0 ? 'Omitir' : 'Siguiente'}</button>}
         </div>
         {step === 0 && !host && <p className="small muted center">Elige un país sede para continuar o para pagar de una vez.</p>}
@@ -163,10 +189,10 @@ export function Mundial() {
               <li>Sede: <b>{host.name}</b>{host.teamId && ` (${TEAM_BY_ID[host.teamId].name} juega de local)`}</li>
               <li>Fecha: <b>{MONTHS[month - 1]}</b> · clima: <b>{CLIMATES.find((c) => c[0] === climate)![1]}</b></li>
               <li>Leyendas en su prime: <b>{primes.length ? primes.map((id) => PLAYERS.find((p) => p.id === id)!.name).join(', ') : 'ninguna'}</b></li>
-              <li>Total: <b>US$ {PRICE_USD}.00</b></li>
+              
             </ul>
             <p className="small muted">Lo que no elegiste usa valores por defecto. Puedes cerrar y personalizar fecha, clima y leyendas antes de pagar.</p>
-            <PayBox what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onPaid={go} disabled={paying} />
+            <PaySection what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onGo={go} disabled={paying} />
             <div className="cta"><button className="btn ghost" disabled={paying} onClick={() => setQuick(false)}>Personalizar</button></div>
           </div>
         </div>

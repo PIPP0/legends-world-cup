@@ -5,6 +5,13 @@
 export const PAYPAL_CLIENT_ID = (import.meta.env.VITE_PAYPAL_CLIENT_ID as string | undefined) ?? ''
 export const PAYMENT_API = ((import.meta.env.VITE_PAYMENT_API as string | undefined) ?? '').replace(/\/$/, '')
 export const PAYMENTS_LIVE = Boolean(PAYPAL_CLIENT_ID && PAYMENT_API)
+// Productos (el servidor valida el precio real; esto es solo para mostrar). Mantén los mismos precios en worker/src/index.ts.
+export const PRODUCTS = [
+  { id: 'uno', credits: 1, usd: 1, name: '1 mundial' },
+  { id: 'pack5', credits: 5, usd: 3, name: 'Pack de 5 mundiales' },
+  { id: 'pack10', credits: 10, usd: 5, name: 'Pack de 10 mundiales' },
+] as const
+export type ProductId = (typeof PRODUCTS)[number]['id']
 export const PRICE_USD = 1
 export interface Receipt { id: string; amountUsd: number; at: string; simulated: boolean; what: string }
 
