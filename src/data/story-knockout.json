@@ -1,5 +1,5 @@
 {
- "version": 5,
+ "version": 6,
  "seed": "historia-oficial-1",
  "bracket": {
   "r16": [
@@ -500,10 +500,10 @@
    "round": "third",
    "a": "fra",
    "b": "arg",
-   "ga": 4,
+   "ga": 2,
    "gb": 2,
-   "et": false,
-   "winner": "fra",
+   "et": true,
+   "winner": "arg",
    "goals": [
     {
      "minute": 29,
@@ -525,25 +525,15 @@
      "phase": "reg"
     },
     {
-     "minute": 49,
-     "teamId": "fra",
-     "scorerId": "fra-thierry-henry",
-     "phase": "reg",
-     "assistId": "fra-lilian-thuram"
-    },
-    {
      "minute": 51,
      "teamId": "arg",
      "scorerId": "arg-fernando-redondo",
      "phase": "reg"
-    },
-    {
-     "minute": 51,
-     "teamId": "fra",
-     "scorerId": "fra-thierry-henry",
-     "phase": "reg",
-     "assistId": "fra-patrick-vieira"
     }
+   ],
+   "pens": [
+    4,
+    5
    ]
   },
   "final": {
@@ -551,48 +541,20 @@
    "round": "final",
    "a": "bra",
    "b": "esp",
-   "ga": 2,
-   "gb": 3,
-   "et": true,
-   "winner": "esp",
+   "ga": 1,
+   "gb": 0,
+   "et": false,
+   "winner": "bra",
    "goals": [
     {
-     "minute": 24,
-     "teamId": "esp",
-     "scorerId": "esp-andres-iniesta",
-     "phase": "reg",
-     "assistId": "esp-xavi-hernandez"
-    },
-    {
-     "minute": 34,
+     "minute": 67,
      "teamId": "bra",
-     "scorerId": "bra-garrincha",
+     "scorerId": "bra-pele",
      "phase": "reg"
-    },
-    {
-     "minute": 54,
-     "teamId": "esp",
-     "scorerId": "esp-david-villa",
-     "phase": "reg",
-     "assistId": "esp-jordi-alba"
-    },
-    {
-     "minute": 86,
-     "teamId": "bra",
-     "scorerId": "bra-garrincha",
-     "phase": "reg",
-     "assistId": "bra-ronaldinho"
-    },
-    {
-     "minute": 113,
-     "teamId": "esp",
-     "scorerId": "esp-david-villa",
-     "phase": "et",
-     "assistId": "esp-cesc-fabregas"
     }
    ]
   },
-  "champion": "esp"
+  "champion": "bra"
  },
  "ediciones": [
   {
@@ -610,6 +572,10 @@
   {
    "que": "Semifinal 1 definida por el autor: Brasil 2-1 Francia. Brasil pasa a la final (ante España, 2-3 en prórroga: se conserva el marcador anterior); Francia juega el tercer puesto ante Argentina (4-2 para Francia: se conserva el marcador anterior). Campeón: España.",
    "goles": "Brasil: 30' y 75' (jugadores por sorteo de semilla fija); gol de Francia conservado"
+  },
+  {
+   "que": "Tercer puesto definido por el autor: Francia 2-2 Argentina, gana Argentina por penales (4-5, valor elegido). Final definida por el autor: Brasil 1-0 España, gol de Pelé (minuto 67 elegido, sin asistencia). Campeón: Brasil.",
+   "goles": "final: Pelé 67'"
   }
  ]
 }
