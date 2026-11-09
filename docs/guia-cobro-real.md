@@ -13,6 +13,9 @@ Esta guía NO es asesoría legal ni tributaria: confirma los pasos con el SII o 
 1. En developer.paypal.com crea una app en **Sandbox** y copia el *Client ID* (público) y el *Secret* (secreto).
 2. Cuentas de prueba (comprador y vendedor) las crea PayPal en el mismo panel.
 
+## Atajo: un solo comando
+Cuando tengas el Client ID y el Secret de la app de PayPal, ejecuta `bash worker/configurar.sh sandbox` (pruebas) o `bash worker/configurar.sh live` (dinero real). Hace los pasos 3 y 4 solo; el Secret lo pegas en tu terminal.
+
 ## 3) Worker de Cloudflare
 Desde la carpeta `worker/`:
 - `npx wrangler login`
