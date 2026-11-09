@@ -105,7 +105,7 @@ function TeamSelect({ value, onChange, label }: { value: string; onChange: (v: s
   return <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}>{[...TEAMS].sort((a, b) => a.name.localeCompare(b.name)).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
 }
 
-export function LiveReplay({ a, b, res, onSkip, onDone }: { a: string; b: string; res: ReturnType<typeof simulateMatch>; onSkip: () => void; onDone?: () => void }) {
+export function LiveReplay({ a, b, res, onSkip, onDone, winLabel }: { a: string; b: string; res: ReturnType<typeof simulateMatch>; onSkip: () => void; onDone?: () => void; winLabel?: string }) {
   const end = res.et ? 120 : 90
   const [min, setMin] = useState(0)
   useEffect(() => {
@@ -132,7 +132,8 @@ export function LiveReplay({ a, b, res, onSkip, onDone }: { a: string; b: string
       <div className="lv-prog"><i style={{ width: `${(min / end) * 100}%` }} /></div>
       {flash && <div className="lv-goal" key={last.minute + last.scorerId}>¡GOL! {PLAYER_BY_ID[last.scorerId].name} · {TEAM_BY_ID[last.teamId].name} · {last.minute}'</div>}
       <Events goals={shown} home={a} away={b} />
-      {done && res.pens && <p className="center">Penales {res.pens[0]}–{res.pens[1]} · avanza <b>{TEAM_BY_ID[res.winner!].name}</b></p>}
+      {done && !winLabel && res.pens && <p className="center">Penales {res.pens[0]}–{res.pens[1]} · avanza <b>{TEAM_BY_ID[res.winner!].name}</b></p>}
+      {done && winLabel && res.winner && <p className="center">{res.pens ? `Penales ${res.pens[0]}–${res.pens[1]} · ` : res.et ? 'Tras la prórroga · ' : ''}<b>{TEAM_BY_ID[res.winner].name}</b> {winLabel}</p>}
       {!done && <button className="btn ghost" onClick={() => { setMin(end); onSkip() }}>Saltar al final</button>}
     </div>
   )
