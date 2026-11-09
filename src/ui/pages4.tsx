@@ -5,6 +5,7 @@ import { DECLARED_R16 } from '../data/raw'
 import { emptyBracket, nextPhase, advance, runAll, newAlt, DEFAULT_PARAMS, probabilities, profile, strengthRank, championOdds, simulateMatch } from '../engine/model'
 import { declaredStats, statsFromEvents, teamStats, type PlayerStat } from '../engine/stats'
 import { makeRng } from '../engine/rng'
+import { explain } from '../engine/explain'
 import { validate } from '../engine/validate'
 import { Avatar, Bar, Flag, Note, ProbBar, Section, Tabs, TeamLink, useApp, useLocalState } from './common'
 import { Events, KoCard } from './blocks'
@@ -144,6 +145,7 @@ function FreeMatch() {
   const [live, setLive] = useState(false)
   const pr = probabilities(a, b, params)
   const A = profile(a, params), B = profile(b, params)
+  const ex = a !== b ? explain(a, b, params, res ?? undefined) : null
   const comps: [string, 'quality' | 'balance' | 'attack' | 'defense' | 'experience'][] = [['Calidad', 'quality'], ['Equilibrio', 'balance'], ['Ataque', 'attack'], ['Defensa', 'defense'], ['Experiencia', 'experience']]
   const run = (s: string) => setRes(simulateMatch(a, b, makeRng(s), params, ko))
   const again = () => { const s = `${seed}#${n + 1}`; setN(n + 1); setLive(true); run(s) }
@@ -161,6 +163,15 @@ function FreeMatch() {
             <div key={k} className="cmp"><b className={A[k] >= B[k] ? 'win' : ''}>{A[k].toFixed(1)}</b><span>{l}</span><b className={B[k] >= A[k] ? 'win' : ''}>{B[k].toFixed(1)}</b></div>
           ))}</div>
           <div className="two">{[a, b].map((id) => <div key={id}><h4 className="sub"><TeamLink id={id} /></h4><ol className="xi">{TEAM_BY_ID[id].xi.map((p) => <li key={p.id}><a href={`#/jugador/${p.id}`}>{p.name}</a><b>{p.ovr}</b></li>)}</ol></div>)}</div>
+          {ex && (
+            <div className="predict">
+              <h4>Predicción del modelo</h4>
+              <p className="pscore"><Flag id={a} size={28} /> {TEAM_BY_ID[a].name} <b>{ex.modal.ga}–{ex.modal.gb}</b> {TEAM_BY_ID[b].name} <Flag id={b} size={28} /></p>
+              <p className="small muted">Marcador más probable. Goles esperados: {ex.expected[0].toFixed(1)} – {ex.expected[1].toFixed(1)}. Favorito: <b>{TEAM_BY_ID[ex.favorite].name}</b> ({Math.round(ex.favP * 100)} % de ganar en 90 min).</p>
+              <ul className="why">{ex.reasons.slice(0, 4).map((r, i) => <li key={i}>{r}</li>)}</ul>
+            </div>
+          )}
+          <p className="small muted">Abajo puedes <b>simular un partido con azar</b>: el favorito gana más veces, pero a veces hay sorpresas, como en el fútbol real.</p>
           <div className="cta"><button className="btn pri" onClick={() => { setN(0); setLive(true); run(seed) }}>Ver en vivo</button><button className="btn" onClick={() => { setN(0); setLive(false); run(seed) }}>Resultado directo</button><button className="btn" onClick={again} disabled={!res}>Repetir partido</button></div>
           {res && live && <LiveReplay key={`${seed}-${n}-${a}-${b}`} a={a} b={b} res={res} onSkip={() => setLive(false)} />}
           {res && !live && (
@@ -170,6 +181,13 @@ function FreeMatch() {
               {res.et && !res.pens && <p className="center muted">Definido en la prórroga</p>}
               {res.winner && <p className="center">Avanza: <b>{TEAM_BY_ID[res.winner].name}</b></p>}
               <Events goals={res.goals} home={a} away={b} />
+              {ex && (
+                <div className="why-box">
+                  <h4>¿Por qué este resultado? <span className={`tag ${ex.verdict}`}>{ex.verdict === 'sorpresa' ? 'Sorpresa' : ex.verdict === 'esperado' ? 'Esperado' : 'Parejo'}</span></h4>
+                  <p>{ex.verdictText}</p>
+                  <ul className="why">{ex.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
+                </div>
+              )}
               <p className="small muted">Resultado ficticio generado por el modelo con la semilla «{n ? `${seed}#${n}` : seed}». Las mismas semilla y parámetros dan siempre el mismo resultado.</p>
             </div>
           )}

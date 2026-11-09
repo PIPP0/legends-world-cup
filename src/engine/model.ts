@@ -5,10 +5,11 @@ import type { AltTournament, Bracket, Goal, KoMatch, Match, ModelParams, Player,
 
 export const DEFAULT_PARAMS: ModelParams = {
   weights: { quality: 0.3, balance: 0.25, attack: 0.2, defense: 0.15, experience: 0.1 },
-  goalBase: 1.3,
-  sensitivity: 0.04,
+  // Calibrado con los 48 resultados oficiales de grupos (máxima verosimilitud + error de Brier): ver scripts/calibrar.ts
+  goalBase: 1.25,
+  sensitivity: 0.07,
   matchup: 0.5,
-  variance: 0.08,
+  variance: 0.06,
 }
 
 const FORMATION_RISK: Record<string, number> = { '4-3-3': 0, '4-2-3-1': 0, '4-4-2': 1, '4-3-1-2': 1.5, '4-2-4': 5 }
@@ -61,7 +62,7 @@ export function lambdas(a: string, b: string, params: ModelParams): [number, num
   return [cl(params.goalBase * Math.exp(ex(A, B))), cl(params.goalBase * Math.exp(ex(B, A)))]
 }
 
-const pois = (k: number, l: number) => { let f = 1; for (let i = 2; i <= k; i++) f *= i; return Math.exp(-l) * l ** k / f }
+export const pois = (k: number, l: number) => { let f = 1; for (let i = 2; i <= k; i++) f *= i; return Math.exp(-l) * l ** k / f }
 
 export function probabilities(a: string, b: string, params: ModelParams) {
   const [la, lb] = lambdas(a, b, params)
@@ -72,6 +73,17 @@ export function probabilities(a: string, b: string, params: ModelParams) {
   }
   const t = win + draw + loss
   return { win: win / t, draw: draw / t, loss: loss / t, expA: la, expB: lb }
+}
+
+// Marcador más probable (moda de la distribución conjunta de Poisson) y matriz de marcadores.
+export function modalScore(a: string, b: string, params: ModelParams) {
+  const [la, lb] = lambdas(a, b, params)
+  let best = { ga: 0, gb: 0, p: -1 }
+  for (let i = 0; i <= 8; i++) for (let j = 0; j <= 8; j++) {
+    const p = pois(i, la) * pois(j, lb)
+    if (p > best.p) best = { ga: i, gb: j, p }
+  }
+  return best
 }
 
 function assignGoals(team: Team, n: number, rng: Rng, minuteMax: number, minuteMin: number, phase: 'reg' | 'et'): Goal[] {

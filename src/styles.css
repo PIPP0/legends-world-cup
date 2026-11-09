@@ -293,3 +293,12 @@ footer .logo{margin-bottom:10px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 .credits td,.credits th{font-size:12px;padding:6px 8px}.credits a{color:var(--cy);text-decoration:underline}
+
+.predict,.why-box{margin:14px 0;padding:16px 18px;background:var(--s1);border:1px solid var(--line);border-left:4px solid var(--cy);border-radius:var(--r)}
+.predict h4,.why-box h4{font:800 18px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.04em;margin:0 0 8px;color:var(--cy)}
+.pscore{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:800 22px 'Barlow Condensed';text-transform:uppercase;margin:4px 0}
+.pscore b{font-size:34px;color:var(--pk)}
+.why{margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.5;color:#c9d6f2}
+.why li{margin:4px 0}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;color:#04101c}
+.tag.sorpresa{background:var(--pk)}.tag.esperado{background:var(--cy)}.tag.parejo{background:var(--gold)}
