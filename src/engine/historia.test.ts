@@ -33,6 +33,13 @@ describe('eliminatorias congeladas', () => {
       ['esp', 'por', 3, 3, 'esp', [5, 4]],
     ])
   })
+  it('semifinal 1 definida por el autor: Brasil 2-1 Francia; el cuadro sigue coherente', () => {
+    const s1 = b.sf[0]
+    expect([s1.a, s1.b, s1.ga, s1.gb, s1.winner]).toEqual(['bra', 'fra', 2, 1, 'bra'])
+    expect([b.final.a, b.final.b]).toEqual(['bra', 'esp'])
+    expect([b.third.a, b.third.b, b.third.winner]).toEqual(['fra', 'arg', 'fra'])
+    expect(b.champion).toBe('esp')
+  })
   it('cada partido está completo y es coherente', () => {
     for (const m of all) {
       expect(m.a && m.b && m.winner).toBeTruthy()
