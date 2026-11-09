@@ -150,7 +150,7 @@ export function Bracket() {
   const empezar = () => { setListo(false); setJugando(true); window.scrollTo(0, 0) }
   const terminar = () => { const antes = nivel; setJugando(false); setListo(false); setLevel(antes + 1); setSkip(0); setAnim({ from: antes, to: antes + 1, key: Date.now() }); window.scrollTo(0, 0) }
   const finAnim = useRef(() => { setAnim(null); try { sessionStorage.setItem('lwc:historia:anim', '1') } catch { /* sin almacenamiento */ } }).current
-  const repetir = () => { setSkip(0); setAnim({ from: 0, to: 4, key: Date.now() }); window.scrollTo(0, 0) }
+  const repetir = () => { if (nivel < 1) return; setSkip(0); setJugando(false); setAnim({ from: 0, to: nivel, key: Date.now() }); window.scrollTo(0, 0) }
   const sub = anim ? 'Así avanza el torneo…' : nivel >= 4 ? 'Historia original: terminó. Estos resultados son los mismos para todas las personas y quedan guardados.'
     : nivel === 0 ? 'Historia original: octavos definidos, aún sin resultados.' : `Historia original: ya se jugaron ${ETAPAS[nivel - 1].juega.toLowerCase()}.`
   return (
@@ -166,8 +166,8 @@ export function Bracket() {
           </div>
         )}
         {!jugando && !anim && nivel < 4 && <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div>}
-        {!jugando && !anim && nivel >= 4 && <div className="cta"><button className="btn ghost" onClick={repetir}>▶ Ver de nuevo cómo avanzó el torneo</button></div>}
-        {anim && <div className="cta"><button className="btn ghost" onClick={() => setSkip((k) => k + 1)}>Saltar animación</button></div>}
+        {!jugando && !anim && nivel >= 1 && <div className="cta"><button className="btn ghost" onClick={repetir}>↺ Reiniciar animación</button></div>}
+        {anim && <div className="cta"><button className="btn ghost" onClick={() => setSkip((k) => k + 1)}>Saltar animación</button><button className="btn ghost" onClick={repetir}>↺ Reiniciar animación</button></div>}
         {!jugando && (anim
           ? <BracketAnimado key={anim.key} full={full} from={anim.from} to={anim.to} speed={600} onEnd={finAnim} skipKey={skip} />
           : <BracketEstatico full={full} level={nivel} />)}
