@@ -4,6 +4,11 @@
 //  · DEMO: si faltan, `pay()` simula el pago sin cobrar nada ni pedir datos.
 export const PAYPAL_CLIENT_ID = (import.meta.env.VITE_PAYPAL_CLIENT_ID as string | undefined) ?? ''
 export const PAYMENT_API = ((import.meta.env.VITE_PAYMENT_API as string | undefined) ?? '').replace(/\/$/, '')
+// Interruptor de cobro: por defecto el mundial es GRATIS y el apoyo es voluntario. Para cobrar, el build necesita VITE_COBRO=on
+// (variable COBRO en GitHub) y la configuración de PayPal de más abajo. No actives el cobro sin haber resuelto lo tributario.
+export const COBRO_ACTIVO = (import.meta.env.VITE_COBRO as string | undefined) === 'on'
+// Enlace público de apoyo voluntario (Ko-fi, PayPal.me, etc.). Variable DONATE_URL en GitHub. Si está vacío, no se muestra el botón.
+export const DONATE_URL = ((import.meta.env.VITE_DONATE_URL as string | undefined) ?? '').trim()
 export const PAYMENTS_LIVE = Boolean(PAYPAL_CLIENT_ID && PAYMENT_API)
 // Productos (el servidor valida el precio real; esto es solo para mostrar). Mantén los mismos precios en worker/src/index.ts.
 export const PRODUCTS = [

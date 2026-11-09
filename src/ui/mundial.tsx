@@ -6,9 +6,9 @@ import { drawGroups, newAlt, runAll } from '../engine/model'
 import { startExperience } from './pending'
 import { explain } from '../engine/explain'
 import { MAX_PRIMES, PRIME_BOOST, adjustments, loadHistory } from '../engine/world'
-import { PRICE_USD, PRODUCTS, type ProductId } from '../engine/payment'
+import { COBRO_ACTIVO, PRICE_USD, PRODUCTS, type ProductId } from '../engine/payment'
 import { addCredits, consumeCredit, getBalance } from '../engine/credits'
-import { PayBox } from './paybox'
+import { DonateBox, PayBox } from './paybox'
 import { Avatar, Flag, Section, useApp } from './common'
 import { BracketView } from './pages4'
 import { GroupResults, WorldSummary, newSeed } from './world'
@@ -41,7 +41,7 @@ function PaySection({ what, onGo, disabled }: { what: string; onGo: (receipt: st
 
 type Climate = NonNullable<WorldConfig['climate']>
 const CLIMATES: [Climate, string, string][] = [['normal', 'Normal', 'Lo típico de la época'], ['calor', 'Ola de calor', '+6 °C'], ['lluvia', 'Año lluvioso', 'El doble de lluvia'], ['frio', 'Año frío', '−6 °C']]
-const STEPS = ['Sede', 'Fecha', 'Clima', 'Leyendas en su prime', 'Pagar y jugar']
+const STEPS = ['Sede', 'Fecha', 'Clima', 'Leyendas en su prime', COBRO_ACTIVO ? 'Pagar y jugar' : 'Jugar']
 
 export function Mundial() {
   const { params } = useApp()
@@ -170,18 +170,20 @@ export function Mundial() {
               <label className="seed">Formato <select value={mode} onChange={(e) => setMode(e.target.value as 'octavos' | 'completo')}><option value="completo">Mundial completo</option><option value="octavos">Desde octavos</option></select></label>
               <label className="seed">Semilla <input value={seed} onChange={(e) => setSeed(e.target.value)} /></label>
             </div>
-            <PaySection what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onGo={go} disabled={paying} />
+            {COBRO_ACTIVO
+              ? <PaySection what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onGo={go} disabled={paying} />
+              : <><div className="cta"><button className="btn pri" disabled={paying} onClick={() => go('gratis')}>▶ Jugar este mundial (gratis)</button></div><DonateBox /></>}
           </>
         )}
 
         <div className="cta wiz">
           <button className="btn ghost" disabled={step === 0} onClick={() => setStep(step - 1)}>Atrás</button>
-          {step < 4 && <button className="btn hot" disabled={!host} onClick={() => setQuick(true)} title="Paga y simula con lo que ya elegiste">⚡ Pagar desde US$ {PRICE_USD}.00 y jugar ya</button>}
+          {step < 4 && <button className="btn hot" disabled={!host} onClick={() => (COBRO_ACTIVO ? setQuick(true) : go('gratis'))} title={COBRO_ACTIVO ? 'Paga y simula con lo que ya elegiste' : 'Simula con lo que ya elegiste'}>{COBRO_ACTIVO ? `⚡ Pagar desde US$ ${PRICE_USD}.00 y jugar ya` : '⚡ Jugar ya (gratis)'}</button>}
           {step < 4 && <button className="btn pri" disabled={!canNext} onClick={() => setStep(step + 1)}>{step === 3 && primes.length === 0 ? 'Omitir' : 'Siguiente'}</button>}
         </div>
         {step === 0 && !host && <p className="small muted center">Elige un país sede para continuar o para pagar de una vez.</p>}
       </Section>
-      {quick && host && (
+      {COBRO_ACTIVO && quick && host && (
         <div className="modal-bg" role="dialog" aria-modal="true" aria-label="Pago rápido simulado" onClick={() => !paying && setQuick(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Pago rápido</h3>
@@ -213,6 +215,7 @@ export function Reveal({ t, onAgain }: { t: AltTournament; onAgain: () => void }
         <WorldSummary alt={t} />
         <p className="center">Final: <b>{TEAM_BY_ID[f.a!].name} {f.ga}–{f.gb} {TEAM_BY_ID[f.b!].name}</b>{f.pens ? ` (penales ${f.pens[0]}–${f.pens[1]})` : f.et ? ' (prórroga)' : ''}</p>
         <div className="why-box"><h4>¿Qué influyó en la final?</h4><p>{why.verdictText}</p><ul className="why">{why.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul></div>
+        {!COBRO_ACTIVO && <DonateBox />}
         <div className="cta"><button className="btn pri" onClick={onAgain}>Simular otro mundial</button><a className="btn" href="#/cuadro">Ver en Eliminatorias</a></div>
       </Section>
       <Section title="Cuadro"><BracketView view="alt" /></Section>

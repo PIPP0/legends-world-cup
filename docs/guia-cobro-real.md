@@ -1,5 +1,11 @@
 # Cobro real de US$ 1 (PayPal + Cloudflare Worker)
 
+## Interruptores (variables públicas en GitHub → Settings → Secrets and variables → Actions → Variables)
+- **Por defecto (sin variables): el mundial es GRATIS.** No hay pago ni simulación de pago.
+- `DONATE_URL` = enlace público de apoyo voluntario (Ko-fi, PayPal.me…). Con eso aparece el botón «Apoyar (opcional)».
+- `COBRO` = `on` activa el cobro por paquetes (además de PAYPAL_CLIENT_ID y PAYMENT_API). Actívalo solo cuando lo tributario esté resuelto.
+Tras cambiar variables, relanza el despliegue (Actions → Deploy → Run workflow).
+
 La web funciona hoy en **modo demostración** (pago simulado). Pasa a cobro real cuando se cargan dos variables públicas en GitHub.
 Esta guía NO es asesoría legal ni tributaria: confirma los pasos con el SII o un contador.
 

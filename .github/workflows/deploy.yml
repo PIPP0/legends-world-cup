@@ -23,6 +23,8 @@ jobs:
         env:
           VITE_PAYPAL_CLIENT_ID: ${{ vars.PAYPAL_CLIENT_ID }}
           VITE_PAYMENT_API: ${{ vars.PAYMENT_API }}
+          VITE_COBRO: ${{ vars.COBRO }}
+          VITE_DONATE_URL: ${{ vars.DONATE_URL }}
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }
   deploy:
