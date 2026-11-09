@@ -27,6 +27,7 @@ export function Mundial() {
   const [mode, setMode] = useState<'octavos' | 'completo'>('completo')
   const [seed, setSeed] = useState(newSeed)
   const [paying, setPaying] = useState(false)
+  const [quick, setQuick] = useState(false)
   const host = hostId ? HOST_BY_ID[hostId] : null
   const dT = climate === 'calor' ? 6 : climate === 'frio' ? -6 : 0
 
@@ -150,9 +151,30 @@ export function Mundial() {
 
         <div className="cta wiz">
           <button className="btn ghost" disabled={step === 0} onClick={() => setStep(step - 1)}>Atrás</button>
+          {step < 4 && <button className="btn hot" disabled={!host} onClick={() => setQuick(true)} title="Paga y simula con lo que ya elegiste">⚡ Pagar US$ {PRICE_USD}.00 y jugar ya</button>}
           {step < 4 && <button className="btn pri" disabled={!canNext} onClick={() => setStep(step + 1)}>{step === 3 && primes.length === 0 ? 'Omitir' : 'Siguiente'}</button>}
         </div>
+        {step === 0 && !host && <p className="small muted center">Elige un país sede para continuar o para pagar de una vez.</p>}
       </Section>
+      {quick && host && (
+        <div className="modal-bg" role="dialog" aria-modal="true" aria-label="Pago rápido simulado" onClick={() => !paying && setQuick(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Pago rápido</h3>
+            <p className="note warn">Modo de demostración: no se cobra nada ni se piden datos de tarjeta.</p>
+            <ul className="why">
+              <li>Sede: <b>{host.name}</b>{host.teamId && ` (${TEAM_BY_ID[host.teamId].name} juega de local)`}</li>
+              <li>Fecha: <b>{MONTHS[month - 1]}</b> · clima: <b>{CLIMATES.find((c) => c[0] === climate)![1]}</b></li>
+              <li>Leyendas en su prime: <b>{primes.length ? primes.map((id) => PLAYERS.find((p) => p.id === id)!.name).join(', ') : 'ninguna'}</b></li>
+              <li>Total: <b>US$ {PRICE_USD}.00</b></li>
+            </ul>
+            <p className="small muted">Lo que no elegiste usa valores por defecto. Puedes cerrar y personalizar fecha, clima y leyendas antes de pagar.</p>
+            <div className="cta">
+              <button className="btn pri" disabled={paying} onClick={go}>{paying ? 'Procesando pago…' : `Pagar US$ ${PRICE_USD}.00 (simulado)`}</button>
+              <button className="btn ghost" disabled={paying} onClick={() => setQuick(false)}>Personalizar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

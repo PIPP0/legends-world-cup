@@ -4093,5 +4093,453 @@
   "title": "Dennis Bergkamp",
   "license": "CC BY 2.0",
   "author": "Kieran Clarke"
+ },
+ "ned-clarence-seedorf": {
+  "file": "photos/ned-clarence-seedorf.jpg",
+  "page": "https://en.wikipedia.org/wiki/Clarence_Seedorf",
+  "title": "Clarence Seedorf",
+  "license": "CC BY 4.0",
+  "author": "فاطمه عموزاد"
+ },
+ "ned-edgar-davids": {
+  "file": "photos/ned-edgar-davids.jpg",
+  "page": "https://en.wikipedia.org/wiki/Edgar_Davids",
+  "title": "Edgar Davids",
+  "license": "CC BY 2.5",
+  "author": "Paul Blank"
+ },
+ "ned-robin-van-persie": {
+  "file": "photos/ned-robin-van-persie.jpg",
+  "page": "https://en.wikipedia.org/wiki/Robin_van_Persie",
+  "title": "Robin van Persie",
+  "license": "CC BY-SA 3.0",
+  "author": "Елена Рыбакова"
+ },
+ "ned-ruud-van-nistelrooy": {
+  "file": "photos/ned-ruud-van-nistelrooy.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ruud_van_Nistelrooy",
+  "title": "Ruud van Nistelrooy",
+  "license": "CC BY-SA 4.0",
+  "author": "Ardfern"
+ },
+ "ned-marc-overmars": {
+  "file": "photos/ned-marc-overmars.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marc_Overmars",
+  "title": "Marc Overmars",
+  "license": "CC BY-SA 2.0",
+  "author": "David Holt"
+ },
+ "den-kasper-schmeichel": {
+  "file": "photos/den-kasper-schmeichel.jpg",
+  "page": "https://en.wikipedia.org/wiki/Kasper_Schmeichel",
+  "title": "Kasper Schmeichel",
+  "license": "CC BY-SA 4.0",
+  "author": "Hameltion"
+ },
+ "den-thomas-s-rensen": {
+  "file": "photos/den-thomas-s-rensen.jpg",
+  "page": "https://en.wikipedia.org/wiki/Thomas_S%C3%B8rensen",
+  "title": "Thomas Sørensen",
+  "license": "CC BY-SA 4.0",
+  "author": "Jonesy702"
+ },
+ "den-morten-olsen": {
+  "file": "photos/den-morten-olsen.jpg",
+  "page": "https://en.wikipedia.org/wiki/Morten_Olsen",
+  "title": "Morten Olsen",
+  "license": "CC BY 3.0",
+  "author": "Biser Todorov"
+ },
+ "den-jan-heintze": {
+  "file": "photos/den-jan-heintze.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jan_Heintze",
+  "title": "Jan Heintze",
+  "license": "CC0",
+  "author": "Bart Molendijk / Anefo"
+ },
+ "den-jannik-vestergaard": {
+  "file": "photos/den-jannik-vestergaard.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jannik_Vestergaard",
+  "title": "Jannik Vestergaard",
+  "license": "CC0",
+  "author": "Timmy96"
+ },
+ "den-pierre-emile-h-jbjerg": {
+  "file": "photos/den-pierre-emile-h-jbjerg.jpg",
+  "page": "https://en.wikipedia.org/wiki/Pierre-Emile_H%C3%B8jbjerg",
+  "title": "Pierre-Emile Højbjerg",
+  "license": "CC BY-SA 4.0",
+  "author": "Ardfern"
+ },
+ "den-daniel-wass": {
+  "file": "photos/den-daniel-wass.jpg",
+  "page": "https://en.wikipedia.org/wiki/Daniel_Wass",
+  "title": "Daniel Wass",
+  "license": "CC BY-SA 3.0",
+  "author": "Дмитрий Пукалик"
+ },
+ "den-preben-elkj-r": {
+  "file": "photos/den-preben-elkj-r.jpg",
+  "page": "https://en.wikipedia.org/wiki/Preben_Elkj%C3%A6r",
+  "title": "Preben Elkjær",
+  "license": "CC BY-SA 3.0",
+  "author": "Lars Schmidt"
+ },
+ "den-jesper-olsen": {
+  "file": "photos/den-jesper-olsen.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jesper_Olsen",
+  "title": "Jesper Olsen",
+  "license": "CC0",
+  "author": "Marcel Antonisse / Anefo"
+ },
+ "den-jesper-gr-nkj-r": {
+  "file": "photos/den-jesper-gr-nkj-r.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jesper_Gr%C3%B8nkj%C3%A6r",
+  "title": "Jesper Grønkjær",
+  "license": "CC BY-SA 3.0",
+  "author": "Struway"
+ },
+ "chi-sergio-livingstone": {
+  "file": "photos/chi-sergio-livingstone.jpg",
+  "page": "https://en.wikipedia.org/wiki/Sergio_Livingstone",
+  "title": "Sergio Livingstone",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "chi-johnny-herrera": {
+  "file": "photos/chi-johnny-herrera.jpg",
+  "page": "https://en.wikipedia.org/wiki/Johnny_Herrera_(footballer)",
+  "title": "Johnny Herrera (footballer)",
+  "license": "CC BY-SA 4.0",
+  "author": "Carlos Figueroa Rojas"
+ },
+ "chi-mauricio-isla": {
+  "file": "photos/chi-mauricio-isla.jpg",
+  "page": "https://en.wikipedia.org/wiki/Mauricio_Isla",
+  "title": "Mauricio Isla",
+  "license": "CC BY-SA 4.0",
+  "author": "Carlos Figueroa Rojas"
+ },
+ "chi-eladio-rojas": {
+  "file": "photos/chi-eladio-rojas.jpg",
+  "page": "https://en.wikipedia.org/wiki/Eladio_Rojas",
+  "title": "Eladio Rojas",
+  "license": "Public domain",
+  "author": "Desconocido, perteneciente al grupo periodístico gráfico de la revista."
+ },
+ "chi-jean-beausejour": {
+  "file": "photos/chi-jean-beausejour.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jean_Beausejour",
+  "title": "Jean Beausejour",
+  "license": "CC BY-SA 4.0",
+  "author": "Carlos Figueroa"
+ },
+ "chi-gonzalo-jara": {
+  "file": "photos/chi-gonzalo-jara.jpg",
+  "page": "https://en.wikipedia.org/wiki/Gonzalo_Jara_(footballer%2C_born_1985)",
+  "title": "Gonzalo Jara (footballer, born 1985)",
+  "license": "CC BY-SA 3.0",
+  "author": "Дмитрий Садовников"
+ },
+ "chi-carlos-reinoso": {
+  "file": "photos/chi-carlos-reinoso.jpg",
+  "page": "https://en.wikipedia.org/wiki/Carlos_Reinoso",
+  "title": "Carlos Reinoso",
+  "license": "CC BY-SA 2.0",
+  "author": "Los ruidos del deporte"
+ },
+ "chi-jorge-toro": {
+  "file": "photos/chi-jorge-toro.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jorge_Toro",
+  "title": "Jorge Toro",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "chi-marcelo-diaz": {
+  "file": "photos/chi-marcelo-diaz.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marcelo_D%C3%ADaz",
+  "title": "Marcelo Díaz",
+  "license": "CC BY-SA 4.0",
+  "author": "Carlos yo"
+ },
+ "chi-eduardo-vargas": {
+  "file": "photos/chi-eduardo-vargas.jpg",
+  "page": "https://en.wikipedia.org/wiki/Eduardo_Vargas",
+  "title": "Eduardo Vargas",
+  "license": "CC BY-SA 3.0",
+  "author": "Clément Bucco-Lechat"
+ },
+ "chi-mark-gonzalez": {
+  "file": "photos/chi-mark-gonzalez.jpg",
+  "page": "https://en.wikipedia.org/wiki/Mark_Gonz%C3%A1lez",
+  "title": "Mark González",
+  "license": "CC BY-SA 3.0",
+  "author": "Анатолий Карбинов"
+ },
+ "sen-bouna-coundoul": {
+  "file": "photos/sen-bouna-coundoul.jpg",
+  "page": "https://en.wikipedia.org/wiki/Bouna_Coundoul",
+  "title": "Bouna Coundoul",
+  "license": "CC BY-SA 3.0",
+  "author": "F. Vera"
+ },
+ "sen-lamine-diatta": {
+  "file": "photos/sen-lamine-diatta.jpg",
+  "page": "https://en.wikipedia.org/wiki/Lamine_Diatta",
+  "title": "Lamine Diatta",
+  "license": "CC BY-SA 2.0",
+  "author": "manuel on flickr uploaded by latouffedisco"
+ },
+ "sen-saliou-ciss": {
+  "file": "photos/sen-saliou-ciss.jpg",
+  "page": "https://en.wikipedia.org/wiki/Saliou_Ciss",
+  "title": "Saliou Ciss",
+  "license": "CC BY 2.0",
+  "author": "Øyvind Andreassen from Tromsø, Norway"
+ },
+ "sen-kara-mbodji": {
+  "file": "photos/sen-kara-mbodji.jpg",
+  "page": "https://en.wikipedia.org/wiki/Kara_Mbodji",
+  "title": "Kara Mbodji",
+  "license": "CC BY 3.0",
+  "author": "Daniel Schrijvers"
+ },
+ "sen-omar-daf": {
+  "file": "photos/sen-omar-daf.jpg",
+  "page": "https://en.wikipedia.org/wiki/Omar_Daf",
+  "title": "Omar Daf",
+  "license": "Public domain",
+  "author": "@n__dillenseger"
+ },
+ "sen-papa-bouba-diop": {
+  "file": "photos/sen-papa-bouba-diop.jpg",
+  "page": "https://en.wikipedia.org/wiki/Papa_Bouba_Diop",
+  "title": "Papa Bouba Diop",
+  "license": "CC BY-SA 3.0",
+  "author": "Supporterhéninois\n\nFile:Anciens du RCL mai 2014 2.JPG:\nderivative work: Aga"
+ },
+ "sen-salif-diao": {
+  "file": "photos/sen-salif-diao.jpg",
+  "page": "https://en.wikipedia.org/wiki/Salif_Diao",
+  "title": "Salif Diao",
+  "license": "CC BY 2.0",
+  "author": "Ronnie Macdonald"
+ },
+ "sen-nampalys-mendy": {
+  "file": "photos/sen-nampalys-mendy.jpg",
+  "page": "https://en.wikipedia.org/wiki/Nampalys_Mendy",
+  "title": "Nampalys Mendy",
+  "license": "CC0",
+  "author": "Paté kroute"
+ },
+ "sen-mamadou-niang": {
+  "file": "photos/sen-mamadou-niang.jpg",
+  "page": "https://en.wikipedia.org/wiki/Mamadou_Niang",
+  "title": "Mamadou Niang",
+  "license": "CC BY 2.0",
+  "author": "Doha Stadium Plus Qatar"
+ },
+ "sen-demba-ba": {
+  "file": "photos/sen-demba-ba.jpg",
+  "page": "https://en.wikipedia.org/wiki/Demba_Ba",
+  "title": "Demba Ba",
+  "license": "CC BY-SA 4.0",
+  "author": "Ultraslansi"
+ },
+ "por-vitor-baia": {
+  "file": "photos/por-vitor-baia.jpg",
+  "page": "https://en.wikipedia.org/wiki/V%C3%ADtor_Ba%C3%ADa",
+  "title": "Vítor Baía",
+  "license": "CC BY 4.0",
+  "author": "Biser Todorov"
+ },
+ "por-diogo-costa": {
+  "file": "photos/por-diogo-costa.jpg",
+  "page": "https://en.wikipedia.org/wiki/Diogo_Costa",
+  "title": "Diogo Costa",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "por-ricardo-carvalho": {
+  "file": "photos/por-ricardo-carvalho.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ricardo_Carvalho",
+  "title": "Ricardo Carvalho",
+  "license": "CC BY-SA 3.0",
+  "author": "Майоров Владимир"
+ },
+ "por-nuno-mendes": {
+  "file": "photos/por-nuno-mendes.jpg",
+  "page": "https://en.wikipedia.org/wiki/Nuno_Mendes_(footballer%2C_born_2002)",
+  "title": "Nuno Mendes (footballer, born 2002)",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "por-fernando-couto": {
+  "file": "photos/por-fernando-couto.jpg",
+  "page": "https://en.wikipedia.org/wiki/Fernando_Couto",
+  "title": "Fernando Couto",
+  "license": "CC BY-SA 1.0",
+  "author": "Dmitry Parshin"
+ },
+ "por-nelson-semedo": {
+  "file": "photos/por-nelson-semedo.jpg",
+  "page": "https://en.wikipedia.org/wiki/N%C3%A9lson_Semedo",
+  "title": "Nélson Semedo",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "por-rui-costa": {
+  "file": "photos/por-rui-costa.jpg",
+  "page": "https://en.wikipedia.org/wiki/Rui_Costa",
+  "title": "Rui Costa",
+  "license": "CC BY-SA 4.0",
+  "author": "Ser!"
+ },
+ "por-joao-moutinho": {
+  "file": "photos/por-joao-moutinho.png",
+  "page": "https://en.wikipedia.org/wiki/Jo%C3%A3o_Moutinho_(footballer%2C_born_1998)",
+  "title": "João Moutinho (footballer, born 1998)",
+  "license": "CC0",
+  "author": "Robert Stępkowski"
+ },
+ "por-paulo-sousa": {
+  "file": "photos/por-paulo-sousa.jpg",
+  "page": "https://en.wikipedia.org/wiki/Paulo_Sousa",
+  "title": "Paulo Sousa",
+  "license": "CC BY-SA 3.0",
+  "author": "Original:  Ludovic Péron / Derivative work:  Danyele"
+ },
+ "por-paulo-futre": {
+  "file": "photos/por-paulo-futre.jpg",
+  "page": "https://en.wikipedia.org/wiki/Paulo_Futre",
+  "title": "Paulo Futre",
+  "license": "Public domain",
+  "author": "DIARIO AS"
+ },
+ "por-pauleta": {
+  "file": "photos/por-pauleta.jpg",
+  "page": "https://en.wikipedia.org/wiki/Pauleta",
+  "title": "Pauleta",
+  "license": "CC BY-SA 3.0",
+  "author": "Christophe95"
+ },
+ "por-rafael-leao": {
+  "file": "photos/por-rafael-leao.jpg",
+  "page": "https://en.wikipedia.org/wiki/Rafael_Le%C3%A3o",
+  "title": "Rafael Leão",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "pol-jan-tomaszewski": {
+  "file": "photos/pol-jan-tomaszewski.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jan_Tomaszewski",
+  "title": "Jan Tomaszewski",
+  "license": "CC0",
+  "author": "Hans Peters for Anefo"
+ },
+ "pol-artur-boruc": {
+  "file": "photos/pol-artur-boruc.jpg",
+  "page": "https://en.wikipedia.org/wiki/Artur_Boruc",
+  "title": "Artur Boruc",
+  "license": "CC BY-SA 3.0",
+  "author": "Анна Нэсси"
+ },
+ "pol-w-adys-aw-zmuda": {
+  "file": "photos/pol-w-adys-aw-zmuda.jpg",
+  "page": "https://en.wikipedia.org/wiki/W%C5%82adys%C5%82aw_%C5%BBmuda_(born_1954)",
+  "title": "Władysław Żmuda (born 1954)",
+  "license": "CC BY-SA 2.0",
+  "author": "Sławek"
+ },
+ "pol-maciej-rybus": {
+  "file": "photos/pol-maciej-rybus.jpg",
+  "page": "https://en.wikipedia.org/wiki/Maciej_Rybus",
+  "title": "Maciej Rybus",
+  "license": "CC BY-SA 3.0",
+  "author": "Антон Зайцев"
+ },
+ "pol-micha-pazdan": {
+  "file": "photos/pol-micha-pazdan.jpg",
+  "page": "https://en.wikipedia.org/wiki/Micha%C5%82_Pazdan",
+  "title": "Michał Pazdan",
+  "license": "CC BY 3.0",
+  "author": "FootballArt.pl"
+ },
+ "pol-kazimierz-deyna": {
+  "file": "photos/pol-kazimierz-deyna.jpg",
+  "page": "https://en.wikipedia.org/wiki/Kazimierz_Deyna",
+  "title": "Kazimierz Deyna",
+  "license": "CC BY-SA 3.0 nl",
+  "author": "Eric Koch for Anefo     Nationaal Archief, Den Haag, Rijksfotoarchief: Fotocollectie Algemeen Nederlands Fotopersbureau "
+ },
+ "pol-sebastian-mila": {
+  "file": "photos/pol-sebastian-mila.jpg",
+  "page": "https://en.wikipedia.org/wiki/Sebastian_Mila",
+  "title": "Sebastian Mila",
+  "license": "CC BY 3.0",
+  "author": "Roger Gor"
+ },
+ "pol-jacek-krzynowek": {
+  "file": "photos/pol-jacek-krzynowek.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jacek_Krzyn%C3%B3wek",
+  "title": "Jacek Krzynówek",
+  "license": "CC BY-SA 2.0",
+  "author": "Sławek"
+ },
+ "pol-w-odzimierz-lubanski": {
+  "file": "photos/pol-w-odzimierz-lubanski.jpg",
+  "page": "https://en.wikipedia.org/wiki/W%C5%82odzimierz_Luba%C5%84ski",
+  "title": "Włodzimierz Lubański",
+  "license": "CC BY 2.0",
+  "author": "Piotr Drabik"
+ },
+ "pol-andrzej-szarmach": {
+  "file": "photos/pol-andrzej-szarmach.jpg",
+  "page": "https://en.wikipedia.org/wiki/Andrzej_Szarmach",
+  "title": "Andrzej Szarmach",
+  "license": "CC BY-SA 4.0",
+  "author": "Grzegorz Gołębiowski"
+ },
+ "pol-arkadiusz-milik": {
+  "file": "photos/pol-arkadiusz-milik.jpg",
+  "page": "https://en.wikipedia.org/wiki/Arkadiusz_Milik",
+  "title": "Arkadiusz Milik",
+  "license": "CC0",
+  "author": "Supporterhéninois"
+ },
+ "cmr-thomas-n-kono": {
+  "file": "photos/cmr-thomas-n-kono.jpg",
+  "page": "https://en.wikipedia.org/wiki/Thomas_N'Kono",
+  "title": "Thomas N'Kono",
+  "license": "CC BY 3.0",
+  "author": "Elemaki"
+ },
+ "cmr-carlos-kameni": {
+  "file": "photos/cmr-carlos-kameni.jpg",
+  "page": "https://en.wikipedia.org/wiki/Carlos_Kameni",
+  "title": "Carlos Kameni",
+  "license": "CC BY 2.0",
+  "author": "mustapha_ennaimi"
+ },
+ "cmr-lauren": {
+  "file": "photos/cmr-lauren.jpg",
+  "page": "https://en.wikipedia.org/wiki/Lauren_(Cameroonian_footballer)",
+  "title": "Lauren (Cameroonian footballer)",
+  "license": "CC BY-SA 4.0",
+  "author": "Chensiyuan"
+ },
+ "cmr-joel-matip": {
+  "file": "photos/cmr-joel-matip.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jo%C3%ABl_Matip",
+  "title": "Joël Matip",
+  "license": "CC BY-SA 4.0",
+  "author": "Steffen Prößdorf"
+ },
+ "cmr-pierre-wome": {
+  "file": "photos/cmr-pierre-wome.jpg",
+  "page": "https://en.wikipedia.org/wiki/Pierre_Wom%C3%A9",
+  "title": "Pierre Womé",
+  "license": "CC0",
+  "author": "Florian K -&gt;WCW, Florian K -&gt; Wikipedia"
  }
 }
