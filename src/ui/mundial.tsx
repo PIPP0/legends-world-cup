@@ -172,7 +172,7 @@ export function Mundial() {
             </div>
             {COBRO_ACTIVO
               ? <PaySection what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onGo={go} disabled={paying} />
-              : <><div className="cta"><button className="btn pri" disabled={paying} onClick={() => go('gratis')}>▶ Jugar este mundial (gratis)</button></div><DonateBox /></>}
+              : <div className="cta"><button className="btn pri" disabled={paying} onClick={() => go('gratis')}>▶ Jugar este mundial (gratis)</button></div>}
           </>
         )}
 
@@ -181,7 +181,7 @@ export function Mundial() {
           {step < 4 && <button className="btn hot" disabled={!host} onClick={() => (COBRO_ACTIVO ? setQuick(true) : go('gratis'))} title={COBRO_ACTIVO ? 'Paga y simula con lo que ya elegiste' : 'Simula con lo que ya elegiste'}>{COBRO_ACTIVO ? `⚡ Pagar desde US$ ${PRICE_USD}.00 y jugar ya` : '⚡ Jugar ya (gratis)'}</button>}
           {step < 4 && <button className="btn pri" disabled={!canNext} onClick={() => setStep(step + 1)}>{step === 3 && primes.length === 0 ? 'Omitir' : 'Siguiente'}</button>}
         </div>
-        {step === 0 && !host && <p className="small muted center">Elige un país sede para continuar o para pagar de una vez.</p>}
+        {step === 0 && !host && <p className="small muted center">{COBRO_ACTIVO ? 'Elige un país sede para continuar o para pagar de una vez.' : 'Elige un país sede para continuar o para jugar de una vez.'}</p>}
       </Section>
       {COBRO_ACTIVO && quick && host && (
         <div className="modal-bg" role="dialog" aria-modal="true" aria-label="Pago rápido simulado" onClick={() => !paying && setQuick(false)}>
