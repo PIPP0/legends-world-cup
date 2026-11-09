@@ -169,7 +169,7 @@ export function Bracket() {
         {!jugando && !anim && nivel >= 4 && <div className="cta"><button className="btn ghost" onClick={repetir}>▶ Ver de nuevo cómo avanzó el torneo</button></div>}
         {anim && <div className="cta"><button className="btn ghost" onClick={() => setSkip((k) => k + 1)}>Saltar animación</button></div>}
         {!jugando && (anim
-          ? <BracketAnimado key={anim.key} full={full} from={anim.from} to={anim.to} speed={anim.to - anim.from === 4 ? 1500 : 1700} onEnd={finAnim} skipKey={skip} />
+          ? <BracketAnimado key={anim.key} full={full} from={anim.from} to={anim.to} speed={600} onEnd={finAnim} skipKey={skip} />
           : <BracketEstatico full={full} level={nivel} />)}
         {jugando && <BracketEstatico full={full} level={nivel} />}
         <Note>Los resultados de las eliminatorias de la historia original son fijos: se calcularon una sola vez y todas las personas ven los mismos. Cada quien decide cuándo avanzar de fase, y lo que ya reveló queda guardado en su navegador. Cuartos y semifinales siguen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8.</Note>

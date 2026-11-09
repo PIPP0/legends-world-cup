@@ -64,10 +64,10 @@ export function Events({ goals, home, away }: { goals: Goal[]; home: string; awa
 
 import { CtxLine } from './world'
 
-export function KoCard({ m, label, entra }: { m: KoMatch; label?: string; entra?: string }) {
+export function KoCard({ m, label, entra }: { m: KoMatch; label?: string; entra?: string[] }) {
   const played = m.winner !== undefined
   const side = (id: string | undefined, g: number | undefined, win: boolean) => (
-    <div className={`kside ${win ? 'win' : ''} ${id && entra === id ? 'llega' : ''}`}>
+    <div className={`kside ${win ? 'win' : played && id ? 'lose' : ''} ${id && entra?.includes(id) ? 'llega' : ''}`}>
       {id ? <><Flag id={id} size={22} /><span className="kn">{TEAM_BY_ID[id].name}</span></> : <span className="kn muted">Por definir</span>}
       <b>{played ? g : ''}</b>
     </div>
