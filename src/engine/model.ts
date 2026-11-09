@@ -95,15 +95,20 @@ export function modalScore(a: string, b: string, params: ModelParams, env?: Env)
 
 function assignGoals(team: Team, n: number, rng: Rng, minuteMax: number, minuteMin: number, phase: 'reg' | 'et'): Goal[] {
   const out: Goal[] = []
-  const outfield = team.xi
+  const subs = team.bench.filter((p) => p.line !== 'GK')
   for (let i = 0; i < n; i++) {
-    const scorer = pickWeighted(outfield, outfield.map((p) => p.weight.scorer + 0.001), rng)
+    const minute = minuteMin + Math.floor(rng() * (minuteMax - minuteMin + 1))
+    // desde el minuto 60 también pueden anotar y asistir los suplentes que ya entraron (peso reducido)
+    const late = minute >= 60
+    const pool = late ? [...team.xi, ...subs] : team.xi
+    const sw = (p: Player, k: 'scorer' | 'creator') => p.weight[k] * (p.starter ? 1 : 0.35) + 0.001
+    const scorer = pickWeighted(pool, pool.map((p) => sw(p, 'scorer')), rng)
     let assistId: string | undefined
     if (rng() < 0.7) {
-      const pool = outfield.filter((p) => p.id !== scorer.id)
-      assistId = pickWeighted(pool, pool.map((p) => p.weight.creator + 0.001), rng).id
+      const ap = pool.filter((p) => p.id !== scorer.id)
+      assistId = pickWeighted(ap, ap.map((p) => sw(p, 'creator')), rng).id
     }
-    out.push({ minute: minuteMin + Math.floor(rng() * (minuteMax - minuteMin + 1)), teamId: team.id, scorerId: scorer.id, assistId, phase })
+    out.push({ minute, teamId: team.id, scorerId: scorer.id, assistId, phase })
   }
   return out
 }

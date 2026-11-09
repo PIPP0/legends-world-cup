@@ -15,6 +15,7 @@ export interface Player {
   y: number // 0..100 (arco propio abajo)
   weight: { scorer: number; creator: number }
   verify: boolean
+  starter: boolean // titular del once; si es false, es suplente del plantel de 23
 }
 
 export interface Team {
@@ -23,7 +24,9 @@ export interface Team {
   iso: string
   group: string
   formation: string
-  xi: Player[]
+  xi: Player[] // once titular
+  bench: Player[] // 12 suplentes
+  squad: Player[] // plantel completo de 23
 }
 
 export interface Goal {

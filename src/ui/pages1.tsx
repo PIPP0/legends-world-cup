@@ -113,7 +113,7 @@ export function Story() {
         <span className="cn">Capítulo 1</span>
         <h2>El sueño imposible</h2>
         <p className="quote">¿Qué selección ganaría un Mundial si pudiera reunir a sus mejores once futbolistas de toda la historia?</p>
-        <p>Cada país envía a sus once mejores jugadores de todos los tiempos, y todos llegan a su mejor versión, a los 27 años. Es un torneo que nunca existió.</p>
+        <p>Cada país envía un plantel de 23 leyendas, con sus once mejores como titulares, y todos llegan a su mejor versión, a los 27 años. Es un torneo que nunca existió.</p>
         <ul className="rules">
           <li>32 selecciones actuales; no hay equipos combinados de países desaparecidos.</li>
           <li>Ningún futbolista juega para dos países.</li>
@@ -173,7 +173,7 @@ export function Story() {
         <span className="cn">Capítulo 6</span>
         <h2>Camino a la gloria</h2>
         <p>La historia oficial se detiene antes de los octavos. Tú decides cuándo seguir: el simulador juega las fases restantes con una semilla reproducible, sin tocar los resultados originales.</p>
-        <p><a className="btn pri" href="#/simulador">Continuar la simulación</a></p>
+        <p><a className="btn pri" href="#/mundial">Continuar la simulación</a></p>
       </div>
     </>
   )

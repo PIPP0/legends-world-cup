@@ -46,7 +46,7 @@ export const RAW_TEAMS: RawTeam[] = [
   // Grupo G
   { id: 'ned', name: 'Países Bajos', iso: 'nl', group: 'G', formation: '4-3-3', xi: 'Edwin van der Sar:91|Wim Suurbier:82|Ronald Koeman:91|Virgil van Dijk:93|Ruud Krol:90|Frank Rijkaard:92|Johan Neeskens:91|Wesley Sneijder:90|Arjen Robben:93|Marco van Basten:96|Johan Cruyff:98' },
   { id: 'den', name: 'Dinamarca', iso: 'dk', group: 'G', formation: '4-3-3', xi: 'Peter Schmeichel:93|Simon Kjær:83|Daniel Agger:82|Andreas Christensen:82|Joakim Mæhle:78|Christian Eriksen:87|Thomas Delaney:80|Michael Laudrup:92|Brian Laudrup:88|Jon Dahl Tomasson:80|Allan Simonsen:88' },
-  { id: 'chi', name: 'Chile', iso: 'cl', group: 'G', formation: '4-3-1-2', xi: 'Claudio Bravo:86|Mauricio Isla:82|Gary Medel:82|Elías Figueroa:92|Jean Beausejour:78|Arturo Vidal:90|Charles Aránguiz:86|Marcelo Díaz:78|Jorge Valdivia:86|Alexis Sánchez:91|Iván Zamorano:87' },
+  { id: 'chi', name: 'Chile', iso: 'cl', group: 'G', formation: '4-3-1-2', xi: 'Claudio Bravo:86|Mauricio Isla:82|Gary Medel:82|Elías Figueroa:92|Jean Beausejour:78|Arturo Vidal:90|Charles Aránguiz:86|Jorge Toro:84|Jorge Valdivia:86|Alexis Sánchez:91|Marcelo Salas:91' },
   { id: 'sen', name: 'Senegal', iso: 'sn', group: 'G', formation: '4-3-3', xi: 'Édouard Mendy:88|Youssouf Sabaly:76|Kalidou Koulibaly:90|Abdou Diallo:78|Ismail Jakobs:74|Idrissa Gueye:84|Pape Matar Sarr:78|Cheikhou Kouyaté:78|Ismaïla Sarr:80|El Hadji Diouf:83|Sadio Mané:91' },
   // Grupo H
   { id: 'por', name: 'Portugal', iso: 'pt', group: 'H', formation: '4-3-3', xi: 'Rui Patrício:83|João Cancelo:88|Pepe:88|Rúben Dias:90|Raphaël Guerreiro:82|Deco:89|Bernardo Silva:90|Bruno Fernandes:89|Luís Figo:93|Eusébio:96|Cristiano Ronaldo:97' },

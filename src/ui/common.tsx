@@ -71,7 +71,7 @@ export function PlayerCard({ p, compact }: { p: Player; compact?: boolean }) {
       <Avatar p={p} size={compact ? 44 : 64} />
       <div className="pc-body">
         <span className="pc-name">{p.name}</span>
-        <span className="pc-sub"><span className="pos">{p.pos}</span>{!compact && <>{TEAM_BY_ID[p.teamId].name}</>}</span>
+        <span className="pc-sub"><span className="pos">{p.pos}</span>{!compact && <>{TEAM_BY_ID[p.teamId].name}</>}{!p.starter && <em className="sup">Suplente</em>}</span>
       </div>
       <span className="ovr">{p.ovr}</span>
     </a>
@@ -169,13 +169,14 @@ export function Pitch({ team, mirror }: { team: Team; mirror?: boolean }) {
         <rect x="24" y="99" width="52" height="16" /><rect x="36" y="109" width="28" height="6" />
       </g>
       {team.xi.map((p) => {
+        const dup = team.xi.filter((q) => shortName(q.name) === shortName(p.name)).length > 1
         const X = mirror ? 100 - p.x : p.x
         const Y = 8 + (p.y / 100) * 104
         return (
           <a key={p.id} href={`#/jugador/${p.id}`} className="pn" data-line={p.line}>
             <circle cx={X} cy={Y} r="5.2" />
             <text x={X} y={Y + 1.6} textAnchor="middle" className="pnn">{p.ovr}</text>
-            <text x={X} y={Y + 9.4} textAnchor="middle" className="pnl">{shortName(p.name)}</text>
+            <text x={X} y={Y + 9.4} textAnchor="middle" className="pnl">{dup ? `${p.name[0]}. ${shortName(p.name)}` : shortName(p.name)}</text>
           </a>
         )
       })}

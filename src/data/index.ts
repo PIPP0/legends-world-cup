@@ -1,4 +1,5 @@
 import { RAW_TEAMS, RAW_RESULTS } from './raw'
+import { BENCH } from './squads'
 import { hashString } from '../engine/rng'
 import type { Attr, Line, Match, Player, Pos, Team } from '../types'
 
@@ -48,35 +49,41 @@ function buildAttrs(name: string, pos: Pos, ovr: number): Attr[] {
   })
 }
 
+interface RawP { name: string; ovr: number; verify: boolean; pos: Pos }
+const parseEntry = (e: string, pos?: Pos): RawP => {
+  const verify = e.endsWith('?')
+  const [name, ovr, p] = e.replace(/\?$/, '').split(':')
+  return { name, ovr: Number(ovr), verify, pos: (pos ?? p) as Pos }
+}
+
 function parseTeam(raw: (typeof RAW_TEAMS)[number]): Team {
   const rows = FORMATIONS[raw.formation]
-  const entries = raw.xi.split('|')
-  const players: Player[] = []
-  let idx = 0
-  const push = (pos: Pos, x: number, y: number) => {
-    const e = entries[idx++]
-    const verify = e.endsWith('?')
-    const [name, ovrRaw] = e.replace('?', '').split(':')
-    const ovr = Number(ovrRaw)
-    const q = Math.pow(ovr / 90, 3)
-    players.push({
-      id: `${raw.id}-${slug(name)}`, name, teamId: raw.id, pos, line: lineOf(pos), ovr, x, y, verify,
-      attrs: buildAttrs(name, pos, ovr),
-      weight: { scorer: SCORER_W[pos] * q, creator: CREATOR_W[pos] * q },
-    })
-  }
-  push('PO', 50, 91)
+  const slots: { pos: Pos; x: number; y: number }[] = [{ pos: 'PO', x: 50, y: 91 }]
   rows.forEach((row, r) => {
     const y = 91 - ((r + 1) * 78) / rows.length
-    row.forEach((pos, i) => push(pos, ((row.length - i - 0.5) / row.length) * 100, y))
+    row.forEach((pos, i) => slots.push({ pos, x: ((row.length - i - 0.5) / row.length) * 100, y }))
   })
-  if (idx !== entries.length) throw new Error(`Alineación inconsistente: ${raw.name}`)
-  return { id: raw.id, name: raw.name, iso: raw.iso, group: raw.group, formation: raw.formation, xi: players }
+  const entries = raw.xi.split('|')
+  if (slots.length !== entries.length) throw new Error(`Alineación inconsistente: ${raw.name}`)
+  const starters = entries.map((e, i) => parseEntry(e, slots[i].pos))
+  const bench = (BENCH[raw.id] ?? '').split('|').filter(Boolean).map((e) => parseEntry(e))
+  if (bench.length !== 12) throw new Error(`Plantel incompleto (se esperan 12 suplentes): ${raw.name}`)
+  const build = (r: RawP, x: number, y: number, starter: boolean): Player => {
+    const q = Math.pow(r.ovr / 90, 3)
+    return {
+      id: `${raw.id}-${slug(r.name)}`, name: r.name, teamId: raw.id, pos: r.pos, line: lineOf(r.pos), ovr: r.ovr, x, y, verify: r.verify, starter,
+      attrs: buildAttrs(r.name, r.pos, r.ovr),
+      weight: { scorer: SCORER_W[r.pos] * q, creator: CREATOR_W[r.pos] * q },
+    }
+  }
+  const xi = starters.map((r, i) => build(r, slots[i].x, slots[i].y, true))
+  const bn = bench.map((r) => build(r, 50, 50, false)).sort((a, b) => ['GK', 'DEF', 'MID', 'ATT'].indexOf(a.line) - ['GK', 'DEF', 'MID', 'ATT'].indexOf(b.line) || b.ovr - a.ovr)
+  return { id: raw.id, name: raw.name, iso: raw.iso, group: raw.group, formation: raw.formation, xi, bench: bn, squad: [...xi, ...bn] }
 }
 
 export const TEAMS: Team[] = RAW_TEAMS.map(parseTeam)
 export const TEAM_BY_ID: Record<string, Team> = Object.fromEntries(TEAMS.map((t) => [t.id, t]))
-export const PLAYERS: Player[] = TEAMS.flatMap((t) => t.xi)
+export const PLAYERS: Player[] = TEAMS.flatMap((t) => t.squad)
 export const PLAYER_BY_ID: Record<string, Player> = Object.fromEntries(PLAYERS.map((p) => [p.id, p]))
 export const GROUPS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 export const teamsOfGroup = (g: string) => RAW_TEAMS.filter((t) => t.group === g).map((t) => t.id)

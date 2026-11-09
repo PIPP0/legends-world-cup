@@ -119,3 +119,17 @@ describe('sorteo', () => {
     expect(t.groupMatches.length).toBe(48)
   })
 })
+
+import { TEAMS } from '../data'
+describe('planteles de 23', () => {
+  it('cada selección tiene 11 titulares, 12 suplentes y al menos 3 arqueros', () => {
+    for (const t of TEAMS) {
+      expect(t.xi.length).toBe(11)
+      expect(t.bench.length).toBe(12)
+      expect(t.squad.length).toBe(23)
+      expect(t.squad.filter((p) => p.pos === 'PO').length).toBeGreaterThanOrEqual(3)
+      expect(t.xi.every((p) => p.starter)).toBe(true)
+      expect(t.bench.every((p) => !p.starter)).toBe(true)
+    }
+  })
+})

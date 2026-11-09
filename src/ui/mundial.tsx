@@ -46,7 +46,7 @@ export function Mundial() {
 
   const list = useMemo(() => {
     const n = q.trim().toLowerCase()
-    return [...PLAYERS].filter((p) => !n || p.name.toLowerCase().includes(n) || TEAM_BY_ID[p.teamId].name.toLowerCase().includes(n)).sort((a, b) => b.ovr - a.ovr).slice(0, 18)
+    return [...PLAYERS].filter((p) => p.starter && (!n || p.name.toLowerCase().includes(n) || TEAM_BY_ID[p.teamId].name.toLowerCase().includes(n))).sort((a, b) => b.ovr - a.ovr).slice(0, 18)
   }, [q])
   const toggle = (id: string) => setPrimes((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length < MAX_PRIMES ? [...c, id] : c))
 

@@ -1959,13 +1959,6 @@
   "license": "CC BY-SA 3.0",
   "author": "Fanny Schertzer"
  },
- "chi-mauricio-isla": {
-  "file": "photos/chi-mauricio-isla.jpg",
-  "page": "https://en.wikipedia.org/wiki/Mauricio_Isla",
-  "title": "Mauricio Isla",
-  "license": "CC BY-SA 4.0",
-  "author": "Carlos Figueroa Rojas"
- },
  "chi-gary-medel": {
   "file": "photos/chi-gary-medel.jpg",
   "page": "https://en.wikipedia.org/wiki/Gary_Medel",
@@ -1980,13 +1973,6 @@
   "license": "CC BY 2.0",
   "author": "Pelé_en_La_Moneda.jpg: tu Foto con el Presidente\nderivative work: Rec79 (talk)"
  },
- "chi-jean-beausejour": {
-  "file": "photos/chi-jean-beausejour.jpg",
-  "page": "https://en.wikipedia.org/wiki/Jean_Beausejour",
-  "title": "Jean Beausejour",
-  "license": "CC BY-SA 4.0",
-  "author": "Carlos Figueroa"
- },
  "chi-arturo-vidal": {
   "file": "photos/chi-arturo-vidal.jpg",
   "page": "https://en.wikipedia.org/wiki/Arturo_Vidal",
@@ -2000,13 +1986,6 @@
   "title": "Charles Aránguiz",
   "license": "CC BY-SA 3.0",
   "author": "Fuguito"
- },
- "chi-marcelo-diaz": {
-  "file": "photos/chi-marcelo-diaz.jpg",
-  "page": "https://en.wikipedia.org/wiki/Marcelo_D%C3%ADaz",
-  "title": "Marcelo Díaz",
-  "license": "CC BY-SA 4.0",
-  "author": "Carlos yo"
  },
  "chi-jorge-valdivia": {
   "file": "photos/chi-jorge-valdivia.jpg",
@@ -2406,5 +2385,313 @@
   "title": "Hakan Şükür",
   "license": "CC BY-SA 3.0",
   "author": "Vulkahn at German Wikipedia"
+ },
+ "chi-leonel-sanchez": {
+  "file": "photos/chi-leonel-sanchez.jpg",
+  "page": "https://en.wikipedia.org/wiki/Leonel_S%C3%A1nchez",
+  "title": "Leonel Sánchez",
+  "license": "Public domain",
+  "author": "Revista Argentina \"Mundo Deportivo\""
+ },
+ "chi-carlos-caszely": {
+  "file": "photos/chi-carlos-caszely.jpg",
+  "page": "https://en.wikipedia.org/wiki/Carlos_Caszely",
+  "title": "Carlos Caszely",
+  "license": "CC BY-SA 3.0",
+  "author": "Emilio Kopaitic"
+ },
+ "chi-marcelo-salas": {
+  "file": "photos/chi-marcelo-salas.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marcelo_Salas",
+  "title": "Marcelo Salas",
+  "license": "CC BY-SA 2.0",
+  "author": "Ministerio Secretaría General de Gobierno"
+ },
+ "bra-julio-cesar": {
+  "file": "photos/bra-julio-cesar.jpg",
+  "page": "https://en.wikipedia.org/wiki/J%C3%BAlio_C%C3%A9sar_(football_goalkeeper%2C_born_1979)",
+  "title": "Júlio César (football goalkeeper, born 1979)",
+  "license": "CC BY-SA 3.0",
+  "author": "Майоров Владимир"
+ },
+ "bra-nilton-santos": {
+  "file": "photos/bra-nilton-santos.jpg",
+  "page": "https://en.wikipedia.org/wiki/N%C3%ADlton_Santos",
+  "title": "Nílton Santos",
+  "license": "Public domain",
+  "author": "UnknownUnknown"
+ },
+ "bra-carlos-alberto-torres": {
+  "file": "photos/bra-carlos-alberto-torres.jpg",
+  "page": "https://en.wikipedia.org/wiki/Carlos_Alberto_Torres",
+  "title": "Carlos Alberto Torres",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "bra-marquinhos": {
+  "file": "photos/bra-marquinhos.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marquinhos",
+  "title": "Marquinhos",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "bra-aldair": {
+  "file": "photos/bra-aldair.jpg",
+  "page": "https://en.wikipedia.org/wiki/Aldair",
+  "title": "Aldair",
+  "license": "CC BY-SA 3.0",
+  "author": "Christophe95"
+ },
+ "bra-zico": {
+  "file": "photos/bra-zico.jpg",
+  "page": "https://en.wikipedia.org/wiki/Zico_(footballer)",
+  "title": "Zico (footballer)",
+  "license": "CC BY-SA 3.0",
+  "author": "Мельников Александр"
+ },
+ "bra-kaka": {
+  "file": "photos/bra-kaka.jpg",
+  "page": "https://en.wikipedia.org/wiki/Kak%C3%A1",
+  "title": "Kaká",
+  "license": "CC BY-SA 3.0",
+  "author": "Евгений Асмолов"
+ },
+ "bra-socrates": {
+  "file": "photos/bra-socrates.jpg",
+  "page": "https://en.wikipedia.org/wiki/S%C3%B3crates",
+  "title": "Sócrates",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "bra-romario": {
+  "file": "photos/bra-romario.jpg",
+  "page": "https://en.wikipedia.org/wiki/Rom%C3%A1rio",
+  "title": "Romário",
+  "license": "CC BY 2.0",
+  "author": "Agência Senado from Brasilia, Brazil"
+ },
+ "bra-neymar": {
+  "file": "photos/bra-neymar.jpg",
+  "page": "https://en.wikipedia.org/wiki/Neymar",
+  "title": "Neymar",
+  "license": "CC BY-SA 4.0",
+  "author": "Bryan Berlin"
+ },
+ "bra-rivaldo": {
+  "file": "photos/bra-rivaldo.jpg",
+  "page": "https://en.wikipedia.org/wiki/Rivaldo",
+  "title": "Rivaldo",
+  "license": "CC BY 3.0 br",
+  "author": "Laura Cortizo/Portal da Copa"
+ },
+ "eng-peter-shilton": {
+  "file": "photos/eng-peter-shilton.png",
+  "page": "https://en.wikipedia.org/wiki/Peter_Shilton",
+  "title": "Peter Shilton",
+  "license": "CC BY-SA 3.0",
+  "author": "Joebloggsy (talk)"
+ },
+ "eng-david-seaman": {
+  "file": "photos/eng-david-seaman.jpg",
+  "page": "https://en.wikipedia.org/wiki/David_Seaman",
+  "title": "David Seaman",
+  "license": "CC BY-SA 3.0",
+  "author": "Christophe95"
+ },
+ "eng-john-terry": {
+  "file": "photos/eng-john-terry.jpg",
+  "page": "https://en.wikipedia.org/wiki/John_Terry",
+  "title": "John Terry",
+  "license": "CC BY-SA 4.0",
+  "author": "ChristopherJClarke"
+ },
+ "eng-sol-campbell": {
+  "file": "photos/eng-sol-campbell.jpg",
+  "page": "https://en.wikipedia.org/wiki/Sol_Campbell",
+  "title": "Sol Campbell",
+  "license": "CC BY 4.0",
+  "author": "Web Summit"
+ },
+ "eng-ray-wilson": {
+  "file": "photos/eng-ray-wilson.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Champions_statue.jpg",
+  "title": "File:Champions statue.jpg",
+  "license": "Public domain",
+  "author": "Mat macwilliam at English Wikipedia"
+ },
+ "eng-kyle-walker": {
+  "file": "photos/eng-kyle-walker.jpg",
+  "page": "https://en.wikipedia.org/wiki/Kyle_Walker",
+  "title": "Kyle Walker",
+  "license": "CC BY-SA 3.0",
+  "author": "Кирилл Венедиктов"
+ },
+ "eng-frank-lampard": {
+  "file": "photos/eng-frank-lampard.jpg",
+  "page": "https://en.wikipedia.org/wiki/Frank_Lampard",
+  "title": "Frank Lampard",
+  "license": "CC BY 4.0",
+  "author": "Mehdi Bolourian"
+ },
+ "eng-paul-gascoigne": {
+  "file": "photos/eng-paul-gascoigne.png",
+  "page": "https://en.wikipedia.org/wiki/Paul_Gascoigne",
+  "title": "Paul Gascoigne",
+  "license": "CC BY 3.0",
+  "author": "James English"
+ },
+ "eng-bryan-robson": {
+  "file": "photos/eng-bryan-robson.jpg",
+  "page": "https://en.wikipedia.org/wiki/Bryan_Robson",
+  "title": "Bryan Robson",
+  "license": "CC BY 2.0",
+  "author": "Government of Thailand"
+ },
+ "eng-alan-shearer": {
+  "file": "photos/eng-alan-shearer.jpg",
+  "page": "https://en.wikipedia.org/wiki/Alan_Shearer",
+  "title": "Alan Shearer",
+  "license": "CC BY-SA 2.0",
+  "author": "Originally carltonreid; retouched by DFS454"
+ },
+ "eng-jimmy-greaves": {
+  "file": "photos/eng-jimmy-greaves.jpg",
+  "page": "https://en.wikipedia.org/wiki/Jimmy_Greaves",
+  "title": "Jimmy Greaves",
+  "license": "CC BY-SA 3.0 nl",
+  "author": "Jack de Nijs for Anefo  / Anefo"
+ },
+ "rou-florin-prunea": {
+  "file": "photos/rou-florin-prunea.png",
+  "page": "https://en.wikipedia.org/wiki/Florin_Prunea",
+  "title": "Florin Prunea",
+  "license": "CC BY-SA 2.0",
+  "author": "Dinamo_Bucharest_at_2009_Romanian_Cup_semifinal.jpg: Riti József Attila on Flickr\nderivative work: Ionutzmovie (talk)"
+ },
+ "rou-miodrag-belodedici": {
+  "file": "photos/rou-miodrag-belodedici.jpg",
+  "page": "https://en.wikipedia.org/wiki/Miodrag_Belodedici",
+  "title": "Miodrag Belodedici",
+  "license": "CC BY-SA 2.0",
+  "author": "Nuță Lucian from Cluj-Napoca, Romania"
+ },
+ "rou-anton-dobos": {
+  "file": "photos/rou-anton-dobos.jpg",
+  "page": "https://en.wikipedia.org/wiki/Anton_Dobo%C8%99",
+  "title": "Anton Doboș",
+  "license": "Public domain",
+  "author": "Paul Buciuta"
+ },
+ "rou-cosmin-contra": {
+  "file": "photos/rou-cosmin-contra.jpg",
+  "page": "https://en.wikipedia.org/wiki/Cosmin_Contra",
+  "title": "Cosmin Contra",
+  "license": "CC BY-SA 4.0",
+  "author": "GSP.ro"
+ },
+ "rou-mirel-radoi": {
+  "file": "photos/rou-mirel-radoi.jpg",
+  "page": "https://en.wikipedia.org/wiki/Mirel_R%C4%83doi",
+  "title": "Mirel Rădoi",
+  "license": "CC BY 4.0",
+  "author": "Zafer"
+ },
+ "rou-nicolae-dobrin": {
+  "file": "photos/rou-nicolae-dobrin.jpg",
+  "page": "https://en.wikipedia.org/wiki/Nicolae_Dobrin",
+  "title": "Nicolae Dobrin",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "rou-ilie-balaci": {
+  "file": "photos/rou-ilie-balaci.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ilie_Balaci",
+  "title": "Ilie Balaci",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "rou-ioan-sabau": {
+  "file": "photos/rou-ioan-sabau.jpg",
+  "page": "https://en.wikipedia.org/wiki/Ioan_Sab%C4%83u",
+  "title": "Ioan Sabău",
+  "license": "CC BY-SA 2.0",
+  "author": "Nuță Lucian from Cluj-Napoca, Romania"
+ },
+ "rou-marius-lacatus": {
+  "file": "photos/rou-marius-lacatus.jpg",
+  "page": "https://en.wikipedia.org/wiki/Marius_L%C4%83c%C4%83tu%C8%99",
+  "title": "Marius Lăcătuș",
+  "license": "CC BY 2.0",
+  "author": "Dan Avraham"
+ },
+ "rou-florin-raducioiu": {
+  "file": "photos/rou-florin-raducioiu.jpg",
+  "page": "https://en.wikipedia.org/wiki/Florin_R%C4%83ducioiu",
+  "title": "Florin Răducioiu",
+  "license": "CC BY-SA 2.0",
+  "author": "Nuță Lucian from Cluj-Napoca, Romania"
+ },
+ "rou-florea-dumitrache": {
+  "file": "photos/rou-florea-dumitrache.jpg",
+  "page": "https://en.wikipedia.org/wiki/Florea_Dumitrache",
+  "title": "Florea Dumitrache",
+  "license": "Public domain",
+  "author": "Unknown authorUnknown author"
+ },
+ "jpn-yoshikatsu-kawaguchi": {
+  "file": "photos/jpn-yoshikatsu-kawaguchi.jpg",
+  "page": "https://en.wikipedia.org/wiki/Yoshikatsu_Kawaguchi",
+  "title": "Yoshikatsu Kawaguchi",
+  "license": "CC BY 2.0",
+  "author": "yoppy from Kawasaki, Kanagawa, Japan"
+ },
+ "jpn-shuichi-gonda": {
+  "file": "photos/jpn-shuichi-gonda.jpg",
+  "page": "https://en.wikipedia.org/wiki/Sh%C5%ABichi_Gonda",
+  "title": "Shūichi Gonda",
+  "license": "CC BY-SA 4.0",
+  "author": "Werner100359"
+ },
+ "jpn-tsuneyasu-miyamoto": {
+  "file": "photos/jpn-tsuneyasu-miyamoto.jpg",
+  "page": "https://en.wikipedia.org/wiki/Tsuneyasu_Miyamoto",
+  "title": "Tsuneyasu Miyamoto",
+  "license": "CC BY 4.0",
+  "author": "内閣官房内閣広報室"
+ },
+ "jpn-yuji-nakazawa": {
+  "file": "photos/jpn-yuji-nakazawa.jpg",
+  "page": "https://en.wikipedia.org/wiki/Yuji_Nakazawa",
+  "title": "Yuji Nakazawa",
+  "license": "CC BY-SA 3.0",
+  "author": "Neier"
+ },
+ "jpn-hiroki-sakai": {
+  "file": "photos/jpn-hiroki-sakai.jpg",
+  "page": "https://en.wikipedia.org/wiki/Hiroki_Sakai",
+  "title": "Hiroki Sakai",
+  "license": "CC0",
+  "author": "Supporterhéninois"
+ },
+ "jpn-hidetoshi-nakata": {
+  "file": "photos/jpn-hidetoshi-nakata.jpg",
+  "page": "https://en.wikipedia.org/wiki/Hidetoshi_Nakata",
+  "title": "Hidetoshi Nakata",
+  "license": "CC BY-SA 2.0",
+  "author": "norio nakayama"
+ },
+ "jpn-shunsuke-nakamura": {
+  "file": "photos/jpn-shunsuke-nakamura.png",
+  "page": "https://en.wikipedia.org/wiki/Shunsuke_Nakamura",
+  "title": "Shunsuke Nakamura",
+  "license": "CC BY-SA 3.0",
+  "author": "Neier"
+ },
+ "jpn-yasuhito-endo": {
+  "file": "photos/jpn-yasuhito-endo.png",
+  "page": "https://en.wikipedia.org/wiki/Yasuhito_End%C5%8D",
+  "title": "Yasuhito Endō",
+  "license": "CC BY-SA 3.0",
+  "author": "Neier"
  }
 }

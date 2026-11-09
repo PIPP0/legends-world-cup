@@ -70,6 +70,14 @@ export function Team({ id }: { id: string }) {
         {t.xi.some((p) => p.verify) && <Note tone="warn">Hay nombres de esta alineación pendientes de verificar (marcados en la ficha del jugador).</Note>}
       </Section>
 
+      <Section title="Plantel de 23" sub="Once titulares más 12 suplentes. Los suplentes pueden entrar desde el minuto 60 en los partidos simulados.">
+        <h4 className="sub">Titulares</h4>
+        <div className="plist">{t.xi.map((p) => <PlayerCard key={p.id} p={p} compact />)}</div>
+        <h4 className="sub">Suplentes</h4>
+        <div className="plist">{t.bench.map((p) => <PlayerCard key={p.id} p={p} compact />)}</div>
+        {t.squad.some((p) => p.verify) && <Note tone="warn">Hay nombres del plantel pendientes de verificar (marcados en la ficha del jugador).</Note>}
+      </Section>
+
       <Section title="Perfil del modelo" sub="Estimaciones; ranking entre las 32 selecciones.">
         {comps.map(([l, k]) => (
           <Bar key={k} label={l} v={prof[k] as number} min={65} right={`${(prof[k] as number).toFixed(1)} · #${rankOf(all.map((a) => a[k] as number), prof[k] as number)}`} />

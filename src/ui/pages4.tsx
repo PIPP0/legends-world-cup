@@ -9,10 +9,8 @@ import { explain } from '../engine/explain'
 import { validate } from '../engine/validate'
 import { Avatar, Bar, Flag, Note, ProbBar, Section, Tabs, TeamLink, useApp, useLocalState } from './common'
 import { Events, KoCard } from './blocks'
-import { startExperience } from './pending'
-import { drawGroups } from '../engine/model'
-import { WorldBuilder, WorldSummary, GroupResults, newSeed } from './world'
-import { recordHistory, loadHistory } from '../engine/world'
+import { newSeed } from './world'
+import { loadHistory } from '../engine/world'
 import { HOSTS, HOST_OF_VENUE, SEASONS, VENUE_BY_ID } from '../data/world'
 import { contextFor } from '../engine/world'
 import { TEAMS } from '../data'
@@ -80,7 +78,7 @@ export function Bracket() {
   return (
     <Section title="Eliminatorias" sub={view === 'story' ? 'Historia original: octavos definidos, aún sin resultados.' : 'Torneo alternativo (modo libre).'}>
       <Tabs value={view} onChange={setView} items={[['story', 'Historia original'], ['alt', 'Torneo alternativo']]} />
-      {view === 'alt' && !alt && <Note>Todavía no hay torneo alternativo. <a href="#/simulador">Créalo en el simulador</a>.</Note>}
+      {view === 'alt' && !alt && <Note>Todavía no hay torneo alternativo. <a href="#/mundial">Simula tu mundial</a>.</Note>}
       {(view === 'story' || alt) && <BracketView view={view} />}
       {view === 'story' && <Note>Cuartos y semifinales asumen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8. La historia continúa solo cuando tú lo decides.</Note>}
     </Section>
@@ -89,16 +87,15 @@ export function Bracket() {
 
 // ---------------- Simulador ----------------
 export function Simulator() {
-  const { params, setParams, alt, setAlt } = useApp()
-  const [tab, setTab] = useState<'match' | 'tour' | 'model' | 'audit'>('match')
+  const { params, setParams } = useApp()
+  const [tab, setTab] = useState<'match' | 'model' | 'audit'>('match')
   return (
     <>
       <Section title="Simulador" sub="El modo libre nunca sobrescribe los resultados de la historia original.">
-        <Tabs value={tab} onChange={setTab} items={[['match', 'Partido'], ['tour', 'Torneo alternativo'], ['model', 'Modelo'], ['audit', 'Auditoría']]} />
+        <Tabs value={tab} onChange={setTab} items={[['match', 'Partido'], ['model', 'Modelo'], ['audit', 'Auditoría']]} />
       </Section>
       {tab === 'match' && <FreeMatch />}
-      {tab === 'tour' && <AltTour alt={alt} setAlt={setAlt} />}
-      {tab === 'model' && <Model params={params} setParams={setParams} />}
+      {tab === 'model' && <><Model params={params} setParams={setParams} /><Odds /></>}
       {tab === 'audit' && <Audit />}
     </>
   )
@@ -213,46 +210,14 @@ function FreeMatch() {
   )
 }
 
-const PHASE_LABEL = { r16: 'octavos', qf: 'cuartos', sf: 'semifinales', final: 'final y tercer puesto', done: 'terminado' } as const
-
-function AltTour({ alt, setAlt }: { alt: ReturnType<typeof useApp>['alt']; setAlt: (a: ReturnType<typeof useApp>['alt']) => void }) {
+function Odds() {
   const { params } = useApp()
-  const [seed, setSeed] = useLocalState('lwc:seed', newSeed())
-  const [mode, setMode] = useState<'octavos' | 'completo'>('octavos')
   const [odds, setOdds] = useState<Record<string, number> | null>(null)
-  const phase = alt ? nextPhase(alt.bracket) : null
-  const commit = (t: typeof alt) => {
-    if (t && t.world && t.bracket.champion && !t.recorded) { recordHistory(t); t = { ...t, recorded: true } }
-    setAlt(t)
-  }
   return (
-    <>
-      <WorldBuilder setAlt={commit} />
-      <Section title="Torneo alternativo" sub="Sin sede ni clima (campo neutral). Se guarda solo en este navegador y es independiente de la historia.">
-        <div className="filters">
-          <label className="seed">Semilla <input value={seed} onChange={(e) => setSeed(e.target.value)} /></label>
-          <select value={mode} onChange={(e) => setMode(e.target.value as 'octavos' | 'completo')} aria-label="Modo">
-            <option value="octavos">Desde octavos (clasificados oficiales)</option><option value="completo">Mundial completo nuevo (grupos incluidos)</option>
-          </select>
-        </div>
-        <div className="cta">
-          <button className="btn pri" onClick={() => startExperience(runAll(newAlt(seed, mode, STORY_MATCHES, params, undefined, mode === 'completo' ? drawGroups(seed, params) : undefined), params))}>Vivir el torneo (sorteo, grupos y eliminatorias en vivo)</button>
-          <button className="btn" onClick={() => setAlt(newAlt(seed, mode, STORY_MATCHES, params))}>{alt ? 'Reiniciar torneo' : 'Crear torneo'}</button>
-          {alt && phase !== 'done' && <button className="btn" onClick={() => commit({ ...alt, bracket: advance(alt.bracket, alt.seed, params, alt.world) })}>Simular {PHASE_LABEL[phase!]}</button>}
-          {alt && phase !== 'done' && <button className="btn" onClick={() => commit(runAll(alt, params))}>Simular todo hasta el campeón</button>}
-          {alt && <button className="btn ghost" onClick={() => setAlt(null)}>Borrar torneo alternativo</button>}
-        </div>
-        {alt && <WorldSummary alt={alt} />}
-        {alt && <p className="small muted">Semilla «{alt.seed}» · {alt.mode === 'completo' ? 'grupos simulados' : 'grupos oficiales'} · siguiente fase: {PHASE_LABEL[phase!]}.</p>}
-        {alt?.bracket.champion && <div className="champ big"><Flag id={alt.bracket.champion} size={64} /><div><span className="muted">Campeón del torneo alternativo</span><b>{TEAM_BY_ID[alt.bracket.champion].name}</b></div></div>}
-      </Section>
-      {alt && <Section title="Cuadro"><BracketView view="alt" /></Section>}
-      {alt && <GroupResults alt={alt} />}
-      <Section title="¿Quién gana desde octavos?" sub="Estimación con 300 torneos simulados sobre los cruces oficiales.">
-        <button className="btn" onClick={() => setOdds(championOdds(DECLARED_R16, params, 300, 'odds'))}>Calcular probabilidades</button>
-        {odds && Object.entries(odds).sort((a, b) => b[1] - a[1]).map(([id, v]) => <Bar key={id} label={TEAM_BY_ID[id].name} v={v * 100} min={0} max={Math.max(...Object.values(odds)) * 100} right={`${(v * 100).toFixed(1)}%`} />)}
-      </Section>
-    </>
+    <Section title="¿Quién gana desde octavos?" sub="Estimación con 300 torneos simulados sobre los cruces oficiales.">
+      <button className="btn" onClick={() => setOdds(championOdds(DECLARED_R16, params, 300, 'odds'))}>Calcular probabilidades</button>
+      {odds && Object.entries(odds).sort((a, b) => b[1] - a[1]).map(([id, v]) => <Bar key={id} label={TEAM_BY_ID[id].name} v={v * 100} min={0} max={Math.max(...Object.values(odds)) * 100} right={`${(v * 100).toFixed(1)}%`} />)}
+    </Section>
   )
 }
 
