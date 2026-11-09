@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TEAM_BY_ID, PLAYER_BY_ID } from '../data/lookup'
 import { STORY_MATCHES } from '../data'
 import { DECLARED_R16 } from '../data/raw'
@@ -9,12 +9,14 @@ import { explain } from '../engine/explain'
 import { validate } from '../engine/validate'
 import { Avatar, Bar, Flag, Note, ProbBar, Section, Tabs, TeamLink, useApp, useLocalState } from './common'
 import { Events, KoCard } from './blocks'
+import { Board, type Item } from './board'
+import { STORY_KNOCKOUT } from '../data/storyKnockout'
 import { newSeed } from './world'
 import { loadHistory } from '../engine/world'
 import { HOSTS, HOST_OF_VENUE, SEASONS, VENUE_BY_ID } from '../data/world'
 import { contextFor } from '../engine/world'
 import { TEAMS } from '../data'
-import type { Season, Weights } from '../types'
+import type { Bracket as BracketT, KoMatch, Season, Weights } from '../types'
 
 // ---------------- Estadísticas ----------------
 export function Stats() {
@@ -56,9 +58,34 @@ export function Stats() {
 }
 
 // ---------------- Cuadro ----------------
-export function BracketView({ view }: { view: 'story' | 'alt' }) {
+// Historia oficial: los resultados de las eliminatorias son FIJOS (src/data/story-knockout.json), iguales para todas las personas.
+// Lo único que cambia entre personas es hasta qué fase decidieron avanzar (se guarda en su navegador).
+const NIVEL_KEY = 'lwc:historia:nivel:v1'
+const ETAPAS = [
+  { boton: 'Avanzar a cuartos', juega: 'Octavos de final' },
+  { boton: 'Avanzar a semifinales', juega: 'Cuartos de final' },
+  { boton: 'Avanzar a la final', juega: 'Semifinales' },
+  { boton: 'Jugar la final y el tercer puesto', juega: 'Tercer puesto y final' },
+] as const
+
+const vacio = (m: KoMatch): KoMatch => ({ id: m.id, round: m.round })
+const soloEquipos = (m: KoMatch): KoMatch => ({ id: m.id, round: m.round, a: m.a, b: m.b })
+// Lo que se ve en el nivel L: resultados de las rondas anteriores a L, los cruces de la ronda L y nada de las siguientes.
+export function visibleBracket(full: BracketT, nivel: number): BracketT {
+  const pick = (m: KoMatch, ronda: number) => (ronda < nivel ? m : ronda === nivel ? soloEquipos(m) : vacio(m))
+  return {
+    r16: full.r16.map((m) => pick(m, 0)),
+    qf: full.qf.map((m) => pick(m, 1)),
+    sf: full.sf.map((m) => pick(m, 2)),
+    third: pick(full.third, 3),
+    final: pick(full.final, 3),
+    champion: nivel >= 4 ? full.champion : undefined,
+  }
+}
+
+export function BracketView({ view, level = 0 }: { view: 'story' | 'alt'; level?: number }) {
   const { alt } = useApp()
-  const br = view === 'alt' && alt ? alt.bracket : emptyBracket(DECLARED_R16)
+  const br = view === 'alt' && alt ? alt.bracket : visibleBracket(STORY_KNOCKOUT.bracket, level)
   return (
     <div className="bracket">
       <div className="bcol"><h4>Octavos</h4>{br.r16.map((m) => <KoCard key={m.id} m={m} />)}</div>
@@ -72,15 +99,36 @@ export function BracketView({ view }: { view: 'story' | 'alt' }) {
   )
 }
 
+const toItem = (m: KoMatch, tag?: string): Item => ({ id: m.id, a: m.a!, b: m.b!, goals: m.goals ?? [], ga: m.ga!, gb: m.gb!, et: m.et, pens: m.pens, winner: m.winner, tag })
+
 export function Bracket() {
-  const { alt } = useApp()
-  const [view, setView] = useState<'story' | 'alt'>('story')
+  const full = STORY_KNOCKOUT.bracket
+  const [nivel, setNivel] = useState<number>(() => { try { const n = Number(localStorage.getItem(NIVEL_KEY)); return Number.isInteger(n) && n >= 0 && n <= 4 ? n : 0 } catch { return 0 } })
+  const [jugando, setJugando] = useState(false)
+  const [listo, setListo] = useState(false)
+  const guardar = (n: number) => { setNivel(n); try { localStorage.setItem(NIVEL_KEY, String(n)) } catch { /* sin almacenamiento */ } }
+  const partidos = nivel === 0 ? full.r16 : nivel === 1 ? full.qf : nivel === 2 ? full.sf : [full.third, full.final]
+  const items = partidos.map((m) => toItem(m, m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined))
+  const done = useRef(() => setListo(true)).current
+  const empezar = () => { setListo(false); setJugando(true); window.scrollTo(0, 0) }
+  const terminar = () => { setJugando(false); setListo(false); guardar(nivel + 1) }
+  const sub = nivel >= 4 ? 'Historia original: terminó. Estos resultados son los mismos para todas las personas.'
+    : nivel === 0 ? 'Historia original: octavos definidos, aún sin resultados.' : `Historia original: ya se jugaron ${ETAPAS[nivel - 1].juega.toLowerCase()}.`
   return (
-    <Section title="Eliminatorias" sub={view === 'story' ? 'Historia original: octavos definidos, aún sin resultados.' : 'Torneo alternativo (modo libre).'}>
-      <Tabs value={view} onChange={setView} items={[['story', 'Historia original'], ['alt', 'Torneo alternativo']]} />
-      {view === 'alt' && !alt && <Note>Todavía no hay torneo alternativo. <a href="#/mundial">Simula tu mundial</a>.</Note>}
-      {(view === 'story' || alt) && <BracketView view={view} />}
-      {view === 'story' && <Note>Cuartos y semifinales asumen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8. La historia continúa solo cuando tú lo decides.</Note>}
+    <Section title="Eliminatorias" sub={sub}>
+      {jugando && (
+        <div className="historia-juega">
+          <h3>{ETAPAS[nivel].juega}</h3>
+          <Board key={`h${nivel}`} items={items} tick={nivel === 3 ? 90 : 70} onDone={done} />
+          {listo && <div className="cta"><button className="btn pri" onClick={terminar}>{nivel === 3 ? 'Conocer al campeón' : 'Continuar'}</button></div>}
+        </div>
+      )}
+      {!jugando && nivel < 4 && (
+        <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div>
+      )}
+      {!jugando && nivel >= 4 && <div className="cta"><button className="btn ghost" onClick={() => guardar(0)}>Volver a ver desde octavos</button></div>}
+      <BracketView view="story" level={jugando ? nivel : nivel} />
+      <Note>Los resultados de las eliminatorias de la historia original son fijos: se calcularon una sola vez y todas las personas ven los mismos. Cada quien decide cuándo avanzar de fase. Cuartos y semifinales siguen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8.</Note>
     </Section>
   )
 }

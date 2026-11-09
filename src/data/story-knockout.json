@@ -1,0 +1,520 @@
+{
+ "version": 1,
+ "seed": "historia-oficial-1",
+ "bracket": {
+  "r16": [
+   {
+    "id": "O1",
+    "round": "r16",
+    "a": "bra",
+    "b": "cro",
+    "ga": 2,
+    "gb": 1,
+    "et": false,
+    "winner": "bra",
+    "goals": [
+     {
+      "minute": 10,
+      "teamId": "bra",
+      "scorerId": "bra-ronaldinho",
+      "phase": "reg"
+     },
+     {
+      "minute": 26,
+      "teamId": "bra",
+      "scorerId": "bra-garrincha",
+      "assistId": "bra-ronaldo-nazario",
+      "phase": "reg"
+     },
+     {
+      "minute": 81,
+      "teamId": "cro",
+      "scorerId": "cro-davor-suker",
+      "assistId": "cro-ivica-olic",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "O2",
+    "round": "r16",
+    "a": "ger",
+    "b": "ita",
+    "ga": 0,
+    "gb": 2,
+    "et": false,
+    "winner": "ita",
+    "goals": [
+     {
+      "minute": 66,
+      "teamId": "ita",
+      "scorerId": "ita-franco-baresi",
+      "phase": "reg"
+     },
+     {
+      "minute": 75,
+      "teamId": "ita",
+      "scorerId": "ita-giuseppe-meazza",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "O3",
+    "round": "r16",
+    "a": "fra",
+    "b": "swe",
+    "ga": 3,
+    "gb": 2,
+    "et": false,
+    "winner": "fra",
+    "goals": [
+     {
+      "minute": 15,
+      "teamId": "swe",
+      "scorerId": "swe-henrik-larsson",
+      "phase": "reg"
+     },
+     {
+      "minute": 58,
+      "teamId": "fra",
+      "scorerId": "fra-thierry-henry",
+      "assistId": "fra-franck-ribery",
+      "phase": "reg"
+     },
+     {
+      "minute": 63,
+      "teamId": "swe",
+      "scorerId": "swe-gunnar-nordahl",
+      "phase": "reg"
+     },
+     {
+      "minute": 75,
+      "teamId": "fra",
+      "scorerId": "fra-thierry-henry",
+      "assistId": "fra-zinedine-zidane",
+      "phase": "reg"
+     },
+     {
+      "minute": 79,
+      "teamId": "fra",
+      "scorerId": "fra-zinedine-zidane",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "O4",
+    "round": "r16",
+    "a": "ned",
+    "b": "cmr",
+    "ga": 3,
+    "gb": 2,
+    "et": true,
+    "winner": "ned",
+    "goals": [
+     {
+      "minute": 19,
+      "teamId": "cmr",
+      "scorerId": "cmr-vincent-aboubakar",
+      "assistId": "cmr-roger-milla",
+      "phase": "reg"
+     },
+     {
+      "minute": 21,
+      "teamId": "ned",
+      "scorerId": "ned-johan-neeskens",
+      "phase": "reg"
+     },
+     {
+      "minute": 52,
+      "teamId": "cmr",
+      "scorerId": "cmr-andre-frank-zambo-anguissa",
+      "phase": "reg"
+     },
+     {
+      "minute": 84,
+      "teamId": "ned",
+      "scorerId": "ned-ruud-van-nistelrooy",
+      "phase": "reg"
+     },
+     {
+      "minute": 118,
+      "teamId": "ned",
+      "scorerId": "ned-ruud-van-nistelrooy",
+      "assistId": "ned-johan-neeskens",
+      "phase": "et"
+     }
+    ]
+   },
+   {
+    "id": "O5",
+    "round": "r16",
+    "a": "arg",
+    "b": "eng",
+    "ga": 0,
+    "gb": 1,
+    "et": false,
+    "winner": "eng",
+    "goals": [
+     {
+      "minute": 21,
+      "teamId": "eng",
+      "scorerId": "eng-steven-gerrard",
+      "assistId": "eng-wayne-rooney",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "O6",
+    "round": "r16",
+    "a": "hun",
+    "b": "uru",
+    "ga": 1,
+    "gb": 1,
+    "et": true,
+    "pens": [
+     5,
+     4
+    ],
+    "winner": "hun",
+    "goals": [
+     {
+      "minute": 35,
+      "teamId": "hun",
+      "scorerId": "hun-sandor-kocsis",
+      "phase": "reg"
+     },
+     {
+      "minute": 56,
+      "teamId": "uru",
+      "scorerId": "uru-luis-suarez",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "O7",
+    "round": "r16",
+    "a": "esp",
+    "b": "bel",
+    "ga": 1,
+    "gb": 1,
+    "et": true,
+    "pens": [
+     4,
+     5
+    ],
+    "winner": "bel",
+    "goals": [
+     {
+      "minute": 25,
+      "teamId": "esp",
+      "scorerId": "esp-fernando-torres",
+      "assistId": "esp-xavi-hernandez",
+      "phase": "reg"
+     },
+     {
+      "minute": 88,
+      "teamId": "bel",
+      "scorerId": "bel-jeremy-doku",
+      "assistId": "bel-kevin-de-bruyne",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "O8",
+    "round": "r16",
+    "a": "por",
+    "b": "chi",
+    "ga": 1,
+    "gb": 0,
+    "et": false,
+    "winner": "por",
+    "goals": [
+     {
+      "minute": 48,
+      "teamId": "por",
+      "scorerId": "por-bruno-fernandes",
+      "phase": "reg"
+     }
+    ]
+   }
+  ],
+  "qf": [
+   {
+    "id": "C1",
+    "round": "qf",
+    "a": "bra",
+    "b": "ita",
+    "ga": 1,
+    "gb": 0,
+    "et": false,
+    "winner": "bra",
+    "goals": [
+     {
+      "minute": 39,
+      "teamId": "bra",
+      "scorerId": "bra-ronaldo-nazario",
+      "assistId": "bra-ronaldinho",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "C2",
+    "round": "qf",
+    "a": "fra",
+    "b": "ned",
+    "ga": 0,
+    "gb": 2,
+    "et": false,
+    "winner": "ned",
+    "goals": [
+     {
+      "minute": 15,
+      "teamId": "ned",
+      "scorerId": "ned-wesley-sneijder",
+      "assistId": "ned-johan-cruyff",
+      "phase": "reg"
+     },
+     {
+      "minute": 74,
+      "teamId": "ned",
+      "scorerId": "ned-arjen-robben",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "C3",
+    "round": "qf",
+    "a": "eng",
+    "b": "hun",
+    "ga": 0,
+    "gb": 0,
+    "et": true,
+    "pens": [
+     5,
+     6
+    ],
+    "winner": "hun",
+    "goals": []
+   },
+   {
+    "id": "C4",
+    "round": "qf",
+    "a": "bel",
+    "b": "por",
+    "ga": 2,
+    "gb": 3,
+    "et": false,
+    "winner": "por",
+    "goals": [
+     {
+      "minute": 44,
+      "teamId": "por",
+      "scorerId": "por-eusebio",
+      "assistId": "por-cristiano-ronaldo",
+      "phase": "reg"
+     },
+     {
+      "minute": 48,
+      "teamId": "bel",
+      "scorerId": "bel-romelu-lukaku",
+      "assistId": "bel-kevin-de-bruyne",
+      "phase": "reg"
+     },
+     {
+      "minute": 58,
+      "teamId": "bel",
+      "scorerId": "bel-kevin-de-bruyne",
+      "assistId": "bel-toby-alderweireld",
+      "phase": "reg"
+     },
+     {
+      "minute": 60,
+      "teamId": "por",
+      "scorerId": "por-paulo-sousa",
+      "phase": "reg"
+     },
+     {
+      "minute": 90,
+      "teamId": "por",
+      "scorerId": "por-ruben-dias",
+      "phase": "reg"
+     }
+    ]
+   }
+  ],
+  "sf": [
+   {
+    "id": "S1",
+    "round": "sf",
+    "a": "bra",
+    "b": "ned",
+    "ga": 0,
+    "gb": 1,
+    "et": false,
+    "winner": "ned",
+    "goals": [
+     {
+      "minute": 62,
+      "teamId": "ned",
+      "scorerId": "ned-arjen-robben",
+      "assistId": "ned-wesley-sneijder",
+      "phase": "reg"
+     }
+    ]
+   },
+   {
+    "id": "S2",
+    "round": "sf",
+    "a": "hun",
+    "b": "por",
+    "ga": 2,
+    "gb": 3,
+    "et": false,
+    "winner": "por",
+    "goals": [
+     {
+      "minute": 5,
+      "teamId": "hun",
+      "scorerId": "hun-florian-albert",
+      "assistId": "hun-sandor-kocsis",
+      "phase": "reg"
+     },
+     {
+      "minute": 12,
+      "teamId": "por",
+      "scorerId": "por-eusebio",
+      "assistId": "por-bernardo-silva",
+      "phase": "reg"
+     },
+     {
+      "minute": 21,
+      "teamId": "hun",
+      "scorerId": "hun-sandor-kocsis",
+      "assistId": "hun-florian-albert",
+      "phase": "reg"
+     },
+     {
+      "minute": 51,
+      "teamId": "por",
+      "scorerId": "por-eusebio",
+      "phase": "reg"
+     },
+     {
+      "minute": 74,
+      "teamId": "por",
+      "scorerId": "por-bernardo-silva",
+      "assistId": "por-luis-figo",
+      "phase": "reg"
+     }
+    ]
+   }
+  ],
+  "third": {
+   "id": "T",
+   "round": "third",
+   "a": "bra",
+   "b": "hun",
+   "ga": 4,
+   "gb": 2,
+   "et": false,
+   "winner": "bra",
+   "goals": [
+    {
+     "minute": 29,
+     "teamId": "bra",
+     "scorerId": "bra-pele",
+     "assistId": "bra-lucio",
+     "phase": "reg"
+    },
+    {
+     "minute": 31,
+     "teamId": "bra",
+     "scorerId": "bra-garrincha",
+     "assistId": "bra-cafu",
+     "phase": "reg"
+    },
+    {
+     "minute": 38,
+     "teamId": "hun",
+     "scorerId": "hun-florian-albert",
+     "assistId": "hun-jozsef-bozsik",
+     "phase": "reg"
+    },
+    {
+     "minute": 49,
+     "teamId": "bra",
+     "scorerId": "bra-ronaldo-nazario",
+     "assistId": "bra-roberto-carlos",
+     "phase": "reg"
+    },
+    {
+     "minute": 51,
+     "teamId": "bra",
+     "scorerId": "bra-ronaldo-nazario",
+     "assistId": "bra-didi",
+     "phase": "reg"
+    },
+    {
+     "minute": 51,
+     "teamId": "hun",
+     "scorerId": "hun-florian-albert",
+     "assistId": "hun-jozsef-bozsik",
+     "phase": "reg"
+    }
+   ]
+  },
+  "final": {
+   "id": "F",
+   "round": "final",
+   "a": "ned",
+   "b": "por",
+   "ga": 2,
+   "gb": 3,
+   "et": true,
+   "winner": "por",
+   "goals": [
+    {
+     "minute": 24,
+     "teamId": "por",
+     "scorerId": "por-deco",
+     "phase": "reg"
+    },
+    {
+     "minute": 34,
+     "teamId": "ned",
+     "scorerId": "ned-johan-cruyff",
+     "phase": "reg"
+    },
+    {
+     "minute": 54,
+     "teamId": "por",
+     "scorerId": "por-luis-figo",
+     "assistId": "por-bruno-fernandes",
+     "phase": "reg"
+    },
+    {
+     "minute": 86,
+     "teamId": "ned",
+     "scorerId": "ned-robin-van-persie",
+     "assistId": "ned-johan-cruyff",
+     "phase": "reg"
+    },
+    {
+     "minute": 113,
+     "teamId": "por",
+     "scorerId": "por-eusebio",
+     "assistId": "por-luis-figo",
+     "phase": "et"
+    }
+   ]
+  },
+  "champion": "por"
+ }
+}

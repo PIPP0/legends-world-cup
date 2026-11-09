@@ -172,8 +172,8 @@ export function Story() {
       <div className="chapter last">
         <span className="cn">Capítulo 6</span>
         <h2>Camino a la gloria</h2>
-        <p>La historia oficial se detiene antes de los octavos. Tú decides cuándo seguir: el simulador juega las fases restantes con una semilla reproducible, sin tocar los resultados originales.</p>
-        <p><a className="btn pri" href="#/mundial">Continuar la simulación</a></p>
+        <p>La historia oficial se detiene antes de los octavos. Tú decides cuándo seguir: en Eliminatorias avanzas fase por fase, y los resultados son los mismos para todas las personas.</p>
+        <p><a className="btn pri" href="#/cuadro">Avanzar a las eliminatorias</a></p>
       </div>
     </>
   )
