@@ -25,6 +25,11 @@ describe('eliminatorias congeladas', () => {
     expect(b.qf[2].a).toBe('arg')
     expect(b.qf[2].winner).toBe('hun')
   })
+  it('España le gana 2-1 a Bélgica en octavos y sigue en cuartos (edición del autor)', () => {
+    const o7 = b.r16[6]
+    expect([o7.a, o7.b, o7.ga, o7.gb, o7.winner, o7.et, o7.pens]).toEqual(['esp', 'bel', 2, 1, 'esp', false, undefined])
+    expect([b.qf[3].a, b.qf[3].b, b.qf[3].ga, b.qf[3].gb, b.qf[3].winner]).toEqual(['esp', 'por', 2, 3, 'por'])
+  })
   it('cada partido está completo y es coherente', () => {
     for (const m of all) {
       expect(m.a && m.b && m.winner).toBeTruthy()

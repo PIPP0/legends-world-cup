@@ -1,5 +1,5 @@
 {
- "version": 2,
+ "version": 3,
  "seed": "historia-oficial-1",
  "bracket": {
   "r16": [
@@ -199,20 +199,23 @@
     "round": "r16",
     "a": "esp",
     "b": "bel",
-    "ga": 1,
+    "ga": 2,
     "gb": 1,
-    "et": true,
-    "pens": [
-     4,
-     5
-    ],
-    "winner": "bel",
+    "et": false,
+    "winner": "esp",
     "goals": [
      {
       "minute": 25,
       "teamId": "esp",
       "scorerId": "esp-fernando-torres",
       "assistId": "esp-xavi-hernandez",
+      "phase": "reg"
+     },
+     {
+      "minute": 62,
+      "teamId": "esp",
+      "scorerId": "esp-david-villa",
+      "assistId": "esp-andres-iniesta",
       "phase": "reg"
      },
      {
@@ -306,7 +309,7 @@
    {
     "id": "C4",
     "round": "qf",
-    "a": "bel",
+    "a": "esp",
     "b": "por",
     "ga": 2,
     "gb": 3,
@@ -322,16 +325,16 @@
      },
      {
       "minute": 48,
-      "teamId": "bel",
-      "scorerId": "bel-romelu-lukaku",
-      "assistId": "bel-kevin-de-bruyne",
+      "teamId": "esp",
+      "scorerId": "esp-david-villa",
+      "assistId": "esp-andres-iniesta",
       "phase": "reg"
      },
      {
       "minute": 58,
-      "teamId": "bel",
-      "scorerId": "bel-kevin-de-bruyne",
-      "assistId": "bel-toby-alderweireld",
+      "teamId": "esp",
+      "scorerId": "esp-david-silva",
+      "assistId": "esp-xavi-hernandez",
       "phase": "reg"
      },
      {
@@ -521,6 +524,10 @@
   {
    "que": "Octavos Argentina-Inglaterra: cambia de Inglaterra 1-0 a Argentina 1-0 (pedido del autor). Argentina ocupa el lugar de Inglaterra en cuartos; el resto de los resultados no se tocó.",
    "goles": "gol de Messi (21'), asistencia de Maradona"
+  },
+  {
+   "que": "Octavos España-Bélgica: cambia de Bélgica (penales 5-4) a España 2-1 en los 90 minutos (pedido del autor). España ocupa el lugar de Bélgica en cuartos (sigue 2-3 ante Portugal); el resto no se tocó.",
+   "goles": "octavos: Torres 25', Villa 62', Doku 88'; cuartos: Villa 48', Silva 58'"
   }
  ]
 }
