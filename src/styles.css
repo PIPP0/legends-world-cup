@@ -358,3 +358,19 @@ footer .logo{margin-bottom:10px}
 .historia-juega{margin:0 0 18px;padding:14px;border:1px solid var(--line);border-top:3px solid var(--pk);border-radius:var(--r);background:var(--s1)}.historia-juega h3{margin:0 0 10px;font:800 22px 'Barlow Condensed';text-transform:uppercase;color:var(--cy)}
 
 .podio{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0}.podio>div{display:flex;flex-direction:column;gap:6px;padding:12px;background:var(--s1);border:1px solid var(--line);border-radius:var(--r)}.podio span{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+
+/* Cuadro en cuadrícula con animación */
+.bgrid-wrap{overflow-x:auto;padding:8px 0 16px;margin:10px 0}
+.bgrid{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));grid-template-rows:auto repeat(8,minmax(96px,auto));gap:10px 28px;min-width:1000px;position:relative}
+.bh{margin:0;color:var(--cy);font:800 17px 'Barlow Condensed';letter-spacing:3px;text-transform:uppercase}
+.bcell{align-self:center;position:relative;min-width:0}.bcell h4{margin:0 0 6px;color:var(--mut);font:700 13px 'Barlow Condensed';letter-spacing:2px;text-transform:uppercase}
+.bcell.c1::after,.bcell.c2::after,.bcell.c3::after{content:'';position:absolute;right:-28px;top:50%;width:28px;border-top:2px solid var(--line)}
+.bcell.c4.trofeo{align-self:end}.bcell.camino .kcard{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 22px rgba(255,207,74,.35)}
+.bcell.camino::after{border-top-color:var(--gold)!important}
+.bcell .kcard{margin:0}.bcell.pop .kcard{animation:bpop .7s cubic-bezier(.2,1.4,.4,1);border-color:var(--cy);box-shadow:0 0 24px rgba(0,229,255,.45)}
+@keyframes bpop{0%{transform:scale(.88);opacity:.3}60%{transform:scale(1.05)}100%{transform:none;opacity:1}}
+.bcell .kside b{animation:bnum .5s ease-out both}@keyframes bnum{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.bcell .kside .kn{transition:color .3s}
+.anim-estado{margin:6px 0;font:800 18px 'Barlow Condensed';letter-spacing:2px;text-transform:uppercase;color:var(--cy)}
+.trofeo .champ.big{margin:0;animation:bpop 1s cubic-bezier(.2,1.4,.4,1)}.trofeo .champ.big b{font-size:30px}.trofeo .champ{font-size:18px}
+@media(max-width:700px){.bgrid{min-width:900px}}

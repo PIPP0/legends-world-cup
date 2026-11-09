@@ -12,6 +12,7 @@ import { validate } from '../engine/validate'
 import { Avatar, Bar, Flag, Note, ProbBar, Section, Tabs, TeamLink, useApp, useLocalState } from './common'
 import { Events, KoCard, KoRow } from './blocks'
 import { Board, type Item } from './board'
+import { BracketAnimado, BracketEstatico } from './bracketAnim'
 import { STORY_KNOCKOUT } from '../data/storyKnockout'
 import { newSeed } from './world'
 import { loadHistory } from '../engine/world'
@@ -139,16 +140,21 @@ export function Bracket() {
   const nivel = useStoryLevel()
   const [jugando, setJugando] = useState(false)
   const [listo, setListo] = useState(false)
+  // animación del cuadro: de qué fase a qué fase se está mostrando (null = cuadro estático)
+  const visto = (() => { try { return sessionStorage.getItem('lwc:historia:anim') === '1' } catch { return false } })()
+  const [anim, setAnim] = useState<{ from: number; to: number; key: number } | null>(() => (nivel >= 4 && !visto ? { from: 0, to: 4, key: 0 } : null))
+  const [skip, setSkip] = useState(0)
   const partidos = nivel === 0 ? full.r16 : nivel === 1 ? full.qf : nivel === 2 ? full.sf : [full.third, full.final]
   const items = nivel >= 4 ? [] : partidos.map((m) => toItem(m, m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined))
   const done = useRef(() => setListo(true)).current
   const empezar = () => { setListo(false); setJugando(true); window.scrollTo(0, 0) }
-  const terminar = () => { setJugando(false); setListo(false); setLevel(nivel + 1); window.scrollTo(0, 0) }
-  const sub = nivel >= 4 ? 'Historia original: terminó. Estos resultados son los mismos para todas las personas y quedan guardados.'
+  const terminar = () => { const antes = nivel; setJugando(false); setListo(false); setLevel(antes + 1); setSkip(0); setAnim({ from: antes, to: antes + 1, key: Date.now() }); window.scrollTo(0, 0) }
+  const finAnim = useRef(() => { setAnim(null); try { sessionStorage.setItem('lwc:historia:anim', '1') } catch { /* sin almacenamiento */ } }).current
+  const repetir = () => { setSkip(0); setAnim({ from: 0, to: 4, key: Date.now() }); window.scrollTo(0, 0) }
+  const sub = anim ? 'Así avanza el torneo…' : nivel >= 4 ? 'Historia original: terminó. Estos resultados son los mismos para todas las personas y quedan guardados.'
     : nivel === 0 ? 'Historia original: octavos definidos, aún sin resultados.' : `Historia original: ya se jugaron ${ETAPAS[nivel - 1].juega.toLowerCase()}.`
   return (
     <>
-      {nivel >= 4 && !jugando && <CampeonDetalle />}
       <Section title="Eliminatorias" sub={sub}>
         {jugando && (
           <div className="historia-juega">
@@ -159,10 +165,16 @@ export function Bracket() {
             </div>
           </div>
         )}
-        {!jugando && nivel < 4 && <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div>}
-        <BracketView view="story" level={nivel} />
+        {!jugando && !anim && nivel < 4 && <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div>}
+        {!jugando && !anim && nivel >= 4 && <div className="cta"><button className="btn ghost" onClick={repetir}>▶ Ver de nuevo cómo avanzó el torneo</button></div>}
+        {anim && <div className="cta"><button className="btn ghost" onClick={() => setSkip((k) => k + 1)}>Saltar animación</button></div>}
+        {!jugando && (anim
+          ? <BracketAnimado key={anim.key} full={full} from={anim.from} to={anim.to} speed={anim.to - anim.from === 4 ? 650 : anim.from === 0 ? 450 : 700} onEnd={finAnim} skipKey={skip} />
+          : <BracketEstatico full={full} level={nivel} />)}
+        {jugando && <BracketEstatico full={full} level={nivel} />}
         <Note>Los resultados de las eliminatorias de la historia original son fijos: se calcularon una sola vez y todas las personas ven los mismos. Cada quien decide cuándo avanzar de fase, y lo que ya reveló queda guardado en su navegador. Cuartos y semifinales siguen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8.</Note>
       </Section>
+      {nivel >= 4 && !jugando && !anim && <CampeonDetalle />}
     </>
   )
 }
