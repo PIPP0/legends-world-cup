@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { GROUPS, STORY_MATCHES, TEAM_BY_ID } from '../data'
+import { useStoryLevel } from '../engine/storyLevel'
+import { RONDAS, isRevealed, koById, revealed } from '../engine/historia'
 import { DEFAULT_PARAMS, probabilities } from '../engine/model'
 import { matchStory } from '../engine/narrative'
 import { groupTable } from '../engine/standings'
 import { Flag, Note, ProbBar, Section, Tabs } from './common'
-import { GroupTable, MatchRow } from './blocks'
+import { Events, GroupTable, KoRow, MatchRow } from './blocks'
 import { PlayerCard } from './common'
 
 export function Groups() {
@@ -26,6 +28,8 @@ export function Groups() {
 }
 
 export function Matches() {
+  const level = useStoryLevel()
+  const ko = revealed(level)
   const [g, setG] = useState('')
   const [md, setMd] = useState('')
   const list = STORY_MATCHES.filter((m) => (!g || m.group === g) && (!md || m.matchday === Number(md)))
@@ -36,11 +40,56 @@ export function Matches() {
         <select value={md} onChange={(e) => setMd(e.target.value)} aria-label="Fecha"><option value="">Todas las fechas</option><option value="1">Fecha 1</option><option value="2">Fecha 2</option><option value="3">Fecha 3</option></select>
       </div>
       <div className="list">{list.map((m) => <MatchRow key={m.id} m={m} />)}</div>
+      {ko.length > 0 && !g && !md && (
+        <>
+          <h3 className="sub">Eliminatorias</h3>
+          <div className="list">{ko.map((m) => <KoRow key={m.id} m={m} />)}</div>
+        </>
+      )}
+      {level < 4 && !g && !md && <p className="small muted">Las eliminatorias aparecen aquí a medida que avanzas en <a href="#/cuadro">Eliminatorias</a>.</p>}
     </Section>
   )
 }
 
+const KO_ID = /^(O[1-8]|C[1-4]|S[12]|T|F)$/
+function KoMatchPage({ id }: { id: string }) {
+  const level = useStoryLevel()
+  const k = koById(id)
+  if (!k) return <Note tone="warn">Partido no encontrado.</Note>
+  if (!isRevealed(id, level)) return <Note>Este partido todavía no se juega en tu historia. Avanza de fase en <a href="#/cuadro">Eliminatorias</a> para verlo.</Note>
+  const m = k.m
+  const A = TEAM_BY_ID[m.a!], B = TEAM_BY_ID[m.b!]
+  const win = TEAM_BY_ID[m.winner!]
+  const pr = probabilities(m.a!, m.b!, DEFAULT_PARAMS)
+  return (
+    <>
+      <div className="mhead">
+        <span className="muted">{RONDAS[k.ronda].nombre}{m.id === 'F' ? ' · Gran final' : m.id === 'T' ? ' · Tercer puesto' : ''}</span>
+        <div className="mh">
+          <a href={`#/equipo/${A.id}`}><Flag id={A.id} size={56} /><b>{A.name}</b></a>
+          <div className="mscore">{m.ga}<i>–</i>{m.gb}</div>
+          <a href={`#/equipo/${B.id}`}><Flag id={B.id} size={56} /><b>{B.name}</b></a>
+        </div>
+        {m.pens && <p className="center muted">Empate {m.ga}–{m.gb}. Penales {m.pens[0]}–{m.pens[1]}.</p>}
+        {m.et && !m.pens && <p className="center muted">Definido en la prórroga.</p>}
+        <p className="center">{m.round === 'third' ? 'Tercer lugar' : m.round === 'final' ? 'Campeón' : 'Avanza'}: <b>{win.name}</b></p>
+        <span className="chip">Resultado de la historia original (igual para todas las personas)</span>
+      </div>
+      <Section title="Antes del partido"><ProbBar a={m.a!} b={m.b!} pa={pr.win} pd={pr.draw} pb={pr.loss} /><p className="small muted">Probabilidades del modelo en 90 minutos (goles esperados {pr.expA.toFixed(2)} – {pr.expB.toFixed(2)}).</p></Section>
+      <Section title="Goles y eventos"><Events goals={m.goals ?? []} home={m.a!} away={m.b!} /></Section>
+      <Section title="Los onces">
+        <div className="two">
+          <div className="plist">{A.xi.map((p) => <PlayerCard key={p.id} p={p} compact />)}</div>
+          <div className="plist">{B.xi.map((p) => <PlayerCard key={p.id} p={p} compact />)}</div>
+        </div>
+      </Section>
+      <p><a className="btn" href="#/cuadro">Ver el cuadro</a></p>
+    </>
+  )
+}
+
 export function MatchPage({ id }: { id: string }) {
+  if (KO_ID.test(id)) return <KoMatchPage id={id} />
   const idx = STORY_MATCHES.findIndex((m) => m.id === id)
   if (idx < 0) return <Note tone="warn">Partido no encontrado.</Note>
   const m = STORY_MATCHES[idx]

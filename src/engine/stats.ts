@@ -1,8 +1,9 @@
 import { PLAYER_BY_ID, TEAMS, findPlayerByName } from '../data'
 import { DECLARED_SCORERS, ESTIMATED_ASSISTS } from '../data/raw'
 import type { Bracket, Match } from '../types'
+import { revealed } from './historia'
 
-export interface PlayerStat { playerId: string; goals: number; assists: number; source: 'eventos' | 'declarado' | 'estimado' }
+export interface PlayerStat { playerId: string; goals: number; assists: number; source: 'eventos' | 'declarado' | 'estimado' | 'mixto' }
 
 // A partir de eventos de partido (torneo alternativo o simulación libre).
 export function statsFromEvents(matches: Match[], bracket?: Bracket): PlayerStat[] {
@@ -52,3 +53,31 @@ export function teamStats(matches: Match[]): TeamStat[] {
 }
 
 export const nameOf = (id: string) => PLAYER_BY_ID[id]?.name ?? id
+
+// Historia original con las eliminatorias que esta persona ya reveló: grupos (declarados) + eliminatorias (por eventos).
+export function storyPlayerStats(level: number): PlayerStat[] {
+  const map = new Map(declaredStats().map((s) => [s.playerId, { ...s }]))
+  for (const m of revealed(level)) for (const g of m.goals ?? []) {
+    const sc = map.get(g.scorerId) ?? { playerId: g.scorerId, goals: 0, assists: 0, source: 'eventos' as const }
+    sc.goals++; if (sc.source !== 'eventos') sc.source = 'mixto'; map.set(g.scorerId, sc)
+    if (g.assistId) {
+      const a = map.get(g.assistId) ?? { playerId: g.assistId, goals: 0, assists: 0, source: 'eventos' as const }
+      a.assists++; if (a.source !== 'eventos') a.source = 'mixto'; map.set(g.assistId, a)
+    }
+  }
+  return [...map.values()]
+}
+
+// Estadísticas por selección: grupos + eliminatorias reveladas. Un partido que se define por penales cuenta como empate (criterio FIFA).
+export function storyTeamStats(matches: Match[], level: number): TeamStat[] {
+  const base = new Map(teamStats(matches).map((t) => [t.teamId, { ...t }]))
+  const get = (id: string): TeamStat => { if (!base.has(id)) base.set(id, { teamId: id, pj: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, unbeaten: true }); return base.get(id)! }
+  for (const m of revealed(level)) {
+    const a = get(m.a!), b = get(m.b!)
+    a.pj++; b.pj++; a.gf += m.ga!; a.ga += m.gb!; b.gf += m.gb!; b.ga += m.ga!
+    if (m.pens || m.ga === m.gb) { a.d++; b.d++ }
+    else if (m.ga! > m.gb!) { a.w++; b.l++; b.unbeaten = false }
+    else { b.w++; a.l++; a.unbeaten = false }
+  }
+  return [...base.values()]
+}

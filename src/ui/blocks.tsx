@@ -14,6 +14,18 @@ export function MatchRow({ m, showGroup = true }: { m: Match; showGroup?: boolea
   )
 }
 
+export function KoRow({ m }: { m: KoMatch }) {
+  const t = TEAM_BY_ID
+  return (
+    <a className="mrow" href={`#/partido/${m.id}`}>
+      <span className="mr-t r">{t[m.a!].name}<Flag id={m.a!} size={22} /></span>
+      <span className="mr-s"><b className={m.winner === m.a ? 'w' : ''}>{m.ga}</b><i>–</i><b className={m.winner === m.b ? 'w' : ''}>{m.gb}</b></span>
+      <span className="mr-t"><Flag id={m.b!} size={22} />{t[m.b!].name}</span>
+      <span className="mr-g">{m.round === 'r16' ? 'Octavos' : m.round === 'qf' ? 'Cuartos' : m.round === 'sf' ? 'Semifinal' : m.round === 'third' ? 'Tercer puesto' : 'Final'}{m.pens ? ` · pen. ${m.pens[0]}–${m.pens[1]}` : m.et ? ' · prórroga' : ''}</span>
+    </a>
+  )
+}
+
 export function GroupTable({ rows, qualify = true }: { rows: TableRow[]; qualify?: boolean }) {
   return (
     <table className="gt">

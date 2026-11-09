@@ -2,12 +2,14 @@ import { useMemo, useState } from 'react'
 import { GROUPS, PLAYERS, STORY_MATCHES, TEAMS, FORMATION_NOTES } from '../data'
 import { DECLARED_R16 } from '../data/raw'
 import { DEFAULT_PARAMS, profile, strengthRank } from '../engine/model'
-import { declaredStats, teamStats } from '../engine/stats'
+import { storyPlayerStats, storyTeamStats, teamStats } from '../engine/stats'
+import { useStoryLevel } from '../engine/storyLevel'
+import { revealed, teamStatus } from '../engine/historia'
 import { teamBlurb } from '../engine/narrative'
 import { groupTable } from '../engine/standings'
 import { Avatar, Bar, Flag, Note, PlayerCard, Radar, Section, TeamLink, usePhoto, go } from './common'
 import { FutCard, Pitch, TeamCard } from './visual'
-import { MatchRow } from './blocks'
+import { KoRow, MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import type { Player } from '../types'
 
@@ -44,14 +46,16 @@ export function Team({ id }: { id: string }) {
   const prof = profile(id, DEFAULT_PARAMS)
   const all = TEAMS.map((x) => profile(x.id, DEFAULT_PARAMS))
   const blurb = teamBlurb(t)
+  const level = useStoryLevel()
   const matches = STORY_MATCHES.filter((m) => m.home === id || m.away === id)
+  const koMatches = revealed(level).filter((m) => m.a === id || m.b === id)
+  const status = teamStatus(id, level)
   const ts = teamStats(STORY_MATCHES).find((x) => x.teamId === id)!
+  const tsKo = storyTeamStats(STORY_MATCHES, level).find((x) => x.teamId === id)!
   const row = groupTable(t.group, STORY_MATCHES)
   const pos = row.findIndex((r) => r.teamId === id) + 1
-  const r16 = DECLARED_R16.find((p) => p.includes(id))
-  const next = r16 ? (r16[0] === id ? r16[1] : r16[0]) : null
   const comps: [string, keyof typeof prof][] = [['Calidad individual', 'quality'], ['Equilibrio táctico', 'balance'], ['Capacidad ofensiva', 'attack'], ['Solidez defensiva', 'defense'], ['Experiencia (proxy)', 'experience']]
-  const decl = declaredStats().filter((s) => PLAYER_BY_ID[s.playerId].teamId === id)
+  const decl = storyPlayerStats(level).filter((s) => PLAYER_BY_ID[s.playerId].teamId === id)
   return (
     <>
       <div className="thead">
@@ -86,13 +90,16 @@ export function Team({ id }: { id: string }) {
       </Section>
 
       <Section title="Resultados">
-        <div className="list">{matches.map((m) => <MatchRow key={m.id} m={m} />)}</div>
-        <p className="small muted">Fase de grupos: {ts.w} G · {ts.d} E · {ts.l} P · {ts.gf} GF · {ts.ga} GC.</p>
-        {decl.length > 0 && <p className="small">Goleadores declarados: {decl.filter((d) => d.goals).map((d) => `${PLAYER_BY_ID[d.playerId].name} (${d.goals})`).join(', ') || '—'}.</p>}
+        <div className="list">{matches.map((m) => <MatchRow key={m.id} m={m} />)}{koMatches.map((m) => <KoRow key={m.id} m={m} />)}</div>
+        <p className="small muted">Fase de grupos: {ts.w} G · {ts.d} E · {ts.l} P · {ts.gf} GF · {ts.ga} GC.{koMatches.length > 0 && <> Total con eliminatorias: {tsKo.pj} PJ · {tsKo.w} G · {tsKo.d} E · {tsKo.l} P · {tsKo.gf} GF · {tsKo.ga} GC (los penales cuentan como empate).</>}</p>
+        {decl.length > 0 && <p className="small">Goleadores: {decl.filter((d) => d.goals).map((d) => `${PLAYER_BY_ID[d.playerId].name} (${d.goals})`).join(', ') || '—'}.</p>}
       </Section>
 
-      <Section title="Próximo enfrentamiento">
-        {next ? <div className="kmini one"><span><Flag id={id} size={22} />{t.name}</span><i>vs</i><span><TeamLink id={next} size={22} /></span><small className="muted">Octavos de final · sin jugar</small></div> : <p className="muted">Eliminada en la fase de grupos.</p>}
+      <Section title={status.next ? 'Próximo enfrentamiento' : 'Camino en el mundial'}>
+        {status.next
+          ? <div className="kmini one"><span><Flag id={id} size={22} />{t.name}</span><i>vs</i><span><TeamLink id={status.next.opp} size={22} /></span><small className="muted">{status.next.ronda} · sin jugar</small></div>
+          : <p className="muted">{status.text || 'Sin partidos pendientes.'}</p>}
+        {status.next && <p className="small muted">Se juega cuando avances en <a href="#/cuadro">Eliminatorias</a>.</p>}
       </Section>
     </>
   )
@@ -103,7 +110,8 @@ export function PlayerPage({ id }: { id: string }) {
   if (!p) return <Note tone="warn">Jugador no encontrado.</Note>
   const t = TEAM_BY_ID[p.teamId]
   const photo = usePhoto(p)
-  const stat = declaredStats().find((s) => s.playerId === id)
+  const level = useStoryLevel()
+  const stat = storyPlayerStats(level).find((s) => s.playerId === id)
   const peers = PLAYERS.filter((x) => x.pos === p.pos && x.id !== p.id).sort((a, b) => Math.abs(a.ovr - p.ovr) - Math.abs(b.ovr - p.ovr)).slice(0, 5)
   return (
     <>

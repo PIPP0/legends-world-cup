@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { STORY_MATCHES } from '../data'
+import { useStoryLevel } from '../engine/storyLevel'
+import { revealed, scoreText } from '../engine/historia'
 import { DECLARED_R16 } from '../data/raw'
 import { DEFAULT_PARAMS, championOdds } from '../engine/model'
 import { Flag, usePhoto, useLocalState } from './common'
@@ -55,10 +57,14 @@ export function Hero() {
 }
 
 export function Ticker() {
-  const items = STORY_MATCHES.map((m) => `${TEAM_BY_ID[m.home].name.toUpperCase()} ${m.hg}–${m.ag} ${TEAM_BY_ID[m.away].name.toUpperCase()}`)
+  const level = useStoryLevel()
+  const items = [
+    ...STORY_MATCHES.map((m) => `${TEAM_BY_ID[m.home].name.toUpperCase()} ${m.hg}–${m.ag} ${TEAM_BY_ID[m.away].name.toUpperCase()}`),
+    ...revealed(level).map((m) => `${TEAM_BY_ID[m.a!].name.toUpperCase()} ${scoreText(m)} ${TEAM_BY_ID[m.b!].name.toUpperCase()}`),
+  ]
   const row = items.join('   •   ')
   return (
-    <div className="ticker" aria-label="Resultados de la fase de grupos">
+    <div className="ticker" aria-label="Resultados del torneo">
       <span className="tk-l">Resultados</span>
       <div className="tk-w"><span>{row}   •   {row}</span></div>
     </div>

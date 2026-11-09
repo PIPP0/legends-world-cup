@@ -2,7 +2,9 @@ import { useMemo } from 'react'
 import { GROUPS, PLAYERS, STORY_MATCHES, TEAMS, teamsOfGroup } from '../data'
 import { DECLARED_R16 } from '../data/raw'
 import { DEFAULT_PARAMS, profile } from '../engine/model'
-import { declaredStats } from '../engine/stats'
+import { storyPlayerStats } from '../engine/stats'
+import { useStoryLevel } from '../engine/storyLevel'
+import { phaseLabel, revealed } from '../engine/historia'
 import { groupTable } from '../engine/standings'
 import { matchStory } from '../engine/narrative'
 import { Avatar, Flag, Note, Section, TeamLink } from './common'
@@ -11,11 +13,14 @@ import { ChampionPicker, Count, Hero } from './hero'
 import { MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 
-const totalGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
+const groupGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
 
 
 export function Home() {
-  const top = useMemo(() => declaredStats().filter((s) => s.goals >= 3).sort((a, b) => b.goals - a.goals), [])
+  const level = useStoryLevel()
+  const ko = revealed(level)
+  const totalGoals = groupGoals + ko.reduce((a, m) => a + (m.ga ?? 0) + (m.gb ?? 0), 0)
+  const top = useMemo(() => storyPlayerStats(level).filter((s) => s.goals >= 3).sort((a, b) => b.goals - a.goals), [level])
   const legends = useMemo(() => [...PLAYERS].sort((a, b) => b.ovr - a.ovr).slice(0, 18), [])
   const featured = STORY_MATCHES[0]
   const story = matchStory(featured)
@@ -29,9 +34,9 @@ export function Home() {
 
       <div className="stats3">
         <div><b><Count to={32} /></b><span>selecciones</span></div>
-        <div><b><Count to={STORY_MATCHES.length} /></b><span>partidos jugados</span></div>
+        <div><b><Count to={STORY_MATCHES.length + ko.length} /></b><span>partidos jugados</span></div>
         <div><b><Count to={totalGoals} /></b><span>goles</span></div>
-        <div className="live"><b><i />Octavos</b><span>próxima fase</span></div>
+        <div className="live"><b><i />{phaseLabel(level)}</b><span>{level >= 4 ? 'torneo terminado' : 'próxima fase'}</span></div>
       </div>
 
       <ChampionPicker />
@@ -153,7 +158,7 @@ export function Story() {
       <div className="chapter" data-n="">
         <span className="cn">Capítulo 4</span>
         <h2>Comienza la historia</h2>
-        <p>{STORY_MATCHES.length} partidos, {totalGoals} goles y {draws} empates. Estos son los duelos que marcaron la fase de grupos.</p>
+        <p>{STORY_MATCHES.length} partidos, {groupGoals} goles y {draws} empates. Estos son los duelos que marcaron la fase de grupos.</p>
         <h3 className="sub">Tres duelos con crónica propia</h3>
         <div className="list">{feat.map((m) => <MatchRow key={m.id} m={m} />)}</div>
         <h3 className="sub">Las victorias más amplias</h3>

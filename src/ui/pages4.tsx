@@ -3,12 +3,14 @@ import { TEAM_BY_ID, PLAYER_BY_ID } from '../data/lookup'
 import { STORY_MATCHES } from '../data'
 import { DECLARED_R16 } from '../data/raw'
 import { emptyBracket, nextPhase, advance, runAll, newAlt, DEFAULT_PARAMS, probabilities, profile, strengthRank, championOdds, simulateMatch } from '../engine/model'
-import { declaredStats, statsFromEvents, teamStats, type PlayerStat } from '../engine/stats'
+import { statsFromEvents, storyPlayerStats, storyTeamStats, teamStats, type PlayerStat } from '../engine/stats'
+import { useStoryLevel, setLevel } from '../engine/storyLevel'
+import { RONDAS, finalResult, phaseLabel, revealed, roundName, scoreText } from '../engine/historia'
 import { makeRng } from '../engine/rng'
 import { explain } from '../engine/explain'
 import { validate } from '../engine/validate'
 import { Avatar, Bar, Flag, Note, ProbBar, Section, Tabs, TeamLink, useApp, useLocalState } from './common'
-import { Events, KoCard } from './blocks'
+import { Events, KoCard, KoRow } from './blocks'
 import { Board, type Item } from './board'
 import { STORY_KNOCKOUT } from '../data/storyKnockout'
 import { newSeed } from './world'
@@ -24,9 +26,10 @@ export function Stats() {
   const [src, setSrc] = useState<'story' | 'alt'>('story')
   const [tab, setTab] = useState<'g' | 'a' | 'ga' | 't'>('g')
   const useAlt = src === 'alt' && alt
-  const stats: PlayerStat[] = useAlt ? statsFromEvents(alt.groupMatches, alt.bracket) : declaredStats()
+  const level = useStoryLevel()
+  const stats: PlayerStat[] = useAlt ? statsFromEvents(alt.groupMatches, alt.bracket) : storyPlayerStats(level)
   const matches = useAlt ? alt.groupMatches : STORY_MATCHES
-  const ts = teamStats(matches)
+  const ts = useAlt ? teamStats(matches) : storyTeamStats(matches, level).filter((t) => t.pj > 0)
   const players = (key: (s: PlayerStat) => number) => stats.filter((s) => key(s) > 0).sort((a, b) => key(b) - key(a) || b.goals - a.goals).slice(0, 20)
   const rowsP = (list: PlayerStat[], val: (s: PlayerStat) => number, label: string) => (
     <table className="gt"><thead><tr><th>#</th><th className="l">Jugador</th><th className="l">País</th><th>{label}</th></tr></thead>
@@ -39,7 +42,7 @@ export function Stats() {
     <Section title="Estadísticas" sub={useAlt ? 'Torneo alternativo, calculado desde los eventos.' : 'Historia original.'}>
       {alt && <Tabs value={src} onChange={setSrc} items={[['story', 'Historia original'], ['alt', 'Torneo alternativo']]} />}
       <Tabs value={tab} onChange={setTab} items={[['g', 'Goleadores'], ['a', 'Asistencias'], ['ga', 'Goles + asist.'], ['t', 'Selecciones']]} />
-      {!useAlt && <Note tone="est">Goles: declarados por la simulación original (lista de dos goles parcial). Asistencias: <b>estimación provisional</b>, no hay asistentes registrados. Las cifras se calcularán desde eventos cuando existan.</Note>}
+      {!useAlt && <Note tone="est">Fase de grupos: goles declarados por la simulación original (lista parcial) y asistencias <b>estimadas</b>. {level > 0 ? <>Eliminatorias: calculadas desde los eventos de cada partido, hasta la fase que ya avanzaste ({phaseLabel(level)}). Los penales cuentan como empate.</> : <>Las eliminatorias se suman a medida que avanzas fase por fase en <a href="#/cuadro">Eliminatorias</a>.</>}</Note>}
       {tab === 'g' && rowsP(players((s) => s.goals), (s) => s.goals, 'Goles')}
       {tab === 'a' && rowsP(players((s) => s.assists), (s) => s.assists, useAlt ? 'Asist.' : 'Asist. (est.)')}
       {tab === 'ga' && rowsP(players((s) => s.goals + s.assists), (s) => s.goals + s.assists, 'G+A')}
@@ -60,7 +63,6 @@ export function Stats() {
 // ---------------- Cuadro ----------------
 // Historia oficial: los resultados de las eliminatorias son FIJOS (src/data/story-knockout.json), iguales para todas las personas.
 // Lo único que cambia entre personas es hasta qué fase decidieron avanzar (se guarda en su navegador).
-const NIVEL_KEY = 'lwc:historia:nivel:v1'
 const ETAPAS = [
   { boton: 'Avanzar a cuartos', juega: 'Octavos de final' },
   { boton: 'Avanzar a semifinales', juega: 'Cuartos de final' },
@@ -101,35 +103,66 @@ export function BracketView({ view, level = 0 }: { view: 'story' | 'alt'; level?
 
 const toItem = (m: KoMatch, tag?: string): Item => ({ id: m.id, a: m.a!, b: m.b!, goals: m.goals ?? [], ga: m.ga!, gb: m.gb!, et: m.et, pens: m.pens, winner: m.winner, tag })
 
+function CampeonDetalle() {
+  const br = STORY_KNOCKOUT.bracket
+  const { champion, runnerUp, third, fourth } = finalResult()
+  const camino = [...br.r16, ...br.qf, ...br.sf, br.final].filter((m) => m.a === champion || m.b === champion)
+  const scorers = new Map<string, number>()
+  for (const m of [...br.r16, ...br.qf, ...br.sf, br.third, br.final]) for (const g of m.goals ?? []) scorers.set(g.scorerId, (scorers.get(g.scorerId) ?? 0) + 1)
+  const top = [...scorers.entries()].sort((x, y) => y[1] - x[1]).slice(0, 5)
+  const f = br.final
+  return (
+    <Section title="¡Tenemos campeón!">
+      <div className="champ big reveal"><Flag id={champion} size={88} /><div><span className="muted">Campeón del Mundial de Leyendas</span><b>{TEAM_BY_ID[champion].name}</b></div></div>
+      <div className="podio">
+        <div><span>🥈 Subcampeón</span><TeamLink id={runnerUp} /></div>
+        <div><span>🥉 Tercer lugar</span><TeamLink id={third} /></div>
+        <div><span>Cuarto lugar</span><TeamLink id={fourth} /></div>
+      </div>
+      <div className="why-box">
+        <h4>La final</h4>
+        <p><b>{TEAM_BY_ID[f.a!].name} {scoreText(f)} {TEAM_BY_ID[f.b!].name}</b></p>
+        <Events goals={f.goals ?? []} home={f.a!} away={f.b!} />
+      </div>
+      <h3 className="sub">El camino de {TEAM_BY_ID[champion].name}</h3>
+      <div className="list">{camino.map((m) => <KoRow key={m.id} m={m} />)}</div>
+      <h3 className="sub">Goleadores de las eliminatorias</h3>
+      <ol className="rules">{top.map(([id, n]) => <li key={id}><a href={`#/jugador/${id}`}>{PLAYER_BY_ID[id].name}</a> ({TEAM_BY_ID[PLAYER_BY_ID[id].teamId].name}) · {n} gol{n > 1 ? 'es' : ''}</li>)}</ol>
+      <p className="small muted">Las estadísticas, los partidos, las selecciones y los jugadores ya incluyen estos resultados.</p>
+    </Section>
+  )
+}
+
 export function Bracket() {
   const full = STORY_KNOCKOUT.bracket
-  const [nivel, setNivel] = useState<number>(() => { try { const n = Number(localStorage.getItem(NIVEL_KEY)); return Number.isInteger(n) && n >= 0 && n <= 4 ? n : 0 } catch { return 0 } })
+  const nivel = useStoryLevel()
   const [jugando, setJugando] = useState(false)
   const [listo, setListo] = useState(false)
-  const guardar = (n: number) => { setNivel(n); try { localStorage.setItem(NIVEL_KEY, String(n)) } catch { /* sin almacenamiento */ } }
   const partidos = nivel === 0 ? full.r16 : nivel === 1 ? full.qf : nivel === 2 ? full.sf : [full.third, full.final]
-  const items = partidos.map((m) => toItem(m, m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined))
+  const items = nivel >= 4 ? [] : partidos.map((m) => toItem(m, m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined))
   const done = useRef(() => setListo(true)).current
   const empezar = () => { setListo(false); setJugando(true); window.scrollTo(0, 0) }
-  const terminar = () => { setJugando(false); setListo(false); guardar(nivel + 1) }
-  const sub = nivel >= 4 ? 'Historia original: terminó. Estos resultados son los mismos para todas las personas.'
+  const terminar = () => { setJugando(false); setListo(false); setLevel(nivel + 1); window.scrollTo(0, 0) }
+  const sub = nivel >= 4 ? 'Historia original: terminó. Estos resultados son los mismos para todas las personas y quedan guardados.'
     : nivel === 0 ? 'Historia original: octavos definidos, aún sin resultados.' : `Historia original: ya se jugaron ${ETAPAS[nivel - 1].juega.toLowerCase()}.`
   return (
-    <Section title="Eliminatorias" sub={sub}>
-      {jugando && (
-        <div className="historia-juega">
-          <h3>{ETAPAS[nivel].juega}</h3>
-          <Board key={`h${nivel}`} items={items} tick={nivel === 3 ? 90 : 70} onDone={done} />
-          {listo && <div className="cta"><button className="btn pri" onClick={terminar}>{nivel === 3 ? 'Conocer al campeón' : 'Continuar'}</button></div>}
-        </div>
-      )}
-      {!jugando && nivel < 4 && (
-        <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div>
-      )}
-      {!jugando && nivel >= 4 && <div className="cta"><button className="btn ghost" onClick={() => guardar(0)}>Volver a ver desde octavos</button></div>}
-      <BracketView view="story" level={jugando ? nivel : nivel} />
-      <Note>Los resultados de las eliminatorias de la historia original son fijos: se calcularon una sola vez y todas las personas ven los mismos. Cada quien decide cuándo avanzar de fase. Cuartos y semifinales siguen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8.</Note>
-    </Section>
+    <>
+      {nivel >= 4 && !jugando && <CampeonDetalle />}
+      <Section title="Eliminatorias" sub={sub}>
+        {jugando && (
+          <div className="historia-juega">
+            <h3>{ETAPAS[nivel].juega}</h3>
+            <Board key={`h${nivel}`} items={items} tick={nivel === 3 ? 90 : 70} onDone={done} />
+            <div className="cta">
+              {listo ? <button className="btn pri" onClick={terminar}>{nivel === 3 ? 'Conocer al campeón' : 'Continuar'}</button> : <span className="small muted">Cuando terminen los partidos aparecerá «{nivel === 3 ? 'Conocer al campeón' : 'Continuar'}».</span>}
+            </div>
+          </div>
+        )}
+        {!jugando && nivel < 4 && <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div>}
+        <BracketView view="story" level={nivel} />
+        <Note>Los resultados de las eliminatorias de la historia original son fijos: se calcularon una sola vez y todas las personas ven los mismos. Cada quien decide cuándo avanzar de fase, y lo que ya reveló queda guardado en su navegador. Cuartos y semifinales siguen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8.</Note>
+      </Section>
+    </>
   )
 }
 

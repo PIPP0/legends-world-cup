@@ -65,3 +65,28 @@ describe('eliminatorias congeladas', () => {
     expect(b.champion).toBe(b.final.winner)
   })
 })
+
+import { storyPlayerStats, storyTeamStats } from './stats'
+import { revealed, teamStatus } from './historia'
+describe('estadísticas con eliminatorias reveladas', () => {
+  it('sin avanzar no suman nada; al avanzar suman goles y partidos', () => {
+    expect(revealed(0).length).toBe(0)
+    expect(revealed(1).length).toBe(8)
+    expect(revealed(4).length).toBe(16)
+    const g = (lvl: number) => storyPlayerStats(lvl).reduce((a, s) => a + s.goals, 0)
+    const ko = (lvl: number) => revealed(lvl).reduce((a, m) => a + m.ga! + m.gb!, 0)
+    expect(g(4) - g(0)).toBe(ko(4))
+  })
+  it('los penales cuentan como empate y las selecciones suman partidos', () => {
+    const t = storyTeamStats(STORY_MATCHES, 4)
+    const bra = t.find((x) => x.teamId === 'bra')!
+    expect(bra.pj).toBe(7)
+    const fra = t.find((x) => x.teamId === 'fra')!
+    expect(fra.d).toBeGreaterThan(0)
+  })
+  it('estado de una selección en el cuadro', () => {
+    expect(teamStatus('eng', 1).text).toContain('Eliminada en octavos')
+    expect(teamStatus('bra', 4).text).toContain('Campeona')
+    expect(teamStatus('arg', 1).next?.opp).toBe('hun')
+  })
+})

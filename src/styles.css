@@ -356,3 +356,5 @@ footer .logo{margin-bottom:10px}
 .admin-enc{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}.admin-enc li{padding:10px 12px;background:var(--s1);border:1px solid var(--line);border-radius:8px}.admin-enc p{margin:6px 0 0}.estrellas-txt{color:#ffcf4a;letter-spacing:1px}
 
 .historia-juega{margin:0 0 18px;padding:14px;border:1px solid var(--line);border-top:3px solid var(--pk);border-radius:var(--r);background:var(--s1)}.historia-juega h3{margin:0 0 10px;font:800 22px 'Barlow Condensed';text-transform:uppercase;color:var(--cy)}
+
+.podio{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0}.podio>div{display:flex;flex-direction:column;gap:6px;padding:12px;background:var(--s1);border:1px solid var(--line);border-radius:var(--r)}.podio span{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
