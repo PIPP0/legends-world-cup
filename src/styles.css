@@ -366,7 +366,7 @@ footer .logo{margin-bottom:10px}
 .bcell{align-self:center;position:relative;min-width:0}.bcell h4{margin:0 0 6px;color:var(--mut);font:700 13px 'Barlow Condensed';letter-spacing:2px;text-transform:uppercase}
 
 @keyframes bpop{0%{transform:scale(.88);opacity:.3}60%{transform:scale(1.05)}100%{transform:none;opacity:1}}
-.bcell .kside b{animation:bnum .5s ease-out both}@keyframes bnum{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.bcell .kside b{animation:bnum .5s ease-out both}@keyframes bnum{from{opacity:0}to{opacity:1}}
 .bcell .kside .kn{transition:color .3s}
 .anim-estado{margin:6px 0;font:800 18px 'Barlow Condensed';letter-spacing:2px;text-transform:uppercase;color:var(--cy)}
 .trofeo .champ.big{margin:0;animation:bpop 1s cubic-bezier(.2,1.4,.4,1)}.trofeo .champ.big b{font-size:30px}.trofeo .champ{font-size:18px}
@@ -386,7 +386,7 @@ footer .logo{margin-bottom:10px}
 /* El equipo llega a la siguiente ronda por la línea */
 
 /* Ganador: su recuadro dorado se enciende; el del perdedor se enciende un instante y se apaga */
-.bgrid .kcard{margin:0;min-height:132px}.bcell.c1 .kcard{min-height:112px}
+.bgrid .kcard{margin:0;min-height:168px}.bcell.c1 .kcard{min-height:168px}
 .kside{border:2px solid transparent;border-radius:999px;padding:4px 14px;margin:2px 0;transition:border-color .5s ease,background-color .5s ease,box-shadow .5s ease}
 .bcell.pop .kside.win{animation:enciende .6s ease-out both}@keyframes enciende{from{border-color:transparent;background-color:transparent;box-shadow:none}to{border-color:var(--gold);background-color:rgba(255,207,74,.10);box-shadow:0 0 14px rgba(255,207,74,.25)}}
 .bcell.pop .kside.lose{animation:apaga 1.5s ease-in-out both}@keyframes apaga{0%{border-color:transparent;background-color:transparent}25%,45%{border-color:var(--gold);background-color:rgba(255,207,74,.10);box-shadow:0 0 14px rgba(255,207,74,.25)}100%{border-color:transparent;background-color:transparent;box-shadow:none}}
@@ -394,7 +394,11 @@ footer .logo{margin-bottom:10px}
 
 /* Llegada suave de los equipos: la casilla se queda visible ("Por definir" se desvanece) y el equipo entra deslizándose por la línea */
 .bgrid .kside{min-height:44px;position:relative}
-.kside.llega>*:not(.ghost-pd){animation:entraEquipo .85s cubic-bezier(.22,1,.36,1) .75s both;will-change:transform,opacity}
-.kside.llega .ghost-pd{position:absolute;left:46px;top:50%;transform:translateY(-50%);font:700 16px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.6px;color:var(--mut);animation:saleDefinir .5s ease .6s both}
-@keyframes entraEquipo{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none}}
+.kside.llega>*:not(.ghost-pd){animation:entraEquipo .7s ease-out .8s both}
+.kside.llega .ghost-pd{position:absolute;left:48px;top:50%;transform:translateY(-50%);font:700 16px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.6px;color:var(--mut);animation:saleDefinir .5s ease .6s both}
+@keyframes entraEquipo{from{opacity:0}to{opacity:1}}
 @keyframes saleDefinir{from{opacity:1}to{opacity:0}}
+
+/* Sin saltos: el nombre y el marcador ocupan siempre el mismo lugar, antes y después de marcar el borde dorado */
+.bgrid .kside b{min-width:1.1em;text-align:right;display:inline-block}
+.bgrid .kside,.bgrid .kside .kn{transform:none!important}
