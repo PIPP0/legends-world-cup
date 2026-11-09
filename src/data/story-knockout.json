@@ -1,5 +1,5 @@
 {
- "version": 6,
+ "version": 7,
  "seed": "historia-oficial-1",
  "bracket": {
   "r16": [
@@ -527,7 +527,7 @@
     {
      "minute": 51,
      "teamId": "arg",
-     "scorerId": "arg-fernando-redondo",
+     "scorerId": "arg-diego-maradona",
      "phase": "reg"
     }
    ],
@@ -576,6 +576,10 @@
   {
    "que": "Tercer puesto definido por el autor: Francia 2-2 Argentina, gana Argentina por penales (4-5, valor elegido). Final definida por el autor: Brasil 1-0 España, gol de Pelé (minuto 67 elegido, sin asistencia). Campeón: Brasil.",
    "goles": "final: Pelé 67'"
+  },
+  {
+   "que": "Tercer puesto: los goles de Argentina son de Messi y Maradona (pedido del autor; sin asistencias; Messi el primero).",
+   "goles": "Messi y Maradona"
   }
  ]
 }

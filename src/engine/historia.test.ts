@@ -38,6 +38,7 @@ describe('eliminatorias congeladas', () => {
     expect([s1.a, s1.b, s1.ga, s1.gb, s1.winner]).toEqual(['bra', 'fra', 2, 1, 'bra'])
     expect([b.final.a, b.final.b]).toEqual(['bra', 'esp'])
     expect([b.third.a, b.third.b, b.third.ga, b.third.gb, b.third.winner, b.third.pens]).toEqual(['fra', 'arg', 2, 2, 'arg', [4, 5]])
+    expect(b.third.goals?.filter((g) => g.teamId === 'arg').map((g) => g.scorerId)).toEqual(['arg-lionel-messi', 'arg-diego-maradona'])
     expect([b.final.ga, b.final.gb, b.final.winner, b.final.pens ?? null]).toEqual([1, 0, 'bra', null])
     expect(b.final.goals?.map((g) => g.scorerId)).toEqual(['bra-pele'])
     expect(b.champion).toBe('bra')
