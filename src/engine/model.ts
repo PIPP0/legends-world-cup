@@ -146,6 +146,22 @@ function assignGoals(team: Team, n: number, rng: Rng, minuteMax: number, minuteM
 
 export interface SimOutcome { ga: number; gb: number; goals: Goal[]; et: boolean; pens?: [number, number]; winner?: string }
 
+// Las probabilidades solo dependen de los goles esperados de cada lado: se guardan para no recalcular la matriz de marcadores en cada partido simulado.
+const probsMemo = new Map<string, { win: number; loss: number }>()
+function probsCache(la: number, lb: number) {
+  const k = `${la.toFixed(3)}|${lb.toFixed(3)}`
+  let v = probsMemo.get(k)
+  if (!v) {
+    const M = scoreMatrix(la, lb)
+    let win = 0, loss = 0
+    M.forEach((row, i) => row.forEach((p, j) => { if (i > j) win += p; else if (i < j) loss += p }))
+    v = { win, loss }
+    if (probsMemo.size > 5000) probsMemo.clear()
+    probsMemo.set(k, v)
+  }
+  return v
+}
+
 export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParams, knockout: boolean, env?: Env): SimOutcome {
   const [la0, lb0] = lambdas(a, b, params, env)
   const vr = params.variance * weatherFactor(env?.ctx).variance // con lluvia hay más imprevistos
@@ -155,7 +171,7 @@ export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParam
   // y el que pierde arriesga un poco más. Así las goleadas extremas (6-2) son tan raras como en el fútbol real.
   // Filtro de coherencia: si hay mucha diferencia entre los equipos, el azar no puede dar un resultado absurdo (p. ej. el favorito perdiendo 0-5).
   // Un marcador así se vuelve a sortear (con la misma semilla el resultado sigue siendo el mismo de siempre).
-  const pr = probabilities(a, b, params, env)
+  const pr = probsCache(la0, lb0)
   const dog = pr.win >= pr.loss ? b : a
   const pDog = Math.min(pr.win, pr.loss), pFav = Math.max(pr.win, pr.loss)
   const sorpresa = rng() < 0.04 // en muy raras ocasiones se deja pasar un tropiezo del gran favorito

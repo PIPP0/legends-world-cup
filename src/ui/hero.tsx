@@ -92,9 +92,19 @@ export function Count({ to }: { to: number }) {
   return <>{n}</>
 }
 
+// Probabilidades de campeón de la portada: se calculan una sola vez (volver al inicio no las recalcula).
+let oddsGuardadas: Record<string, number> | null = null
+const oddsPortada = () => (oddsGuardadas ??= championOdds(DECLARED_R16, DEFAULT_PARAMS, 300, 'home'))
+
 export function ChampionPicker() {
   const [pick, setPick] = useLocalState<string | null>('lwc:pick', null)
-  const odds = useMemo(() => championOdds(DECLARED_R16, DEFAULT_PARAMS, 300, 'home'), [])
+  // La portada se dibuja primero y las probabilidades llegan un instante después (la primera vez; luego quedan guardadas).
+  const [odds, setOdds] = useState<Record<string, number>>(oddsGuardadas ?? {})
+  useEffect(() => {
+    if (oddsGuardadas) return
+    const h = setTimeout(() => setOdds(oddsPortada()), 60)
+    return () => clearTimeout(h)
+  }, [])
   const teams = DECLARED_R16.flat()
   const ranked = [...teams].sort((a, b) => (odds[b] ?? 0) - (odds[a] ?? 0))
   const rank = pick ? ranked.indexOf(pick) + 1 : 0
