@@ -758,5 +758,7 @@ const D: string[] = [
   "Ancora nessun voto. Sii il primo!",
   "{n} voto",
   "{n} voti",
+  "Non hai ancora scelto il tuo MVP.",
+  "Nessun giocatore corrisponde.",
 ]
 export default D

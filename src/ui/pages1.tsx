@@ -1,5 +1,5 @@
 import { rich } from '../i18n/rich'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { GROUPS, PLAYERS, STORY_MATCHES, TEAMS, teamsOfGroup } from '../data'
 import { DECLARED_R16 } from '../data/raw'
 import { DEFAULT_PARAMS, profile } from '../engine/model'
@@ -10,7 +10,7 @@ import { groupTable } from '../engine/standings'
 import { matchStory } from '../engine/narrative'
 import { Avatar, Flag, Note, Section, TeamLink } from './common'
 import { FutCard, TeamCard } from './visual'
-import { ChampionPicker, Count, Hero, MvpModal } from './hero'
+import { ChampionPicker, Count, Hero } from './hero'
 import { MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { LANG, tr } from '../i18n'
@@ -20,7 +20,6 @@ const groupGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
 
 export function Home() {
   const level = useStoryLevel()
-  const [mvpAbierto, setMvpAbierto] = useState(false)
   const ko = revealed(level)
   const totalGoals = groupGoals + ko.reduce((a, m) => a + (m.ga ?? 0) + (m.gb ?? 0), 0)
   const top = useMemo(() => storyPlayerStats(level).filter((s) => s.goals >= 3).sort((a, b) => b.goals - a.goals), [level])
@@ -39,11 +38,10 @@ export function Home() {
         <div><b><Count to={32} /></b><span>{tr('selecciones')}</span></div>
         <div><b><Count to={STORY_MATCHES.length + ko.length} /></b><span>{tr('partidos jugados')}</span></div>
         <div><b><Count to={totalGoals} /></b><span>{tr('goles')}</span></div>
-        <button type="button" className="live mvp-cta" onClick={() => setMvpAbierto(true)}><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></button>
+        <a className="live mvp-cta" href="#/mvp"><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></a>
       </div>
 
       <ChampionPicker />
-      {mvpAbierto && <MvpModal onClose={() => setMvpAbierto(false)} />}
 
       <Section title={tr('Partido inaugural')} sub={tr('Grupo A · Fecha 1')} action={<a className="more" href={`#/partido/${featured.id}`}>{tr('Ver partido →')}</a>}>
         <a className="feature" href={`#/partido/${featured.id}`} style={{ ['--fa' as string]: 'url(https://flagcdn.com/w320/br.png)', ['--fb' as string]: 'url(https://flagcdn.com/w320/gb-eng.png)' }}>

@@ -758,4 +758,6 @@ export const KEYS: string[] = [
   "Aún no hay votos. ¡Sé el primero!",
   "{n} voto",
   "{n} votos",
+  "Aún no has elegido a tu MVP.",
+  "Ningún jugador coincide.",
 ]

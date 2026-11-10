@@ -758,5 +758,7 @@ const D: string[] = [
   "Belum ada suara. Jadilah yang pertama!",
   "{n} suara",
   "{n} suara",
+  "Kamu belum memilih MVP-mu.",
+  "Tidak ada pemain yang cocok.",
 ]
 export default D

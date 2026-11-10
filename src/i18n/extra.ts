@@ -20,4 +20,6 @@ export const EXTRA: Array<[string, string]> = [
   ['Aún no hay votos. ¡Sé el primero!', 'No votes yet. Be the first!'],
   ['{n} voto', '{n} vote'],
   ['{n} votos', '{n} votes'],
+  ['Aún no has elegido a tu MVP.', 'You have not picked your MVP yet.'],
+  ['Ningún jugador coincide.', 'No player matches.'],
 ]

@@ -1,3 +1,4 @@
+import { MvpPage } from './mvp'
 import { DonateLink } from './paybox'
 import { useEffect, useState } from 'react'
 import { DEFAULT_PARAMS } from '../engine/model'
@@ -55,6 +56,7 @@ function Page({ route }: { route: string }) {
     case 'estadisticas': return <Stats />
     case 'cuadro': return <Bracket />
     case 'simulador': return <Simulator />
+    case 'mvp': return <MvpPage />
     case 'creditos': return <Credits />
     case 'mundial': return fun.simulaMundial ? <Mundial /> : <Note>{t('«Simula tu mundial» no está disponible por ahora.')} <a href="#/">{t('Volver al inicio')}</a></Note>
     case 'vivo': return <Vivo />
