@@ -23,7 +23,8 @@ const LINEAS: [Linea, string][] = [['ALL', 'Todas las líneas'], ['GK', 'Portero
 // Página «Elige MVP»: voto del jugador favorito (uno por persona, se puede cambiar) y ranking de los 10 más populares.
 export function MvpPage() {
   const [voto, setVoto] = useLocalState<string | null>('lwc:mvp', null)
-  const [ranking, setRanking] = useState<VotoMvp[] | null>(null)
+  const [reales, setReales] = useState<VotoMvp[]>([]) // votos reales de la nube; el ranking se arma con ellos + los iniciales
+  const ranking = useMemo(() => conIniciales(reales), [reales])
   const [q, setQ] = useState('')
   const [linea, setLinea] = useState<Linea>('ALL')
   const [aviso, setAviso] = useState('')
@@ -32,17 +33,26 @@ export function MvpPage() {
     const base = PLAYERS.filter((p) => linea === 'ALL' || p.line === linea)
     return (t.length >= 2 ? base.filter((p) => p.name.toLowerCase().includes(t)) : [...base].sort((a, b) => b.ovr - a.ovr)).slice(0, 24)
   }, [q, linea])
-  const cargar = () => { void leerRankingMvp().then((r) => setRanking(conIniciales(r ?? []))) }
+  const cargar = () => { void leerRankingMvp().then((r) => { if (r) setReales(r) }) }
   useEffect(cargar, [])
   const elegir = async (id: string) => {
+    if (id === voto) return
+    // al instante en pantalla: se resta el voto anterior y se suma el nuevo; la nube se sincroniza por detrás
+    const anterior = voto
+    setReales((prev) => {
+      const m = new Map(prev.map((r) => [r.id, r.n]))
+      if (anterior && (m.get(anterior) ?? 0) > 0) m.set(anterior, (m.get(anterior) ?? 0) - 1)
+      m.set(id, (m.get(id) ?? 0) + 1)
+      return [...m.entries()].map(([k, n]) => ({ id: k, n }))
+    })
     setVoto(id); setAviso('')
     const ok = await votarMvp(id)
     if (!ok) setAviso(tr('Tu voto quedó guardado en este navegador; el ranking compartido no está disponible ahora.'))
     cargar()
   }
-  const max = Math.max(1, ...(ranking ?? []).map((r) => r.n))
+  const max = Math.max(1, ...ranking.map((r) => r.n))
   const mio = voto ? PLAYER_BY_ID[voto] : undefined
-  const validos = (ranking ?? []).filter((r) => PLAYER_BY_ID[r.id])
+  const validos = ranking.filter((r) => PLAYER_BY_ID[r.id])
   const podio = validos.slice(0, 3), resto = validos.slice(3)
   const nVotos = (n: number) => (n === 1 ? tr('{n} voto', { n }) : tr('{n} votos', { n }))
   return (
@@ -83,7 +93,7 @@ export function MvpPage() {
         </section>
         <aside className="mvp-ranking">
           <h2>{tr('Los 10 más populares')}</h2>
-          {ranking === null ? <p className="muted small">…</p> : (
+          {(
             <>
               <div className="mvp-podio">
                 {podio.map((r, i) => (
