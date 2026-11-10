@@ -37,7 +37,7 @@ export function Hero() {
         <h1>{LANG === 'es' ? <>Mundial<br /><span>Imposible</span></> : <>{tr('HERO·1')}<br /><span>{tr('HERO·2')}</span></>}</h1>
         <p className="lead">{tr('32 selecciones, las mayores leyendas de la historia, todos a los 27 años. Un solo campeón. Sigue cada partido como si fuera en vivo.')}</p>
         <div className="cta">
-          <a className="btn pri" href="#/historia">{tr('Ver el torneo')}</a>
+          <a className="btn pri" href="#/cuadro">{tr('Ver el torneo')}</a>
           {fun.simulaMundial && <a className="btn hot" href="#/mundial">{tr('Simula tu mundial')}</a>}
           <a className="btn" href="#/simulador">{tr('Simular un partido')}</a>
         </div>
