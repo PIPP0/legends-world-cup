@@ -769,5 +769,8 @@ const D: string[] = [
   "Seguem na disputa",
   "Eliminadas na fase de grupos",
   "Editar",
+  "Você concorda com o campeão?",
+  "Concordo",
+  "Discordo",
 ]
 export default D

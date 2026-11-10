@@ -31,6 +31,34 @@ export async function registrarMundial(t: AltTournament): Promise<void> {
   } catch { /* no interrumpe el juego */ }
 }
 
+// ---- ¿De acuerdo con el campeón? 👍/👎: un voto por persona (se puede cambiar); contadores públicos ----
+export type Acuerdo = 'si' | 'no'
+export async function votarAcuerdo(voto: Acuerdo): Promise<boolean> {
+  if (!NUBE_ACTIVA) return false
+  try {
+    const n = await nube(); const u = await uid(); if (!u) return false
+    const votoRef = n.fs.doc(n.db, 'acuerdoVotos', u), contRef = n.fs.doc(n.db, 'acuerdoConteo', 'campeon')
+    await n.fs.runTransaction(n.db, async (tx) => {
+      const prev = await tx.get(votoRef); const cont = await tx.get(contRef)
+      const antes = prev.exists() ? (prev.data().voto as Acuerdo) : null
+      if (antes === voto) return
+      const c = { si: cont.exists() ? (cont.data().si as number) : 0, no: cont.exists() ? (cont.data().no as number) : 0 }
+      if (antes && c[antes] > 0) c[antes]--
+      c[voto]++
+      tx.set(votoRef, { voto, creada: Date.now() })
+      tx.set(contRef, c)
+    })
+    return true
+  } catch { return false }
+}
+export async function leerAcuerdo(): Promise<{ si: number; no: number } | null> {
+  if (!NUBE_ACTIVA) return null
+  try {
+    const n = await nube(); const d = await n.fs.getDoc(n.fs.doc(n.db, 'acuerdoConteo', 'campeon'))
+    return d.exists() ? { si: (d.data().si as number) ?? 0, no: (d.data().no as number) ?? 0 } : { si: 0, no: 0 }
+  } catch { return null }
+}
+
 // ---- selección favorita (por cuenta): vive en la ficha del usuario ----
 export async function leerFavoritaNube(): Promise<string | null | undefined> {
   if (!NUBE_ACTIVA) return undefined

@@ -769,4 +769,7 @@ export const KEYS: string[] = [
   "Siguen en carrera",
   "Eliminadas en grupos",
   "Editar",
+  "¿Estás de acuerdo con el campeón?",
+  "De acuerdo",
+  "En desacuerdo",
 ]

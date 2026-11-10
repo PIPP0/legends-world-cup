@@ -769,5 +769,8 @@ const D: string[] = [
   "Still in the running",
   "Out in the groups",
   "Edit",
+  "Do you agree with the champion?",
+  "Agree",
+  "Disagree",
 ]
 export default D

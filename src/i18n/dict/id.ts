@@ -769,5 +769,8 @@ const D: string[] = [
   "Masih bertahan",
   "Tersingkir di fase grup",
   "Ubah",
+  "Apakah kamu setuju dengan juaranya?",
+  "Setuju",
+  "Tidak setuju",
 ]
 export default D

@@ -769,5 +769,8 @@ const D: string[] = [
   "Toujours en lice",
   "Éliminées en phase de groupes",
   "Modifier",
+  "Es-tu d’accord avec le champion ?",
+  "D’accord",
+  "Pas d’accord",
 ]
 export default D

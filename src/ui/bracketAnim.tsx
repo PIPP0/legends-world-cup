@@ -1,3 +1,4 @@
+import { AcuerdoCampeon } from './acuerdo'
 import { tr } from '../i18n'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { TEAM_BY_ID } from '../data/lookup'
@@ -165,6 +166,7 @@ function Grid({ br, pop, avanzan, hechas, full, camino }: { br: ReturnType<typeo
         {br.sf.map((m, i) => cell(m, `${4 * i + 2} / span 4`, 3))}
         <div ref={(el) => { refs.current.F = el }} className={`bcell c4 ${pop.has('F') ? 'pop' : ''}`} style={{ gridColumn: 4, gridRow: '4 / span 3' }}><KoCard m={br.final} entra={llegan.F} /></div>
         <div ref={(el) => { refs.current.TRO = el }} className="bcell c4 trofeo" style={{ gridColumn: 4, gridRow: '2 / span 2' }}>
+          {br.champion && <AcuerdoCampeon />}
           <div className={`champ ${br.champion ? 'big reveal' : ''}`}>{br.champion ? <><Flag id={br.champion} size={56} /><div><span>{tr('Campeón')}</span><b>🏆 {TEAM_BY_ID[br.champion].name}</b></div></> : <span className="muted">{tr('🏆 Campeón por definir')}</span>}</div>
         </div>
         <div ref={(el) => { refs.current.T = el }} className={`bcell c4 ${pop.has('T') ? 'pop' : ''}`} style={{ gridColumn: 4, gridRow: '7 / span 2' }}><h4>{tr('Tercer puesto')}</h4><KoCard m={br.third} entra={llegan.T} /></div>

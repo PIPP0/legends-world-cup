@@ -31,4 +31,7 @@ export const EXTRA: Array<[string, string]> = [
   ['Siguen en carrera', 'Still in the running'],
   ['Eliminadas en grupos', 'Out in the groups'],
   ['Editar', 'Edit'],
+  ['¿Estás de acuerdo con el campeón?', 'Do you agree with the champion?'],
+  ['De acuerdo', 'Agree'],
+  ['En desacuerdo', 'Disagree'],
 ]
