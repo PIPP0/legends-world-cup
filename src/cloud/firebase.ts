@@ -81,12 +81,14 @@ export async function anotarUsuario(): Promise<void> {
     const ref = n.fs.doc(n.db, 'usuarios', u.uid)
     const previo = await n.fs.getDoc(ref).catch(() => null)
     const ahora = Date.now()
-    const movil = /Mobi|Android|iPhone/i.test(navigator.userAgent)
+    const ua = navigator.userAgent
+    const tablet = /iPad|Tablet/i.test(ua) || (/Android/i.test(ua) && !/Mobi/i.test(ua)) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    const movil = !tablet && /Mobi|Android|iPhone/i.test(ua)
     const sn = sistemaYNavegador()
     await n.fs.setDoc(ref, {
       uid: u.uid, email: u.email ?? '', nombre: (u.displayName ?? '').slice(0, 120), foto: (u.photoURL ?? '').slice(0, 400), anonimo: u.isAnonymous,
       creado: previo?.exists() ? (previo.data().creado as number) : ahora, ultimo: ahora, visitas: Math.min(100000, (previo?.exists() ? (previo.data().visitas as number) : 0) + 1),
-      idioma: (navigator.language || '').slice(0, 12), dispositivo: movil ? 'móvil' : 'computador',
+      idioma: (navigator.language || '').slice(0, 12), dispositivo: tablet ? 'tablet' : movil ? 'móvil' : 'computador',
       // Datos técnicos del navegador (sin IP): país aproximado por zona horaria, sistema, navegador, pantalla, de dónde llegó e idioma elegido en la web.
       pais: paisAproximado(), zona: zonaHoraria(), sistema: sn.sistema, navegador: sn.navegador, pantalla: `${screen.width}x${screen.height}`.slice(0, 12), origen: origenVisita(), idiomaWeb: LANG,
     })

@@ -6,6 +6,9 @@ import { HOST_BY_ID, MONTHS } from '../data/world'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Bar, Note, Section, Tabs } from './common'
 import { nombrePais } from '../lib/pais'
+// País de un registro: el guardado (zona horaria) o, en registros viejos, la región del idioma del navegador (es-CL → CL).
+const paisDe = (u: UsuarioReg) => { const c = u.pais || (u.idioma?.split('-')[1] ?? '').toUpperCase(); return c.length === 2 ? { cod: c, aprox: !u.pais } : null }
+const paisTxt = (u: UsuarioReg) => { const p = paisDe(u); return p ? `${nombrePais(p.cod)} (${p.cod})${p.aprox ? ' · por idioma' : ''}` : '—' }
 
 type Seccion = 'resumen' | 'personas' | 'funciones' | 'encuestas' | 'mundiales' | 'historia'
 const NIVELES = ['Ninguna fase (solo se ven los cruces de octavos)', 'Hasta octavos jugados', 'Hasta cuartos jugados', 'Hasta semifinales jugadas', 'Todo, hasta el campeón']
@@ -94,14 +97,14 @@ function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: Progre
   return (
     <>
       <p className="muted small">Toca una fila para ver todo lo que se sabe de esa persona. El país es aproximado (por zona horaria del navegador, no por IP).</p>
-      <div className="tscroll"><table className="gt"><thead><tr><th className="l">ID</th><th className="l">Persona</th><th className="l">País</th><th>Último</th><th>Visitas</th><th className="l">Sistema · navegador</th><th>Idioma web</th></tr></thead>
-        <tbody>{l.map((x) => <tr key={x.uid} className={`fila-sel${sel === x.uid ? ' on' : ''}`} onClick={() => setSel(sel === x.uid ? null : x.uid)} style={{ cursor: 'pointer' }}><td className="l" title={x.uid}>{corto(x.uid)}</td><td className="l">{x.nombre || x.email || (x.anonimo ? 'Anónimo' : '—')}</td><td className="l">{x.pais ? `${nombrePais(x.pais)} (${x.pais})` : '—'}</td><td>{fecha(x.ultimo)}</td><td>{x.visitas}</td><td className="l">{x.sistema ? `${x.sistema} · ${x.navegador ?? ''}` : x.dispositivo || '—'}</td><td>{x.idiomaWeb || '—'}</td></tr>)}</tbody></table></div>
+      <div className="tscroll"><table className="gt"><thead><tr><th className="l">ID</th><th className="l">Persona</th><th className="l">País</th><th>Último</th><th>Visitas</th><th className="l">Dispositivo</th><th className="l">Sistema · navegador</th><th className="l">Idioma</th></tr></thead>
+        <tbody>{l.map((x) => <tr key={x.uid} className={`fila-sel${sel === x.uid ? ' on' : ''}`} onClick={() => setSel(sel === x.uid ? null : x.uid)} style={{ cursor: 'pointer' }}><td className="l" title={x.uid}>{corto(x.uid)}</td><td className="l">{x.nombre || x.email || (x.anonimo ? 'Anónimo' : '—')}</td><td className="l">{paisTxt(x)}</td><td>{fecha(x.ultimo)}</td><td>{x.visitas}</td><td className="l">{x.dispositivo || '—'}</td><td className="l">{x.sistema ? `${x.sistema} · ${x.navegador ?? ''}` : '—'}</td><td className="l">{x.idiomaWeb || x.idioma || '—'}</td></tr>)}</tbody></table></div>
       {u && (
         <div className="detalle-stat"><h4 className="sub">{u.nombre || u.email || `Visitante ${corto(u.uid)}`}</h4>
           <table className="gt"><tbody>
             {fila('ID de usuario', u.uid)}{fila('Tipo', u.anonimo ? 'Anónimo (sin datos personales)' : 'Cuenta de Google')}{fila('Correo', u.email)}
-            {fila('País (aproximado)', u.pais ? `${nombrePais(u.pais)} (${u.pais})` : '')}{fila('Zona horaria', u.zona)}
-            {fila('Idioma del navegador', u.idioma)}{fila('Idioma elegido en la web', u.idiomaWeb)}
+            {fila('País (aproximado)', paisTxt(u))}{fila('Zona horaria', u.zona)}
+            {fila('Idioma del navegador', u.idioma)}{fila('Idioma en que se abrió la web', u.idiomaWeb)}
             {fila('Dispositivo', u.dispositivo)}{fila('Sistema', u.sistema)}{fila('Navegador', u.navegador)}{fila('Pantalla', u.pantalla)}
             {fila('Llegó desde', u.origen)}{fila('Primera visita', fecha(u.creado))}{fila('Última visita', fecha(u.ultimo))}{fila('Visitas', u.visitas)}
             {fila('Avance en la historia', prog ? `${NIVELES[prog.nivel] ?? prog.nivel} (actualizado ${fecha(prog.actualizado)})` : 'Sin avance guardado')}
@@ -177,7 +180,7 @@ function Resumen({ d }: { d: Datos }) {
       </div>
       {det && <div className="detalle-stat"><h3 className="sub">{det.titulo}</h3><p className="muted small">{det.como}</p>{det.cuerpo}</div>}
       {d.mundiales.length > 0 && <><h3 className="sub">Sedes más elegidas</h3>{barras(sedes)}<h3 className="sub">Meses más elegidos</h3>{barras(meses)}<h3 className="sub">Campeones más frecuentes</h3>{barras(campeones)}</>}
-      {d.usuarios.length > 0 && <><h3 className="sub">Países (aproximado, por zona horaria)</h3>{barras(top(d.usuarios, (u) => (u.pais ? nombrePais(u.pais) : 'Desconocido'), 12))}</>}
+      {d.usuarios.length > 0 && <><h3 className="sub">Países (aproximado, por zona horaria)</h3>{barras(top(d.usuarios, (u) => { const p = paisDe(u); return p ? nombrePais(p.cod) : 'Desconocido' }, 12))}</>}
       <h3 className="sub">Sistemas, navegadores y orígenes</h3>
       <p className="small muted">Sistemas: {top(d.usuarios, (u) => u.sistema || 'desconocido').map(([k, v]) => `${k} ${v}`).join(' · ') || '—'}</p>
       <p className="small muted">Navegadores: {top(d.usuarios, (u) => u.navegador || 'desconocido').map(([k, v]) => `${k} ${v}`).join(' · ') || '—'}</p>
