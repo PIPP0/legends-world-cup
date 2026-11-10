@@ -4,7 +4,7 @@ import { KEYS } from '../src/i18n/keys'
 const lang = process.argv[2]
 const lines = readFileSync(`/tmp/i18n/${lang}.txt`, 'utf8').split('\n').filter((l) => l.trim())
 const out: string[] = new Array(KEYS.length).fill('')
-for (const l of lines) { const i = l.indexOf('|'); const n = Number(l.slice(0, i)); if (!(n >= 0 && n < KEYS.length)) { console.log('índice raro', l.slice(0, 40)); continue } const v = l.slice(i + 1).replace(/\r$/, ''); const k = KEYS[n]; const ini = k.match(/^\s*/)![0], fin = k.match(/\s*$/)![0]; out[n] = k.trim() ? ini + v.trim() + fin : v }
+for (const l of lines) { const i = l.indexOf('|'); const n = Number(l.slice(0, i)); if (!(n >= 0 && n < KEYS.length)) { console.log('índice raro', l.slice(0, 40)); continue } const v = l.slice(i + 1).replace(/\r$/, ''); const k = KEYS[n]; const ini = k.match(/^\s*/)![0], fin = k.match(/\s*$/)![0]; out[n] = k.trim() ? (/^[.,;:!?]/.test(v.trim()) ? '' : ini) + v.trim() + fin : v }
 const toks = (s: string) => (s.match(/\{\w+\}|<\/?b>/g) ?? []).sort().join(',')
 let malos = 0
 out.forEach((v, i) => {
