@@ -1,3 +1,5 @@
+import { LANG } from '../i18n'
+import { origenVisita, paisAproximado, sistemaYNavegador, zonaHoraria } from '../lib/pais'
 // Nube opcional (Firebase). Si no hay configuración, la web funciona igual que antes y el admin muestra "sin conectar".
 // La configuración de una app web de Firebase es PÚBLICA (no es un secreto): se carga como variable VITE_FIREBASE_CONFIG (JSON).
 import type { FirebaseApp } from 'firebase/app'
@@ -80,10 +82,13 @@ export async function anotarUsuario(): Promise<void> {
     const previo = await n.fs.getDoc(ref).catch(() => null)
     const ahora = Date.now()
     const movil = /Mobi|Android|iPhone/i.test(navigator.userAgent)
+    const sn = sistemaYNavegador()
     await n.fs.setDoc(ref, {
       uid: u.uid, email: u.email ?? '', nombre: (u.displayName ?? '').slice(0, 120), foto: (u.photoURL ?? '').slice(0, 400), anonimo: u.isAnonymous,
       creado: previo?.exists() ? (previo.data().creado as number) : ahora, ultimo: ahora, visitas: Math.min(100000, (previo?.exists() ? (previo.data().visitas as number) : 0) + 1),
       idioma: (navigator.language || '').slice(0, 12), dispositivo: movil ? 'móvil' : 'computador',
+      // Datos técnicos del navegador (sin IP): país aproximado por zona horaria, sistema, navegador, pantalla, de dónde llegó e idioma elegido en la web.
+      pais: paisAproximado(), zona: zonaHoraria(), sistema: sn.sistema, navegador: sn.navegador, pantalla: `${screen.width}x${screen.height}`.slice(0, 12), origen: origenVisita(), idiomaWeb: LANG,
     })
   } catch { /* si falla, la web sigue igual */ }
 }

@@ -39,7 +39,14 @@ service cloud.firestore {
         && request.resource.data.get('foto', '') is string && request.resource.data.get('foto', '').size() <= 400
         && request.resource.data.get('visitas', 0) is int && request.resource.data.get('visitas', 0) <= 100000
         && request.resource.data.get('dispositivo', '') is string && request.resource.data.get('dispositivo', '').size() <= 20
-        && request.resource.data.get('idioma', '') is string && request.resource.data.get('idioma', '').size() <= 12;
+        && request.resource.data.get('idioma', '') is string && request.resource.data.get('idioma', '').size() <= 12
+        && request.resource.data.get('pais', '') is string && request.resource.data.get('pais', '').size() <= 2
+        && request.resource.data.get('zona', '') is string && request.resource.data.get('zona', '').size() <= 40
+        && request.resource.data.get('sistema', '') is string && request.resource.data.get('sistema', '').size() <= 20
+        && request.resource.data.get('navegador', '') is string && request.resource.data.get('navegador', '').size() <= 20
+        && request.resource.data.get('pantalla', '') is string && request.resource.data.get('pantalla', '').size() <= 12
+        && request.resource.data.get('origen', '') is string && request.resource.data.get('origen', '').size() <= 40
+        && request.resource.data.get('idiomaWeb', '') is string && request.resource.data.get('idiomaWeb', '').size() <= 4;
       allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
       allow delete: if signedIn() && request.auth.uid == uid;
     }

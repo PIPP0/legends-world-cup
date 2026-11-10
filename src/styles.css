@@ -416,3 +416,6 @@ footer .logo{margin-bottom:10px}
 .lang-menu button.on{background:rgba(80,200,255,.16);font-weight:700}
 .lang-menu em{font-style:normal;font-size:12px;opacity:.6}
 .admin-login{display:grid;gap:12px;max-width:360px}.admin-login label{display:grid;gap:6px;font-size:14px}.admin-login input{padding:11px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:inherit;font:inherit}
+.stat-btn{text-align:left;cursor:pointer;font:inherit;color:inherit;border:1px solid rgba(255,255,255,.12);width:100%}.stat-btn:hover,.stat-btn:focus-visible{border-color:var(--c1,#38d4ff)}.stat-btn.sel{border-color:var(--c1,#38d4ff);background:rgba(56,212,255,.1)}.stat-more{display:block;margin-top:6px;font-size:12px;opacity:.65}
+.detalle-stat{margin:16px 0;padding:16px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.03)}.tscroll{overflow-x:auto}
+.fila-sel:hover td{background:rgba(255,255,255,.05)}.fila-sel.on td{background:rgba(56,212,255,.12)}
