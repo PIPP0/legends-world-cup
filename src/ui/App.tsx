@@ -1,3 +1,4 @@
+import { DonateLink } from './paybox'
 import { useEffect, useState } from 'react'
 import { DEFAULT_PARAMS } from '../engine/model'
 import { Note, AppCtx, useLocalState } from './common'
@@ -99,7 +100,7 @@ export default function App() {
       <footer>
         <Logo />
         <p>{t('Proyecto de ficción deportiva. Los nombres y trayectorias son históricos; las valoraciones, atributos, resultados del torneo y estadísticas son ficticios o estimados por el modelo.')}</p>
-        <p>{t('Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre.')} <a href="#/creditos" style={{ textDecoration: 'underline' }}>{t('Ver créditos de cada foto')}</a>.</p>
+        <p>{t('Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre.')} <a href="#/creditos" style={{ textDecoration: 'underline' }}>{t('Ver créditos de cada foto')}</a>. <DonateLink /></p>
       </footer>
       {more && <div className="sheet-bg" onClick={() => setMore(false)} />}
       {more && (

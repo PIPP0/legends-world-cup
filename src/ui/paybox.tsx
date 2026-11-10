@@ -74,6 +74,13 @@ export function PayBox({ what, product, onPaid, disabled }: { what: string; prod
   )
 }
 
+// Enlace discreto de apoyo (pie de página, etc.): una sola línea de texto, sin ventanas ni avisos. Solo aparece si hay enlace configurado y la función está activa.
+export function DonateLink() {
+  const f = useFunciones()
+  if (!f.donaciones || !DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
+  return <a className="donate-link" href={DONATE_URL} target="_blank" rel="noopener noreferrer">{tr('☕ Apoyar (opcional)')}</a>
+}
+
 // Apoyo voluntario: no desbloquea nada, solo agradece. Solo se muestra si hay un enlace configurado.
 export function DonateBox() {
   const f = useFunciones()

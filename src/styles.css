@@ -419,3 +419,4 @@ footer .logo{margin-bottom:10px}
 .stat-btn{text-align:left;cursor:pointer;font:inherit;color:inherit;border:1px solid rgba(255,255,255,.12);width:100%}.stat-btn:hover,.stat-btn:focus-visible{border-color:var(--c1,#38d4ff)}.stat-btn.sel{border-color:var(--c1,#38d4ff);background:rgba(56,212,255,.1)}.stat-more{display:block;margin-top:6px;font-size:12px;opacity:.65}
 .detalle-stat{margin:16px 0;padding:16px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.03)}.tscroll{overflow-x:auto}
 .fila-sel:hover td{background:rgba(255,255,255,.05)}.fila-sel.on td{background:rgba(56,212,255,.12)}
+.donate-link{margin-left:6px;font-size:13px;opacity:.75;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}.donate-link:hover{opacity:1}
