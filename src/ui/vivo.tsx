@@ -140,7 +140,7 @@ export function Vivo() {
   if (!t) return <Section title={tr('Sin torneo en curso')}><p className="note">{tr('No hay un mundial por vivir.')} <a href="#/mundial">{tr('Arma uno')}</a>{tr(' o ')}<a href="#/simulador">{tr('ve el simulador')}</a>.</p></Section>
   const exige = NUBE_ACTIVA && f.cuentas && step.kind === 'pair' && step.r === 'r16' && !(cuenta && !cuenta.anonimo)
   if (exige) {
-    const entrar = async () => { setErrLogin(''); try { await entrarConGoogle(); } catch (e) { const code = (e as { code?: string }).code; if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setErrLogin(tr('No se pudo entrar. Inténtalo de nuevo.')) } }
+    const entrar = async () => { setErrLogin(''); try { await entrarConGoogle(); } catch (e) { const code = (e as { code?: string }).code ?? ''; console.warn('login Google:', code, e); if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setErrLogin(`${tr('No se pudo entrar. Inténtalo de nuevo.')} (${code.replace('auth/', '') || 'error'})`) } }
     return (
       <Section title={tr('Inicia sesión y descubre quién es el campeón de tu propio Mundial de Leyendas')} sub={tr('Octavos de final')}>
         <p>{tr('La fase de grupos es libre. Desde los octavos de final necesitas entrar con tu cuenta de Gmail para ver cómo termina tu mundial y guardar tu resultado.')}</p>

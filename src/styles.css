@@ -420,3 +420,5 @@ footer .logo{margin-bottom:10px}
 .detalle-stat{margin:16px 0;padding:16px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.03)}.tscroll{overflow-x:auto}
 .fila-sel:hover td{background:rgba(255,255,255,.05)}.fila-sel.on td{background:rgba(56,212,255,.12)}
 .donate-link{margin-left:6px;font-size:13px;opacity:.75;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}.donate-link:hover{opacity:1}
+.cuenta{position:relative}.cuenta-err{position:absolute;right:0;top:calc(100% + 8px);z-index:60;width:max-content;max-width:min(280px,80vw);white-space:normal;padding:10px 12px;border-radius:10px;background:#1a1a22;border:1px solid #f5c542;color:#f5e6b0}
+main,.note,h2,.sec-title{overflow-wrap:anywhere}

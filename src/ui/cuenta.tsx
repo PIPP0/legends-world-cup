@@ -21,7 +21,7 @@ export function CuentaHeader() {
   }, [])
   if (!NUBE_ACTIVA || !f.cuentas) return null
   const conCuenta = c && !c.anonimo
-  const entrar = async () => { setError(''); try { await entrarConGoogle(); setAbierto(false) } catch (e) { const code = (e as { code?: string }).code; if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setError('No se pudo entrar con Google. Intenta de nuevo.') } }
+  const entrar = async () => { setError(''); try { await entrarConGoogle(); setAbierto(false) } catch (e) { const code = (e as { code?: string }).code ?? ''; console.warn('login Google:', code, e); if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setError(`${tr('No se pudo entrar. Inténtalo de nuevo.')} (${code.replace('auth/', '') || 'error'})`) } }
   return (
     <div className="cuenta">
       {conCuenta ? (
@@ -38,7 +38,7 @@ export function CuentaHeader() {
           <button className="btn ghost" onClick={() => { setAbierto(false); void salir().then(() => asegurarVisitante()) }}>{tr('Cerrar sesión')}</button>
         </div>
       )}
-      {error && <span className="small muted">{error}</span>}
+      {error && <span className="cuenta-err small" role="alert">{error}</span>}
     </div>
   )
 }
