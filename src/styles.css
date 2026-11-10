@@ -50,7 +50,7 @@ main{max-width:1180px;margin:0 auto;padding:14px 16px 120px}
 .hb-t h1{font:italic 800 clamp(58px,17vw,128px)/.84 'Barlow Condensed';letter-spacing:-1px;margin:4px 0 14px;transform:skewX(-6deg);transform-origin:left bottom}
 .hb-t h1 span{color:transparent;-webkit-text-stroke:2px var(--cy);text-shadow:0 0 40px rgba(0,229,255,.35)}
 .lead{color:#b8c6e6;max-width:520px;font-size:14.5px}
-.heroB .cta{flex-wrap:nowrap}.heroB .cta .btn{padding:11px 14px;font-size:15px;white-space:nowrap;flex:1}
+.heroB .cta{flex-wrap:wrap}.heroB .cta .btn{padding:11px 14px;font-size:15px;white-space:nowrap;flex:1 1 auto;text-align:center}
 @media(min-width:900px){.lead{font-size:16px}.heroB .cta .btn{flex:none;padding:12px 26px;font-size:16px}}
 .hb-v{position:relative;height:330px;margin-top:6px}
 .cutB{position:absolute;right:0;top:0;width:min(66%,330px);height:290px;transform:skewX(-7deg);overflow:hidden;border-left:6px solid var(--pk);background:linear-gradient(160deg,#1a2a6c,#0a1130);box-shadow:-22px 22px 0 rgba(0,229,255,.12),0 24px 60px rgba(0,0,0,.5);animation:slideIn .7s cubic-bezier(.2,.8,.2,1) both}
