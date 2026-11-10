@@ -108,8 +108,11 @@ export function ChampionPicker() {
   const enCarrera = DECLARED_R16.flat()
   // las 32 selecciones: primero las 16 que siguen en carrera y luego el resto por orden alfabético
   const resto = TEAMS.filter((t) => !enCarrera.includes(t.id)).sort((a, b) => a.name.localeCompare(b.name)).map((t) => t.id)
-  const [pagina, setPagina] = useState<0 | 1>(pick && resto.includes(pick) ? 1 : 0)
-  const teams = pagina === 0 ? enCarrera : resto
+  // tres láminas con rejilla completa de 4 columnas: las 16 en carrera (4×4) y las 16 eliminadas repartidas en 8 + 8 (4×2)
+  const laminas = [enCarrera, resto.slice(0, 8), resto.slice(8)]
+  const [pagina, setPagina] = useState(() => { const i = pick ? laminas.findIndex((l) => l.includes(pick)) : 0; return i < 0 ? 0 : i })
+  const teams = laminas[pagina]
+  const irA = (i: number) => setPagina(Math.max(0, Math.min(2, i)))
   const [x0, setX0] = useState<number | null>(null)
   const ranked = [...enCarrera].sort((a, b) => (odds[b] ?? 0) - (odds[a] ?? 0))
   const rank = pick ? ranked.indexOf(pick) + 1 : 0
@@ -127,21 +130,22 @@ export function ChampionPicker() {
         <p className="muted small">{tr('Elige entre las 32 selecciones. Tu voto se guarda en este navegador.')}</p>
       </div>
       <div className="pk-tabs" role="tablist">
-        <button type="button" role="tab" aria-selected={pagina === 0} className={`mvp-chip${pagina === 0 ? ' on' : ''}`} onClick={() => setPagina(0)}>{tr('Siguen en carrera')} · 16</button>
-        <button type="button" role="tab" aria-selected={pagina === 1} className={`mvp-chip${pagina === 1 ? ' on' : ''}`} onClick={() => setPagina(1)}>{tr('Eliminadas en grupos')} · 16</button>
+        <button type="button" role="tab" aria-selected={pagina === 0} className={`mvp-chip${pagina === 0 ? ' on' : ''}`} onClick={() => irA(0)}>{tr('Siguen en carrera')} · 16</button>
+        <button type="button" role="tab" aria-selected={pagina === 1} className={`mvp-chip${pagina === 1 ? ' on' : ''}`} onClick={() => irA(1)}>{tr('Eliminadas en grupos')} · 1/2</button>
+        <button type="button" role="tab" aria-selected={pagina === 2} className={`mvp-chip${pagina === 2 ? ' on' : ''}`} onClick={() => irA(2)}>{tr('Eliminadas en grupos')} · 2/2</button>
       </div>
-      <div className="pk-car" onTouchStart={(e) => setX0(e.touches[0].clientX)} onTouchEnd={(e) => { if (x0 !== null) { const dx = e.changedTouches[0].clientX - x0; if (dx < -50) setPagina(1); else if (dx > 50) setPagina(0) } setX0(null) }}>
-        <button type="button" className="pk-arrow" aria-label={tr('Atrás')} disabled={pagina === 0} onClick={() => setPagina(0)}>‹</button>
+      <div className="pk-car" onTouchStart={(e) => setX0(e.touches[0].clientX)} onTouchEnd={(e) => { if (x0 !== null) { const dx = e.changedTouches[0].clientX - x0; if (dx < -50) irA(pagina + 1); else if (dx > 50) irA(pagina - 1) } setX0(null) }}>
+        <button type="button" className="pk-arrow" aria-label={tr('Atrás')} disabled={pagina === 0} onClick={() => irA(pagina - 1)}>‹</button>
         <div className="pk-g" key={pagina}>
-        {teams.map((id) => (
-          <button key={id} className={`pk-b ${pick === id ? 'on' : ''}`} onClick={() => setPick(id)} aria-pressed={pick === id}>
-            <Flag id={id} size={34} /><span>{TEAM_BY_ID[id].name}</span><FavStar id={id} />
-          </button>
-        ))}
+          {teams.map((id) => (
+            <button key={id} className={`pk-b ${pick === id ? 'on' : ''}`} onClick={() => setPick(id)} aria-pressed={pick === id}>
+              <Flag id={id} size={34} /><span>{TEAM_BY_ID[id].name}</span><FavStar id={id} />
+            </button>
+          ))}
         </div>
-        <button type="button" className="pk-arrow" aria-label={tr('Siguiente')} disabled={pagina === 1} onClick={() => setPagina(1)}>›</button>
+        <button type="button" className="pk-arrow" aria-label={tr('Siguiente')} disabled={pagina === 2} onClick={() => irA(pagina + 1)}>›</button>
       </div>
-      <div className="pk-dots" aria-hidden>{[0, 1].map((i) => <i key={i} className={pagina === i ? 'on' : ''} />)}</div>
+      <div className="pk-dots">{[0, 1, 2].map((i) => <button type="button" key={i} className={pagina === i ? 'on' : ''} onClick={() => irA(i)} aria-label={`${i + 1}/3`} />)}</div>
       {pick && (
         <div className="pk-r">
           <Flag id={pick} size={56} />
