@@ -25,6 +25,7 @@ jobs:
           VITE_PAYMENT_API: ${{ vars.PAYMENT_API }}
           VITE_COBRO: ${{ vars.COBRO }}
           VITE_ENCUESTAS_API: ${{ vars.ENCUESTAS_API }}
+          VITE_FIREBASE_CONFIG: ${{ vars.FIREBASE_CONFIG }}
           VITE_DONATE_URL: ${{ vars.DONATE_URL }}
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }

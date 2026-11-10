@@ -11,6 +11,7 @@ import { LiveReplay } from './pages4'
 import { Reveal } from './mundial'
 import { Board, type Item } from './board'
 import { takePending } from './pending'
+import { registrarMundial } from '../cloud/datos'
 import type { AltTournament, Goal, KoMatch, MatchCtx } from '../types'
 
 const ALL = Object.keys(TEAM_BY_ID)
@@ -120,7 +121,7 @@ export function Vivo() {
   const done = useRef(() => setReady(true)).current
   const prOf = (a: string, b: string, ctx?: MatchCtx): [number, number, number] => { const p = probabilities(a, b, params, ctx && t ? { ctx, world: t.world } : undefined); return [p.win, p.draw, p.loss] }
   useEffect(() => {
-    if (step?.kind === 'end' && t && !saved.current) { saved.current = true; recordHistory(t); setAlt({ ...t, recorded: true }) }
+    if (step?.kind === 'end' && t && !saved.current) { saved.current = true; recordHistory(t); void registrarMundial(t); setAlt({ ...t, recorded: true }) }
   }, [step, t, setAlt])
 
   if (!t) return <Section title="Sin torneo en curso"><p className="note">No hay un mundial por vivir. <a href="#/mundial">Arma uno</a> o <a href="#/simulador">ve el simulador</a>.</p></Section>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ENCUESTAS_API, enviarEncuesta, vaciarCola, type Respuesta } from '../lib/encuesta'
+import { useFunciones } from '../cloud/funciones'
 
 const TEXTOS = ['', 'Muy mal', 'Mal', 'Normal', 'Bien', 'Excelente']
 
@@ -67,8 +68,10 @@ export function EncuestaModal({ tipo, titulo, pregunta, pregunta2, datos, pantal
 
 // Icono en el header (persona con globo de diálogo), como el de Forma.
 export function EncuestaHeader({ pantalla }: { pantalla: string }) {
+  const f = useFunciones()
   const [abierto, setAbierto] = useState(false)
   useEffect(() => { void vaciarCola() }, [])
+  if (!f.encuestas) return null
   return (
     <>
       <button type="button" className="icon-btn" title="Cuéntanos qué te parece" aria-label="Dar tu opinión sobre Legends World Cup" onClick={() => setAbierto(true)}>
@@ -83,6 +86,7 @@ export function EncuestaHeader({ pantalla }: { pantalla: string }) {
 
 // Al terminar «Simula tu mundial»: se abre sola una vez por torneo.
 export function EncuestaMundial({ seed, datos }: { seed: string; datos: string }) {
+  const f = useFunciones()
   const clave = `lwc:enc:mundial:${seed}`
   const [abierta, setAbierta] = useState(false)
   useEffect(() => {
@@ -93,54 +97,6 @@ export function EncuestaMundial({ seed, datos }: { seed: string; datos: string }
     return () => clearTimeout(t)
   }, [clave])
   const cerrar = () => { setAbierta(false); try { localStorage.setItem(clave, '1') } catch { /* sin almacenamiento */ } }
-  if (!abierta) return null
+  if (!abierta || !f.encuestas) return null
   return <EncuestaModal tipo="mundial" titulo="¿Cómo estuvo tu mundial?" pregunta="¿Qué tan entretenida fue la experiencia?" pregunta2="¿Qué tan realistas te parecieron los resultados?" datos={datos} pantalla="fin-mundial" onClose={cerrar} />
-}
-
-// Vista de administración (#/encuestas): lee las respuestas con la clave de administrador (no se guarda en ningún lado).
-interface Fila { t: string; e: number; e2?: number; c?: string; d?: string; p?: string; f: number }
-export function EncuestasAdmin() {
-  const [clave, setClave] = useState('')
-  const [filas, setFilas] = useState<Fila[] | null>(null)
-  const [err, setErr] = useState('')
-  const cargar = async () => {
-    setErr('')
-    try {
-      const r = await fetch(`${ENCUESTAS_API}/api/encuestas`, { headers: { Authorization: `Bearer ${clave}` } })
-      if (r.status === 401) { setErr('Clave incorrecta.'); return }
-      if (!r.ok) { setErr('No se pudieron leer las respuestas.'); return }
-      setFilas(((await r.json()) as { respuestas: Fila[] }).respuestas)
-    } catch { setErr('No se pudo conectar con el servidor.') }
-  }
-  const avg = (xs: number[]) => (xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(2) : '—')
-  const por = (t: string) => (filas ?? []).filter((x) => x.t === t)
-  return (
-    <section className="sec">
-      <header className="sec-h"><div><h2>Encuestas</h2><p className="muted">Respuestas del icono del header y de la encuesta al final de «Simula tu mundial».</p></div></header>
-      {!ENCUESTAS_API && <p className="note warn">Las encuestas aún no están conectadas a un servidor. Ejecuta <code>bash worker/encuestas.sh</code>.</p>}
-      {!filas && (
-        <div className="filters">
-          <label className="seed">Clave de administrador <input type="password" value={clave} onChange={(e) => setClave(e.target.value)} autoComplete="off" /></label>
-          <button className="btn pri" disabled={!clave || !ENCUESTAS_API} onClick={() => void cargar()}>Ver respuestas</button>
-        </div>
-      )}
-      {err && <p className="note warn">{err}</p>}
-      {filas && (
-        <>
-          <div className="board">
-            <div className="mcard"><b>General</b><p>{por('general').length} respuestas · promedio {avg(por('general').map((x) => x.e))} ★</p></div>
-            <div className="mcard"><b>Fin del mundial</b><p>{por('mundial').length} respuestas · entretenida {avg(por('mundial').map((x) => x.e))} ★ · realismo {avg(por('mundial').filter((x) => x.e2).map((x) => x.e2!))} ★</p></div>
-          </div>
-          <ul className="admin-enc">
-            {filas.map((x, i) => (
-              <li key={i}><span className="estrellas-txt">{'★'.repeat(x.e)}{'☆'.repeat(5 - x.e)}{x.e2 ? ` · realismo ${x.e2}/5` : ''}</span>
-                <span className="muted small"> {x.t === 'general' ? 'General' : 'Fin del mundial'} · {new Date(x.f).toLocaleString('es-CL')}{x.d ? ` · ${x.d}` : ''}</span>
-                {x.c && <p>{x.c}</p>}</li>
-            ))}
-            {filas.length === 0 && <li className="muted">Todavía nadie respondió.</li>}
-          </ul>
-        </>
-      )}
-    </section>
-  )
 }

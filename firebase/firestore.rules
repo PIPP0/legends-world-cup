@@ -1,0 +1,88 @@
+rules_version = '2';
+// Legends World Cup: datos del admin en la nube. Mismo modelo que Forma Pro.
+// - Admin: solo las cuentas listadas en config/admin.correos, entrando con Google y con correo verificado.
+// - Cada visitante (anónimo o con Google) escribe SOLO lo suyo; nadie lee lo de otras personas salvo Admin.
+// - config/funciones es público de lectura (la web necesita saber qué funciones están encendidas); solo Admin escribe.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function verificado() { return request.auth.token.get('email_verified', false) == true; }
+    function miCorreo() { return request.auth.token.get('email', ''); }
+    function esAdmin() {
+      return signedIn() && verificado()
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && exists(/databases/$(database)/documents/config/admin)
+        && miCorreo().lower() in get(/databases/$(database)/documents/config/admin).data.correos;
+    }
+
+    // Quiénes son administradores: nadie lo lee desde un navegador (la regla lo usa por dentro); solo Admin lo cambia.
+    match /config/admin {
+      allow read: if false;
+      allow write: if esAdmin();
+    }
+    // Interruptores de funciones: la web los lee sin iniciar sesión; solo Admin los cambia.
+    match /config/funciones {
+      allow get: if true;
+      allow list: if false;
+      allow write: if esAdmin() && request.resource.data.keys().hasOnly(['valores', 'actualizado', 'por']);
+    }
+
+    // Visitantes y personas con cuenta. Cada uno crea y actualiza el suyo (sin poder cambiar campos ajenos); Admin los lee todos.
+    match /usuarios/{uid} {
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'nombre', 'foto', 'anonimo', 'creado', 'ultimo', 'visitas', 'idioma', 'dispositivo'])
+        && request.resource.data.uid == uid
+        && request.resource.data.get('email', '') in ['', miCorreo()]
+        && request.resource.data.get('nombre', '') is string && request.resource.data.get('nombre', '').size() <= 120
+        && request.resource.data.get('foto', '') is string && request.resource.data.get('foto', '').size() <= 400
+        && request.resource.data.get('visitas', 0) is int && request.resource.data.get('visitas', 0) <= 100000
+        && request.resource.data.get('dispositivo', '') is string && request.resource.data.get('dispositivo', '').size() <= 20
+        && request.resource.data.get('idioma', '') is string && request.resource.data.get('idioma', '').size() <= 12;
+      allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+    // Progreso de la historia oficial (hasta qué fase avanzó cada persona): lo escribe y lee la propia cuenta; Admin lee.
+    match /progreso/{uid} {
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['nivel', 'actualizado'])
+        && request.resource.data.nivel is int && request.resource.data.nivel >= 0 && request.resource.data.nivel <= 4;
+      allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+    // Encuestas de satisfacción: cada persona crea las suyas; solo Admin las lee. Nunca se editan.
+    match /encuestas/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'tipo', 'estrellas', 'estrellas2', 'comentario', 'datos', 'pantalla', 'creada'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.tipo in ['general', 'mundial']
+        && request.resource.data.estrellas is int && request.resource.data.estrellas >= 1 && request.resource.data.estrellas <= 5
+        && request.resource.data.get('estrellas2', 1) is int && request.resource.data.get('estrellas2', 1) >= 1 && request.resource.data.get('estrellas2', 1) <= 5
+        && request.resource.data.get('comentario', '') is string && request.resource.data.get('comentario', '').size() <= 400
+        && request.resource.data.get('datos', '') is string && request.resource.data.get('datos', '').size() <= 160
+        && request.resource.data.get('pantalla', '') is string && request.resource.data.get('pantalla', '').size() <= 40
+        && request.resource.data.creada is int;
+      allow read: if esAdmin();
+      allow update: if false;
+      allow delete: if esAdmin();
+    }
+    // Mundiales simulados (sede, fecha, clima, campeón…): para las métricas de Admin. Se crean y nunca se editan.
+    match /mundiales/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'sede', 'mes', 'clima', 'primes', 'formato', 'campeon', 'semilla', 'creada'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.sede is string && request.resource.data.sede.size() <= 20
+        && request.resource.data.mes is int && request.resource.data.mes >= 0 && request.resource.data.mes <= 12
+        && request.resource.data.clima is string && request.resource.data.clima.size() <= 12
+        && request.resource.data.primes is int && request.resource.data.primes >= 0 && request.resource.data.primes <= 3
+        && request.resource.data.formato in ['completo', 'octavos']
+        && request.resource.data.campeon is string && request.resource.data.campeon.size() <= 12
+        && request.resource.data.semilla is string && request.resource.data.semilla.size() <= 40
+        && request.resource.data.creada is int;
+      allow read: if esAdmin();
+      allow update: if false;
+      allow delete: if esAdmin();
+    }
+    // Todo lo demás, cerrado.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

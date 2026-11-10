@@ -1,3 +1,5 @@
+import { NUBE_ACTIVA } from '../cloud/firebase'
+import { guardarEncuestaNube } from '../cloud/datos'
 // Envío de encuestas. Las respuestas se guardan primero en una cola local y se mandan al servidor (Worker de Cloudflare);
 // si el servidor aún no está configurado o falla, se reintentan solas más tarde y no se pierden.
 export const ENCUESTAS_API = ((import.meta.env.VITE_ENCUESTAS_API as string | undefined) || (import.meta.env.VITE_PAYMENT_API as string | undefined) || '').replace(/\/$/, '')
@@ -33,6 +35,7 @@ export async function vaciarCola(): Promise<void> {
 }
 
 export async function enviarEncuesta(r: Respuesta): Promise<'enviada' | 'guardada'> {
+  if (NUBE_ACTIVA && (await guardarEncuestaNube(r))) return 'enviada' // Firebase (como Forma)
   guardar([...leer(), r])
   if (!ENCUESTAS_API) return 'guardada'
   await vaciarCola()

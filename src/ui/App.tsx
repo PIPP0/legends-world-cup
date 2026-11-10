@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DEFAULT_PARAMS } from '../engine/model'
-import { AppCtx, useLocalState } from './common'
+import { Note, AppCtx, useLocalState } from './common'
 import { ICONS } from './visual'
 import { Ticker } from './hero'
 import { Home, Story } from './pages1'
@@ -10,7 +10,10 @@ import { Bracket, Simulator, Stats } from './pages4'
 import { Credits } from './credits'
 import { Mundial } from './mundial'
 import { Vivo } from './vivo'
-import { EncuestaHeader, EncuestasAdmin } from './encuesta'
+import { EncuestaHeader } from './encuesta'
+import { Admin } from './admin'
+import { CuentaHeader } from './cuenta'
+import { iniciarFunciones, useFunciones } from '../cloud/funciones'
 import type { AltTournament, ModelParams } from '../types'
 
 const MAIN: [string, string, string][] = [
@@ -33,6 +36,7 @@ function useRoute() {
 }
 
 function Page({ route }: { route: string }) {
+  const fun = useFunciones()
   const [, root, a, b] = route.split('/')
   switch (root) {
     case undefined: case '': return <Home />
@@ -49,9 +53,9 @@ function Page({ route }: { route: string }) {
     case 'cuadro': return <Bracket />
     case 'simulador': return <Simulator />
     case 'creditos': return <Credits />
-    case 'mundial': return <Mundial />
+    case 'mundial': return fun.simulaMundial ? <Mundial /> : <Note>«Simula tu mundial» no está disponible por ahora. <a href="#/">Volver al inicio</a></Note>
     case 'vivo': return <Vivo />
-    case 'encuestas': return <EncuestasAdmin />
+    case 'admin': return <Admin />
     default: return <p className="note warn">Página no encontrada. <a href="#/">Volver al inicio</a></p>
   }
 }
@@ -68,12 +72,15 @@ export default function App() {
   const [params, setParams] = useLocalState<ModelParams>('lwc:params:v1', DEFAULT_PARAMS)
   const [alt, setAlt] = useLocalState<AltTournament | null>('lwc:alt:v1', null)
   const [more, setMore] = useState(false)
+  const fun = useFunciones()
+  useEffect(() => { iniciarFunciones() }, [])
   useEffect(() => setMore(false), [route])
   const root = '/' + (route.split('/')[1] ?? '')
   const active = ({ '/equipo': '/selecciones', '/jugador': '/jugadores', '/comparar': '/jugadores', '/partido': '/partidos' } as Record<string, string>)[root] ?? root
   const moreActive = MORE.some(([p]) => p === active)
   return (
     <AppCtx.Provider value={{ params, setParams, alt, setAlt }}>
+      {fun.mantenimiento && <div className="aviso-web" role="status">{fun.mantenimiento}</div>}
       <Ticker />
       <header className="top">
         <div className="top-in">
@@ -82,6 +89,7 @@ export default function App() {
             {[...MAIN, ...MORE].map(([p, l]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''} aria-current={active === p ? 'page' : undefined}>{l}</a>)}
           </nav>
           <EncuestaHeader pantalla={route.split('/')[1] || 'inicio'} />
+          <CuentaHeader />
         </div>
       </header>
       <main key={route.split('/').slice(0, 3).join('/')}><Page route={route} /></main>

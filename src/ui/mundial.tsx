@@ -6,7 +6,8 @@ import { drawGroups, newAlt, runAll } from '../engine/model'
 import { startExperience } from './pending'
 import { explain } from '../engine/explain'
 import { MAX_PRIMES, PRIME_BOOST, adjustments, loadHistory } from '../engine/world'
-import { COBRO_ACTIVO, PRICE_USD, PRODUCTS, type ProductId } from '../engine/payment'
+import { cobroActivo, PRICE_USD, PRODUCTS, type ProductId } from '../engine/payment'
+import { useFunciones } from '../cloud/funciones'
 import { addCredits, consumeCredit, getBalance } from '../engine/credits'
 import { DonateBox, PayBox } from './paybox'
 import { EncuestaMundial } from './encuesta'
@@ -42,10 +43,12 @@ function PaySection({ what, onGo, disabled }: { what: string; onGo: (receipt: st
 
 type Climate = NonNullable<WorldConfig['climate']>
 const CLIMATES: [Climate, string, string][] = [['normal', 'Normal', 'Lo típico de la época'], ['calor', 'Ola de calor', '+6 °C'], ['lluvia', 'Año lluvioso', 'El doble de lluvia'], ['frio', 'Año frío', '−6 °C']]
-const STEPS = ['Sede', 'Fecha', 'Clima', 'Leyendas en su prime', COBRO_ACTIVO ? 'Pagar y jugar' : 'Jugar']
+const pasosDe = (cobro: boolean) => ['Sede', 'Fecha', 'Clima', 'Leyendas en su prime', cobro ? 'Pagar y jugar' : 'Jugar']
 
 export function Mundial() {
   const { params } = useApp()
+  const COBRO_ACTIVO = cobroActivo(useFunciones().cobro)
+  const STEPS = pasosDe(COBRO_ACTIVO)
   const [step, setStep] = useState(0)
   const [hostId, setHostId] = useState('')
   const [month, setMonth] = useState(6)
@@ -206,6 +209,7 @@ export function Mundial() {
 
 export function Reveal({ t, onAgain }: { t: AltTournament; onAgain: () => void }) {
   const { params } = useApp()
+  const COBRO_ACTIVO = cobroActivo(useFunciones().cobro)
   const f = t.bracket.final
   const champ = t.bracket.champion!
   const why = useMemo(() => explain(f.a!, f.b!, params, { ga: f.ga!, gb: f.gb!, goals: f.goals ?? [], et: !!f.et, pens: f.pens, winner: f.winner }, { ctx: f.ctx, world: t.world }), [t])

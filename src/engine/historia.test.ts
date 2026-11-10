@@ -90,3 +90,15 @@ describe('estadísticas con eliminatorias reveladas', () => {
     expect(teamStatus('arg', 1).next?.opp).toBe('hun')
   })
 })
+
+import { FUNCIONES_BASE } from '../cloud/funciones'
+import { cobroActivo } from './payment'
+describe('funciones del admin', () => {
+  it('los valores de partida dejan la web como estaba', () => {
+    expect(FUNCIONES_BASE).toMatchObject({ simulaMundial: true, encuestas: true, donaciones: true, cobro: false, animacionCuadro: true, nivelHistoria: 4, mantenimiento: '' })
+  })
+  it('el cobro solo se activa si el interruptor está encendido Y hay pago conectado', () => {
+    expect(cobroActivo(false)).toBe(false)
+    expect(cobroActivo(true)).toBe(false) // sin PayPal configurado en el build de prueba
+  })
+})

@@ -5,6 +5,7 @@ import { DECLARED_R16 } from '../data/raw'
 import { emptyBracket, nextPhase, advance, runAll, newAlt, DEFAULT_PARAMS, probabilities, profile, strengthRank, championOdds, simulateMatch } from '../engine/model'
 import { statsFromEvents, storyPlayerStats, storyTeamStats, teamStats, type PlayerStat } from '../engine/stats'
 import { useStoryLevel, setLevel } from '../engine/storyLevel'
+import { useFunciones } from '../cloud/funciones'
 import { RONDAS, finalResult, phaseLabel, revealed, roundName, scoreText } from '../engine/historia'
 import { makeRng } from '../engine/rng'
 import { explain } from '../engine/explain'
@@ -138,19 +139,21 @@ function CampeonDetalle() {
 export function Bracket() {
   const full = STORY_KNOCKOUT.bracket
   const nivel = useStoryLevel()
+  const fun = useFunciones()
+  const conAnim = fun.animacionCuadro
   const [jugando, setJugando] = useState(false)
   const [listo, setListo] = useState(false)
   // animación del cuadro: de qué fase a qué fase se está mostrando (null = cuadro estático)
   const visto = (() => { try { return sessionStorage.getItem('lwc:historia:anim') === '1' } catch { return false } })()
-  const [anim, setAnim] = useState<{ from: number; to: number; key: number } | null>(() => (nivel >= 4 && !visto ? { from: 0, to: 4, key: 0 } : null))
+  const [anim, setAnim] = useState<{ from: number; to: number; key: number } | null>(() => (conAnim && nivel >= 4 && !visto ? { from: 0, to: 4, key: 0 } : null))
   const [skip, setSkip] = useState(0)
   const partidos = nivel === 0 ? full.r16 : nivel === 1 ? full.qf : nivel === 2 ? full.sf : [full.third, full.final]
   const items = nivel >= 4 ? [] : partidos.map((m) => toItem(m, m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined))
   const done = useRef(() => setListo(true)).current
   const empezar = () => { setListo(false); setJugando(true); window.scrollTo(0, 0) }
-  const terminar = () => { const antes = nivel; setJugando(false); setListo(false); setLevel(antes + 1); setSkip(0); setAnim({ from: antes, to: antes + 1, key: Date.now() }); window.scrollTo(0, 0) }
+  const terminar = () => { const antes = nivel; setJugando(false); setListo(false); setLevel(antes + 1); setSkip(0); setAnim(conAnim ? { from: antes, to: antes + 1, key: Date.now() } : null); window.scrollTo(0, 0) }
   const finAnim = useRef(() => { setAnim(null); try { sessionStorage.setItem('lwc:historia:anim', '1') } catch { /* sin almacenamiento */ } }).current
-  const repetir = () => { if (nivel < 1) return; setSkip(0); setJugando(false); setAnim({ from: 0, to: nivel, key: Date.now() }); window.scrollTo(0, 0) }
+  const repetir = () => { if (nivel < 1 || !conAnim) return; setSkip(0); setJugando(false); setAnim({ from: 0, to: nivel, key: Date.now() }); window.scrollTo(0, 0) }
   const sub = anim ? 'Así avanza el torneo…' : nivel >= 4 ? 'Historia original: terminó. Estos resultados son los mismos para todas las personas y quedan guardados.'
     : nivel === 0 ? 'Historia original: octavos definidos, aún sin resultados.' : `Historia original: ya se jugaron ${ETAPAS[nivel - 1].juega.toLowerCase()}.`
   return (
@@ -165,8 +168,8 @@ export function Bracket() {
             </div>
           </div>
         )}
-        {!jugando && !anim && nivel < 4 && <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div>}
-        {!jugando && !anim && nivel >= 1 && <div className="cta"><button className="btn ghost" onClick={repetir}>↺ Reiniciar animación</button></div>}
+        {!jugando && !anim && nivel < 4 && (nivel < fun.nivelHistoria ? <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div> : <p className="note">La siguiente fase de la historia todavía no está disponible. Vuelve pronto.</p>)}
+        {!jugando && !anim && nivel >= 1 && conAnim && <div className="cta"><button className="btn ghost" onClick={repetir}>↺ Reiniciar animación</button></div>}
         {anim && <div className="cta"><button className="btn ghost" onClick={() => setSkip((k) => k + 1)}>Saltar animación</button><button className="btn ghost" onClick={repetir}>↺ Reiniciar animación</button></div>}
         {!jugando && (anim
           ? <BracketAnimado key={anim.key} full={full} from={anim.from} to={anim.to} speed={600} onEnd={finAnim} skipKey={skip} />

@@ -10,6 +10,8 @@ export const COBRO_ACTIVO = (import.meta.env.VITE_COBRO as string | undefined) =
 // Enlace público de apoyo voluntario (Ko-fi, PayPal.me, etc.). Variable DONATE_URL en GitHub. Si está vacío, no se muestra el botón.
 export const DONATE_URL = ((import.meta.env.VITE_DONATE_URL as string | undefined) ?? '').trim()
 export const PAYMENTS_LIVE = Boolean(PAYPAL_CLIENT_ID && PAYMENT_API)
+// El cobro está activo si lo enciende Admin (y hay PayPal conectado) o si el build lo fuerza con VITE_COBRO=on.
+export const cobroActivo = (interruptor: boolean) => COBRO_ACTIVO || (interruptor && PAYMENTS_LIVE)
 // Productos (el servidor valida el precio real; esto es solo para mostrar). Mantén los mismos precios en worker/src/index.ts.
 export const PRODUCTS = [
   { id: 'uno', credits: 1, usd: 1, name: '1 mundial' },

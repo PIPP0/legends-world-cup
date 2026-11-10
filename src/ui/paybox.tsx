@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useFunciones } from '../cloud/funciones'
 import { DONATE_URL, PAYMENTS_LIVE, PAYMENT_API, PAYPAL_CLIENT_ID, PRODUCTS, pay, saveReceipt, type ProductId } from '../engine/payment'
 
 declare global { interface Window { paypal?: { Buttons: (o: unknown) => { render: (el: HTMLElement) => Promise<void>; close: () => void } } } }
@@ -74,7 +75,8 @@ export function PayBox({ what, product, onPaid, disabled }: { what: string; prod
 
 // Apoyo voluntario: no desbloquea nada, solo agradece. Solo se muestra si hay un enlace configurado.
 export function DonateBox() {
-  if (!DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
+  const f = useFunciones()
+  if (!f.donaciones || !DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
   return (
     <div className="note">
       ¿Te gustó? El mundial es gratis; si quieres, puedes <b>apoyar el proyecto</b> de forma voluntaria.{' '}

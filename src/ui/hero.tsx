@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { STORY_MATCHES } from '../data'
 import { useStoryLevel } from '../engine/storyLevel'
+import { useFunciones } from '../cloud/funciones'
 import { revealed, scoreText } from '../engine/historia'
 import { DECLARED_R16 } from '../data/raw'
 import { DEFAULT_PARAMS, championOdds } from '../engine/model'
@@ -23,6 +24,7 @@ export function Hero() {
   }, [hold, reduce])
   const p = PLAYER_BY_ID[SLIDES[i]]
   const photo = usePhoto(p)
+  const fun = useFunciones()
   const t = TEAM_BY_ID[p.teamId]
   return (
     <section className="heroB" onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}>
@@ -33,7 +35,7 @@ export function Hero() {
         <p className="lead">32 selecciones, las mayores leyendas de la historia, todos a los 27 años. Un solo campeón. Sigue cada partido como si fuera en vivo.</p>
         <div className="cta">
           <a className="btn pri" href="#/historia">Ver el torneo</a>
-          <a className="btn hot" href="#/mundial">Simula tu mundial</a>
+          {fun.simulaMundial && <a className="btn hot" href="#/mundial">Simula tu mundial</a>}
           <a className="btn" href="#/simulador">Simular un partido</a>
         </div>
       </div>
