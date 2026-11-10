@@ -768,5 +768,6 @@ const D: string[] = [
   "Choisis parmi les 32 sélections. Ton vote est enregistré dans ce navigateur.",
   "Toujours en lice",
   "Éliminées en phase de groupes",
+  "Modifier",
 ]
 export default D

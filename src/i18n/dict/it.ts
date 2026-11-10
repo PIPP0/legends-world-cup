@@ -768,5 +768,6 @@ const D: string[] = [
   "Scegli tra le 32 nazionali. Il tuo voto viene salvato in questo browser.",
   "Ancora in corsa",
   "Eliminate nei gironi",
+  "Modifica",
 ]
 export default D

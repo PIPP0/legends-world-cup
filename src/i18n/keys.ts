@@ -768,4 +768,5 @@ export const KEYS: string[] = [
   "Elige entre las 32 selecciones. Tu voto se guarda en este navegador.",
   "Siguen en carrera",
   "Eliminadas en grupos",
+  "Editar",
 ]

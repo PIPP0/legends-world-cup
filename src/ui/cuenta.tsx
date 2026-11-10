@@ -4,7 +4,9 @@ import { NUBE_ACTIVA, anotarUsuario, asegurarVisitante, entrarConGoogle, esperar
 import { sincronizarNivel } from '../engine/storyLevel'
 import { useFunciones } from '../cloud/funciones'
 import { leerFavoritaNube } from '../cloud/datos'
-import { ponerFavorita } from '../engine/favorita'
+import { ponerFavorita, useFavorita } from '../engine/favorita'
+import { TEAM_BY_ID } from '../data/lookup'
+import { Flag } from './common'
 import { ElegirFavorita } from './favorita'
 
 // Registro opcional con Google: junto al icono de opinión. Sin cuenta se juega igual (visitante anónimo).
@@ -13,6 +15,7 @@ export function CuentaHeader() {
   const [c, setC] = useState<Cuenta | null>(null)
   const [abierto, setAbierto] = useState(false)
   const [eligiendo, setEligiendo] = useState(false)
+  const favorita = useFavorita()
   const [error, setError] = useState('')
   useEffect(() => {
     if (!NUBE_ACTIVA) return
@@ -41,11 +44,18 @@ export function CuentaHeader() {
       ) : (
         <button type="button" className="btn cta-entrar" onClick={() => void entrar()}>{tr('Entrar')}</button>
       )}
+      {conCuenta && favorita && TEAM_BY_ID[favorita] && <span className="av-flag" aria-hidden><Flag id={favorita} size={18} /></span>}
       {abierto && conCuenta && (
         <div className="cuenta-menu" role="menu">
           <p><b>{c!.nombre || tr('Mi cuenta')}</b><br /><span className="muted small">{c!.email}</span></p>
           <p className="small muted">{tr('Tu avance de la historia se guarda en la nube.')}</p>
-          <button className="btn ghost" onClick={() => { setAbierto(false); setEligiendo(true) }}>{tr('Cambiar mi selección favorita')}</button>
+          <div className="fav-row">
+            <span className="fav-lbl">{tr('Tu selección favorita')}</span>
+            <div>
+              {favorita && TEAM_BY_ID[favorita] ? <span className="fav-eq"><Flag id={favorita} size={24} /><b>{TEAM_BY_ID[favorita].name}</b><i className="fav-star">★</i></span> : <span className="muted">—</span>}
+              <button type="button" className="fav-edit" onClick={() => { setAbierto(false); setEligiendo(true) }}>{tr('Editar')}</button>
+            </div>
+          </div>
           <button className="btn ghost" onClick={() => { setAbierto(false); void salir().then(() => asegurarVisitante()) }}>{tr('Cerrar sesión')}</button>
         </div>
       )}

@@ -768,5 +768,6 @@ const D: string[] = [
   "Choose from the 32 national teams. Your vote is saved in this browser.",
   "Still in the running",
   "Out in the groups",
+  "Edit",
 ]
 export default D

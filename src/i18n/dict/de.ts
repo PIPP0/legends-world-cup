@@ -768,5 +768,6 @@ const D: string[] = [
   "Wähle unter den 32 Nationen. Deine Stimme wird in diesem Browser gespeichert.",
   "Noch im Rennen",
   "In der Gruppenphase ausgeschieden",
+  "Bearbeiten",
 ]
 export default D

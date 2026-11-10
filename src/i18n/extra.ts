@@ -30,4 +30,5 @@ export const EXTRA: Array<[string, string]> = [
   ['Elige entre las 32 selecciones. Tu voto se guarda en este navegador.', 'Choose from the 32 national teams. Your vote is saved in this browser.'],
   ['Siguen en carrera', 'Still in the running'],
   ['Eliminadas en grupos', 'Out in the groups'],
+  ['Editar', 'Edit'],
 ]

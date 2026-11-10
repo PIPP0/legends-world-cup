@@ -768,5 +768,6 @@ const D: string[] = [
   "Pilih di antara 32 tim nasional. Suaramu disimpan di peramban ini.",
   "Masih bertahan",
   "Tersingkir di fase grup",
+  "Ubah",
 ]
 export default D
