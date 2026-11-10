@@ -744,5 +744,7 @@ const D: string[] = [
   "Kembali menyusun Piala Dunia-ku",
   "Tidak dapat masuk. Silakan coba lagi.",
   "Kamu bisa melihat fase grup tanpa akun; mulai babak 16 besar, kami akan meminta kamu masuk dengan Gmail untuk mengetahui juaranya.",
+  "Filter koherensi: ketika satu tim jelas lebih unggul, kebetulan tidak menghasilkan hasil yang absurd (misalnya favorit kalah telak); hanya pada kesempatan yang sangat jarang ia tergelincir.",
+  "Legenda di masa puncak: menaikkan penilaian pemain dan memberi dorongan serangan bagi tim nasionalnya; jika datang dari bangku cadangan, ia masuk sebelas pemain inti saat mengungguli yang terlemah di liniya.",
 ]
 export default D

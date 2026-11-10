@@ -744,5 +744,7 @@ const D: string[] = [
   "Zurück zur Einrichtung meiner WM",
   "Anmeldung nicht möglich. Bitte versuche es erneut.",
   "Die Gruppenphase siehst du ohne Konto; ab dem Achtelfinale bitten wir dich, dich mit Gmail anzumelden, um den Champion zu erfahren.",
+  "Kohärenzfilter: Wenn ein Team deutlich überlegen ist, erzeugt der Zufall keine absurden Ergebnisse (zum Beispiel der Favorit, der hoch verliert); nur in sehr seltenen Fällen stolpert er.",
+  "Legenden in Bestform: Sie erhöhen die Bewertung des Spielers und geben ihrer Nation einen Offensivschub; wenn sie von der Bank kommen, rücken sie in die Startelf, sobald sie den Schwächsten ihres Mannschaftsteils übertreffen.",
 ]
 export default D

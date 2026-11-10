@@ -29,9 +29,17 @@ const stdev = (xs: number[]) => { const m = mean(xs); return Math.sqrt(mean(xs.m
 //  experiencia  = proxy: promedio de los cinco mejores del once
 export function baseProfile(team: Team, primes: string[] = []): Omit<TeamProfile, 'strength'> {
   const boost = (p: Player) => (primes.includes(p.id) ? PRIME_BOOST : 0)
-  const o = team.xi.map((p) => p.ovr + boost(p))
+  // Cada puesto del once con su valoración; si un suplente llega en su prime y supera al más flojo de su línea, entra en ese puesto.
+  const slots = team.xi.map((p) => ({ line: p.line, v: p.ovr + boost(p) }))
+  for (const bp of team.bench.filter((p) => primes.includes(p.id))) {
+    const v = bp.ovr + PRIME_BOOST
+    let k = -1
+    slots.forEach((s, i) => { if (s.line === bp.line && (k < 0 || s.v < slots[k].v)) k = i })
+    if (k >= 0 && v > slots[k].v) slots[k].v = v
+  }
+  const o = slots.map((s) => s.v)
   const hasDM = team.xi.some((p) => p.pos === 'MCD')
-  const by = (line: string) => team.xi.filter((p) => p.line === line).map((p) => p.ovr + boost(p))
+  const by = (line: string) => slots.filter((s) => s.line === line).map((s) => s.v)
   return {
     teamId: team.id,
     quality: mean(o),
@@ -65,8 +73,11 @@ export function lambdas(a: string, b: string, params: ModelParams, env?: Env): [
   const cl = (v: number) => Math.min(4.5, Math.max(0.15, v))
   const adjA = adjustments(a, env).total, adjB = adjustments(b, env).total
   const wf = weatherFactor(env?.ctx).goals
+  // Las leyendas en su prime dan además un impulso al equipo: más ataque propio (+3 % por leyenda) y algo más de presión sobre el rival.
+  const nPrimes = (id: string) => Math.min(5, (env?.world?.primes ?? []).filter((x) => PLAYER_BY_ID[x]?.teamId === id).length)
+  const liftA = 1 + 0.03 * nPrimes(a) - 0.01 * nPrimes(b), liftB = 1 + 0.03 * nPrimes(b) - 0.01 * nPrimes(a)
   // el lugar favorece al equipo cómodo y perjudica al incómodo (la mitad del efecto del rival se traslada al otro)
-  return [cl(params.goalBase * wf * Math.exp(ex(A, B) + adjA - 0.5 * adjB)), cl(params.goalBase * wf * Math.exp(ex(B, A) + adjB - 0.5 * adjA))]
+  return [cl(params.goalBase * wf * liftA * Math.exp(ex(A, B) + adjA - 0.5 * adjB)), cl(params.goalBase * wf * liftB * Math.exp(ex(B, A) + adjB - 0.5 * adjA))]
 }
 
 // Estado del partido: el que va ganando por 2 o más baja el ritmo y el que pierde arriesga un poco más.
@@ -142,14 +153,35 @@ export function simulateMatch(a: string, b: string, rng: Rng, params: ModelParam
   const ma = la0 * Math.exp(shock), mb = lb0 * Math.exp(-shock * 0.5 + normal(rng) * vr)
   // Los goles se sortean por tramos de 15 minutos con «estado del partido»: el que va ganando por 2 o más baja el ritmo
   // y el que pierde arriesga un poco más. Así las goleadas extremas (6-2) son tan raras como en el fútbol real.
-  const goals: Goal[] = []
+  // Filtro de coherencia: si hay mucha diferencia entre los equipos, el azar no puede dar un resultado absurdo (p. ej. el favorito perdiendo 0-5).
+  // Un marcador así se vuelve a sortear (con la misma semilla el resultado sigue siendo el mismo de siempre).
+  const pr = probabilities(a, b, params, env)
+  const dog = pr.win >= pr.loss ? b : a
+  const pDog = Math.min(pr.win, pr.loss), pFav = Math.max(pr.win, pr.loss)
+  const sorpresa = rng() < 0.04 // en muy raras ocasiones se deja pasar un tropiezo del gran favorito
+  const absurdo = (x: number, y: number) => {
+    const margen = Math.abs(x - y), ganaDog = (x > y ? a : y > x ? b : '') === dog
+    if (x + y > 8) return true
+    // con una gran diferencia (favorito ≥ 75 %) el favorito gana: ni empate ni derrota, salvo esa rarísima sorpresa
+    if (pFav >= 0.75 && !sorpresa && (ganaDog || margen === 0)) return true
+    if (pFav >= 0.62 && !sorpresa && ganaDog && margen >= 2) return true
+    if (ganaDog && margen >= 3 && pDog < 0.22) return true
+    if (ganaDog && margen >= 2 && pDog < 0.08) return true
+    if (margen >= 5 && !(pFav > 0.8 && !ganaDog)) return true
+    return false
+  }
+  let goals: Goal[] = []
   let ga = 0, gb = 0
-  for (let c = 0; c < 6; c++) {
-    const lead = ga - gb
-    const fa = stateFactor(lead), fb = stateFactor(-lead)
-    const na = poisson((ma / 6) * fa, rng), nb = poisson((mb / 6) * fb, rng)
-    ga += na; gb += nb
-    goals.push(...assignGoals(TEAM_BY_ID[a], na, rng, (c + 1) * 15, c * 15 + 1, 'reg'), ...assignGoals(TEAM_BY_ID[b], nb, rng, (c + 1) * 15, c * 15 + 1, 'reg'))
+  for (let intento = 0; intento < 24; intento++) {
+    goals = []; ga = 0; gb = 0
+    for (let c = 0; c < 6; c++) {
+      const lead = ga - gb
+      const fa = stateFactor(lead), fb = stateFactor(-lead)
+      const na = poisson((ma / 6) * fa, rng), nb = poisson((mb / 6) * fb, rng)
+      ga += na; gb += nb
+      goals.push(...assignGoals(TEAM_BY_ID[a], na, rng, (c + 1) * 15, c * 15 + 1, 'reg'), ...assignGoals(TEAM_BY_ID[b], nb, rng, (c + 1) * 15, c * 15 + 1, 'reg'))
+    }
+    if (!absurdo(ga, gb)) break
   }
   let A = ga, B = gb
   let et = false

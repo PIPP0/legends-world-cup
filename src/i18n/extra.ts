@@ -6,4 +6,6 @@ export const EXTRA: Array<[string, string]> = [
   ['Volver a armar mi mundial', 'Back to my World Cup setup'],
   ['No se pudo entrar. Inténtalo de nuevo.', 'Could not sign in. Please try again.'],
   ['Verás la fase de grupos sin cuenta; desde los octavos de final te pediremos entrar con Gmail para descubrir al campeón.', 'You can watch the group stage without an account; from the round of 16 we will ask you to sign in with Gmail to find out the champion.'],
+  ['Filtro de coherencia: cuando un equipo es claramente superior, el azar no produce resultados absurdos (por ejemplo, el favorito perdiendo por goleada); solo en rarísimas ocasiones tropieza.', 'Coherence filter: when one team is clearly stronger, chance does not produce absurd results (for example, the favorite losing by a landslide); only on very rare occasions does it slip up.'],
+  ['Leyendas en su prime: suben la valoración del jugador y dan un impulso de ataque a su selección; si llegan desde el banco, entran al once cuando superan al más flojo de su línea.', 'Legends in their prime: they raise the player’s rating and give their team an attacking boost; if they come from the bench, they enter the starting eleven when they beat the weakest player in their line.'],
 ]

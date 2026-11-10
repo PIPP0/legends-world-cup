@@ -345,6 +345,8 @@ function Model({ params, setParams }: { params: ReturnType<typeof useApp>['param
           <li>{tr('Ataque / defensa: promedios ponderados según la función de cada puesto.')}</li>
           <li>{tr('Experiencia: aproximación con el promedio de los cinco mejores del once.')}</li>
           <li>{tr('Con eso se calculan goles esperados para cada equipo; el partido se sortea con distribución de Poisson, más un factor de incertidumbre. No hay ventajas para ningún país.')}</li>
+          <li>{tr('Filtro de coherencia: cuando un equipo es claramente superior, el azar no produce resultados absurdos (por ejemplo, el favorito perdiendo por goleada); solo en rarísimas ocasiones tropieza.')}</li>
+          <li>{tr('Leyendas en su prime: suben la valoración del jugador y dan un impulso de ataque a su selección; si llegan desde el banco, entran al once cuando superan al más flojo de su línea.')}</li>
         </ul>
         <h3 className="sub">{tr('Fuerza global (top 10 con estos parámetros)')}</h3>
         {rank.map((p) => <Bar key={p.teamId} label={TEAM_BY_ID[p.teamId].name} v={p.strength} min={78} right={p.strength.toFixed(1)} />)}

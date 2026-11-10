@@ -151,12 +151,12 @@ import { scoreMatrix } from './model'
 describe('probabilidades coherentes con la simulación', () => {
   it('la matriz de marcadores suma 1 y coincide con la frecuencia simulada', () => {
     const P0 = { ...DEFAULT_PARAMS, variance: 0 }
-    const pr = probabilities('chi', 'bra', P0)
+    const pr = probabilities('col', 'mex', P0) // pareja equilibrada: el filtro de coherencia no actúa
     expect(scoreMatrix(1.2, 1.5).flat().reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6)
     let w = 0, d = 0, l = 0
     const N = 12000
     for (let i = 0; i < N; i++) {
-      const r = simulateMatch('chi', 'bra', makeRng('q' + i), P0, false)
+      const r = simulateMatch('col', 'mex', makeRng('q' + i), P0, false)
       if (r.ga > r.gb) w++; else if (r.ga === r.gb) d++; else l++
     }
     expect(Math.abs(w / N - pr.win)).toBeLessThan(0.02)
@@ -167,5 +167,19 @@ describe('probabilidades coherentes con la simulación', () => {
     let big = 0
     for (let i = 0; i < 6000; i++) { const r = simulateMatch('chi', 'bra', makeRng('g' + i), DEFAULT_PARAMS, false); if (r.ga >= 6 || r.gb >= 6) big++ }
     expect(big / 6000).toBeLessThan(0.01)
+  })
+  it('con gran diferencia el favorito gana casi siempre y no hay resultados absurdos', () => {
+    let w = 0, dogBig = 0, N = 3000
+    for (let i = 0; i < N; i++) {
+      const r = simulateMatch('bra', 'rou', makeRng('f' + i), DEFAULT_PARAMS, false)
+      if (r.ga > r.gb) w++
+      if (r.gb - r.ga >= 2) dogBig++
+    }
+    expect(w / N).toBeGreaterThan(0.95)
+    expect(dogBig / N).toBeLessThan(0.03) // solo la rarísima «sorpresa» (4 %) puede dejarlo pasar
+    // un favorito moderado (≈65 %) nunca pierde por 3 o más goles
+    let absurdo = 0
+    for (let i = 0; i < 6000; i++) { const r = simulateMatch('arg', 'kor', makeRng('h' + i), DEFAULT_PARAMS, false); if (r.gb - r.ga >= 3) absurdo++ }
+    expect(absurdo).toBe(0)
   })
 })

@@ -744,5 +744,7 @@ const D: string[] = [
   "Back to my World Cup setup",
   "Could not sign in. Please try again.",
   "You can watch the group stage without an account; from the round of 16 we will ask you to sign in with Gmail to find out the champion.",
+  "Coherence filter: when one team is clearly stronger, chance does not produce absurd results (for example, the favorite losing by a landslide); only on very rare occasions does it slip up.",
+  "Legends in their prime: they raise the player’s rating and give their team an attacking boost; if they come from the bench, they enter the starting eleven when they beat the weakest player in their line.",
 ]
 export default D

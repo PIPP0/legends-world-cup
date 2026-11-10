@@ -744,5 +744,7 @@ const D: string[] = [
   "Torna a preparare il mio Mondiale",
   "Impossibile accedere. Riprova.",
   "Vedrai la fase a gironi senza account; dagli ottavi di finale ti chiederemo di accedere con Gmail per scoprire il campione.",
+  "Filtro di coerenza: quando una squadra è nettamente superiore, il caso non produce risultati assurdi (per esempio, la favorita che perde in goleada); solo in rarissime occasioni inciampa.",
+  "Leggende al massimo della forma: aumentano la valutazione del giocatore e danno una spinta offensiva alla loro nazionale; se arrivano dalla panchina, entrano negli undici quando superano il più debole del loro reparto.",
 ]
 export default D
