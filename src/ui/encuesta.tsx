@@ -85,7 +85,11 @@ export function EncuestaHeader({ pantalla }: { pantalla: string }) {
   )
 }
 
-// Al terminar «Simula tu mundial»: se abre sola una vez por torneo.
+// Momento en que se vio al campeón de cada torneo: el reloj no se reinicia aunque la pantalla se vuelva a dibujar (en la web con cuenta ocurre al sincronizar).
+const vistoAl = new Map<string, number>()
+const ESPERA_MS = 5000
+
+// Al terminar «Simula tu mundial»: se abre sola una vez por torneo, 5 segundos después de ver al campeón.
 export function EncuestaMundial({ seed, datos }: { seed: string; datos: string }) {
   const f = useFunciones()
   const clave = `lwc:enc:mundial:${seed}`
@@ -94,7 +98,9 @@ export function EncuestaMundial({ seed, datos }: { seed: string; datos: string }
     let hecha = false
     try { hecha = localStorage.getItem(clave) === '1' } catch { /* sin almacenamiento */ }
     if (hecha) return
-    const t = setTimeout(() => setAbierta(true), 5000)
+    if (!vistoAl.has(clave)) vistoAl.set(clave, Date.now())
+    const resta = Math.max(0, ESPERA_MS - (Date.now() - vistoAl.get(clave)!))
+    const t = setTimeout(() => setAbierta(true), resta)
     return () => clearTimeout(t)
   }, [clave])
   const cerrar = () => { setAbierta(false); try { localStorage.setItem(clave, '1') } catch { /* sin almacenamiento */ } }
