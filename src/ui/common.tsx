@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import photoData from '../data/photos.json'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
+import { tr } from '../i18n'
+import { attrLabel, posLabel } from '../i18n/nombres'
 import type { AltTournament, Attr, ModelParams, Player, Team } from '../types'
 
 export interface Ctx {
@@ -18,13 +20,13 @@ export function Flag({ id, size = 24 }: { id: string; size?: number }) {
   const t = TEAM_BY_ID[id]
   if (!t) return <span className="flag ph" style={{ width: size, height: size * 0.7 }} />
   return (
-    <img className="flag" src={`https://flagcdn.com/w80/${t.iso}.png`} alt={`Bandera de ${t.name}`} loading="lazy"
+    <img className="flag" src={`https://flagcdn.com/w80/${t.iso}.png`} alt={tr('Bandera de {team}', { team: t.name })} loading="lazy"
       style={{ width: size, height: size * 0.7 }} />
   )
 }
 
 export function TeamLink({ id, flag = true, size = 22 }: { id?: string; flag?: boolean; size?: number }) {
-  if (!id) return <span className="muted">Por definir</span>
+  if (!id) return <span className="muted">{tr('Por definir')}</span>
   return (
     <a className="tl" href={`#/equipo/${id}`}>
       {flag && <Flag id={id} size={size} />}<span>{TEAM_BY_ID[id].name}</span>
@@ -71,7 +73,7 @@ export function PlayerCard({ p, compact }: { p: Player; compact?: boolean }) {
       <Avatar p={p} size={compact ? 44 : 64} />
       <div className="pc-body">
         <span className="pc-name">{p.name}</span>
-        <span className="pc-sub"><span className="pos">{p.pos}</span>{!compact && <>{TEAM_BY_ID[p.teamId].name}</>}{!p.starter && <em className="sup">Suplente</em>}</span>
+        <span className="pc-sub"><span className="pos">{posLabel(p.pos)}</span>{!compact && <>{TEAM_BY_ID[p.teamId].name}</>}{!p.starter && <em className="sup">{tr('Suplente')}</em>}</span>
       </div>
       <span className="ovr">{p.ovr}</span>
     </a>
@@ -120,7 +122,7 @@ export function ProbBar({ a, b, pa, pd, pb }: { a: string; b: string; pa: number
       </div>
       <div className="prob-l">
         <span>{TEAM_BY_ID[a].name} <b>{Math.round(pa * 100)}%</b></span>
-        <span>Empate <b>{Math.round(pd * 100)}%</b></span>
+        <span>{tr('Empate')} <b>{Math.round(pd * 100)}%</b></span>
         <span>{TEAM_BY_ID[b].name} <b>{Math.round(pb * 100)}%</b></span>
       </div>
     </div>
@@ -137,7 +139,7 @@ export function Radar({ attrs, attrs2, size = 220 }: { attrs: Attr[]; attrs2?: A
   }
   const poly = (as: Attr[]) => as.map((a, i) => pt(i, a.v).join(',')).join(' ')
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} className="radar" role="img" aria-label="Atributos">
+    <svg viewBox={`0 0 ${size} ${size}`} className="radar" role="img" aria-label={tr('Atributos')}>
       {[0.25, 0.5, 0.75, 1].map((k) => (
         <polygon key={k} points={attrs.map((_, i) => pt(i, 30 + 70 * k).join(',')).join(' ')} className="grid" />
       ))}
@@ -153,7 +155,7 @@ export function Radar({ attrs, attrs2, size = 220 }: { attrs: Attr[]; attrs2?: A
 
 export function Pitch({ team, mirror }: { team: Team; mirror?: boolean }) {
   return (
-    <svg viewBox="0 0 100 118" className="pitch" role="group" aria-label={`Alineación de ${team.name}`}>
+    <svg viewBox="0 0 100 118" className="pitch" role="group" aria-label={tr('Alineación de {team}', { team: team.name })}>
       <defs>
         <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#14301d" /><stop offset="1" stopColor="#0f2616" />

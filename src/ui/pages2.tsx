@@ -1,3 +1,5 @@
+import { LANG, tr, ordinal } from '../i18n'
+import { attrLabel, posLabel } from '../i18n/nombres'
 import { useMemo, useState } from 'react'
 import { GROUPS, PLAYERS, STORY_MATCHES, TEAMS, FORMATION_NOTES } from '../data'
 import { DECLARED_R16 } from '../data/raw'
@@ -21,18 +23,18 @@ export function Teams() {
   const rank = useMemo(() => strengthRank(DEFAULT_PARAMS).map((p) => p.teamId), [])
   const list = TEAMS.filter((t) => (!g || t.group === g) && t.name.toLowerCase().includes(q.toLowerCase()))
   return (
-    <Section title="Selecciones" sub="32 equipos históricos. Toca uno para ver su once.">
+    <Section title={tr('Selecciones')} sub={tr('32 equipos históricos. Toca uno para ver su once.')}>
       <div className="filters">
-        <input type="search" placeholder="Buscar selección…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar selección" />
-        <select value={g} onChange={(e) => setG(e.target.value)} aria-label="Filtrar por grupo">
-          <option value="">Todos los grupos</option>{GROUPS.map((x) => <option key={x} value={x}>Grupo {x}</option>)}
+        <input type="search" placeholder={tr('Buscar selección…')} value={q} onChange={(e) => setQ(e.target.value)} aria-label={tr('Buscar selección')} />
+        <select value={g} onChange={(e) => setG(e.target.value)} aria-label={tr('Filtrar por grupo')}>
+          <option value="">{tr('Todos los grupos')}</option>{GROUPS.map((x) => <option key={x} value={x}>{tr('Grupo')} {x}</option>)}
         </select>
       </div>
       <div className="grid g4">
         {list.map((t) => {
           const star = [...t.xi].sort((a, b) => b.ovr - a.ovr)[0]
           return (
-            <TeamCard key={t.id} t={t} star={star} extra={<small>Gr. {t.group} · {t.formation} · #{rank.indexOf(t.id) + 1} del modelo</small>} />
+            <TeamCard key={t.id} t={t} star={star} extra={<small>{tr('Gr. {g} · {f} · #{r} del modelo', { g: t.group, f: t.formation, r: rank.indexOf(t.id) + 1 })}</small>} />
           )
         })}
       </div>
@@ -42,7 +44,7 @@ export function Teams() {
 
 export function Team({ id }: { id: string }) {
   const t = TEAM_BY_ID[id]
-  if (!t) return <Note tone="warn">Selección no encontrada.</Note>
+  if (!t) return <Note tone="warn">{tr('Selección no encontrada.')}</Note>
   const prof = profile(id, DEFAULT_PARAMS)
   const all = TEAMS.map((x) => profile(x.id, DEFAULT_PARAMS))
   const blurb = teamBlurb(t)
@@ -54,7 +56,7 @@ export function Team({ id }: { id: string }) {
   const tsKo = storyTeamStats(STORY_MATCHES, level).find((x) => x.teamId === id)!
   const row = groupTable(t.group, STORY_MATCHES)
   const pos = row.findIndex((r) => r.teamId === id) + 1
-  const comps: [string, keyof typeof prof][] = [['Calidad individual', 'quality'], ['Equilibrio táctico', 'balance'], ['Capacidad ofensiva', 'attack'], ['Solidez defensiva', 'defense'], ['Experiencia (proxy)', 'experience']]
+  const comps: [string, keyof typeof prof][] = [[tr('Calidad individual'), 'quality'], [tr('Equilibrio táctico'), 'balance'], [tr('Capacidad ofensiva'), 'attack'], [tr('Solidez defensiva'), 'defense'], [tr('Experiencia (proxy)'), 'experience']]
   const decl = storyPlayerStats(level).filter((s) => PLAYER_BY_ID[s.playerId].teamId === id)
   return (
     <>
@@ -62,44 +64,44 @@ export function Team({ id }: { id: string }) {
         <Flag id={id} size={64} />
         <div>
           <h1>{t.name}</h1>
-          <p className="muted">Grupo {t.group} · {t.formation} · {pos}.º del grupo · #{rankOf(all.map((a) => a.strength), prof.strength)} de 32 en el modelo</p>
+          <p className="muted">{LANG === 'en' ? `Group ${t.group} · ${t.formation} · ${ordinal(pos)} in the group · #${rankOf(all.map((a) => a.strength), prof.strength)} of 32 by the model` : `Grupo ${t.group} · ${t.formation} · ${pos}.º del grupo · #${rankOf(all.map((a) => a.strength), prof.strength)} de 32 en el modelo`}</p>
         </div>
       </div>
 
-      <Section title="Alineación histórica" sub={`${t.formation}: ${FORMATION_NOTES[t.formation]}`}>
+      <Section title={tr('Alineación histórica')} sub={`${t.formation}: ${FORMATION_NOTES[t.formation]}`}>
         <div className="two">
           <Pitch team={t} />
           <div className="plist">{t.xi.map((p) => <PlayerCard key={p.id} p={p} compact />)}</div>
         </div>
-        {t.xi.some((p) => p.verify) && <Note tone="warn">Hay nombres de esta alineación pendientes de verificar (marcados en la ficha del jugador).</Note>}
+        {t.xi.some((p) => p.verify) && <Note tone="warn">{tr('Hay nombres de esta alineación pendientes de verificar (marcados en la ficha del jugador).')}</Note>}
       </Section>
 
-      <Section title="Plantel de 23" sub="Once titulares más 12 suplentes. Los suplentes pueden entrar desde el minuto 60 en los partidos simulados.">
-        <h4 className="sub">Titulares</h4>
+      <Section title={tr('Plantel de 23')} sub={tr('Once titulares más 12 suplentes. Los suplentes pueden entrar desde el minuto 60 en los partidos simulados.')}>
+        <h4 className="sub">{tr('Titulares')}</h4>
         <div className="plist">{t.xi.map((p) => <PlayerCard key={p.id} p={p} compact />)}</div>
-        <h4 className="sub">Suplentes</h4>
+        <h4 className="sub">{tr('Suplentes')}</h4>
         <div className="plist">{t.bench.map((p) => <PlayerCard key={p.id} p={p} compact />)}</div>
-        {t.squad.some((p) => p.verify) && <Note tone="warn">Hay nombres del plantel pendientes de verificar (marcados en la ficha del jugador).</Note>}
+        {t.squad.some((p) => p.verify) && <Note tone="warn">{tr('Hay nombres del plantel pendientes de verificar (marcados en la ficha del jugador).')}</Note>}
       </Section>
 
-      <Section title="Perfil del modelo" sub="Estimaciones; ranking entre las 32 selecciones.">
+      <Section title={tr('Perfil del modelo')} sub={tr('Estimaciones; ranking entre las 32 selecciones.')}>
         {comps.map(([l, k]) => (
           <Bar key={k} label={l} v={prof[k] as number} min={65} right={`${(prof[k] as number).toFixed(1)} · #${rankOf(all.map((a) => a[k] as number), prof[k] as number)}`} />
         ))}
-        <p className="small"><b>Fortalezas:</b> {blurb.strong.join(' y ')}. <b>Punto más débil:</b> {blurb.weak.join(', ')}. Figura: {blurb.star.name}.</p>
+        <p className="small"><b>{tr('Fortalezas:')}</b> {blurb.strong.join(tr(' y '))}. <b>{tr('Punto más débil:')}</b> {blurb.weak.join(', ')}. {tr('Figura: {n}.', { n: blurb.star.name })}</p>
       </Section>
 
-      <Section title="Resultados">
+      <Section title={tr('Resultados')}>
         <div className="list">{matches.map((m) => <MatchRow key={m.id} m={m} />)}{koMatches.map((m) => <KoRow key={m.id} m={m} />)}</div>
-        <p className="small muted">Fase de grupos: {ts.w} G · {ts.d} E · {ts.l} P · {ts.gf} GF · {ts.ga} GC.{koMatches.length > 0 && <> Total con eliminatorias: {tsKo.pj} PJ · {tsKo.w} G · {tsKo.d} E · {tsKo.l} P · {tsKo.gf} GF · {tsKo.ga} GC (los penales cuentan como empate).</>}</p>
-        {decl.length > 0 && <p className="small">Goleadores: {decl.filter((d) => d.goals).map((d) => `${PLAYER_BY_ID[d.playerId].name} (${d.goals})`).join(', ') || '—'}.</p>}
+        <p className="small muted">{tr('Fase de grupos: {w} G · {d} E · {l} P · {gf} GF · {ga} GC.', { w: ts.w, d: ts.d, l: ts.l, gf: ts.gf, ga: ts.ga })}{koMatches.length > 0 && tr(' Total con eliminatorias: {pj} PJ · {w} G · {d} E · {l} P · {gf} GF · {ga} GC (los penales cuentan como empate).', { pj: tsKo.pj, w: tsKo.w, d: tsKo.d, l: tsKo.l, gf: tsKo.gf, ga: tsKo.ga })}</p>
+        {decl.length > 0 && <p className="small">{tr('Goleadores:')} {decl.filter((d) => d.goals).map((d) => `${PLAYER_BY_ID[d.playerId].name} (${d.goals})`).join(', ') || '—'}.</p>}
       </Section>
 
-      <Section title={status.next ? 'Próximo enfrentamiento' : 'Camino en el mundial'}>
+      <Section title={status.next ? tr('Próximo enfrentamiento') : tr('Camino en el mundial')}>
         {status.next
-          ? <div className="kmini one"><span><Flag id={id} size={22} />{t.name}</span><i>vs</i><span><TeamLink id={status.next.opp} size={22} /></span><small className="muted">{status.next.ronda} · sin jugar</small></div>
-          : <p className="muted">{status.text || 'Sin partidos pendientes.'}</p>}
-        {status.next && <p className="small muted">Se juega cuando avances en <a href="#/cuadro">Eliminatorias</a>.</p>}
+          ? <div className="kmini one"><span><Flag id={id} size={22} />{t.name}</span><i>vs</i><span><TeamLink id={status.next.opp} size={22} /></span><small className="muted">{status.next.ronda} · {tr('sin jugar')}</small></div>
+          : <p className="muted">{status.text || tr('Sin partidos pendientes.')}</p>}
+        {status.next && <p className="small muted">{tr('Se juega cuando avances en')} <a href="#/cuadro">{tr('Eliminatorias')}</a>.</p>}
       </Section>
     </>
   )
@@ -107,7 +109,7 @@ export function Team({ id }: { id: string }) {
 
 export function PlayerPage({ id }: { id: string }) {
   const p = PLAYER_BY_ID[id]
-  if (!p) return <Note tone="warn">Jugador no encontrado.</Note>
+  if (!p) return <Note tone="warn">{tr('Jugador no encontrado.')}</Note>
   const t = TEAM_BY_ID[p.teamId]
   const photo = usePhoto(p)
   const level = useStoryLevel()
@@ -119,33 +121,33 @@ export function PlayerPage({ id }: { id: string }) {
         <FutCard p={p} size="lg" />
         <div>
           <h1>{p.name}</h1>
-          <p><TeamLink id={p.teamId} /> · <span className="pos">{p.pos}</span> · {t.formation}</p>
-          <p className="ovr big">{p.ovr}<small>valoración del modelo</small></p>
+          <p><TeamLink id={p.teamId} /> · <span className="pos">{posLabel(p.pos)}</span> · {t.formation}</p>
+          <p className="ovr big">{p.ovr}<small>{tr('valoración del modelo')}</small></p>
         </div>
       </div>
-      {photo && <p className="credit">Foto: <a href={photo.page} target="_blank" rel="noreferrer">{photo.title}</a>{photo.author ? ` · ${photo.author}` : ''} · {photo.license} · Wikimedia.</p>}
-      {p.verify && <Note tone="warn">Este nombre figura en el once original pero conviene verificarlo; no se garantiza foto ni trayectoria.</Note>}
+      {photo && <p className="credit">{tr('Foto:')} <a href={photo.page} target="_blank" rel="noreferrer">{photo.title}</a>{photo.author ? ` · ${photo.author}` : ''} · {photo.license} · Wikimedia.</p>}
+      {p.verify && <Note tone="warn">{tr('Este nombre figura en el once original pero conviene verificarlo; no se garantiza foto ni trayectoria.')}</Note>}
 
-      <Section title="Atributos" sub="Estimaciones del modelo, no calificaciones oficiales.">
+      <Section title={tr('Atributos')} sub={tr('Estimaciones del modelo, no calificaciones oficiales.')}>
         <div className="two">
           <Radar attrs={p.attrs} />
-          <div>{p.attrs.map((a) => <Bar key={a.k} label={a.k} v={a.v} min={40} />)}</div>
+          <div>{p.attrs.map((a) => <Bar key={a.k} label={attrLabel(a.k)} v={a.v} min={40} />)}</div>
         </div>
       </Section>
 
-      <Section title="En el torneo">
+      <Section title={tr('En el torneo')}>
         <div className="statrow">
-          <div><b>{stat?.goals ?? 0}</b><span>Goles{stat && !stat.goals ? '' : ' (declarados)'}</span></div>
-          <div><b>{stat?.assists ?? 0}</b><span>Asistencias (estimadas)</span></div>
+          <div><b>{stat?.goals ?? 0}</b><span>{tr('Goles')}{stat && !stat.goals ? '' : tr(' (declarados)')}</span></div>
+          <div><b>{stat?.assists ?? 0}</b><span>{tr('Asistencias (estimadas)')}</span></div>
         </div>
-        <Note tone="est">La simulación original no registró autores por partido: los goles son los declarados y las asistencias, una estimación provisional.</Note>
+        <Note tone="est">{tr('La simulación original no registró autores por partido: los goles son los declarados y las asistencias, una estimación provisional.')}</Note>
       </Section>
 
-      <Section title="Biografía y trayectoria">
-        <p className="muted">Ficha biográfica aún no redactada en esta primera versión. Está preparada para sumarse sin cambiar la estructura.</p>
+      <Section title={tr('Biografía y trayectoria')}>
+        <p className="muted">{tr('Ficha biográfica aún no redactada en esta primera versión. Está preparada para sumarse sin cambiar la estructura.')}</p>
       </Section>
 
-      <Section title="Compara con otras leyendas" sub={`Otros ${p.pos} con valoración cercana`}>
+      <Section title={tr('Compara con otras leyendas')} sub={tr('Otros {p} con valoración cercana', { p: posLabel(p.pos) })}>
         <div className="plist">{peers.map((x) => <a key={x.id} href={`#/comparar/${p.id}/${x.id}`} className="pcard compact"><Avatar p={x} size={44} /><div className="pc-body"><span className="pc-name">{x.name}</span><span className="pc-sub">{TEAM_BY_ID[x.teamId].name}</span></div><span className="ovr">{x.ovr}</span></a>)}</div>
       </Section>
     </>
@@ -158,16 +160,16 @@ export function Players() {
   const list = PLAYERS.filter((p) => (!pos || p.line === pos) && (p.name.toLowerCase().includes(q.toLowerCase()) || TEAM_BY_ID[p.teamId].name.toLowerCase().includes(q.toLowerCase())))
     .sort((a, b) => b.ovr - a.ovr).slice(0, 60)
   return (
-    <Section title="Jugadores" sub="352 leyendas. Busca por nombre o país y compara a dos.">
+    <Section title={tr('Jugadores')} sub={tr('352 leyendas. Busca por nombre o país y compara a dos.')}>
       <div className="filters">
-        <input type="search" placeholder="Buscar jugador o país…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar jugador" />
-        <select value={pos} onChange={(e) => setPos(e.target.value)} aria-label="Filtrar por línea">
-          <option value="">Todas las líneas</option><option value="GK">Porteros</option><option value="DEF">Defensas</option><option value="MID">Mediocampistas</option><option value="ATT">Atacantes</option>
+        <input type="search" placeholder={tr('Buscar jugador o país…')} value={q} onChange={(e) => setQ(e.target.value)} aria-label={tr('Buscar jugador')} />
+        <select value={pos} onChange={(e) => setPos(e.target.value)} aria-label={tr('Filtrar por línea')}>
+          <option value="">{tr('Todas las líneas')}</option><option value="GK">{tr('Porteros')}</option><option value="DEF">{tr('Defensas')}</option><option value="MID">{tr('Mediocampistas')}</option><option value="ATT">{tr('Atacantes')}</option>
         </select>
-        <a className="btn" href="#/comparar">Comparar jugadores</a>
+        <a className="btn" href="#/comparar">{tr('Comparar jugadores')}</a>
       </div>
       <div className="grid futgrid">{list.map((p) => <FutCard key={p.id} p={p} />)}</div>
-      {list.length === 60 && <p className="muted small">Mostrando los 60 mejor valorados de la búsqueda.</p>}
+      {list.length === 60 && <p className="muted small">{tr('Mostrando los 60 mejor valorados de la búsqueda.')}</p>}
     </Section>
   )
 }
@@ -187,11 +189,11 @@ export function Compare({ a: ia, b: ib }: { a?: string; b?: string }) {
   const A = PLAYER_BY_ID[a], B = PLAYER_BY_ID[b]
   const same = A.line === 'GK' && B.line === 'GK' || (A.line !== 'GK' && B.line !== 'GK')
   return (
-    <Section title="Comparar jugadores" sub="Atributos estimados por el modelo.">
-      <div className="filters"><PlayerSelect value={a} onChange={(v) => { setA(v); go(`/comparar/${v}/${b}`) }} label="Jugador A" /><PlayerSelect value={b} onChange={(v) => { setB(v); go(`/comparar/${a}/${v}`) }} label="Jugador B" /></div>
+    <Section title={tr('Comparar jugadores')} sub={tr('Atributos estimados por el modelo.')}>
+      <div className="filters"><PlayerSelect value={a} onChange={(v) => { setA(v); go(`/comparar/${v}/${b}`) }} label={tr('Jugador A')} /><PlayerSelect value={b} onChange={(v) => { setB(v); go(`/comparar/${a}/${v}`) }} label={tr('Jugador B')} /></div>
       <div className="vs">
         {[A, B].map((p: Player, i) => (
-          <a key={p.id} href={`#/jugador/${p.id}`} className={`vsp ${i ? 'b' : 'a'}`}><Avatar p={p} size={84} rounded={false} /><b>{p.name}</b><span>{TEAM_BY_ID[p.teamId].name} · {p.pos}</span><em>{p.ovr}</em></a>
+          <a key={p.id} href={`#/jugador/${p.id}`} className={`vsp ${i ? 'b' : 'a'}`}><Avatar p={p} size={84} rounded={false} /><b>{p.name}</b><span>{TEAM_BY_ID[p.teamId].name} · {posLabel(p.pos)}</span><em>{p.ovr}</em></a>
         ))}
       </div>
       {same ? (
@@ -199,11 +201,11 @@ export function Compare({ a: ia, b: ib }: { a?: string; b?: string }) {
           <Radar attrs={A.attrs} attrs2={B.attrs} />
           <div>
             {A.attrs.map((x, i) => (
-              <div key={x.k} className="cmp"><b className={x.v >= B.attrs[i].v ? 'win' : ''}>{x.v}</b><span>{x.k}</span><b className={B.attrs[i].v >= x.v ? 'win' : ''}>{B.attrs[i].v}</b></div>
+              <div key={x.k} className="cmp"><b className={x.v >= B.attrs[i].v ? 'win' : ''}>{x.v}</b><span>{attrLabel(x.k)}</span><b className={B.attrs[i].v >= x.v ? 'win' : ''}>{B.attrs[i].v}</b></div>
             ))}
           </div>
         </div>
-      ) : <Note>Un portero y un jugador de campo no comparten atributos directos; se comparan solo por valoración general.</Note>}
+      ) : <Note>{tr('Un portero y un jugador de campo no comparten atributos directos; se comparan solo por valoración general.')}</Note>}
     </Section>
   )
 }

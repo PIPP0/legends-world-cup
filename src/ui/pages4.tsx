@@ -1,3 +1,4 @@
+import { LANG, tr } from '../i18n'
 import { useEffect, useRef, useState } from 'react'
 import { TEAM_BY_ID, PLAYER_BY_ID } from '../data/lookup'
 import { STORY_MATCHES } from '../data'
@@ -34,27 +35,27 @@ export function Stats() {
   const ts = useAlt ? teamStats(matches) : storyTeamStats(matches, level).filter((t) => t.pj > 0)
   const players = (key: (s: PlayerStat) => number) => stats.filter((s) => key(s) > 0).sort((a, b) => key(b) - key(a) || b.goals - a.goals).slice(0, 20)
   const rowsP = (list: PlayerStat[], val: (s: PlayerStat) => number, label: string) => (
-    <table className="gt"><thead><tr><th>#</th><th className="l">Jugador</th><th className="l">País</th><th>{label}</th></tr></thead>
+    <table className="gt"><thead><tr><th>#</th><th className="l">{tr('Jugador')}</th><th className="l">{tr('País')}</th><th>{label}</th></tr></thead>
       <tbody>{list.map((s, i) => { const p = PLAYER_BY_ID[s.playerId]; return (
         <tr key={s.playerId}><td>{i + 1}</td><td className="l"><a className="tl" href={`#/jugador/${p.id}`}><Avatar p={p} size={28} />{p.name}</a></td><td className="l"><TeamLink id={p.teamId} size={18} /></td><td><b>{val(s)}</b></td></tr>) })}</tbody></table>
   )
   const byAttack = [...ts].sort((a, b) => b.gf - a.gf).slice(0, 8)
   const byDef = [...ts].sort((a, b) => a.ga - b.ga || b.pj - a.pj).slice(0, 8)
   return (
-    <Section title="Estadísticas" sub={useAlt ? 'Torneo alternativo, calculado desde los eventos.' : 'Historia original.'}>
-      {alt && <Tabs value={src} onChange={setSrc} items={[['story', 'Historia original'], ['alt', 'Torneo alternativo']]} />}
-      <Tabs value={tab} onChange={setTab} items={[['g', 'Goleadores'], ['a', 'Asistencias'], ['ga', 'Goles + asist.'], ['t', 'Selecciones']]} />
-      {!useAlt && <Note tone="est"><b>Total del torneo:</b> goles de la fase de grupos (declarados por la simulación original, lista parcial) más los de las eliminatorias; asistencias <b>estimadas</b> en grupos. {level > 0 ? <>Eliminatorias: calculadas desde los eventos de cada partido, hasta la fase que ya avanzaste ({phaseLabel(level)}). Los penales cuentan como empate.</> : <>Las eliminatorias se suman a medida que avanzas fase por fase en <a href="#/cuadro">Eliminatorias</a>.</>}</Note>}
-      {tab === 'g' && rowsP(players((s) => s.goals), (s) => s.goals, 'Goles')}
-      {tab === 'a' && rowsP(players((s) => s.assists), (s) => s.assists, useAlt ? 'Asist.' : 'Asist. (est.)')}
+    <Section title={tr('Estadísticas')} sub={useAlt ? tr('Torneo alternativo, calculado desde los eventos.') : tr('Historia original.')}>
+      {alt && <Tabs value={src} onChange={setSrc} items={[['story', tr('Historia original')], ['alt', tr('Torneo alternativo')]]} />}
+      <Tabs value={tab} onChange={setTab} items={[['g', tr('Goleadores')], ['a', tr('Asistencias')], ['ga', tr('Goles + asist.')], ['t', tr('Selecciones')]]} />
+      {!useAlt && <Note tone="est">{LANG === 'en' ? <><b>Tournament total:</b> group-stage goals (as declared by the original simulation, partial list) plus knockout goals; assists in the group stage are <b>estimated</b>. {level > 0 ? <>Knockouts: calculated from each match’s events, up to the stage you have reached ({phaseLabel(level)}). Penalty shoot-outs count as draws.</> : <>Knockout matches are added as you advance stage by stage in <a href="#/cuadro">Knockouts</a>.</>}</> : <><b>Total del torneo:</b> goles de la fase de grupos (declarados por la simulación original, lista parcial) más los de las eliminatorias; asistencias <b>estimadas</b> en grupos. {level > 0 ? <>Eliminatorias: calculadas desde los eventos de cada partido, hasta la fase que ya avanzaste ({phaseLabel(level)}). Los penales cuentan como empate.</> : <>Las eliminatorias se suman a medida que avanzas fase por fase en <a href="#/cuadro">Eliminatorias</a>.</>}</>}</Note>}
+      {tab === 'g' && rowsP(players((s) => s.goals), (s) => s.goals, tr('Goles'))}
+      {tab === 'a' && rowsP(players((s) => s.assists), (s) => s.assists, useAlt ? tr('Asist.') : tr('Asist. (est.)'))}
       {tab === 'ga' && rowsP(players((s) => s.goals + s.assists), (s) => s.goals + s.assists, 'G+A')}
       {tab === 't' && (
         <>
-          <h3 className="sub">Mejor ataque (goles a favor)</h3>
+          <h3 className="sub">{tr('Mejor ataque (goles a favor)')}</h3>
           {byAttack.map((t) => <Bar key={t.teamId} label={TEAM_BY_ID[t.teamId].name} v={t.gf} min={0} max={Math.max(...ts.map((x) => x.gf))} right={`${t.gf}`} />)}
-          <h3 className="sub">Mejor defensa (goles en contra)</h3>
+          <h3 className="sub">{tr('Mejor defensa (goles en contra)')}</h3>
           {byDef.map((t) => <Bar key={t.teamId} label={TEAM_BY_ID[t.teamId].name} v={Math.max(...ts.map((x) => x.ga)) - t.ga + 1} min={0} max={Math.max(...ts.map((x) => x.ga)) + 1} right={`${t.ga}`} />)}
-          <h3 className="sub">Invictos</h3>
+          <h3 className="sub">{tr('Invictos')}</h3>
           <div className="flags">{ts.filter((t) => t.unbeaten).map((t) => <TeamLink key={t.teamId} id={t.teamId} />)}</div>
         </>
       )}
@@ -66,10 +67,10 @@ export function Stats() {
 // Historia oficial: los resultados de las eliminatorias son FIJOS (src/data/story-knockout.json), iguales para todas las personas.
 // Lo único que cambia entre personas es hasta qué fase decidieron avanzar (se guarda en su navegador).
 const ETAPAS = [
-  { boton: 'Avanzar a cuartos', juega: 'Octavos de final' },
-  { boton: 'Avanzar a semifinales', juega: 'Cuartos de final' },
-  { boton: 'Avanzar a la final', juega: 'Semifinales' },
-  { boton: 'Jugar la final y el tercer puesto', juega: 'Tercer puesto y final' },
+  { boton: tr('Avanzar a cuartos'), juega: tr('Octavos de final') },
+  { boton: tr('Avanzar a semifinales'), juega: tr('Cuartos de final') },
+  { boton: tr('Avanzar a la final'), juega: tr('Semifinales') },
+  { boton: tr('Jugar la final y el tercer puesto'), juega: tr('Tercer puesto y final') },
 ] as const
 
 const vacio = (m: KoMatch): KoMatch => ({ id: m.id, round: m.round })
@@ -92,11 +93,11 @@ export function BracketView({ view, level = 0 }: { view: 'story' | 'alt'; level?
   const br = view === 'alt' && alt ? alt.bracket : visibleBracket(STORY_KNOCKOUT.bracket, level)
   return (
     <div className="bracket">
-      <div className="bcol"><h4>Octavos</h4>{br.r16.map((m) => <KoCard key={m.id} m={m} />)}</div>
-      <div className="bcol"><h4>Cuartos</h4>{br.qf.map((m) => <KoCard key={m.id} m={m} />)}</div>
-      <div className="bcol"><h4>Semifinales</h4>{br.sf.map((m) => <KoCard key={m.id} m={m} />)}</div>
-      <div className="bcol"><h4>Final</h4><KoCard m={br.final} /><h4>Tercer puesto</h4><KoCard m={br.third} />
-        <h4>Campeón</h4>
+      <div className="bcol"><h4>{tr('Octavos')}</h4>{br.r16.map((m) => <KoCard key={m.id} m={m} />)}</div>
+      <div className="bcol"><h4>{tr('Cuartos')}</h4>{br.qf.map((m) => <KoCard key={m.id} m={m} />)}</div>
+      <div className="bcol"><h4>{tr('Semifinales')}</h4>{br.sf.map((m) => <KoCard key={m.id} m={m} />)}</div>
+      <div className="bcol"><h4>{tr('Final')}</h4><KoCard m={br.final} /><h4>{tr('Tercer puesto')}</h4><KoCard m={br.third} />
+        <h4>{tr('Campeón')}</h4>
         <div className="champ">{br.champion ? <><Flag id={br.champion} size={48} /><b>{TEAM_BY_ID[br.champion].name}</b></> : <span className="muted">Por definir</span>}</div>
       </div>
     </div>
@@ -114,24 +115,24 @@ function CampeonDetalle() {
   const top = [...scorers.entries()].sort((x, y) => y[1] - x[1]).slice(0, 5)
   const f = br.final
   return (
-    <Section title="¡Tenemos campeón!">
-      <div className="champ big reveal"><Flag id={champion} size={88} /><div><span className="muted">Campeón del Mundial de Leyendas</span><b>{TEAM_BY_ID[champion].name}</b></div></div>
+    <Section title={tr('¡Tenemos campeón!')}>
+      <div className="champ big reveal"><Flag id={champion} size={88} /><div><span className="muted">{tr('Campeón del Mundial de Leyendas')}</span><b>{TEAM_BY_ID[champion].name}</b></div></div>
       <div className="podio">
-        <div><span>🥈 Subcampeón</span><TeamLink id={runnerUp} /></div>
-        <div><span>🥉 Tercer lugar</span><TeamLink id={third} /></div>
-        <div><span>Cuarto lugar</span><TeamLink id={fourth} /></div>
+        <div><span>🥈 {tr('Subcampeón')}</span><TeamLink id={runnerUp} /></div>
+        <div><span>🥉 {tr('Tercer lugar')}</span><TeamLink id={third} /></div>
+        <div><span>{tr('Cuarto lugar')}</span><TeamLink id={fourth} /></div>
       </div>
       <div className="why-box">
-        <h4>La final</h4>
+        <h4>{tr('La final')}</h4>
         <p><b>{TEAM_BY_ID[f.a!].name} {scoreText(f)} {TEAM_BY_ID[f.b!].name}</b></p>
         <Events goals={f.goals ?? []} home={f.a!} away={f.b!} />
       </div>
-      <h3 className="sub">El camino de {TEAM_BY_ID[champion].name}</h3>
+      <h3 className="sub">{tr('El camino de {t}', { t: TEAM_BY_ID[champion].name })}</h3>
       <div className="list">{camino.map((m) => <KoRow key={m.id} m={m} />)}</div>
-      <h3 className="sub">Goleadores de las eliminatorias (desde octavos de final)</h3>
-      <p className="small muted">Solo cuenta los goles de octavos, cuartos, semifinales, tercer puesto y final. No incluye la fase de grupos. El total del torneo está en Estadísticas.</p>
-      <ol className="rules">{top.map(([id, n]) => <li key={id}><a href={`#/jugador/${id}`}>{PLAYER_BY_ID[id].name}</a> ({TEAM_BY_ID[PLAYER_BY_ID[id].teamId].name}) · {n} gol{n > 1 ? 'es' : ''}</li>)}</ol>
-      <p className="small muted">Las estadísticas, los partidos, las selecciones y los jugadores ya incluyen estos resultados. En Estadísticas, los goles son del torneo completo: fase de grupos más estas eliminatorias.</p>
+      <h3 className="sub">{tr('Goleadores de las eliminatorias (desde octavos de final)')}</h3>
+      <p className="small muted">{tr('Solo cuenta los goles de octavos, cuartos, semifinales, tercer puesto y final. No incluye la fase de grupos. El total del torneo está en Estadísticas.')}</p>
+      <ol className="rules">{top.map(([id, n]) => <li key={id}><a href={`#/jugador/${id}`}>{PLAYER_BY_ID[id].name}</a> ({TEAM_BY_ID[PLAYER_BY_ID[id].teamId].name}) · {n > 1 ? tr('{n} goles', { n }) : tr('{n} gol', { n })}</li>)}</ol>
+      <p className="small muted">{tr('Las estadísticas, los partidos, las selecciones y los jugadores ya incluyen estos resultados. En Estadísticas, los goles son del torneo completo: fase de grupos más estas eliminatorias.')}</p>
     </Section>
   )
 }
@@ -148,34 +149,34 @@ export function Bracket() {
   const [anim, setAnim] = useState<{ from: number; to: number; key: number } | null>(() => (conAnim && nivel >= 4 && !visto ? { from: 0, to: 4, key: 0 } : null))
   const [skip, setSkip] = useState(0)
   const partidos = nivel === 0 ? full.r16 : nivel === 1 ? full.qf : nivel === 2 ? full.sf : [full.third, full.final]
-  const items = nivel >= 4 ? [] : partidos.map((m) => toItem(m, m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined))
+  const items = nivel >= 4 ? [] : partidos.map((m) => toItem(m, m.id === 'F' ? tr('Gran final') : m.id === 'T' ? tr('Tercer puesto') : undefined))
   const done = useRef(() => setListo(true)).current
   const empezar = () => { setListo(false); setJugando(true); window.scrollTo(0, 0) }
   const terminar = () => { const antes = nivel; setJugando(false); setListo(false); setLevel(antes + 1); setSkip(0); setAnim(conAnim ? { from: antes, to: antes + 1, key: Date.now() } : null); window.scrollTo(0, 0) }
   const finAnim = useRef(() => { setAnim(null); try { sessionStorage.setItem('lwc:historia:anim', '1') } catch { /* sin almacenamiento */ } }).current
   const repetir = () => { if (nivel < 1 || !conAnim) return; setSkip(0); setJugando(false); setAnim({ from: 0, to: nivel, key: Date.now() }); window.scrollTo(0, 0) }
-  const sub = anim ? 'Así avanza el torneo…' : nivel >= 4 ? 'Historia original: terminó. Estos resultados son los mismos para todas las personas y quedan guardados.'
-    : nivel === 0 ? 'Historia original: octavos definidos, aún sin resultados.' : `Historia original: ya se jugaron ${ETAPAS[nivel - 1].juega.toLowerCase()}.`
+  const sub = anim ? tr('Así avanza el torneo…') : nivel >= 4 ? tr('Historia original: terminó. Estos resultados son los mismos para todas las personas y quedan guardados.')
+    : nivel === 0 ? tr('Historia original: octavos definidos, aún sin resultados.') : tr('Historia original: ya se jugaron {x}.', { x: ETAPAS[nivel - 1].juega.toLowerCase() })
   return (
     <>
-      <Section title="Eliminatorias" sub={sub}>
+      <Section title={tr('Eliminatorias')} sub={sub}>
         {jugando && (
           <div className="historia-juega">
             <h3>{ETAPAS[nivel].juega}</h3>
             <Board key={`h${nivel}`} items={items} tick={nivel === 3 ? 90 : 70} onDone={done} />
             <div className="cta">
-              {listo ? <button className="btn pri" onClick={terminar}>{nivel === 3 ? 'Conocer al campeón' : 'Continuar'}</button> : <span className="small muted">Cuando terminen los partidos aparecerá «{nivel === 3 ? 'Conocer al campeón' : 'Continuar'}».</span>}
+              {listo ? <button className="btn pri" onClick={terminar}>{nivel === 3 ? tr('Conocer al campeón') : tr('Continuar')}</button> : <span className="small muted">{tr('Cuando terminen los partidos aparecerá «{x}».', { x: nivel === 3 ? tr('Conocer al campeón') : tr('Continuar') })}</span>}
             </div>
           </div>
         )}
-        {!jugando && !anim && nivel < 4 && (nivel < fun.nivelHistoria ? <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div> : <p className="note">La siguiente fase de la historia todavía no está disponible. Vuelve pronto.</p>)}
-        {!jugando && !anim && nivel >= 1 && conAnim && <div className="cta"><button className="btn ghost" onClick={repetir}>↺ Reiniciar animación</button></div>}
-        {anim && <div className="cta"><button className="btn ghost" onClick={() => setSkip((k) => k + 1)}>Saltar animación</button><button className="btn ghost" onClick={repetir}>↺ Reiniciar animación</button></div>}
+        {!jugando && !anim && nivel < 4 && (nivel < fun.nivelHistoria ? <div className="cta"><button className="btn hot" onClick={empezar}>{ETAPAS[nivel].boton}</button></div> : <p className="note">{tr('La siguiente fase de la historia todavía no está disponible. Vuelve pronto.')}</p>)}
+        {!jugando && !anim && nivel >= 1 && conAnim && <div className="cta"><button className="btn ghost" onClick={repetir}>{tr('↺ Reiniciar animación')}</button></div>}
+        {anim && <div className="cta"><button className="btn ghost" onClick={() => setSkip((k) => k + 1)}>{tr('Saltar animación')}</button><button className="btn ghost" onClick={repetir}>{tr('↺ Reiniciar animación')}</button></div>}
         {!jugando && (anim
           ? <BracketAnimado key={anim.key} full={full} from={anim.from} to={anim.to} speed={600} onEnd={finAnim} skipKey={skip} />
           : <BracketEstatico full={full} level={nivel} />)}
         {jugando && <BracketEstatico full={full} level={nivel} />}
-        <Note>Los resultados de las eliminatorias de la historia original son fijos: se calcularon una sola vez y todas las personas ven los mismos. Cada quien decide cuándo avanzar de fase, y lo que ya reveló queda guardado en su navegador. Cuartos y semifinales siguen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8.</Note>
+        <Note>{tr('Los resultados de las eliminatorias de la historia original son fijos: se calcularon una sola vez y todas las personas ven los mismos. Cada quien decide cuándo avanzar de fase, y lo que ya reveló queda guardado en su navegador. Cuartos y semifinales siguen el orden de los octavos: ganador 1 vs ganador 2, 3 vs 4, 5 vs 6 y 7 vs 8.')}</Note>
       </Section>
       {nivel >= 4 && !jugando && !anim && <CampeonDetalle />}
     </>
@@ -188,8 +189,8 @@ export function Simulator() {
   const [tab, setTab] = useState<'match' | 'model' | 'audit'>('match')
   return (
     <>
-      <Section title="Simulador" sub="El modo libre nunca sobrescribe los resultados de la historia original.">
-        <Tabs value={tab} onChange={setTab} items={[['match', 'Partido'], ['model', 'Modelo'], ['audit', 'Auditoría']]} />
+      <Section title={tr('Simulador')} sub={tr('El modo libre nunca sobrescribe los resultados de la historia original.')}>
+        <Tabs value={tab} onChange={setTab} items={[['match', tr('Partido')], ['model', tr('Modelo')], ['audit', tr('Auditoría')]]} />
       </Section>
       {tab === 'match' && <FreeMatch />}
       {tab === 'model' && <><Model params={params} setParams={setParams} /><Odds /></>}
@@ -227,11 +228,11 @@ export function LiveReplay({ a, b, res, onSkip, onDone, winLabel }: { a: string;
         <span className={`lv-st ${done ? '' : 'on'}`}>{done ? 'FINAL' : '● EN VIVO'}</span>
       </div>
       <div className="lv-prog"><i style={{ width: `${(min / end) * 100}%` }} /></div>
-      {flash && <div className="lv-goal" key={last.minute + last.scorerId}>¡GOL! {PLAYER_BY_ID[last.scorerId].name} · {TEAM_BY_ID[last.teamId].name} · {last.minute}'</div>}
+      {flash && <div className="lv-goal" key={last.minute + last.scorerId}>{tr('¡GOL!')} {PLAYER_BY_ID[last.scorerId].name} · {TEAM_BY_ID[last.teamId].name} · {last.minute}'</div>}
       <Events goals={shown} home={a} away={b} />
-      {done && !winLabel && res.pens && <p className="center">Penales {res.pens[0]}–{res.pens[1]} · avanza <b>{TEAM_BY_ID[res.winner!].name}</b></p>}
-      {done && winLabel && res.winner && <p className="center">{res.pens ? `Penales ${res.pens[0]}–${res.pens[1]} · ` : res.et ? 'Tras la prórroga · ' : ''}<b>{TEAM_BY_ID[res.winner].name}</b> {winLabel}</p>}
-      {!done && <button className="btn ghost" onClick={() => { setMin(end); onSkip() }}>Saltar al final</button>}
+      {done && !winLabel && res.pens && <p className="center">{tr('Penales {a}–{b} · avanza', { a: res.pens[0], b: res.pens[1] })} <b>{TEAM_BY_ID[res.winner!].name}</b></p>}
+      {done && winLabel && res.winner && <p className="center">{res.pens ? tr('Penales {a}–{b} · ', { a: res.pens[0], b: res.pens[1] }) : res.et ? tr('Tras la prórroga · ') : ''}<b>{TEAM_BY_ID[res.winner].name}</b> {winLabel}</p>}
+      {!done && <button className="btn ghost" onClick={() => { setMin(end); onSkip() }}>{tr('Saltar al final')}</button>}
     </div>
   )
 }
@@ -251,23 +252,23 @@ function FreeMatch() {
   const pr = probabilities(a, b, params, env)
   const A = profile(a, params), B = profile(b, params)
   const ex = a !== b ? explain(a, b, params, res ?? undefined, env) : null
-  const comps: [string, 'quality' | 'balance' | 'attack' | 'defense' | 'experience'][] = [['Calidad', 'quality'], ['Equilibrio', 'balance'], ['Ataque', 'attack'], ['Defensa', 'defense'], ['Experiencia', 'experience']]
+  const comps: [string, 'quality' | 'balance' | 'attack' | 'defense' | 'experience'][] = [[tr('Calidad'), 'quality'], [tr('Equilibrio'), 'balance'], [tr('Ataque'), 'attack'], [tr('Defensa'), 'defense'], [tr('Experiencia'), 'experience']]
   const run = (s: string) => setRes(simulateMatch(a, b, makeRng(s), params, ko, env))
   const again = () => { const s = `${seed}#${n + 1}`; setN(n + 1); setLive(true); run(s) }
   return (
-    <Section title="Partido libre">
-      <div className="filters"><TeamSelect value={a} onChange={(v) => { setA(v); setRes(null) }} label="Selección A" /><TeamSelect value={b} onChange={(v) => { setB(v); setRes(null) }} label="Selección B" /></div>
+    <Section title={tr('Partido libre')}>
+      <div className="filters"><TeamSelect value={a} onChange={(v) => { setA(v); setRes(null) }} label={tr('Selección A')} /><TeamSelect value={b} onChange={(v) => { setB(v); setRes(null) }} label={tr('Selección B')} /></div>
       <div className="filters">
-        <label className="seed">Semilla <input value={seed} onChange={(e) => { setSeed(e.target.value); setN(0) }} /></label>
-        <label className="seed">Estadio
+        <label className="seed">{tr('Semilla')} <input value={seed} onChange={(e) => { setSeed(e.target.value); setN(0) }} /></label>
+        <label className="seed">{tr('Estadio')}
           <select value={venue} onChange={(e) => { setVenue(e.target.value); setRes(null) }}>
-            <option value="">Neutral (sin sede)</option>
+            <option value="">{tr('Neutral (sin sede)')}</option>
             {HOSTS.map((h) => <optgroup key={h.id} label={h.name}>{h.venues.map((x) => <option key={x.id} value={x.id}>{x.name} · {x.city}</option>)}</optgroup>)}
           </select></label>
-        {venue && <label className="seed">Época <select value={season} onChange={(e) => { setSeason(e.target.value as Season); setRes(null) }}>{Object.entries(SEASONS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>}
-        <label className="chk"><input type="checkbox" checked={ko} onChange={(e) => setKo(e.target.checked)} /> Eliminatoria (prórroga y penales)</label>
+        {venue && <label className="seed">{tr('Época')} <select value={season} onChange={(e) => { setSeason(e.target.value as Season); setRes(null) }}>{Object.entries(SEASONS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>}
+        <label className="chk"><input type="checkbox" checked={ko} onChange={(e) => setKo(e.target.checked)} /> {tr('Eliminatoria (prórroga y penales)')}</label>
       </div>
-      {a === b ? <Note tone="warn">Elige dos selecciones distintas.</Note> : (
+      {a === b ? <Note tone="warn">{tr('Elige dos selecciones distintas.')}</Note> : (
         <>
           <ProbBar a={a} b={b} pa={pr.win} pd={pr.draw} pb={pr.loss} />
           <div className="cmp5">{comps.map(([l, k]) => (
@@ -276,30 +277,30 @@ function FreeMatch() {
           <div className="two">{[a, b].map((id) => <div key={id}><h4 className="sub"><TeamLink id={id} /></h4><ol className="xi">{TEAM_BY_ID[id].xi.map((p) => <li key={p.id}><a href={`#/jugador/${p.id}`}>{p.name}</a><b>{p.ovr}</b></li>)}</ol></div>)}</div>
           {ex && (
             <div className="predict">
-              <h4>Predicción del modelo</h4>
+              <h4>{tr('Predicción del modelo')}</h4>
               <p className="pscore"><Flag id={a} size={28} /> {TEAM_BY_ID[a].name} <b>{ex.modal.ga}–{ex.modal.gb}</b> {TEAM_BY_ID[b].name} <Flag id={b} size={28} /></p>
-              <p className="small muted">Marcador más probable. Goles esperados: {ex.expected[0].toFixed(1)} – {ex.expected[1].toFixed(1)}. Favorito: <b>{TEAM_BY_ID[ex.favorite].name}</b> ({Math.round(ex.favP * 100)} % de ganar en 90 min).</p>
+              <p className="small muted">{LANG === 'en' ? <>Most likely score. Expected goals: {ex.expected[0].toFixed(1)} – {ex.expected[1].toFixed(1)}. Favorite: <b>{TEAM_BY_ID[ex.favorite].name}</b> ({Math.round(ex.favP * 100)} % to win in 90 min).</> : <>Marcador más probable. Goles esperados: {ex.expected[0].toFixed(1)} – {ex.expected[1].toFixed(1)}. Favorito: <b>{TEAM_BY_ID[ex.favorite].name}</b> ({Math.round(ex.favP * 100)} % de ganar en 90 min).</>}</p>
               <ul className="why">{ex.reasons.slice(0, 4).map((r, i) => <li key={i}>{r}</li>)}</ul>
             </div>
           )}
-          <p className="small muted">Abajo puedes <b>simular un partido con azar</b>: el favorito gana más veces, pero a veces hay sorpresas, como en el fútbol real.</p>
-          <div className="cta"><button className="btn pri" onClick={() => { setN(0); setLive(true); run(seed) }}>Ver en vivo</button><button className="btn" onClick={() => { setN(0); setLive(false); run(seed) }}>Resultado directo</button><button className="btn" onClick={again} disabled={!res}>Repetir partido</button></div>
+          <p className="small muted">{tr('Abajo puedes simular un partido con azar: el favorito gana más veces, pero a veces hay sorpresas, como en el fútbol real.')}</p>
+          <div className="cta"><button className="btn pri" onClick={() => { setN(0); setLive(true); run(seed) }}>{tr('Ver en vivo')}</button><button className="btn" onClick={() => { setN(0); setLive(false); run(seed) }}>{tr('Resultado directo')}</button><button className="btn" onClick={again} disabled={!res}>{tr('Repetir partido')}</button></div>
           {res && live && <LiveReplay key={`${seed}-${n}-${a}-${b}`} a={a} b={b} res={res} onSkip={() => setLive(false)} />}
           {res && !live && (
             <div className="result">
               <div className="mh"><span><Flag id={a} size={40} /> {TEAM_BY_ID[a].name}</span><div className="mscore">{res.ga}<i>–</i>{res.gb}</div><span>{TEAM_BY_ID[b].name} <Flag id={b} size={40} /></span></div>
-              {res.pens && <p className="center muted">Penales {res.pens[0]}–{res.pens[1]}</p>}
-              {res.et && !res.pens && <p className="center muted">Definido en la prórroga</p>}
-              {res.winner && <p className="center">Avanza: <b>{TEAM_BY_ID[res.winner].name}</b></p>}
+              {res.pens && <p className="center muted">{tr('Penales {a}–{b}', { a: res.pens[0], b: res.pens[1] })}</p>}
+              {res.et && !res.pens && <p className="center muted">{tr('Definido en la prórroga')}</p>}
+              {res.winner && <p className="center">{tr('Avanza: {n}', { n: '' })}<b>{TEAM_BY_ID[res.winner].name}</b></p>}
               <Events goals={res.goals} home={a} away={b} />
               {ex && (
                 <div className="why-box">
-                  <h4>¿Por qué este resultado? <span className={`tag ${ex.verdict}`}>{ex.verdict === 'sorpresa' ? 'Sorpresa' : ex.verdict === 'esperado' ? 'Esperado' : 'Parejo'}</span></h4>
+                  <h4>{tr('¿Por qué este resultado?')} <span className={`tag ${ex.verdict}`}>{ex.verdict === 'sorpresa' ? tr('Sorpresa') : ex.verdict === 'esperado' ? tr('Esperado') : tr('Parejo')}</span></h4>
                   <p>{ex.verdictText}</p>
                   <ul className="why">{ex.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
                 </div>
               )}
-              <p className="small muted">Resultado ficticio generado por el modelo con la semilla «{n ? `${seed}#${n}` : seed}». Las mismas semilla y parámetros dan siempre el mismo resultado.</p>
+              <p className="small muted">{tr('Resultado ficticio generado por el modelo con la semilla «{s}». Las mismas semilla y parámetros dan siempre el mismo resultado.', { s: n ? `${seed}#${n}` : seed })}</p>
             </div>
           )}
         </>
@@ -312,37 +313,37 @@ function Odds() {
   const { params } = useApp()
   const [odds, setOdds] = useState<Record<string, number> | null>(null)
   return (
-    <Section title="¿Quién gana desde octavos?" sub="Estimación con 300 torneos simulados sobre los cruces oficiales.">
-      <button className="btn" onClick={() => setOdds(championOdds(DECLARED_R16, params, 300, 'odds'))}>Calcular probabilidades</button>
+    <Section title={tr('¿Quién gana desde octavos?')} sub={tr('Estimación con 300 torneos simulados sobre los cruces oficiales.')}>
+      <button className="btn" onClick={() => setOdds(championOdds(DECLARED_R16, params, 300, 'odds'))}>{tr('Calcular probabilidades')}</button>
       {odds && Object.entries(odds).sort((a, b) => b[1] - a[1]).map(([id, v]) => <Bar key={id} label={TEAM_BY_ID[id].name} v={v * 100} min={0} max={Math.max(...Object.values(odds)) * 100} right={`${(v * 100).toFixed(1)}%`} />)}
     </Section>
   )
 }
 
 function Model({ params, setParams }: { params: ReturnType<typeof useApp>['params']; setParams: (p: ReturnType<typeof useApp>['params']) => void }) {
-  const W: [keyof Weights, string][] = [['quality', 'Calidad individual'], ['balance', 'Equilibrio táctico'], ['attack', 'Capacidad ofensiva'], ['defense', 'Solidez defensiva'], ['experience', 'Experiencia competitiva']]
+  const W: [keyof Weights, string][] = [['quality', tr('Calidad individual')], ['balance', tr('Equilibrio táctico')], ['attack', tr('Capacidad ofensiva')], ['defense', tr('Solidez defensiva')], ['experience', tr('Experiencia competitiva')]]
   const total = Object.values(params.weights).reduce((a, b) => a + b, 0)
   const rank = strengthRank(params).slice(0, 10)
   return (
     <>
-      <Section title="Ponderaciones" sub="Parámetros configurables del motor. Los cambios se guardan en este navegador.">
+      <Section title={tr('Ponderaciones')} sub={tr('Parámetros configurables del motor. Los cambios se guardan en este navegador.')}>
         {W.map(([k, l]) => (
           <label key={k} className="slider"><span>{l}</span><input type="range" min="0" max="50" value={Math.round(params.weights[k] * 100)} onChange={(e) => setParams({ ...params, weights: { ...params.weights, [k]: Number(e.target.value) / 100 } })} /><b>{Math.round((params.weights[k] / (total || 1)) * 100)}%</b></label>
         ))}
-        <label className="slider"><span>Goles base por equipo</span><input type="range" min="80" max="200" value={Math.round(params.goalBase * 100)} onChange={(e) => setParams({ ...params, goalBase: Number(e.target.value) / 100 })} /><b>{params.goalBase.toFixed(2)}</b></label>
-        <label className="slider"><span>Sensibilidad a la calidad</span><input type="range" min="0" max="100" value={Math.round(params.sensitivity * 1000)} onChange={(e) => setParams({ ...params, sensitivity: Number(e.target.value) / 1000 })} /><b>{params.sensitivity.toFixed(3)}</b></label>
-        <label className="slider"><span>Incertidumbre del día</span><input type="range" min="0" max="40" value={Math.round(params.variance * 100)} onChange={(e) => setParams({ ...params, variance: Number(e.target.value) / 100 })} /><b>{params.variance.toFixed(2)}</b></label>
-        <button className="btn ghost" onClick={() => setParams(DEFAULT_PARAMS)}>Restablecer valores del proyecto</button>
+        <label className="slider"><span>{tr('Goles base por equipo')}</span><input type="range" min="80" max="200" value={Math.round(params.goalBase * 100)} onChange={(e) => setParams({ ...params, goalBase: Number(e.target.value) / 100 })} /><b>{params.goalBase.toFixed(2)}</b></label>
+        <label className="slider"><span>{tr('Sensibilidad a la calidad')}</span><input type="range" min="0" max="100" value={Math.round(params.sensitivity * 1000)} onChange={(e) => setParams({ ...params, sensitivity: Number(e.target.value) / 1000 })} /><b>{params.sensitivity.toFixed(3)}</b></label>
+        <label className="slider"><span>{tr('Incertidumbre del día')}</span><input type="range" min="0" max="40" value={Math.round(params.variance * 100)} onChange={(e) => setParams({ ...params, variance: Number(e.target.value) / 100 })} /><b>{params.variance.toFixed(2)}</b></label>
+        <button className="btn ghost" onClick={() => setParams(DEFAULT_PARAMS)}>{tr('Restablecer valores del proyecto')}</button>
       </Section>
-      <Section title="Cómo funciona">
+      <Section title={tr('Cómo funciona')}>
         <ul className="rules">
-          <li><b>Calidad:</b> promedio de valoraciones del once (estimaciones del modelo, no oficiales).</li>
-          <li><b>Equilibrio:</b> parte de 90, resta la dispersión del once y el riesgo de la formación (4-2-4 es la más arriesgada) y suma por pivote defensivo.</li>
-          <li><b>Ataque / defensa:</b> promedios ponderados según la función de cada puesto.</li>
-          <li><b>Experiencia:</b> aproximación con el promedio de los cinco mejores del once.</li>
-          <li>Con eso se calculan goles esperados para cada equipo; el partido se sortea con distribución de Poisson, más un factor de incertidumbre. No hay ventajas para ningún país.</li>
+          <li>{tr('Calidad: promedio de valoraciones del once (estimaciones del modelo, no oficiales).')}</li>
+          <li>{tr('Equilibrio: parte de 90, resta la dispersión del once y el riesgo de la formación (4-2-4 es la más arriesgada) y suma por pivote defensivo.')}</li>
+          <li>{tr('Ataque / defensa: promedios ponderados según la función de cada puesto.')}</li>
+          <li>{tr('Experiencia: aproximación con el promedio de los cinco mejores del once.')}</li>
+          <li>{tr('Con eso se calculan goles esperados para cada equipo; el partido se sortea con distribución de Poisson, más un factor de incertidumbre. No hay ventajas para ningún país.')}</li>
         </ul>
-        <h3 className="sub">Fuerza global (top 10 con estos parámetros)</h3>
+        <h3 className="sub">{tr('Fuerza global (top 10 con estos parámetros)')}</h3>
         {rank.map((p) => <Bar key={p.teamId} label={TEAM_BY_ID[p.teamId].name} v={p.strength} min={78} right={p.strength.toFixed(1)} />)}
       </Section>
     </>
@@ -353,7 +354,7 @@ function Audit() {
   const checks = validate()
   const icon = { ok: '✓', warn: '!', fail: '✕' } as const
   return (
-    <Section title="Auditoría de datos" sub="Validaciones automáticas sobre el torneo original.">
+    <Section title={tr('Auditoría de datos')} sub={tr('Validaciones automáticas sobre el torneo original.')}>
       <ul className="audit">{checks.map((c, i) => <li key={i} className={c.level}><i>{icon[c.level]}</i><div><b>{c.label}</b><span>{c.detail}</span></div></li>)}</ul>
     </Section>
   )

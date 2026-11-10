@@ -3,6 +3,7 @@
 // en la época indicada; los perfiles climáticos de los equipos son aproximaciones del clima donde suelen jugar.
 // No son datos oficiales: son los supuestos del modelo y se muestran como tales.
 import type { Season } from '../types'
+import { esIngles } from '../i18n'
 
 export interface Venue {
   id: string; name: string; city: string; alt: number // metros sobre el nivel del mar
@@ -46,17 +47,21 @@ export const HOSTS: Host[] = [
     v('soccercity', 'Soccer City', 'Johannesburgo', 1750, 26, 13, 0.4, 0.2), v('greenpoint', 'Cape Town Stadium', 'Ciudad del Cabo', 5, 27, 12, 0.6, 0.3), v('durban', 'Moses Mabhida', 'Durban', 30, 28, 18, 0.75, 0.25)] },
   { id: 'rus', name: 'Rusia', iso: 'ru', venues: [v('luzhniki', 'Luzhniki', 'Moscú', 150, 24, -3, 0.65, 0.25), v('krestovsky', 'Krestovsky', 'San Petersburgo', 10, 20, -4, 0.75, 0.3)] },
 ]
+// En inglés: nombres de países y ciudades.
+const HOST_EN: Record<string, string> = { mex: 'Mexico', usa: 'United States', bra: 'Brazil', arg: 'Argentina', chi: 'Chile', uru: 'Uruguay', esp: 'Spain', ita: 'Italy', fra: 'France', ger: 'Germany', eng: 'England', jpn: 'Japan', kor: 'South Korea', qat: 'Qatar', rsa: 'South Africa', rus: 'Russia' }
+const CITY_EN: Record<string, string> = { 'Ciudad de México': 'Mexico City', 'Nueva Jersey': 'New Jersey', 'Río de Janeiro': 'Rio de Janeiro', 'Nápoles': 'Naples', 'Milán': 'Milan', 'Roma': 'Rome', 'Múnich': 'Munich', 'Londres': 'London', 'Mánchester': 'Manchester', 'París': 'Paris', 'Marsella': 'Marseille', 'Berlín': 'Berlin', 'Seúl': 'Seoul', 'Johannesburgo': 'Johannesburg', 'Ciudad del Cabo': 'Cape Town', 'Moscú': 'Moscow', 'San Petersburgo': 'Saint Petersburg', 'Sevilla': 'Seville', 'Concepción': 'Concepción' }
+if (esIngles) for (const h of HOSTS) { h.name = HOST_EN[h.id] ?? h.name; for (const x of h.venues) x.city = CITY_EN[x.city] ?? x.city }
 export const HOST_BY_ID: Record<string, Host> = Object.fromEntries(HOSTS.map((h) => [h.id, h]))
 export const VENUE_BY_ID: Record<string, Venue> = Object.fromEntries(HOSTS.flatMap((h) => h.venues.map((x) => [x.id, x])))
 export const HOST_OF_VENUE: Record<string, Host> = Object.fromEntries(HOSTS.flatMap((h) => h.venues.map((x) => [x.id, h])))
 
-export const SEASONS: Record<Season, string> = { verano: 'Verano (calor)', templado: 'Primavera / otoño (templado)', invierno: 'Invierno (frío)' }
+export const SEASONS: Record<Season, string> = esIngles ? { verano: 'Summer (hot)', templado: 'Spring / autumn (mild)', invierno: 'Winter (cold)' } : { verano: 'Verano (calor)', templado: 'Primavera / otoño (templado)', invierno: 'Invierno (frío)' }
 
 export function venueTemp(vn: Venue, season: Season): number {
   return season === 'verano' ? vn.warm : season === 'invierno' ? vn.cold : (vn.warm + vn.cold) / 2
 }
 
-export const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+export const MONTHS = esIngles ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 // Temperatura típica de un mes: onda anual entre la temperatura cálida y la fría (pico en julio al norte, enero al sur).
 export function monthTemp(vn: Venue, month: number, south?: boolean): number {
   const peak = south ? 1 : 7

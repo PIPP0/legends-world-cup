@@ -12,16 +12,18 @@ import { Mundial } from './mundial'
 import { Vivo } from './vivo'
 import { EncuestaHeader } from './encuesta'
 import { Admin } from './admin'
+import { t } from '../i18n'
+import { SelectorIdioma } from './idioma'
 import { CuentaHeader } from './cuenta'
 import { iniciarFunciones, useFunciones } from '../cloud/funciones'
 import type { AltTournament, ModelParams } from '../types'
 
 const MAIN: [string, string, string][] = [
-  ['/', 'Inicio', 'home'], ['/selecciones', 'Selecciones', 'teams'], ['/partidos', 'Partidos', 'ball'], ['/cuadro', 'Cuadro', 'bracket'],
+  ['/', t('Inicio'), 'home'], ['/selecciones', t('Selecciones'), 'teams'], ['/partidos', t('Partidos'), 'ball'], ['/cuadro', t('Cuadro'), 'bracket'],
 ]
 const MORE: [string, string, string][] = [
-  ['/historia', 'Historia', 'story'], ['/grupos', 'Grupos', 'groups'], ['/estadisticas', 'Estadísticas', 'stats'],
-  ['/jugadores', 'Jugadores', 'players'], ['/simulador', 'Simulador', 'sim'],
+  ['/historia', t('Historia'), 'story'], ['/grupos', t('Grupos'), 'groups'], ['/estadisticas', t('Estadísticas'), 'stats'],
+  ['/jugadores', t('Jugadores'), 'players'], ['/simulador', t('Simulador'), 'sim'],
 ]
 
 function useRoute() {
@@ -53,10 +55,10 @@ function Page({ route }: { route: string }) {
     case 'cuadro': return <Bracket />
     case 'simulador': return <Simulator />
     case 'creditos': return <Credits />
-    case 'mundial': return fun.simulaMundial ? <Mundial /> : <Note>«Simula tu mundial» no está disponible por ahora. <a href="#/">Volver al inicio</a></Note>
+    case 'mundial': return fun.simulaMundial ? <Mundial /> : <Note>{t('«Simula tu mundial» no está disponible por ahora.')} <a href="#/">{t('Volver al inicio')}</a></Note>
     case 'vivo': return <Vivo />
     case 'admin': return <Admin />
-    default: return <p className="note warn">Página no encontrada. <a href="#/">Volver al inicio</a></p>
+    default: return <p className="note warn">{t('Página no encontrada.')} <a href="#/">{t('Volver al inicio')}</a></p>
   }
 }
 
@@ -85,28 +87,29 @@ export default function App() {
       <header className="top">
         <div className="top-in">
           <Logo />
-          <nav className="dnav" aria-label="Principal">
+          <nav className="dnav" aria-label={t('Principal')}>
             {[...MAIN, ...MORE].map(([p, l]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''} aria-current={active === p ? 'page' : undefined}>{l}</a>)}
           </nav>
           <EncuestaHeader pantalla={route.split('/')[1] || 'inicio'} />
+          <SelectorIdioma />
           <CuentaHeader />
         </div>
       </header>
       <main key={route.split('/').slice(0, 3).join('/')}><Page route={route} /></main>
       <footer>
         <Logo />
-        <p>Proyecto de ficción deportiva. Los nombres y trayectorias son históricos; las valoraciones, atributos, resultados del torneo y estadísticas son ficticios o estimados por el modelo.</p>
-        <p>Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre. <a href="#/creditos" style={{ textDecoration: 'underline' }}>Ver créditos de cada foto</a>.</p>
+        <p>{t('Proyecto de ficción deportiva. Los nombres y trayectorias son históricos; las valoraciones, atributos, resultados del torneo y estadísticas son ficticios o estimados por el modelo.')}</p>
+        <p>{t('Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre.')} <a href="#/creditos" style={{ textDecoration: 'underline' }}>{t('Ver créditos de cada foto')}</a>.</p>
       </footer>
       {more && <div className="sheet-bg" onClick={() => setMore(false)} />}
       {more && (
-        <div className="sheet" role="dialog" aria-label="Más secciones">
+        <div className="sheet" role="dialog" aria-label={t('Más secciones')}>
           {MORE.map(([p, l, i]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''}>{ICONS[i]}<span>{l}</span></a>)}
         </div>
       )}
-      <nav className="bnav" aria-label="Navegación móvil">
+      <nav className="bnav" aria-label={t('Navegación móvil')}>
         {MAIN.map(([p, l, i]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''}>{ICONS[i]}<span>{l}</span></a>)}
-        <button className={moreActive || more ? 'on' : ''} onClick={() => setMore(!more)} aria-expanded={more}>{ICONS.more}<span>Más</span></button>
+        <button className={moreActive || more ? 'on' : ''} onClick={() => setMore(!more)} aria-expanded={more}>{ICONS.more}<span>{t('Más')}</span></button>
       </nav>
     </AppCtx.Provider>
   )

@@ -1,10 +1,13 @@
+import { LANG, tr } from '../i18n'
+import { posLabel } from '../i18n/nombres'
 import { useState, type ReactNode } from 'react'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Flag, usePhoto } from './common'
 import type { Player, Team } from '../types'
 
 export const tierOf = (o: number) => (o >= 96 ? 'icon' : o >= 92 ? 'gold' : o >= 86 ? 'silver' : 'base')
-const ab = (k: string) => k.replace('Juego aéreo', 'Aéreo').replace('Juego con los pies', 'Pie').slice(0, 3).toUpperCase()
+const AB_EN: Record<string, string> = { Ritmo: 'PAC', Disparo: 'SHO', Pase: 'PAS', Regate: 'DRI', Defensa: 'DEF', Físico: 'PHY', Paradas: 'DIV', Reflejos: 'REF', Posición: 'POS', Salida: 'HAN', 'Juego aéreo': 'AER', 'Juego con los pies': 'KIC' }
+const ab = (k: string) => (LANG === 'en' ? AB_EN[k] ?? k.slice(0, 3).toUpperCase() : k.replace('Juego aéreo', 'Aéreo').replace('Juego con los pies', 'Pie').slice(0, 3).toUpperCase())
 const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 
 // Carta estilo videojuego deportivo
@@ -14,7 +17,7 @@ export function FutCard({ p, size = 'md' }: { p: Player; size?: 'sm' | 'md' | 'l
   const t = TEAM_BY_ID[p.teamId]
   const shown = photo && !bad
   return (
-    <a className={`fut ${tierOf(p.ovr)} ${size}`} href={`#/jugador/${p.id}`} aria-label={`${p.name}, ${t.name}, valoración ${p.ovr}`}
+    <a className={`fut ${tierOf(p.ovr)} ${size}`} href={`#/jugador/${p.id}`} aria-label={tr('{p}, {t}, valoración {o}', { p: p.name, t: t.name, o: p.ovr })}
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect()
         const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5
@@ -77,7 +80,7 @@ function Node({ p }: { p: Player }) {
 
 export function Pitch({ team }: { team: Team }) {
   return (
-    <svg viewBox="0 0 100 118" className="pitch" role="group" aria-label={`Alineación de ${team.name}`}>
+    <svg viewBox="0 0 100 118" className="pitch" role="group" aria-label={tr('Alineación de {team}', { team: team.name })}>
       <defs>
         <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#1d4d2b" /><stop offset=".5" stopColor="#16401f" /><stop offset="1" stopColor="#0f3017" /></linearGradient>
         <radialGradient id="spot" cx=".5" cy=".4" r=".7"><stop offset="0" stopColor="rgba(198,255,61,.18)" /><stop offset="1" stopColor="rgba(198,255,61,0)" /></radialGradient>

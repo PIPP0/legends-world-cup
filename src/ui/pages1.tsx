@@ -12,6 +12,7 @@ import { FutCard, TeamCard } from './visual'
 import { ChampionPicker, Count, Hero } from './hero'
 import { MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
+import { LANG, tr } from '../i18n'
 
 const groupGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
 
@@ -33,37 +34,37 @@ export function Home() {
       <Hero />
 
       <div className="stats3">
-        <div><b><Count to={32} /></b><span>selecciones</span></div>
-        <div><b><Count to={STORY_MATCHES.length + ko.length} /></b><span>partidos jugados</span></div>
-        <div><b><Count to={totalGoals} /></b><span>goles</span></div>
-        <div className="live"><b><i />{phaseLabel(level)}</b><span>{level >= 4 ? 'torneo terminado' : 'próxima fase'}</span></div>
+        <div><b><Count to={32} /></b><span>{tr('selecciones')}</span></div>
+        <div><b><Count to={STORY_MATCHES.length + ko.length} /></b><span>{tr('partidos jugados')}</span></div>
+        <div><b><Count to={totalGoals} /></b><span>{tr('goles')}</span></div>
+        <div className="live"><b><i />{phaseLabel(level)}</b><span>{level >= 4 ? tr('torneo terminado') : tr('próxima fase')}</span></div>
       </div>
 
       <ChampionPicker />
 
-      <Section title="Partido inaugural" sub="Grupo A · Fecha 1" action={<a className="more" href={`#/partido/${featured.id}`}>Ver partido →</a>}>
+      <Section title={tr('Partido inaugural')} sub={tr('Grupo A · Fecha 1')} action={<a className="more" href={`#/partido/${featured.id}`}>{tr('Ver partido →')}</a>}>
         <a className="feature" href={`#/partido/${featured.id}`} style={{ ['--fa' as string]: 'url(https://flagcdn.com/w320/br.png)', ['--fb' as string]: 'url(https://flagcdn.com/w320/gb-eng.png)' }}>
           <span className="fbg" aria-hidden />
           <div className="ft">
-            <div><Flag id="bra" size={64} /><b>Brasil</b></div>
+            <div><Flag id="bra" size={64} /><b>{TEAM_BY_ID.bra.name}</b></div>
             <div className="fscore"><span>2</span><i>–</i><span>1</span></div>
-            <div><Flag id="eng" size={64} /><b>Inglaterra</b></div>
+            <div><Flag id="eng" size={64} /><b>{TEAM_BY_ID.eng.name}</b></div>
           </div>
           <p>{story.cronica}</p>
         </a>
       </Section>
 
-      <Section title="Las leyendas" sub="Las cartas mejor valoradas por el modelo" action={<a className="more" href="#/jugadores">Ver todas →</a>}>
+      <Section title={tr('Las leyendas')} sub={tr('Las cartas mejor valoradas por el modelo')} action={<a className="more" href="#/jugadores">{tr('Ver todas →')}</a>}>
         <div className="hscroll cards">{legends.map((p) => <FutCard key={p.id} p={p} />)}</div>
       </Section>
 
-      <Section title="Los ocho grupos" action={<a className="more" href="#/grupos">Tablas →</a>}>
+      <Section title={tr('Los ocho grupos')} action={<a className="more" href="#/grupos">{tr('Tablas →')}</a>}>
         <div className="grid g4">
           {GROUPS.map((g) => {
             const t = groupTable(g, STORY_MATCHES)
             return (
               <a key={g} href="#/grupos" className="gcard">
-                <h3><span>Grupo</span> {g}</h3>
+                <h3><span>{tr('Grupo')}</span> {g}</h3>
                 {t.map((r, i) => (
                   <div key={r.teamId} className={`gl ${i < 2 ? 'q' : ''}`}><Flag id={r.teamId} size={22} /><span>{TEAM_BY_ID[r.teamId].name}</span><b>{r.pts}</b></div>
                 ))}
@@ -71,10 +72,10 @@ export function Home() {
             )
           })}
         </div>
-        <p className="muted small">Mayor nivel medio según el modelo: Grupo <b>{groupStrength[0].g}</b>. Menor: Grupo <b>{groupStrength[groupStrength.length - 1].g}</b>.</p>
+        <p className="muted small">{LANG === 'en' ? <>Highest average level according to the model: Group <b>{groupStrength[0].g}</b>. Lowest: Group <b>{groupStrength[groupStrength.length - 1].g}</b>.</> : <>Mayor nivel medio según el modelo: Grupo <b>{groupStrength[0].g}</b>. Menor: Grupo <b>{groupStrength[groupStrength.length - 1].g}</b>.</>}</p>
       </Section>
 
-      <Section title="Goleadores" sub="Declarados por la simulación original" action={<a className="more" href="#/estadisticas">Estadísticas →</a>}>
+      <Section title={tr('Goleadores')} sub={tr('Declarados por la simulación original')} action={<a className="more" href="#/estadisticas">{tr('Estadísticas →')}</a>}>
         <div className="grid g3">
           {top.map((s, i) => {
             const p = PLAYER_BY_ID[s.playerId]
@@ -87,7 +88,7 @@ export function Home() {
         </div>
       </Section>
 
-      <Section title="Octavos de final" sub="Cruces definidos. Todavía sin resultados." action={<a className="more" href="#/cuadro">Cuadro →</a>}>
+      <Section title={tr('Octavos de final')} sub={tr('Cruces definidos. Todavía sin resultados.')} action={<a className="more" href="#/cuadro">{tr('Cuadro →')}</a>}>
         <div className="grid g4">
           {DECLARED_R16.map(([a, b], i) => (
             <a key={i} className="kmini" href="#/cuadro">
@@ -97,7 +98,7 @@ export function Home() {
         </div>
       </Section>
 
-      <Section title="Las 32 selecciones" action={<a className="more" href="#/selecciones">Ver todas →</a>}>
+      <Section title={tr('Las 32 selecciones')} action={<a className="more" href="#/selecciones">{tr('Ver todas →')}</a>}>
         <div className="hscroll teams">
           {TEAMS.map((t) => <TeamCard key={t.id} t={t} mini star={[...t.xi].sort((a, b) => b.ovr - a.ovr)[0]} />)}
         </div>
@@ -115,70 +116,70 @@ export function Story() {
   return (
     <>
       <div className="chapter" data-n="">
-        <span className="cn">Capítulo 1</span>
-        <h2>El sueño imposible</h2>
-        <p className="quote">¿Qué selección ganaría un Mundial si pudiera reunir a sus mejores once futbolistas de toda la historia?</p>
-        <p>Cada país envía un plantel de 23 leyendas, con sus once mejores como titulares, y todos llegan a su mejor versión, a los 27 años. Es un torneo que nunca existió.</p>
+        <span className="cn">{tr('Capítulo {n}', { n: 1 })}</span>
+        <h2>{tr('El sueño imposible')}</h2>
+        <p className="quote">{tr('¿Qué selección ganaría un Mundial si pudiera reunir a sus mejores once futbolistas de toda la historia?')}</p>
+        <p>{tr('Cada país envía un plantel de 23 leyendas, con sus once mejores como titulares, y todos llegan a su mejor versión, a los 27 años. Es un torneo que nunca existió.')}</p>
         <ul className="rules">
-          <li>32 selecciones actuales; no hay equipos combinados de países desaparecidos.</li>
-          <li>Ningún futbolista juega para dos países.</li>
-          <li>Ocho grupos de cuatro, tres partidos por equipo: 3 puntos por victoria, 1 por empate.</li>
-          <li>Pasan los dos primeros. Luego octavos, cuartos, semifinales, tercer puesto y final.</li>
-          <li>En eliminatorias, los empates se resuelven con prórroga o penales.</li>
+          <li>{tr('32 selecciones actuales; no hay equipos combinados de países desaparecidos.')}</li>
+          <li>{tr('Ningún futbolista juega para dos países.')}</li>
+          <li>{tr('Ocho grupos de cuatro, tres partidos por equipo: 3 puntos por victoria, 1 por empate.')}</li>
+          <li>{tr('Pasan los dos primeros. Luego octavos, cuartos, semifinales, tercer puesto y final.')}</li>
+          <li>{tr('En eliminatorias, los empates se resuelven con prórroga o penales.')}</li>
         </ul>
-        <Note tone="info">Hay tres tipos de información: <b>histórica</b> (nombres y trayectorias reales), <b>estimada</b> (valoraciones y atributos del modelo) y <b>ficticia</b> (los resultados del torneo).</Note>
+        <Note tone="info">{LANG === 'en' ? <>There are three kinds of information: <b>historical</b> (real names and careers), <b>estimated</b> (the model’s ratings and attributes) and <b>fictional</b> (the tournament results).</> : <>Hay tres tipos de información: <b>histórica</b> (nombres y trayectorias reales), <b>estimada</b> (valoraciones y atributos del modelo) y <b>ficticia</b> (los resultados del torneo).</>}</Note>
       </div>
 
       <div className="chapter" data-n="">
-        <span className="cn">Capítulo 2</span>
-        <h2>Los 32 elegidos</h2>
-        <p>La mayor estrella de cada selección según el modelo. Toca una para ver su once histórico.</p>
+        <span className="cn">{tr('Capítulo {n}', { n: 2 })}</span>
+        <h2>{tr('Los 32 elegidos')}</h2>
+        <p>{tr('La mayor estrella de cada selección según el modelo. Toca una para ver su once histórico.')}</p>
         <div className="grid g4">
           {stars.map(({ t, p }) => <TeamCard key={t.id} t={t} star={p} />)}
         </div>
       </div>
 
       <div className="chapter" data-n="">
-        <span className="cn">Capítulo 3</span>
-        <h2>El sorteo</h2>
-        <p>Los grupos quedaron definidos desde el inicio del proyecto. El orden de publicación en cada grupo sugiere cuatro bombos: el primer equipo de cada grupo es cabeza de serie.</p>
+        <span className="cn">{tr('Capítulo {n}', { n: 3 })}</span>
+        <h2>{tr('El sorteo')}</h2>
+        <p>{tr('Los grupos quedaron definidos desde el inicio del proyecto. El orden de publicación en cada grupo sugiere cuatro bombos: el primer equipo de cada grupo es cabeza de serie.')}</p>
         <div className="grid g4">
           {GROUPS.map((g) => (
             <div key={g} className="gcard">
-              <h3>Grupo {g}</h3>
+              <h3>{tr('Grupo')} {g}</h3>
               {teamsOfGroup(g).map((id, i) => (
                 <div key={id} className="gl"><span className="bombo">{i + 1}</span><Flag id={id} size={20} /><span>{TEAM_BY_ID[id].name}</span></div>
               ))}
             </div>
           ))}
         </div>
-        <Note tone="est">Bombos deducidos del orden en que se publicaron los grupos; el material original no los detalla. Grupo de mayor nivel medio según el modelo: <b>{gs[0].g}</b>. De menor nivel: <b>{gs[gs.length - 1].g}</b>.</Note>
+        <Note tone="est">{LANG === 'en' ? <>Pots inferred from the order the groups were published; the original material does not detail them. Highest average level according to the model: <b>{gs[0].g}</b>. Lowest: <b>{gs[gs.length - 1].g}</b>.</> : <>Bombos deducidos del orden en que se publicaron los grupos; el material original no los detalla. Grupo de mayor nivel medio según el modelo: <b>{gs[0].g}</b>. De menor nivel: <b>{gs[gs.length - 1].g}</b>.</>}</Note>
       </div>
 
       <div className="chapter" data-n="">
-        <span className="cn">Capítulo 4</span>
-        <h2>Comienza la historia</h2>
-        <p>{STORY_MATCHES.length} partidos, {groupGoals} goles y {draws} empates. Estos son los duelos que marcaron la fase de grupos.</p>
-        <h3 className="sub">Tres duelos con crónica propia</h3>
+        <span className="cn">{tr('Capítulo {n}', { n: 4 })}</span>
+        <h2>{tr('Comienza la historia')}</h2>
+        <p>{tr('{n} partidos, {g} goles y {d} empates. Estos son los duelos que marcaron la fase de grupos.', { n: STORY_MATCHES.length, g: groupGoals, d: draws })}</p>
+        <h3 className="sub">{tr('Tres duelos con crónica propia')}</h3>
         <div className="list">{feat.map((m) => <MatchRow key={m.id} m={m} />)}</div>
-        <h3 className="sub">Las victorias más amplias</h3>
+        <h3 className="sub">{tr('Las victorias más amplias')}</h3>
         <div className="list">{big.map((m) => <MatchRow key={m.id} m={m} />)}</div>
-        <p><a className="btn" href="#/partidos">Ver los 48 partidos</a></p>
+        <p><a className="btn" href="#/partidos">{tr('Ver los 48 partidos')}</a></p>
       </div>
 
       <div className="chapter" data-n="">
-        <span className="cn">Capítulo 5</span>
-        <h2>Sobreviven los mejores</h2>
-        <p>Dieciséis selecciones siguen en carrera.</p>
+        <span className="cn">{tr('Capítulo {n}', { n: 5 })}</span>
+        <h2>{tr('Sobreviven los mejores')}</h2>
+        <p>{tr('Dieciséis selecciones siguen en carrera.')}</p>
         <div className="flags">{DECLARED_R16.flat().map((id) => <TeamLink key={id} id={id} />)}</div>
-        <p><a className="btn" href="#/cuadro">Ver octavos de final</a></p>
+        <p><a className="btn" href="#/cuadro">{tr('Ver octavos de final')}</a></p>
       </div>
 
       <div className="chapter last">
-        <span className="cn">Capítulo 6</span>
-        <h2>Camino a la gloria</h2>
-        <p>La historia oficial se detiene antes de los octavos. Tú decides cuándo seguir: en Eliminatorias avanzas fase por fase, y los resultados son los mismos para todas las personas.</p>
-        <p><a className="btn pri" href="#/cuadro">Avanzar a las eliminatorias</a></p>
+        <span className="cn">{tr('Capítulo {n}', { n: 6 })}</span>
+        <h2>{tr('Camino a la gloria')}</h2>
+        <p>{tr('La historia oficial se detiene antes de los octavos. Tú decides cuándo seguir: en Eliminatorias avanzas fase por fase, y los resultados son los mismos para todas las personas.')}</p>
+        <p><a className="btn pri" href="#/cuadro">{tr('Avanzar a las eliminatorias')}</a></p>
       </div>
     </>
   )

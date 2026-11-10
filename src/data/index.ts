@@ -1,5 +1,7 @@
 import { RAW_TEAMS, RAW_RESULTS } from './raw'
 import { BENCH } from './squads'
+import { teamName } from '../i18n/nombres'
+import { esIngles } from '../i18n'
 import { hashString } from '../engine/rng'
 import type { Attr, Line, Match, Player, Pos, Team } from '../types'
 
@@ -78,7 +80,7 @@ function parseTeam(raw: (typeof RAW_TEAMS)[number]): Team {
   }
   const xi = starters.map((r, i) => build(r, slots[i].x, slots[i].y, true))
   const bn = bench.map((r) => build(r, 50, 50, false)).sort((a, b) => ['GK', 'DEF', 'MID', 'ATT'].indexOf(a.line) - ['GK', 'DEF', 'MID', 'ATT'].indexOf(b.line) || b.ovr - a.ovr)
-  return { id: raw.id, name: raw.name, iso: raw.iso, group: raw.group, formation: raw.formation, xi, bench: bn, squad: [...xi, ...bn] }
+  return { id: raw.id, name: teamName(raw.id, raw.name), iso: raw.iso, group: raw.group, formation: raw.formation, xi, bench: bn, squad: [...xi, ...bn] }
 }
 
 export const TEAMS: Team[] = RAW_TEAMS.map(parseTeam)
