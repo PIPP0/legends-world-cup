@@ -85,25 +85,24 @@ export function EncuestaHeader({ pantalla }: { pantalla: string }) {
   )
 }
 
-// Momento en que se vio al campeón de cada torneo: el reloj no se reinicia aunque la pantalla se vuelva a dibujar (en la web con cuenta ocurre al sincronizar).
-const vistoAl = new Map<string, number>()
+// Cada vez que termina un «Simula tu mundial» se pregunta de nuevo, 5 segundos después de ver al campeón (aunque sea el mismo torneo o la misma persona).
+// El reloj vive fuera del componente para que no se reinicie si la pantalla se vuelve a dibujar (en la web con cuenta ocurre al sincronizar).
 const ESPERA_MS = 5000
+let corrida: { clave: string; inicio: number; cerrada: boolean } | null = null
 
-// Al terminar «Simula tu mundial»: se abre sola una vez por torneo, 5 segundos después de ver al campeón.
+// Al terminar «Simula tu mundial»: se abre sola 5 segundos después de ver al campeón, cada vez.
 export function EncuestaMundial({ seed, datos }: { seed: string; datos: string }) {
   const f = useFunciones()
-  const clave = `lwc:enc:mundial:${seed}`
   const [abierta, setAbierta] = useState(false)
   useEffect(() => {
-    let hecha = false
-    try { hecha = localStorage.getItem(clave) === '1' } catch { /* sin almacenamiento */ }
-    if (hecha) return
-    if (!vistoAl.has(clave)) vistoAl.set(clave, Date.now())
-    const resta = Math.max(0, ESPERA_MS - (Date.now() - vistoAl.get(clave)!))
-    const t = setTimeout(() => setAbierta(true), resta)
+    // misma pantalla redibujada (menos de 60 s) = misma corrida; si no, es un mundial nuevo
+    if (!corrida || corrida.clave !== seed || Date.now() - corrida.inicio > 60_000) corrida = { clave: seed, inicio: Date.now(), cerrada: false }
+    const c = corrida
+    if (c.cerrada) return
+    const t = setTimeout(() => { if (!c.cerrada) setAbierta(true) }, Math.max(0, ESPERA_MS - (Date.now() - c.inicio)))
     return () => clearTimeout(t)
-  }, [clave])
-  const cerrar = () => { setAbierta(false); try { localStorage.setItem(clave, '1') } catch { /* sin almacenamiento */ } }
+  }, [seed])
+  const cerrar = () => { setAbierta(false); if (corrida) corrida.cerrada = true }
   if (!abierta || !f.encuestas) return null
   return <EncuestaModal tipo="mundial" titulo={tr('¿Cómo estuvo tu mundial?')} pregunta={tr('¿Qué tan entretenida fue la experiencia?')} pregunta2={tr('¿Qué tan realistas te parecieron los resultados?')} datos={datos} pantalla="fin-mundial" onClose={cerrar} />
 }
