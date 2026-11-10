@@ -1,5 +1,6 @@
 import { rich } from '../i18n/rich'
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { STORY_MATCHES } from '../data'
 import { useStoryLevel } from '../engine/storyLevel'
@@ -144,8 +145,8 @@ export function ChampionPicker() {
   )
 }
 
-// «Elige MVP»: voto del jugador favorito (uno por persona, se puede cambiar) y ranking de los 10 más votados.
-export function MvpPicker() {
+// «Elige MVP»: ventana con el voto del jugador favorito (uno por persona, se puede cambiar) y el ranking de los 10 más votados.
+export function MvpModal({ onClose }: { onClose: () => void }) {
   const [voto, setVoto] = useLocalState<string | null>('lwc:mvp', null)
   const [ranking, setRanking] = useState<VotoMvp[] | null>(null)
   const [q, setQ] = useState('')
@@ -157,51 +158,71 @@ export function MvpPicker() {
     const goleadores = storyPlayerStats(level).sort((a, b) => b.goals - a.goals).slice(0, 4).map((s) => s.playerId)
     return [...new Set([...porNivel, ...goleadores])].filter((id) => PLAYER_BY_ID[id]).slice(0, 12)
   }, [level])
-  const coincidencias = useMemo(() => {
+  const busqueda = useMemo(() => {
     const t = q.trim().toLowerCase()
-    return t.length < 2 ? [] : PLAYERS.filter((p) => p.name.toLowerCase().includes(t)).slice(0, 6)
+    return t.length < 2 ? [] : PLAYERS.filter((p) => p.name.toLowerCase().includes(t)).slice(0, 8).map((p) => p.id)
   }, [q])
+  const lista = q.trim().length >= 2 ? busqueda : candidatos
   const cargar = () => { void leerRankingMvp().then((r) => setRanking(r ?? [])) }
   useEffect(cargar, [])
+  useEffect(() => {
+    const k = (ev: KeyboardEvent) => ev.key === 'Escape' && onClose()
+    window.addEventListener('keydown', k)
+    const prev = document.body.style.overflow; document.body.style.overflow = 'hidden'
+    return () => { window.removeEventListener('keydown', k); document.body.style.overflow = prev }
+  }, [onClose])
   const elegir = async (id: string) => {
-    setVoto(id); setQ(''); setAviso('')
+    setVoto(id); setAviso('')
     const ok = await votarMvp(id)
     if (!ok) setAviso(tr('Tu voto quedó guardado en este navegador; el ranking compartido no está disponible ahora.'))
     cargar()
   }
   const max = Math.max(1, ...(ranking ?? []).map((r) => r.n))
-  return (
-    <section className="pick mvp" id="mvp">
-      <div className="pk-h">
-        <div><p className="kicker">{tr('Los fans opinan')}</p><h2>{tr('Elige MVP: tu jugador favorito')}</h2></div>
-        <p className="muted small">{tr('Elige al MVP del Mundial de Leyendas. Un voto por persona; puedes cambiarlo cuando quieras.')}</p>
+  const mio = voto ? PLAYER_BY_ID[voto] : undefined
+  return createPortal(
+    <div className="modal-bg" role="dialog" aria-modal="true" aria-label={tr('Elige MVP: tu jugador favorito')} onClick={onClose}>
+      <div className="modal mvp-modal" onClick={(e) => e.stopPropagation()}>
+        <header className="mvp-top">
+          <div><p className="kicker">{tr('Los fans opinan')}</p><h3>{tr('Elige MVP: tu jugador favorito')}</h3>
+            <p className="muted small">{tr('Elige al MVP del Mundial de Leyendas. Un voto por persona; puedes cambiarlo cuando quieras.')}</p></div>
+          <button type="button" className="mvp-x" onClick={onClose} aria-label={tr('Cerrar')}>✕</button>
+        </header>
+        <div className="mvp-cols">
+          <div className="mvp-izq">
+            {mio && <div className="mvp-mio"><Avatar p={mio} size={52} /><div><span>{tr('Tu MVP: {name}', { name: '' })}</span><b>{mio.name}</b><small>{TEAM_BY_ID[mio.teamId].name}</small></div></div>}
+            <input className="search" placeholder={tr('Buscar otro jugador…')} aria-label={tr('Buscar otro jugador…')} value={q} onChange={(e) => setQ(e.target.value)} />
+            <div className="mvp-grid">
+              {lista.map((id) => {
+                const p = PLAYER_BY_ID[id]
+                return (
+                  <button key={id} type="button" className={`mvp-card${voto === id ? ' on' : ''}`} onClick={() => void elegir(id)} aria-pressed={voto === id}>
+                    <Avatar p={p} size={64} />
+                    <b>{p.name}</b>
+                    <span><Flag id={p.teamId} size={16} /> {TEAM_BY_ID[p.teamId].name}</span>
+                    {voto === id && <i className="mvp-ok">✓</i>}
+                  </button>
+                )
+              })}
+            </div>
+            {aviso && <p className="small muted">{aviso}</p>}
+          </div>
+          <aside className="mvp-der">
+            <h4>{tr('Los 10 más populares')}</h4>
+            {ranking === null ? <p className="muted small">…</p> : ranking.length === 0 ? <p className="muted small">{tr('Aún no hay votos. ¡Sé el primero!')}</p> : (
+              <ol className="mvp-rank">
+                {ranking.map((r, i) => PLAYER_BY_ID[r.id] && (
+                  <li key={r.id} className={i < 3 ? `top${i + 1}` : ''}>
+                    <span className="n">{i + 1}</span><Avatar p={PLAYER_BY_ID[r.id]} size={38} />
+                    <div><b>{PLAYER_BY_ID[r.id].name}</b><small className="muted">{TEAM_BY_ID[PLAYER_BY_ID[r.id].teamId].name}</small><i style={{ width: `${(r.n / max) * 100}%` }} /></div>
+                    <em>{r.n === 1 ? tr('{n} voto', { n: r.n }) : tr('{n} votos', { n: r.n })}</em>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </aside>
+        </div>
       </div>
-      <div className="pk-g">
-        {candidatos.map((id) => (
-          <button key={id} className={`pk-b ${voto === id ? 'on' : ''}`} onClick={() => void elegir(id)} aria-pressed={voto === id}>
-            <Avatar p={PLAYER_BY_ID[id]} size={34} /><span>{PLAYER_BY_ID[id].name}</span>
-          </button>
-        ))}
-      </div>
-      <div className="mvp-buscar">
-        <input className="search" placeholder={tr('Buscar otro jugador…')} aria-label={tr('Buscar otro jugador…')} value={q} onChange={(e) => setQ(e.target.value)} />
-        {coincidencias.length > 0 && (
-          <ul className="mvp-res">{coincidencias.map((p) => <li key={p.id}><button className="pk-b" onClick={() => void elegir(p.id)}><Avatar p={p} size={28} /><span>{p.name} · {TEAM_BY_ID[p.teamId].name}</span></button></li>)}</ul>
-        )}
-      </div>
-      {voto && PLAYER_BY_ID[voto] && (
-        <div className="pk-r"><Avatar p={PLAYER_BY_ID[voto]} size={56} /><div><b>{tr('Tu MVP: {name}', { name: PLAYER_BY_ID[voto].name })}</b><span>{TEAM_BY_ID[PLAYER_BY_ID[voto].teamId].name}</span></div>
-          <div className="pk-a"><button className="btn ghost" onClick={() => setVoto(null)}>{tr('Cambiar')}</button></div></div>
-      )}
-      {aviso && <p className="small muted">{aviso}</p>}
-      <h3 className="sub">{tr('Los 10 más populares')}</h3>
-      {ranking === null ? <p className="muted small">…</p> : ranking.length === 0 ? <p className="muted small">{tr('Aún no hay votos. ¡Sé el primero!')}</p> : (
-        <ol className="mvp-rank">
-          {ranking.map((r, i) => PLAYER_BY_ID[r.id] && (
-            <li key={r.id}><span className="n">{i + 1}</span><Avatar p={PLAYER_BY_ID[r.id]} size={34} /><div><b>{PLAYER_BY_ID[r.id].name}</b><small className="muted"> {TEAM_BY_ID[PLAYER_BY_ID[r.id].teamId].name}</small><i style={{ width: `${(r.n / max) * 100}%` }} /></div><em>{r.n === 1 ? tr('{n} voto', { n: r.n }) : tr('{n} votos', { n: r.n })}</em></li>
-          ))}
-        </ol>
-      )}
-    </section>
+    </div>,
+    document.body,
   )
 }
