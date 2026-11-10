@@ -10,7 +10,7 @@ Qué incluye: **Resumen** (visitas, mundiales, sedes, campeones, satisfacción),
 1. **Proyecto de Firebase**: en console.firebase.google.com crea un proyecto NUEVO solo para Legends (plan Spark, gratis).
    No uses el de Forma: así no se mezclan datos de tus clientes.
 2. **App web**: Configuración del proyecto → «Agregar app» → Web. Copia el objeto `firebaseConfig` (es público, no es un secreto).
-3. **Authentication**: activa los proveedores **Correo/contraseña**, **Google** y **Anónimo**. En Configuración → Acciones del usuario, DESACTIVA «Habilitar creación (registro)». Luego en Usuarios crea tú el usuario administrador con tu correo y una contraseña larga (la escribes solo en Firebase, nunca en un chat). En Configuración → Dominios autorizados agrega `impossiblecup.com` y `pipp0.github.io`.
+3. **Authentication**: activa los proveedores **Correo/contraseña**, **Google** y **Anónimo**. NO desactives «Habilitar creación (registro)»: bloquearía también a los visitantes anónimos y a Google. Crea tú el usuario administrador con tu correo y una contraseña larga (la escribes solo en Firebase, nunca en un chat). En Configuración → Dominios autorizados agrega `impossiblecup.com` y `pipp0.github.io`.
 4. **Firestore**: crea la base de datos en modo producción.
 5. **Reglas**: `bash firebase/desplegar-reglas.sh ID_DEL_PROYECTO` (pide iniciar sesión en tu terminal).
 6. **Administrador**: en Firestore crea la colección `config`, documento `admin`, con el campo `correos` (tipo array) = `["tu-correo@gmail.com"]`.

@@ -11,7 +11,7 @@ service cloud.firestore {
     function esAdmin() {
       return signedIn()
         && ((verificado() && request.auth.token.firebase.sign_in_provider == 'google.com')
-          // Usuario y contraseña: la cuenta la crea solo el dueño en Firebase (con el registro abierto desactivado), y su correo debe estar en config/admin.
+          // Usuario y contraseña: la cuenta la crea el dueño en Firebase antes de publicar (así nadie más puede registrar ese correo) y su correo debe estar en config/admin.
           || request.auth.token.firebase.sign_in_provider == 'password')
         && exists(/databases/$(database)/documents/config/admin)
         && miCorreo().lower() in get(/databases/$(database)/documents/config/admin).data.correos;
