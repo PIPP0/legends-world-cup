@@ -9,7 +9,7 @@ import { useFunciones } from '../cloud/funciones'
 import { revealed, scoreText } from '../engine/historia'
 import { DECLARED_R16 } from '../data/raw'
 import { DEFAULT_PARAMS, championOdds } from '../engine/model'
-import { Flag, usePhoto, useLocalState } from './common'
+import { FavStar, Flag, usePhoto, useLocalState } from './common'
 import type { Player } from '../types'
 
 const SLIDES = ['bra-pele', 'por-cristiano-ronaldo', 'arg-diego-maradona', 'fra-zinedine-zidane', 'bra-ronaldo-nazario', 'fra-kylian-mbappe', 'ger-franz-beckenbauer']
@@ -135,7 +135,7 @@ export function ChampionPicker() {
         <div className="pk-g" key={pagina}>
         {teams.map((id) => (
           <button key={id} className={`pk-b ${pick === id ? 'on' : ''}`} onClick={() => setPick(id)} aria-pressed={pick === id}>
-            <Flag id={id} size={34} /><span>{TEAM_BY_ID[id].name}</span>
+            <Flag id={id} size={34} /><span>{TEAM_BY_ID[id].name}</span><FavStar id={id} />
           </button>
         ))}
         </div>
