@@ -79,6 +79,25 @@ export function Admin() {
   )
 }
 
+// Paginación de las listas del admin: así no crecen sin límite. 10 por página (también 25 o 50) y vuelve a la primera si cambia la lista.
+function usePaginado<T>(items: T[], inicial = 10) {
+  const [pagina, setPagina] = useState(0)
+  const [por, setPor] = useState(inicial)
+  useEffect(() => setPagina(0), [items.length, por])
+  const paginas = Math.max(1, Math.ceil(items.length / por))
+  const p = Math.min(pagina, paginas - 1)
+  const visibles = useMemo(() => items.slice(p * por, p * por + por), [items, p, por])
+  const barra = items.length <= 10 ? null : (
+    <nav className="pager" aria-label="Paginación">
+      <button type="button" className="btn ghost" disabled={p === 0} onClick={() => setPagina(p - 1)}>← Anterior</button>
+      <span>Página {p + 1} de {paginas} · {items.length} en total</span>
+      <button type="button" className="btn ghost" disabled={p >= paginas - 1} onClick={() => setPagina(p + 1)}>Siguiente →</button>
+      <label className="small muted">Mostrar <select value={por} onChange={(e) => setPor(Number(e.target.value))}>{[10, 25, 50].map((n) => <option key={n} value={n}>{n}</option>)}</select></label>
+    </nav>
+  )
+  return { visibles, barra }
+}
+
 function Stat({ n, l, activo, onClick }: { n: string | number; l: string; activo?: boolean; onClick?: () => void }) {
   return <button type="button" className={`mcard stat-btn${activo ? ' sel' : ''}`} aria-pressed={activo} onClick={onClick}><b style={{ fontSize: 26 }}>{n}</b><p className="muted small">{l}</p><span className="stat-more">{activo ? 'Ocultar detalle ▲' : 'Ver detalle ▼'}</span></button>
 }
@@ -89,8 +108,9 @@ const corto = (uid: string) => '…' + uid.slice(-6)
 
 function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: ProgresoReg[] }) {
   const [sel, setSel] = useState<string | null>(null)
-  const l = [...xs].sort((a, b) => b.ultimo - a.ultimo).slice(0, 200)
-  if (!l.length) return <p className="muted">Nadie en este grupo todavía.</p>
+  const orden = useMemo(() => [...xs].sort((a, b) => b.ultimo - a.ultimo), [xs])
+  const { visibles: l, barra } = usePaginado(orden)
+  if (!orden.length) return <p className="muted">Nadie en este grupo todavía.</p>
   const u = sel ? l.find((x) => x.uid === sel) : undefined
   const prog = u ? progresos?.find((p) => p.uid === u.uid) : undefined
   const fila = (k: string, v: string | number | undefined) => <tr key={k}><th className="l">{k}</th><td className="l" style={{ wordBreak: 'break-all' }}>{v === undefined || v === '' ? '—' : v}</td></tr>
@@ -99,6 +119,7 @@ function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: Progre
       <p className="muted small">Toca una fila para ver todo lo que se sabe de esa persona. El país es aproximado (por zona horaria del navegador, no por IP).</p>
       <div className="tscroll"><table className="gt"><thead><tr><th className="l">ID</th><th className="l">Persona</th><th className="l">País</th><th>Último</th><th>Visitas</th><th className="l">Dispositivo</th><th className="l">Sistema · navegador</th><th className="l">Idioma</th></tr></thead>
         <tbody>{l.map((x) => <tr key={x.uid} className={`fila-sel${sel === x.uid ? ' on' : ''}`} onClick={() => setSel(sel === x.uid ? null : x.uid)} style={{ cursor: 'pointer' }}><td className="l" title={x.uid}>{corto(x.uid)}</td><td className="l">{x.nombre || x.email || (x.anonimo ? 'Anónimo' : '—')}</td><td className="l">{paisTxt(x)}</td><td>{fecha(x.ultimo)}</td><td>{x.visitas}</td><td className="l">{x.dispositivo || '—'}</td><td className="l">{x.sistema ? `${x.sistema} · ${x.navegador ?? ''}` : '—'}</td><td className="l">{x.idiomaWeb || x.idioma || '—'}</td></tr>)}</tbody></table></div>
+      {barra}
       {u && (
         <div className="detalle-stat"><h4 className="sub">{u.nombre || u.email || `Visitante ${corto(u.uid)}`}</h4>
           <table className="gt"><tbody>
@@ -116,15 +137,20 @@ function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: Progre
 }
 
 function TablaMundiales({ xs }: { xs: MundialReg[] }) {
+  const { visibles, barra } = usePaginado(xs)
   if (!xs.length) return <p className="muted">Todavía no hay mundiales simulados.</p>
   return (
+    <>
     <div className="tscroll"><table className="gt"><thead><tr><th>Fecha</th><th className="l">Sede</th><th>Mes</th><th className="l">Clima</th><th>Leyendas en su prime</th><th className="l">Formato</th><th className="l">Campeón</th><th>Semilla</th></tr></thead>
-      <tbody>{xs.slice(0, 200).map((m) => <tr key={m.id}><td>{fecha(m.creada)}</td><td className="l">{HOST_BY_ID[m.sede]?.name ?? 'Neutral'}</td><td>{m.mes > 0 ? MONTHS[m.mes - 1] : '—'}</td><td className="l">{m.clima}</td><td>{m.primes}</td><td className="l">{m.formato}</td><td className="l">{TEAM_BY_ID[m.campeon]?.name ?? m.campeon}</td><td>{m.semilla}</td></tr>)}</tbody></table></div>
+      <tbody>{visibles.map((m) => <tr key={m.id}><td>{fecha(m.creada)}</td><td className="l">{HOST_BY_ID[m.sede]?.name ?? 'Neutral'}</td><td>{m.mes > 0 ? MONTHS[m.mes - 1] : '—'}</td><td className="l">{m.clima}</td><td>{m.primes}</td><td className="l">{m.formato}</td><td className="l">{TEAM_BY_ID[m.campeon]?.name ?? m.campeon}</td><td>{m.semilla}</td></tr>)}</tbody></table></div>
+    {barra}
+    </>
   )
 }
 
 function ListaEncuestas({ xs, campo }: { xs: EncuestaReg[]; campo: 'estrellas' | 'estrellas2' }) {
-  const con = xs.filter((e) => (e[campo] ?? 0) > 0)
+  const con = useMemo(() => xs.filter((e) => (e[campo] ?? 0) > 0), [xs, campo])
+  const { visibles, barra } = usePaginado(con)
   if (!con.length) return <p className="muted">Todavía no hay respuestas.</p>
   const dist = [5, 4, 3, 2, 1].map((n) => [`${n} ★`, con.filter((e) => e[campo] === n).length] as [string, number])
   const max = Math.max(...dist.map((x) => x[1]), 1)
@@ -134,7 +160,8 @@ function ListaEncuestas({ xs, campo }: { xs: EncuestaReg[]; campo: 'estrellas' |
       {dist.map(([k, v]) => <Bar key={k} label={k} v={v} min={0} max={max} right={String(v)} />)}
       <h4 className="sub">Respuestas (más recientes primero)</h4>
       <div className="tscroll"><table className="gt"><thead><tr><th>Fecha</th><th className="l">Nota</th><th className="l">Pantalla</th><th className="l">Comentario</th></tr></thead>
-        <tbody>{con.slice(0, 200).map((e) => <tr key={e.id}><td>{fecha(e.creada)}</td><td className="l">{estrellasTxt(e[campo] ?? 0)}</td><td className="l">{e.pantalla || '—'}</td><td className="l">{e.comentario || '—'}</td></tr>)}</tbody></table></div>
+        <tbody>{visibles.map((e) => <tr key={e.id}><td>{fecha(e.creada)}</td><td className="l">{estrellasTxt(e[campo] ?? 0)}</td><td className="l">{e.pantalla || '—'}</td><td className="l">{e.comentario || '—'}</td></tr>)}</tbody></table></div>
+      {barra}
     </>
   )
 }
@@ -195,12 +222,14 @@ function Resumen({ d }: { d: Datos }) {
 function Personas({ us }: { us: UsuarioReg[] }) {
   const [q, setQ] = useState('')
   const [todos, setTodos] = useState(false)
-  const lista = useMemo(() => us.filter((u) => (todos || !u.anonimo) && `${u.nombre} ${u.email}`.toLowerCase().includes(q.toLowerCase())).sort((a, b) => b.ultimo - a.ultimo).slice(0, 200), [us, q, todos])
+  const lista = useMemo(() => us.filter((u) => (todos || !u.anonimo) && `${u.nombre} ${u.email}`.toLowerCase().includes(q.toLowerCase())).sort((a, b) => b.ultimo - a.ultimo), [us, q, todos])
+  const { visibles, barra } = usePaginado(lista)
   return (
     <>
       <div className="filters"><input className="search" placeholder="Buscar por nombre o correo…" value={q} onChange={(e) => setQ(e.target.value)} /><label className="chk"><input type="checkbox" checked={todos} onChange={(e) => setTodos(e.target.checked)} /> Incluir visitantes anónimos ({us.filter((u) => u.anonimo).length})</label></div>
       <table className="gt"><thead><tr><th className="l">Persona</th><th className="l">Correo</th><th>Entró</th><th>Último</th><th>Visitas</th><th>Equipo</th></tr></thead>
-        <tbody>{lista.map((u) => <tr key={u.uid}><td className="l">{u.nombre || (u.anonimo ? 'Visitante anónimo' : '—')}</td><td className="l">{u.email || '—'}</td><td>{fecha(u.creado)}</td><td>{fecha(u.ultimo)}</td><td>{u.visitas}</td><td>{u.dispositivo || '—'}</td></tr>)}</tbody></table>
+        <tbody>{visibles.map((u) => <tr key={u.uid}><td className="l">{u.nombre || (u.anonimo ? 'Visitante anónimo' : '—')}</td><td className="l">{u.email || '—'}</td><td>{fecha(u.creado)}</td><td>{fecha(u.ultimo)}</td><td>{u.visitas}</td><td>{u.dispositivo || '—'}</td></tr>)}</tbody></table>
+      {barra}
       {lista.length === 0 && <p className="muted">Nadie coincide.</p>}
     </>
   )
@@ -229,13 +258,14 @@ function FuncionesAdmin({ email }: { email: string }) {
 
 function Encuestas({ es, alBorrar }: { es: EncuestaReg[]; alBorrar: (id: string) => void }) {
   const [tipo, setTipo] = useState<'todas' | 'general' | 'mundial'>('todas')
-  const lista = es.filter((e) => tipo === 'todas' || e.tipo === tipo)
+  const lista = useMemo(() => es.filter((e) => tipo === 'todas' || e.tipo === tipo), [es, tipo])
+  const { visibles, barra } = usePaginado(lista)
   return (
     <>
       <Tabs value={tipo} onChange={setTipo} items={[['todas', 'Todas'], ['general', 'General'], ['mundial', 'Fin del mundial']]} />
       <p className="small muted">Promedio: {avg(lista.map((e) => e.estrellas))} ★ · {lista.length} respuestas</p>
       <ul className="admin-enc">
-        {lista.map((e) => (
+        {visibles.map((e) => (
           <li key={e.id}><span className="estrellas-txt">{'★'.repeat(e.estrellas)}{'☆'.repeat(5 - e.estrellas)}{e.estrellas2 ? ` · realismo ${e.estrellas2}/5` : ''}</span>
             <span className="muted small"> {e.tipo === 'general' ? 'General' : 'Fin del mundial'} · {fecha(e.creada)}{e.datos ? ` · ${e.datos}` : ''}{e.pantalla ? ` · pantalla ${e.pantalla}` : ''}</span>
             {e.comentario && <p>{e.comentario}</p>}
@@ -243,14 +273,19 @@ function Encuestas({ es, alBorrar }: { es: EncuestaReg[]; alBorrar: (id: string)
         ))}
         {lista.length === 0 && <li className="muted">Todavía nadie respondió.</li>}
       </ul>
+      {barra}
     </>
   )
 }
 
 function Mundiales({ ms }: { ms: MundialReg[] }) {
+  const { visibles, barra } = usePaginado(ms)
   return (
+    <>
     <table className="gt"><thead><tr><th className="l">Cuándo</th><th className="l">Sede</th><th>Mes</th><th>Clima</th><th>Primes</th><th className="l">Campeón</th></tr></thead>
-      <tbody>{ms.slice(0, 200).map((m) => <tr key={m.id}><td className="l">{fecha(m.creada)}</td><td className="l">{HOST_BY_ID[m.sede]?.name ?? 'Neutral'}</td><td>{m.mes ? MONTHS[m.mes - 1] : '—'}</td><td>{m.clima}</td><td>{m.primes}</td><td className="l">{TEAM_BY_ID[m.campeon]?.name ?? m.campeon}</td></tr>)}</tbody></table>
+      <tbody>{visibles.map((m) => <tr key={m.id}><td className="l">{fecha(m.creada)}</td><td className="l">{HOST_BY_ID[m.sede]?.name ?? 'Neutral'}</td><td>{m.mes ? MONTHS[m.mes - 1] : '—'}</td><td>{m.clima}</td><td>{m.primes}</td><td className="l">{TEAM_BY_ID[m.campeon]?.name ?? m.campeon}</td></tr>)}</tbody></table>
+    {barra}
+    </>
   )
 }
 
