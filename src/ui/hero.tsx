@@ -8,7 +8,7 @@ import { attrLabel, posLabel } from '../i18n/nombres'
 import { useFunciones } from '../cloud/funciones'
 import { revealed, scoreText } from '../engine/historia'
 import { DECLARED_R16 } from '../data/raw'
-import { DEFAULT_PARAMS, championOdds } from '../engine/model'
+import oddsPortadaJson from '../data/oddsPortada.json'
 import { FavStar, Flag, usePhoto, useLocalState } from './common'
 import type { Player } from '../types'
 
@@ -92,19 +92,12 @@ export function Count({ to }: { to: number }) {
   return <>{n}</>
 }
 
-// Probabilidades de campeón de la portada: se calculan una sola vez (volver al inicio no las recalcula).
-let oddsGuardadas: Record<string, number> | null = null
-const oddsPortada = () => (oddsGuardadas ??= championOdds(DECLARED_R16, DEFAULT_PARAMS, 300, 'home'))
+// Probabilidades de campeón de la portada: vienen ya calculadas (scripts/odds-portada.ts), así la portada abre al instante.
+const ODDS_PORTADA = oddsPortadaJson as Record<string, number>
 
 export function ChampionPicker() {
   const [pick, setPick] = useLocalState<string | null>('lwc:pick', null)
-  // La portada se dibuja primero y las probabilidades llegan un instante después (la primera vez; luego quedan guardadas).
-  const [odds, setOdds] = useState<Record<string, number>>(oddsGuardadas ?? {})
-  useEffect(() => {
-    if (oddsGuardadas) return
-    const h = setTimeout(() => setOdds(oddsPortada()), 60)
-    return () => clearTimeout(h)
-  }, [])
+  const odds = ODDS_PORTADA
   const enCarrera = DECLARED_R16.flat()
   // las 32 selecciones: primero las 16 que siguen en carrera y luego el resto por orden alfabético
   const resto = TEAMS.filter((t) => !enCarrera.includes(t.id)).sort((a, b) => a.name.localeCompare(b.name)).map((t) => t.id)

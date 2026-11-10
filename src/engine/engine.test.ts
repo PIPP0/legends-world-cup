@@ -183,3 +183,11 @@ describe('probabilidades coherentes con la simulación', () => {
     expect(absurdo).toBe(0)
   })
 })
+
+import oddsPortadaJson from '../data/oddsPortada.json'
+describe('probabilidades de la portada', () => {
+  it('el archivo guardado coincide con el cálculo actual (si falla: npx tsx scripts/odds-portada.ts)', () => {
+    const vivo = championOdds(DECLARED_R16, DEFAULT_PARAMS, 300, 'home')
+    for (const [k, v] of Object.entries(vivo)) expect((oddsPortadaJson as Record<string, number>)[k] ?? 0).toBeCloseTo(v, 3)
+  })
+})
