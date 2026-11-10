@@ -31,6 +31,37 @@ export async function registrarMundial(t: AltTournament): Promise<void> {
   } catch { /* no interrumpe el juego */ }
 }
 
+// ---- MVP: un voto por persona (se puede cambiar); el ranking sale de contadores por jugador ----
+export interface VotoMvp { id: string; n: number }
+export async function votarMvp(jugadorId: string): Promise<boolean> {
+  if (!NUBE_ACTIVA || !/^[a-z0-9_-]{1,60}$/.test(jugadorId)) return false
+  try {
+    const n = await nube(); const u = await uid(); if (!u) return false
+    const votoRef = n.fs.doc(n.db, 'mvpVotos', u)
+    await n.fs.runTransaction(n.db, async (tx) => {
+      const prev = await tx.get(votoRef)
+      const antes = prev.exists() ? (prev.data().jugador as string) : null
+      if (antes === jugadorId) return
+      const nuevoRef = n.fs.doc(n.db, 'mvpConteo', jugadorId)
+      const nuevo = await tx.get(nuevoRef)
+      let viejo: { ref: ReturnType<typeof n.fs.doc>; n: number } | null = null
+      if (antes) { const r = n.fs.doc(n.db, 'mvpConteo', antes); const d = await tx.get(r); viejo = { ref: r, n: d.exists() ? (d.data().n as number) : 0 } }
+      tx.set(votoRef, { jugador: jugadorId, creada: Date.now() })
+      tx.set(nuevoRef, { n: (nuevo.exists() ? (nuevo.data().n as number) : 0) + 1 })
+      if (viejo && viejo.n > 0) tx.set(viejo.ref, { n: viejo.n - 1 })
+    })
+    return true
+  } catch { return false }
+}
+export async function leerRankingMvp(): Promise<VotoMvp[] | null> {
+  if (!NUBE_ACTIVA) return null
+  try {
+    const n = await nube()
+    const q = n.fs.query(n.fs.collection(n.db, 'mvpConteo'), n.fs.orderBy('n', 'desc'), n.fs.limit(10))
+    return (await n.fs.getDocs(q)).docs.map((d) => ({ id: d.id, n: d.data().n as number })).filter((x) => x.n > 0)
+  } catch { return null }
+}
+
 // ---- progreso de la historia oficial: se guarda por cuenta y se toma el avance más alto entre el navegador y la nube ----
 export async function leerNivelNube(): Promise<number | null> {
   if (!NUBE_ACTIVA) return null

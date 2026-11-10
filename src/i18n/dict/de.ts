@@ -747,5 +747,16 @@ const D: string[] = [
   "Kohärenzfilter: Wenn ein Team deutlich überlegen ist, erzeugt der Zufall keine absurden Ergebnisse (zum Beispiel der Favorit, der hoch verliert); nur in sehr seltenen Fällen stolpert er.",
   "Legenden in Bestform: Sie erhöhen die Bewertung des Spielers und geben ihrer Nation einen Offensivschub; wenn sie von der Bank kommen, rücken sie in die Startelf, sobald sie den Schwächsten ihres Mannschaftsteils übertreffen.",
   "Champion deiner letzten WM",
+  "WÄHLE DEN MVP",
+  "stimme für deinen Lieblingsspieler ab",
+  "Wähle den MVP: dein Lieblingsspieler",
+  "Wähle den MVP der Legenden-WM. Eine Stimme pro Person; du kannst sie jederzeit ändern.",
+  "Deine Stimme ist in diesem Browser gespeichert; die gemeinsame Rangliste ist gerade nicht verfügbar.",
+  "Anderen Spieler suchen…",
+  "Dein MVP: {name}",
+  "Die 10 beliebtesten",
+  "Noch keine Stimmen. Sei der Erste!",
+  "{n} Stimme",
+  "{n} Stimmen",
 ]
 export default D

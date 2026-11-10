@@ -747,5 +747,16 @@ const D: string[] = [
   "Filtro de coerência: quando uma equipe é claramente superior, o acaso não produz resultados absurdos (por exemplo, o favorito perdendo de goleada); só em raríssimas ocasiões ela tropeça.",
   "Lendas no auge: elevam a avaliação do jogador e dão um impulso de ataque à sua seleção; se vierem do banco, entram no time titular quando superam o mais fraco do seu setor.",
   "campeão da sua última Copa do Mundo",
+  "ESCOLHA O MVP",
+  "vote no seu jogador favorito",
+  "Escolha o MVP: seu jogador favorito",
+  "Escolha o MVP da Copa do Mundo das Lendas. Um voto por pessoa; você pode mudá-lo quando quiser.",
+  "Seu voto ficou salvo neste navegador; o ranking compartilhado não está disponível agora.",
+  "Buscar outro jogador…",
+  "Seu MVP: {name}",
+  "Os 10 mais populares",
+  "Ainda não há votos. Seja o primeiro!",
+  "{n} voto",
+  "{n} votos",
 ]
 export default D

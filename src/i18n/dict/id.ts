@@ -747,5 +747,16 @@ const D: string[] = [
   "Filter koherensi: ketika satu tim jelas lebih unggul, kebetulan tidak menghasilkan hasil yang absurd (misalnya favorit kalah telak); hanya pada kesempatan yang sangat jarang ia tergelincir.",
   "Legenda di masa puncak: menaikkan penilaian pemain dan memberi dorongan serangan bagi tim nasionalnya; jika datang dari bangku cadangan, ia masuk sebelas pemain inti saat mengungguli yang terlemah di liniya.",
   "juara Piala Dunia terakhirmu",
+  "PILIH MVP",
+  "pilih pemain favoritmu",
+  "Pilih MVP: pemain favoritmu",
+  "Pilih MVP Piala Dunia Legenda. Satu suara per orang; kamu bisa mengubahnya kapan saja.",
+  "Suaramu tersimpan di peramban ini; peringkat bersama sedang tidak tersedia.",
+  "Cari pemain lain…",
+  "MVP-mu: {name}",
+  "10 yang paling populer",
+  "Belum ada suara. Jadilah yang pertama!",
+  "{n} suara",
+  "{n} suara",
 ]
 export default D

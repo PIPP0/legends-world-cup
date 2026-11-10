@@ -747,5 +747,16 @@ const D: string[] = [
   "Coherence filter: when one team is clearly stronger, chance does not produce absurd results (for example, the favorite losing by a landslide); only on very rare occasions does it slip up.",
   "Legends in their prime: they raise the player’s rating and give their team an attacking boost; if they come from the bench, they enter the starting eleven when they beat the weakest player in their line.",
   "champion of your latest World Cup",
+  "PICK THE MVP",
+  "vote for your favorite player",
+  "Pick the MVP: your favorite player",
+  "Pick the MVP of the Legends World Cup. One vote per person; you can change it whenever you like.",
+  "Your vote is saved in this browser; the shared ranking is not available right now.",
+  "Search another player…",
+  "Your MVP: {name}",
+  "The 10 most popular",
+  "No votes yet. Be the first!",
+  "{n} vote",
+  "{n} votes",
 ]
 export default D

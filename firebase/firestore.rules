@@ -58,6 +58,22 @@ service cloud.firestore {
       allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
       allow delete: if signedIn() && request.auth.uid == uid;
     }
+    // MVP: cada persona guarda su voto (solo ella y Admin lo leen); los contadores por jugador son públicos y solo suben o bajan de a 1.
+    match /mvpVotos/{uid} {
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['jugador', 'creada'])
+        && request.resource.data.jugador is string && request.resource.data.jugador.size() >= 1 && request.resource.data.jugador.size() <= 60
+        && request.resource.data.creada is int;
+      allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
+      allow delete: if esAdmin();
+    }
+    match /mvpConteo/{id} {
+      allow read: if true;
+      allow create: if signedIn() && id.size() <= 60 && request.resource.data.keys().hasOnly(['n']) && request.resource.data.n == 1;
+      allow update: if signedIn() && request.resource.data.keys().hasOnly(['n']) && request.resource.data.n is int && request.resource.data.n >= 0
+        && (request.resource.data.n == resource.data.n + 1 || request.resource.data.n == resource.data.n - 1);
+      allow delete: if esAdmin();
+    }
     // Encuestas de satisfacción: cada persona crea las suyas; solo Admin las lee. Nunca se editan.
     match /encuestas/{id} {
       allow create: if signedIn()

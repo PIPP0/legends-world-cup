@@ -422,3 +422,6 @@ footer .logo{margin-bottom:10px}
 .donate-link{margin-left:6px;font-size:13px;opacity:.75;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}.donate-link:hover{opacity:1}
 .cuenta{position:relative}.cuenta-err{position:absolute;right:0;top:calc(100% + 8px);z-index:60;width:max-content;max-width:min(280px,80vw);white-space:normal;padding:10px 12px;border-radius:10px;background:#1a1a22;border:1px solid #f5c542;color:#f5e6b0}
 main,.note,h2,.sec-title{overflow-wrap:anywhere}
+.mvp-buscar{margin-top:12px}.mvp-res{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.mvp-rank{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}.mvp-rank li{display:grid;grid-template-columns:28px 34px 1fr auto;align-items:center;gap:10px}.mvp-rank .n{font:800 20px 'Barlow Condensed';color:var(--cy);text-align:center}
+.mvp-rank div{position:relative;min-width:0}.mvp-rank div b{display:inline-block}.mvp-rank div i{display:block;height:4px;margin-top:4px;background:linear-gradient(90deg,var(--pk),var(--cy));border-radius:2px}.mvp-rank em{font-style:normal;font-size:13px;opacity:.8;white-space:nowrap}

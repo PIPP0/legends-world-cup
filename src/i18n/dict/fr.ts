@@ -747,5 +747,16 @@ const D: string[] = [
   "Filtre de cohérence : quand une équipe est nettement supérieure, le hasard ne produit pas de résultats absurdes (par exemple, le favori battu sur un score fleuve) ; ce n’est que très rarement qu’elle trébuche.",
   "Légendes à leur apogée : elles augmentent la note du joueur et donnent un élan offensif à leur sélection ; si elles viennent du banc, elles entrent dans le onze quand elles dépassent le plus faible de leur ligne.",
   "champion de ta dernière Coupe du monde",
+  "CHOISIS LE MVP",
+  "vote pour ton joueur préféré",
+  "Choisis le MVP : ton joueur préféré",
+  "Choisis le MVP de la Coupe du monde des légendes. Un vote par personne ; tu peux le changer quand tu veux.",
+  "Ton vote est enregistré dans ce navigateur ; le classement partagé n’est pas disponible pour le moment.",
+  "Chercher un autre joueur…",
+  "Ton MVP : {name}",
+  "Les 10 plus populaires",
+  "Pas encore de votes. Sois le premier !",
+  "{n} vote",
+  "{n} votes",
 ]
 export default D

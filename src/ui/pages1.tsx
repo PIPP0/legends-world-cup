@@ -8,9 +8,9 @@ import { useStoryLevel } from '../engine/storyLevel'
 import { phaseLabel, revealed } from '../engine/historia'
 import { groupTable } from '../engine/standings'
 import { matchStory } from '../engine/narrative'
-import { Avatar, Flag, Note, Section, TeamLink, useApp } from './common'
+import { Avatar, Flag, Note, Section, TeamLink } from './common'
 import { FutCard, TeamCard } from './visual'
-import { ChampionPicker, Count, Hero } from './hero'
+import { ChampionPicker, Count, Hero, MvpPicker } from './hero'
 import { MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { LANG, tr } from '../i18n'
@@ -20,7 +20,6 @@ const groupGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
 
 export function Home() {
   const level = useStoryLevel()
-  const { alt } = useApp()
   const ko = revealed(level)
   const totalGoals = groupGoals + ko.reduce((a, m) => a + (m.ga ?? 0) + (m.gb ?? 0), 0)
   const top = useMemo(() => storyPlayerStats(level).filter((s) => s.goals >= 3).sort((a, b) => b.goals - a.goals), [level])
@@ -39,12 +38,11 @@ export function Home() {
         <div><b><Count to={32} /></b><span>{tr('selecciones')}</span></div>
         <div><b><Count to={STORY_MATCHES.length + ko.length} /></b><span>{tr('partidos jugados')}</span></div>
         <div><b><Count to={totalGoals} /></b><span>{tr('goles')}</span></div>
-        {alt?.recorded && alt.bracket.champion && TEAM_BY_ID[alt.bracket.champion]
-          ? <a className="live" href="#/mundial" style={{ textDecoration: 'none', color: 'inherit' }}><b><Flag id={alt.bracket.champion} size={26} /> {TEAM_BY_ID[alt.bracket.champion].name}</b><span>{tr('campeón de tu último mundial')}</span></a>
-          : <div className="live"><b><i />{phaseLabel(level)}</b><span>{level >= 4 ? tr('torneo terminado') : tr('próxima fase')}</span></div>}
+        <button type="button" className="live mvp-cta" onClick={() => document.getElementById('mvp')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></button>
       </div>
 
       <ChampionPicker />
+      <MvpPicker />
 
       <Section title={tr('Partido inaugural')} sub={tr('Grupo A · Fecha 1')} action={<a className="more" href={`#/partido/${featured.id}`}>{tr('Ver partido →')}</a>}>
         <a className="feature" href={`#/partido/${featured.id}`} style={{ ['--fa' as string]: 'url(https://flagcdn.com/w320/br.png)', ['--fb' as string]: 'url(https://flagcdn.com/w320/gb-eng.png)' }}>
