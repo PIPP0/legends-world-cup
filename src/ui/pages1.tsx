@@ -14,6 +14,7 @@ import { ChampionPicker, Count, Hero } from './hero'
 import { MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { LANG, tr } from '../i18n'
+import { DonateBox } from './paybox'
 
 const groupGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
 
@@ -182,6 +183,7 @@ export function Story() {
         <p>{tr('La historia oficial se detiene antes de los octavos. Tú decides cuándo seguir: en Eliminatorias avanzas fase por fase, y los resultados son los mismos para todas las personas.')}</p>
         <p><a className="btn pri" href="#/cuadro">{tr('Avanzar a las eliminatorias')}</a></p>
       </div>
+      <DonateBox />
     </>
   )
 }

@@ -5,6 +5,7 @@ import { LOCALE, tr } from '../i18n'
 import { escucharRankingMvp, leerMiMvp, votarMvp, type VotoMvp } from '../cloud/datos'
 import { NUBE_ACTIVA, esperarCambiosDeSesion } from '../cloud/firebase'
 import { Avatar, Flag, useLocalState } from './common'
+import { DonateLink } from './paybox'
 import { posLabel } from '../i18n/nombres'
 
 // Ranking inicial de referencia: los votos reales de la gente se suman a estos valores. Se avisa en pantalla que es un punto de partida.
@@ -131,6 +132,7 @@ export function MvpPage() {
               <p className="small muted">{tr('Ranking inicial de referencia: los votos de la comunidad se van sumando a estos valores.')}</p>
             </>
           )}
+          <div className="mvp-donar"><DonateLink /></div>
         </aside>
       </div>
     </div>

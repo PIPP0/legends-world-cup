@@ -1,5 +1,5 @@
 import { MvpPage } from './mvp'
-import { DonateLink } from './paybox'
+import { DonateIcon, DonateLink } from './paybox'
 import { useEffect, useState } from 'react'
 import { DEFAULT_PARAMS } from '../engine/model'
 import { Note, AppCtx, useLocalState } from './common'
@@ -94,6 +94,7 @@ export default function App() {
             {[...MAIN, ...MORE].map(([p, l]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''} aria-current={active === p ? 'page' : undefined}>{l}</a>)}
           </nav>
           <EncuestaHeader pantalla={route.split('/')[1] || 'inicio'} />
+          <DonateIcon />
           <SelectorIdioma />
           <CuentaHeader />
         </div>
@@ -108,6 +109,7 @@ export default function App() {
       {more && (
         <div className="sheet" role="dialog" aria-label={t('Más secciones')}>
           {MORE.map(([p, l, i]) => <a key={p} href={`#${p}`} className={active === p ? 'on' : ''}>{ICONS[i]}<span>{l}</span></a>)}
+          <div className="sheet-donate"><DonateLink /></div>
         </div>
       )}
       <nav className="bnav" aria-label={t('Navegación móvil')}>

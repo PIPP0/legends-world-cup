@@ -81,6 +81,13 @@ export function DonateLink() {
   return <a className="donate-link" href={DONATE_URL} target="_blank" rel="noopener noreferrer">{tr('☕ Apoyar (opcional)')}</a>
 }
 
+// Ícono de taza en el encabezado (escritorio): mismo tamaño que los otros íconos; el texto sale al pasar el mouse.
+export function DonateIcon() {
+  const f = useFunciones()
+  if (!f.donaciones || !DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
+  return <a className="icon-btn donate-ic" href={DONATE_URL} target="_blank" rel="noopener noreferrer" title={tr('☕ Apoyar (opcional)')} aria-label={tr('☕ Apoyar (opcional)')}><span aria-hidden>☕</span></a>
+}
+
 // Apoyo voluntario: no desbloquea nada, solo agradece. Solo se muestra si hay un enlace configurado.
 export function DonateBox() {
   const f = useFunciones()
