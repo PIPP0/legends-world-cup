@@ -9,8 +9,10 @@ service cloud.firestore {
     function verificado() { return request.auth.token.get('email_verified', false) == true; }
     function miCorreo() { return request.auth.token.get('email', ''); }
     function esAdmin() {
-      return signedIn() && verificado()
-        && request.auth.token.firebase.sign_in_provider == 'google.com'
+      return signedIn()
+        && ((verificado() && request.auth.token.firebase.sign_in_provider == 'google.com')
+          // Usuario y contraseña: la cuenta la crea solo el dueño en Firebase (con el registro abierto desactivado), y su correo debe estar en config/admin.
+          || request.auth.token.firebase.sign_in_provider == 'password')
         && exists(/databases/$(database)/documents/config/admin)
         && miCorreo().lower() in get(/databases/$(database)/documents/config/admin).data.correos;
     }

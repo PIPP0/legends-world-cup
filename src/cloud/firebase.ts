@@ -58,6 +58,12 @@ export async function entrarConGoogle(opciones: { vincular?: boolean } = {}): Pr
     throw e
   }
 }
+// Entrar al Admin con usuario (correo) y contraseña. La contraseña viaja directo a Firebase; la web no la guarda.
+export async function entrarConClave(correo: string, clave: string): Promise<Cuenta> {
+  const n = await nube()
+  return deUsuario((await n.fa.signInWithEmailAndPassword(n.auth, correo.trim(), clave)).user)
+}
+
 export async function salir(): Promise<void> { const n = await nube(); await n.fa.signOut(n.auth) }
 export async function esperarCambiosDeSesion(cb: (c: Cuenta | null) => void): Promise<() => void> {
   const n = await nube(); return n.fa.onAuthStateChanged(n.auth, (u) => cb(u ? deUsuario(u) : null))

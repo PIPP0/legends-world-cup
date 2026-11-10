@@ -1,6 +1,6 @@
 # Admin de Legends World Cup (como el de Forma)
 
-El admin vive en `#/admin` del sitio. Funciona igual que el de Forma: entras con **Google**, y solo la cuenta listada en la nube
+El admin vive en `/admin` del sitio (impossiblecup.com/admin). Entras con **usuario (correo) y contraseña** o con **Google**, y solo la cuenta listada en la nube
 puede ver y cambiar cosas. Mientras no conectes la nube, la web funciona como siempre y el admin muestra «La nube no está conectada».
 
 Qué incluye: **Resumen** (visitas, mundiales, sedes, campeones, satisfacción), **Personas** (cuentas registradas y visitantes),
@@ -10,13 +10,13 @@ Qué incluye: **Resumen** (visitas, mundiales, sedes, campeones, satisfacción),
 1. **Proyecto de Firebase**: en console.firebase.google.com crea un proyecto NUEVO solo para Legends (plan Spark, gratis).
    No uses el de Forma: así no se mezclan datos de tus clientes.
 2. **App web**: Configuración del proyecto → «Agregar app» → Web. Copia el objeto `firebaseConfig` (es público, no es un secreto).
-3. **Authentication**: activa los proveedores **Google** y **Anónimo**. En Configuración → Dominios autorizados agrega `pipp0.github.io`.
+3. **Authentication**: activa los proveedores **Correo/contraseña**, **Google** y **Anónimo**. En Configuración → Acciones del usuario, DESACTIVA «Habilitar creación (registro)». Luego en Usuarios crea tú el usuario administrador con tu correo y una contraseña larga (la escribes solo en Firebase, nunca en un chat). En Configuración → Dominios autorizados agrega `impossiblecup.com` y `pipp0.github.io`.
 4. **Firestore**: crea la base de datos en modo producción.
 5. **Reglas**: `bash firebase/desplegar-reglas.sh ID_DEL_PROYECTO` (pide iniciar sesión en tu terminal).
 6. **Administrador**: en Firestore crea la colección `config`, documento `admin`, con el campo `correos` (tipo array) = `["tu-correo@gmail.com"]`.
 7. **Conectar la web**: en GitHub → Settings → Secrets and variables → Actions → Variables, crea `FIREBASE_CONFIG` con el `firebaseConfig`
    en una sola línea como JSON, p. ej. `{"apiKey":"…","authDomain":"…","projectId":"…","appId":"…"}`. Luego Actions → Deploy → Run workflow.
-8. Entra a `https://pipp0.github.io/legends-world-cup/#/admin` con tu cuenta de Google.
+8. Entra a `https://impossiblecup.com/admin` con tu correo y contraseña.
 
 ## Qué se guarda y por qué (privacidad)
 - **usuarios**: visitante anónimo (sin datos personales) o, si la persona entra con Google, nombre, correo y foto. Visitas, primera y última vez, tipo de equipo.

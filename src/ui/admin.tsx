@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { NUBE_ACTIVA, asegurarVisitante, cuentaActual, entrarConGoogle, salir, type Cuenta } from '../cloud/firebase'
+import { NUBE_ACTIVA, asegurarVisitante, cuentaActual, entrarConClave, entrarConGoogle, salir, type Cuenta } from '../cloud/firebase'
 import { FUNCIONES_BASE, FUNCIONES_INFO, guardarFunciones, useFunciones, type Funciones } from '../cloud/funciones'
 import { borrarEncuesta, leerEncuestas, leerMundiales, leerProgresos, leerUsuarios, type EncuestaReg, type MundialReg, type ProgresoReg, type UsuarioReg } from '../cloud/datos'
 import { HOST_BY_ID, MONTHS } from '../data/world'
@@ -19,6 +19,8 @@ export function Admin() {
   const [cuenta, setCuenta] = useState<Cuenta | null | undefined>(undefined)
   const [datos, setDatos] = useState<Datos | null>(null)
   const [error, setError] = useState('')
+  const [correo, setCorreo] = useState('')
+  const [clave, setClave] = useState('')
   const [cargando, setCargando] = useState(false)
   const [sec, setSec] = useState<Seccion>('resumen')
 
@@ -45,7 +47,11 @@ export function Admin() {
   if (cuenta === undefined) return <Section title="Administración"><p className="muted">Cargando…</p></Section>
   if (!cuenta || cuenta.anonimo) return (
     <Section title="Administración" sub="Solo para la cuenta de administrador.">
-      <div className="cta"><button className="btn pri" onClick={() => void entrar()}>Entrar con Google</button></div>
+      <form className="admin-login" onSubmit={(e) => { e.preventDefault(); setError(''); void entrarConClave(correo, clave).then(setCuenta).catch(() => setError('Usuario o contraseña incorrectos.')) }}>
+        <label>Usuario (correo)<input type="email" autoComplete="username" value={correo} onChange={(e) => setCorreo(e.target.value)} required /></label>
+        <label>Contraseña<input type="password" autoComplete="current-password" value={clave} onChange={(e) => setClave(e.target.value)} required /></label>
+        <div className="cta"><button className="btn pri" type="submit">Entrar</button><button className="btn ghost" type="button" onClick={() => void entrar()}>Entrar con Google</button></div>
+      </form>
       {error && <Note tone="warn">{error}</Note>}
     </Section>
   )
