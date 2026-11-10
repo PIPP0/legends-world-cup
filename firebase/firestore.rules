@@ -32,7 +32,7 @@ service cloud.firestore {
     // Visitantes y personas con cuenta. Cada uno crea y actualiza el suyo (sin poder cambiar campos ajenos); Admin los lee todos.
     match /usuarios/{uid} {
       allow create, update: if signedIn() && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['uid', 'email', 'nombre', 'foto', 'anonimo', 'creado', 'ultimo', 'visitas', 'idioma', 'dispositivo'])
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'nombre', 'foto', 'anonimo', 'creado', 'ultimo', 'visitas', 'idioma', 'dispositivo', 'pais', 'zona', 'sistema', 'navegador', 'pantalla', 'origen', 'idiomaWeb', 'favorita'])
         && request.resource.data.uid == uid
         && request.resource.data.get('email', '') in ['', miCorreo()]
         && request.resource.data.get('nombre', '') is string && request.resource.data.get('nombre', '').size() <= 120

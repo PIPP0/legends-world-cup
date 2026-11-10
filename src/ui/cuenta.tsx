@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react'
 import { NUBE_ACTIVA, anotarUsuario, asegurarVisitante, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { sincronizarNivel } from '../engine/storyLevel'
 import { useFunciones } from '../cloud/funciones'
-import { leerFavoritaNube } from '../cloud/datos'
-import { ponerFavorita, useFavorita } from '../engine/favorita'
+import { guardarFavoritaNube, leerFavoritaNube } from '../cloud/datos'
+import { favoritaActual, ponerFavorita, useFavorita } from '../engine/favorita'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Flag } from './common'
 import { ElegirFavorita } from './favorita'
@@ -26,7 +26,12 @@ export function CuentaHeader() {
         setC(cuenta)
         if (cuenta) { void anotarUsuario(); void sincronizarNivel() }
         // la selección favorita es de quien tiene cuenta: se trae de la nube y, si aún no eligió una, se le pide
-        if (cuenta && !cuenta.anonimo) void leerFavoritaNube().then((f) => { if (f) ponerFavorita(f); else if (f === null) setEligiendo(true) })
+        if (cuenta && !cuenta.anonimo) void leerFavoritaNube().then((f) => {
+          const local = favoritaActual()
+          if (f) ponerFavorita(f) // la nube manda
+          else if (local) void guardarFavoritaNube(local) // ya la había elegido en este navegador: se recuerda y se reintenta guardar en la nube
+          else if (f === null) setEligiendo(true) // solo se pregunta si nunca eligió
+        })
         else ponerFavorita(null)
       })
     })()
@@ -44,7 +49,7 @@ export function CuentaHeader() {
       ) : (
         <button type="button" className="btn cta-entrar" onClick={() => void entrar()}>{tr('Entrar')}</button>
       )}
-      {conCuenta && favorita && TEAM_BY_ID[favorita] && <span className="av-flag" aria-hidden><Flag id={favorita} size={18} /></span>}
+      {conCuenta && favorita && TEAM_BY_ID[favorita] && <span className="av-flag" aria-hidden style={{ backgroundImage: `url(https://flagcdn.com/w80/${TEAM_BY_ID[favorita].iso}.png)` }} />}
       {abierto && conCuenta && (
         <div className="cuenta-menu" role="menu">
           <p><b>{c!.nombre || tr('Mi cuenta')}</b><br /><span className="muted small">{c!.email}</span></p>
