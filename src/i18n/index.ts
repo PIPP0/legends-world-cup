@@ -14,9 +14,7 @@ function detectar(): Lang {
     if (guardado === 'es' || guardado === 'en') return guardado
     if (/mundialimposible\./i.test(location.hostname)) return 'es'
     if (/impossiblecup\./i.test(location.hostname)) return 'en'
-    const langs = navigator.languages?.length ? navigator.languages : [navigator.language]
-    for (const l of langs) { const c = l.toLowerCase().slice(0, 2); if (c === 'es') return 'es'; if (c === 'en') return 'en' }
-    return 'en' // idioma internacional por defecto
+    return 'en' // inglés por defecto; solo cambia si la persona lo elige (?lang= o selector)
   } catch { return 'es' }
 }
 export const LANG: Lang = typeof window === 'undefined' ? 'es' : detectar()
