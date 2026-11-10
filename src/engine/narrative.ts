@@ -76,7 +76,7 @@ export function matchStory(m: Match): MatchStory {
   for (const team of [H, A]) {
     const idx = t.findIndex((r) => r.teamId === team.id)
     const r = t[idx]
-    const pos = LANG === 'en' ? ordinal(idx + 1) : `${idx + 1}.º`
+    const pos = ordinal(idx + 1)
     const ptl = r.pts === 1 ? tr('pt') : tr('pts')
     if (m.matchday < 3) consecuencias.push(tr('{t}: {p} del Grupo {g} con {n} {pt} (DG {d}) tras la fecha {m}.', { t: team.name, p: pos, g: m.group, n: r.pts, pt: ptl, d: `${r.gd > 0 ? '+' : ''}${r.gd}`, m: m.matchday }))
     else consecuencias.push(tr('{t}: termina {p} del Grupo {g} con {n} {pt} y {r}.', { t: team.name, p: pos, g: m.group, n: r.pts, pt: ptl, r: idx < 2 ? tr('clasifica a octavos') : tr('queda eliminado') }))

@@ -3,7 +3,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 import photoData from '../data/photos.json'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { tr } from '../i18n'
-import { attrLabel, posLabel } from '../i18n/nombres'
+import { attrLabel, attrAbbr, posLabel } from '../i18n/nombres'
 import type { AltTournament, Attr, ModelParams, Player, Team } from '../types'
 
 export interface Ctx {
@@ -146,7 +146,7 @@ export function Radar({ attrs, attrs2, size = 220 }: { attrs: Attr[]; attrs2?: A
       ))}
       {attrs.map((a, i) => {
         const [x, y] = pt(i, 112)
-        return <text key={a.k} x={x} y={y} className="rl" textAnchor="middle" dominantBaseline="middle">{LANG === 'es' ? a.k.replace('Juego con los pies', 'Pie').replace('Juego aéreo', 'Aéreo') : attrLabel(a.k).replace('Kicking', 'Foot')}</text>
+        return <text key={a.k} x={x} y={y} className="rl" textAnchor="middle" dominantBaseline="middle">{LANG === 'es' ? a.k.replace('Juego con los pies', 'Pie').replace('Juego aéreo', 'Aéreo') : attrAbbr(a.k)}</text>
       })}
       <polygon points={poly(attrs)} className="pg a" />
       {attrs2 && <polygon points={poly(attrs2)} className="pg b" />}

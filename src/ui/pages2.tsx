@@ -64,7 +64,7 @@ export function Team({ id }: { id: string }) {
         <Flag id={id} size={64} />
         <div>
           <h1>{t.name}</h1>
-          <p className="muted">{LANG === 'en' ? `Group ${t.group} · ${t.formation} · ${ordinal(pos)} in the group · #${rankOf(all.map((a) => a.strength), prof.strength)} of 32 by the model` : `Grupo ${t.group} · ${t.formation} · ${pos}.º del grupo · #${rankOf(all.map((a) => a.strength), prof.strength)} de 32 en el modelo`}</p>
+          <p className="muted">{tr('Grupo {g} · {f} · {p} del grupo · #{r} de 32 en el modelo', { g: t.group, f: t.formation, p: ordinal(pos), r: rankOf(all.map((a) => a.strength), prof.strength) })}</p>
         </div>
       </div>
 

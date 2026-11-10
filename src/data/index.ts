@@ -2,7 +2,6 @@ import { tr } from '../i18n'
 import { RAW_TEAMS, RAW_RESULTS } from './raw'
 import { BENCH } from './squads'
 import { teamName } from '../i18n/nombres'
-import { esIngles } from '../i18n'
 import { hashString } from '../engine/rng'
 import type { Attr, Line, Match, Player, Pos, Team } from '../types'
 

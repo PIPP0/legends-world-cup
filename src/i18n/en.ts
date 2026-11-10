@@ -595,6 +595,6 @@ export const EN: Record<string, string> = {
   "Pago rápido simulado": "Simulated quick payment",
   "Pago rápido": "Quick payment",
   "Leer este sitio en español": "Read this site in Spanish",
-  "HERO·1": "Impossible",
-  "HERO·2": "World Cup",
+  "Grupo {g} · {f} · {p} del grupo · #{r} de 32 en el modelo": "Group {g} · {f} · {p} in the group · #{r} of 32 by the model",
+  "Idioma": "Language",
 }

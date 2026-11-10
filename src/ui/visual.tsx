@@ -1,13 +1,12 @@
 import { LANG, tr } from '../i18n'
-import { posLabel } from '../i18n/nombres'
+import { posLabel, attrAbbr } from '../i18n/nombres'
 import { useState, type ReactNode } from 'react'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Flag, usePhoto } from './common'
 import type { Player, Team } from '../types'
 
 export const tierOf = (o: number) => (o >= 96 ? 'icon' : o >= 92 ? 'gold' : o >= 86 ? 'silver' : 'base')
-const AB_EN: Record<string, string> = { Ritmo: 'PAC', Disparo: 'SHO', Pase: 'PAS', Regate: 'DRI', Defensa: 'DEF', Físico: 'PHY', Paradas: 'DIV', Reflejos: 'REF', Posición: 'POS', Salida: 'HAN', 'Juego aéreo': 'AER', 'Juego con los pies': 'KIC' }
-const ab = (k: string) => (LANG === 'en' ? AB_EN[k] ?? k.slice(0, 3).toUpperCase() : k.replace('Juego aéreo', 'Aéreo').replace('Juego con los pies', 'Pie').slice(0, 3).toUpperCase())
+const ab = (k: string) => attrAbbr(k)
 const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 
 // Carta estilo videojuego deportivo
