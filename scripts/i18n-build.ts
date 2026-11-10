@@ -2,9 +2,10 @@
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { EN } from '../src/i18n/en'
 import { NS } from '../src/i18n/claves-nombres'
-const keys = [...Object.keys(EN), ...NS.map((x) => x[0])]
-const en = [...Object.values(EN), ...NS.map((x) => x[2])]
-const src = [...Object.keys(EN), ...NS.map((x) => x[1])]
+import { EXTRA } from '../src/i18n/extra'
+const keys = [...Object.keys(EN), ...NS.map((x) => x[0]), ...EXTRA.map((x) => x[0])]
+const en = [...Object.values(EN), ...NS.map((x) => x[2]), ...EXTRA.map((x) => x[1])]
+const src = [...Object.keys(EN), ...NS.map((x) => x[1]), ...EXTRA.map((x) => x[0])]
 const q = (s: string) => JSON.stringify(s)
 writeFileSync('src/i18n/keys.ts', '// Generado por scripts/i18n-build.ts: claves (texto original en español) en el orden de los diccionarios.\nexport const KEYS: string[] = [\n' + keys.map((k) => '  ' + q(k) + ',').join('\n') + '\n]\n')
 mkdirSync('src/i18n/dict', { recursive: true })

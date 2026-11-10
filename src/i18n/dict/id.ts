@@ -738,5 +738,11 @@ const D: string[] = [
   "KAK",
   "Piala Dunia",
   "Mustahil",
+  "Masuk dan temukan siapa juara Piala Dunia Legenda-mu sendiri",
+  "Fase grup terbuka untuk semua. Mulai babak 16 besar, kamu perlu masuk dengan akun Gmail untuk melihat bagaimana Piala Dunia-mu berakhir dan menyimpan hasilnya.",
+  "Masuk dengan Gmail",
+  "Kembali menyusun Piala Dunia-ku",
+  "Tidak dapat masuk. Silakan coba lagi.",
+  "Kamu bisa melihat fase grup tanpa akun; mulai babak 16 besar, kami akan meminta kamu masuk dengan Gmail untuk mengetahui juaranya.",
 ]
 export default D

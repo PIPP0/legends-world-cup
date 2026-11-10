@@ -738,5 +738,11 @@ const D: string[] = [
   "KIC",
   "Impossible",
   "World Cup",
+  "Sign in and find out who wins your very own Legends World Cup",
+  "The group stage is open to everyone. From the round of 16 you need to sign in with your Gmail account to see how your World Cup ends and save your result.",
+  "Sign in with Gmail",
+  "Back to my World Cup setup",
+  "Could not sign in. Please try again.",
+  "You can watch the group stage without an account; from the round of 16 we will ask you to sign in with Gmail to find out the champion.",
 ]
 export default D

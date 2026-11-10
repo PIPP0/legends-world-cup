@@ -738,5 +738,11 @@ const D: string[] = [
   "FUS",
   "Unmögliche",
   "WM",
+  "Melde dich an und finde heraus, wer der Champion deiner eigenen Legenden-WM ist",
+  "Die Gruppenphase ist frei zugänglich. Ab dem Achtelfinale musst du dich mit deinem Gmail-Konto anmelden, um zu sehen, wie deine WM endet, und dein Ergebnis zu speichern.",
+  "Mit Gmail anmelden",
+  "Zurück zur Einrichtung meiner WM",
+  "Anmeldung nicht möglich. Bitte versuche es erneut.",
+  "Die Gruppenphase siehst du ohne Konto; ab dem Achtelfinale bitten wir dich, dich mit Gmail anzumelden, um den Champion zu erfahren.",
 ]
 export default D

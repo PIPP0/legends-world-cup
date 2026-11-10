@@ -1,3 +1,4 @@
+import { NUBE_ACTIVA } from '../cloud/firebase'
 import { tr } from '../i18n'
 import { posLabel } from '../i18n/nombres'
 import { useMemo, useState } from 'react'
@@ -178,7 +179,7 @@ export function Mundial() {
             </div>
             {COBRO_ACTIVO
               ? <PaySection what={`Mundial en ${host.name} · ${MONTHS[month - 1]}`} onGo={go} disabled={paying} />
-              : <div className="cta"><button className="btn pri" disabled={paying} onClick={() => go('gratis')}>{tr('▶ Jugar este mundial (gratis)')}</button></div>}
+              : <><div className="cta"><button className="btn pri" disabled={paying} onClick={() => go('gratis')}>{tr('▶ Jugar este mundial (gratis)')}</button></div>{NUBE_ACTIVA && <p className="small muted">{tr('Verás la fase de grupos sin cuenta; desde los octavos de final te pediremos entrar con Gmail para descubrir al campeón.')}</p>}</>}
           </>
         )}
 

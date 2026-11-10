@@ -738,4 +738,10 @@ export const KEYS: string[] = [
   "AB·Juego con los pies",
   "HERO·1",
   "HERO·2",
+  "Inicia sesión y descubre quién es el campeón de tu propio Mundial de Leyendas",
+  "La fase de grupos es libre. Desde los octavos de final necesitas entrar con tu cuenta de Gmail para ver cómo termina tu mundial y guardar tu resultado.",
+  "Entrar con Gmail",
+  "Volver a armar mi mundial",
+  "No se pudo entrar. Inténtalo de nuevo.",
+  "Verás la fase de grupos sin cuenta; desde los octavos de final te pediremos entrar con Gmail para descubrir al campeón.",
 ]

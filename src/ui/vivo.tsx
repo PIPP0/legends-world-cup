@@ -13,6 +13,8 @@ import { Reveal } from './mundial'
 import { Board, type Item } from './board'
 import { takePending } from './pending'
 import { registrarMundial } from '../cloud/datos'
+import { NUBE_ACTIVA, cuentaActual, entrarConGoogle, esperarCambiosDeSesion, type Cuenta } from '../cloud/firebase'
+import { useFunciones } from '../cloud/funciones'
 import type { AltTournament, Goal, KoMatch, MatchCtx } from '../types'
 
 const ALL = Object.keys(TEAM_BY_ID)
@@ -118,6 +120,16 @@ export function Vivo() {
   const [ready, setReady] = useState(false)
   const saved = useRef(false)
   const step = steps[i]
+  // Puerta de cuenta: la fase de grupos es libre; desde octavos de final hay que entrar con Gmail (Google). Sin nube conectada no se exige nada.
+  const f = useFunciones()
+  const [cuenta, setCuenta] = useState<Cuenta | null | undefined>(NUBE_ACTIVA ? undefined : null)
+  const [errLogin, setErrLogin] = useState('')
+  useEffect(() => {
+    if (!NUBE_ACTIVA) return
+    let off: (() => void) | undefined
+    void (async () => { setCuenta(await cuentaActual()); off = await esperarCambiosDeSesion((c) => setCuenta(c)) })()
+    return () => off?.()
+  }, [])
   const next = () => { setReady(false); setI((x) => x + 1); window.scrollTo(0, 0) }
   const done = useRef(() => setReady(true)).current
   const prOf = (a: string, b: string, ctx?: MatchCtx): [number, number, number] => { const p = probabilities(a, b, params, ctx && t ? { ctx, world: t.world } : undefined); return [p.win, p.draw, p.loss] }
@@ -126,6 +138,17 @@ export function Vivo() {
   }, [step, t, setAlt])
 
   if (!t) return <Section title={tr('Sin torneo en curso')}><p className="note">{tr('No hay un mundial por vivir.')} <a href="#/mundial">{tr('Arma uno')}</a>{tr(' o ')}<a href="#/simulador">{tr('ve el simulador')}</a>.</p></Section>
+  const exige = NUBE_ACTIVA && f.cuentas && step.kind === 'pair' && step.r === 'r16' && !(cuenta && !cuenta.anonimo)
+  if (exige) {
+    const entrar = async () => { setErrLogin(''); try { await entrarConGoogle(); } catch (e) { const code = (e as { code?: string }).code; if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setErrLogin(tr('No se pudo entrar. Inténtalo de nuevo.')) } }
+    return (
+      <Section title={tr('Inicia sesión y descubre quién es el campeón de tu propio Mundial de Leyendas')} sub={tr('Octavos de final')}>
+        <p>{tr('La fase de grupos es libre. Desde los octavos de final necesitas entrar con tu cuenta de Gmail para ver cómo termina tu mundial y guardar tu resultado.')}</p>
+        {cuenta === undefined ? <p className="muted">…</p> : <div className="cta"><button className="btn pri" onClick={() => void entrar()}>{tr('Entrar con Gmail')}</button><a className="btn ghost" href="#/mundial">{tr('Volver a armar mi mundial')}</a></div>}
+        {errLogin && <p className="note warn">{errLogin}</p>}
+      </Section>
+    )
+  }
   if (step.kind === 'end') return <Reveal t={t} onAgain={() => { location.hash = '#/mundial' }} />
 
   const br = t.bracket

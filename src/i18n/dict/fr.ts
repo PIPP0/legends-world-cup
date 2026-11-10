@@ -738,5 +738,11 @@ const D: string[] = [
   "PIE",
   "Coupe du monde",
   "impossible",
+  "Connecte-toi et découvre qui est le champion de ta propre Coupe du monde des légendes",
+  "La phase de groupes est libre. À partir des huitièmes de finale, tu dois te connecter avec ton compte Gmail pour voir comment se termine ta Coupe du monde et enregistrer ton résultat.",
+  "Se connecter avec Gmail",
+  "Retour à la préparation de ma Coupe du monde",
+  "Connexion impossible. Réessaie.",
+  "Tu pourras voir la phase de groupes sans compte ; à partir des huitièmes de finale, nous te demanderons de te connecter avec Gmail pour découvrir le champion.",
 ]
 export default D

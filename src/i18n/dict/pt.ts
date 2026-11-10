@@ -738,5 +738,11 @@ const D: string[] = [
   "PÉS",
   "Copa do Mundo",
   "Impossível",
+  "Faça login e descubra quem é o campeão da sua própria Copa do Mundo das Lendas",
+  "A fase de grupos é livre. A partir das oitavas de final, você precisa entrar com sua conta do Gmail para ver como termina o seu Mundial e salvar o resultado.",
+  "Entrar com o Gmail",
+  "Voltar a montar meu Mundial",
+  "Não foi possível entrar. Tente novamente.",
+  "Você verá a fase de grupos sem conta; a partir das oitavas de final, vamos pedir que entre com o Gmail para descobrir o campeão.",
 ]
 export default D
