@@ -21,7 +21,10 @@ export function nube(): Promise<Nube> {
   return (cargando ??= (async () => {
     const [{ initializeApp }, fa, fs] = await Promise.all([import('firebase/app'), import('firebase/auth'), import('firebase/firestore')])
     const app = initializeApp(CONFIG_NUBE)
-    return { app, auth: fa.getAuth(app), db: fs.getFirestore(app), fa, fs }
+    const auth = fa.getAuth(app)
+    // Precarga el componente de inicio de sesión (iframe de Google) para que la ventana se abra al instante al pulsar «Entrar» y el navegador no la bloquee.
+    void fa.getRedirectResult(auth).catch(() => undefined)
+    return { app, auth, db: fs.getFirestore(app), fa, fs }
   })())
 }
 
@@ -56,7 +59,11 @@ export async function entrarConGoogle(opciones: { vincular?: boolean } = {}): Pr
     return deUsuario(r.user)
   } catch (e) {
     const code = (e as { code?: string }).code
-    if (code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use') return deUsuario((await n.fa.signInWithPopup(n.auth, proveedor)).user)
+    // Esa cuenta de Google ya existía: se entra con la credencial que devolvió Google (sin abrir otra ventana, que el navegador bloquearía).
+    if (code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use') {
+      const cred = n.fa.GoogleAuthProvider.credentialFromError(e as never)
+      if (cred) return deUsuario((await n.fa.signInWithCredential(n.auth, cred)).user)
+    }
     throw e
   }
 }
