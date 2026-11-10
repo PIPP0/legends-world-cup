@@ -760,5 +760,6 @@ const D: string[] = [
   "{n} Stimmen",
   "Du hast deinen MVP noch nicht gewählt.",
   "Kein Spieler passt.",
+  "Start-Rangliste als Orientierung: Die Stimmen der Community werden nach und nach zu diesen Werten addiert.",
 ]
 export default D

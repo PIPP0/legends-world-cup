@@ -760,5 +760,6 @@ const D: string[] = [
   "{n} voti",
   "Non hai ancora scelto il tuo MVP.",
   "Nessun giocatore corrisponde.",
+  "Classifica iniziale di riferimento: i voti della community si sommano via via a questi valori.",
 ]
 export default D

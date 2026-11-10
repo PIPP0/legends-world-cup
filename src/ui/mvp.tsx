@@ -6,6 +6,17 @@ import { leerRankingMvp, votarMvp, type VotoMvp } from '../cloud/datos'
 import { Avatar, Flag, useLocalState } from './common'
 import { posLabel } from '../i18n/nombres'
 
+// Ranking inicial de referencia: los votos reales de la gente se suman a estos valores. Se avisa en pantalla que es un punto de partida.
+const VOTOS_INICIALES: Record<string, number> = {
+  'por-cristiano-ronaldo': 45, 'arg-lionel-messi': 38, 'arg-diego-maradona': 27, 'bra-pele': 25, 'ned-johan-cruyff': 21,
+  'bra-ronaldo-nazario': 18, 'fra-zinedine-zidane': 15, 'ger-franz-beckenbauer': 12, 'hun-ferenc-puskas': 9, 'por-eusebio': 7,
+}
+const conIniciales = (reales: VotoMvp[]): VotoMvp[] => {
+  const m = new Map<string, number>(Object.entries(VOTOS_INICIALES))
+  for (const r of reales) m.set(r.id, (m.get(r.id) ?? 0) + r.n)
+  return [...m.entries()].map(([id, n]) => ({ id, n })).sort((a, b) => b.n - a.n).slice(0, 10)
+}
+
 type Linea = 'ALL' | 'GK' | 'DEF' | 'MID' | 'ATT'
 const LINEAS: [Linea, string][] = [['ALL', 'Todas las líneas'], ['GK', 'Porteros'], ['DEF', 'Defensas'], ['MID', 'Mediocampistas'], ['ATT', 'Atacantes']]
 
@@ -21,7 +32,7 @@ export function MvpPage() {
     const base = PLAYERS.filter((p) => linea === 'ALL' || p.line === linea)
     return (t.length >= 2 ? base.filter((p) => p.name.toLowerCase().includes(t)) : [...base].sort((a, b) => b.ovr - a.ovr)).slice(0, 24)
   }, [q, linea])
-  const cargar = () => { void leerRankingMvp().then((r) => setRanking(r ?? [])) }
+  const cargar = () => { void leerRankingMvp().then((r) => setRanking(conIniciales(r ?? []))) }
   useEffect(cargar, [])
   const elegir = async (id: string) => {
     setVoto(id); setAviso('')
@@ -72,7 +83,7 @@ export function MvpPage() {
         </section>
         <aside className="mvp-ranking">
           <h2>{tr('Los 10 más populares')}</h2>
-          {ranking === null ? <p className="muted small">…</p> : validos.length === 0 ? <p className="muted small">{tr('Aún no hay votos. ¡Sé el primero!')}</p> : (
+          {ranking === null ? <p className="muted small">…</p> : (
             <>
               <div className="mvp-podio">
                 {podio.map((r, i) => (
@@ -88,6 +99,7 @@ export function MvpPage() {
                   ))}
                 </ol>
               )}
+              <p className="small muted">{tr('Ranking inicial de referencia: los votos de la comunidad se van sumando a estos valores.')}</p>
             </>
           )}
         </aside>

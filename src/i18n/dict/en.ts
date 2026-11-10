@@ -760,5 +760,6 @@ const D: string[] = [
   "{n} votes",
   "You have not picked your MVP yet.",
   "No player matches.",
+  "Starting reference ranking: the community’s votes are added on top of these values.",
 ]
 export default D

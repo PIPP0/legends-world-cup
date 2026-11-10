@@ -760,5 +760,6 @@ const D: string[] = [
   "{n} suara",
   "Kamu belum memilih MVP-mu.",
   "Tidak ada pemain yang cocok.",
+  "Peringkat awal sebagai acuan: suara komunitas akan terus ditambahkan ke nilai-nilai ini.",
 ]
 export default D

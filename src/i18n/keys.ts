@@ -760,4 +760,5 @@ export const KEYS: string[] = [
   "{n} votos",
   "Aún no has elegido a tu MVP.",
   "Ningún jugador coincide.",
+  "Ranking inicial de referencia: los votos de la comunidad se van sumando a estos valores.",
 ]

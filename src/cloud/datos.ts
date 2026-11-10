@@ -57,7 +57,7 @@ export async function leerRankingMvp(): Promise<VotoMvp[] | null> {
   if (!NUBE_ACTIVA) return null
   try {
     const n = await nube()
-    const q = n.fs.query(n.fs.collection(n.db, 'mvpConteo'), n.fs.orderBy('n', 'desc'), n.fs.limit(10))
+    const q = n.fs.query(n.fs.collection(n.db, 'mvpConteo'), n.fs.orderBy('n', 'desc'), n.fs.limit(40))
     return (await n.fs.getDocs(q)).docs.map((d) => ({ id: d.id, n: d.data().n as number })).filter((x) => x.n > 0)
   } catch { return null }
 }

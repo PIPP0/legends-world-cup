@@ -22,4 +22,5 @@ export const EXTRA: Array<[string, string]> = [
   ['{n} votos', '{n} votes'],
   ['Aún no has elegido a tu MVP.', 'You have not picked your MVP yet.'],
   ['Ningún jugador coincide.', 'No player matches.'],
+  ['Ranking inicial de referencia: los votos de la comunidad se van sumando a estos valores.', 'Starting reference ranking: the community’s votes are added on top of these values.'],
 ]
