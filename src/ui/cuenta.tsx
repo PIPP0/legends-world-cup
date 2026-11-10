@@ -53,7 +53,6 @@ export function CuentaHeader() {
       {abierto && conCuenta && (
         <div className="cuenta-menu" role="menu">
           <p><b>{c!.nombre || tr('Mi cuenta')}</b><br /><span className="muted small">{c!.email}</span></p>
-          <p className="small muted">{tr('Tu avance de la historia se guarda en la nube.')}</p>
           <div className="fav-row">
             <span className="fav-lbl">{tr('Tu selección favorita')}</span>
             <div>
