@@ -1,3 +1,4 @@
+import { tr } from '../i18n'
 import { useEffect, useState } from 'react'
 import { NUBE_ACTIVA, anotarUsuario, asegurarVisitante, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { sincronizarNivel } from '../engine/storyLevel'
@@ -24,17 +25,17 @@ export function CuentaHeader() {
   return (
     <div className="cuenta">
       {conCuenta ? (
-        <button type="button" className="icon-btn av" aria-label="Mi cuenta" title={c!.nombre || c!.email} onClick={() => setAbierto(!abierto)}>
+        <button type="button" className="icon-btn av" aria-label={tr('Mi cuenta')} title={c!.nombre || c!.email} onClick={() => setAbierto(!abierto)}>
           {c!.foto ? <img src={c!.foto} alt="" referrerPolicy="no-referrer" /> : <b>{(c!.nombre || c!.email || '?')[0].toUpperCase()}</b>}
         </button>
       ) : (
-        <button type="button" className="btn cta-entrar" onClick={() => void entrar()}>Entrar</button>
+        <button type="button" className="btn cta-entrar" onClick={() => void entrar()}>{tr('Entrar')}</button>
       )}
       {abierto && conCuenta && (
         <div className="cuenta-menu" role="menu">
-          <p><b>{c!.nombre || 'Mi cuenta'}</b><br /><span className="muted small">{c!.email}</span></p>
-          <p className="small muted">Tu avance de la historia se guarda en la nube.</p>
-          <button className="btn ghost" onClick={() => { setAbierto(false); void salir().then(() => asegurarVisitante()) }}>Cerrar sesión</button>
+          <p><b>{c!.nombre || tr('Mi cuenta')}</b><br /><span className="muted small">{c!.email}</span></p>
+          <p className="small muted">{tr('Tu avance de la historia se guarda en la nube.')}</p>
+          <button className="btn ghost" onClick={() => { setAbierto(false); void salir().then(() => asegurarVisitante()) }}>{tr('Cerrar sesión')}</button>
         </div>
       )}
       {error && <span className="small muted">{error}</span>}

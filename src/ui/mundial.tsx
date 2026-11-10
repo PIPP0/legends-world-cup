@@ -29,7 +29,7 @@ function PaySection({ what, onGo, disabled }: { what: string; onGo: (receipt: st
           <button className="btn pri" disabled={disabled} onClick={() => { if (consumeCredit()) { setBal(getBalance()); onGo('credito') } }}>Usar 1 mundial y jugar</button>
         </div>
       )}
-      <p className="small muted">{bal > 0 ? 'O compra más:' : 'Elige cuántos mundiales quieres:'}</p>
+      <p className="small muted">{bal > 0 ? tr('O compra más:') : tr('Elige cuántos mundiales quieres:')}</p>
       <div className="chips">
         {PRODUCTS.map((p) => (
           <button key={p.id} className={`chip ${product === p.id ? 'on' : ''}`} onClick={() => setProduct(p.id)}>
@@ -190,9 +190,9 @@ export function Mundial() {
         {step === 0 && !host && <p className="small muted center">{tr('Elige un país sede para continuar.')}</p>}
       </Section>
       {COBRO_ACTIVO && quick && host && (
-        <div className="modal-bg" role="dialog" aria-modal="true" aria-label="Pago rápido simulado" onClick={() => !paying && setQuick(false)}>
+        <div className="modal-bg" role="dialog" aria-modal="true" aria-label={tr('Pago rápido simulado')} onClick={() => !paying && setQuick(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Pago rápido</h3>
+            <h3>{tr('Pago rápido')}</h3>
             <ul className="why">
               <li>Sede: <b>{host.name}</b>{host.teamId && ` (${TEAM_BY_ID[host.teamId].name} juega de local)`}</li>
               <li>Fecha: <b>{MONTHS[month - 1]}</b> · clima: <b>{CLIMATES.find((c) => c[0] === climate)![1]}</b></li>

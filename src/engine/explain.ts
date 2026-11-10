@@ -1,3 +1,4 @@
+import { tr } from '../i18n'
 import { TEAM_BY_ID, PLAYER_BY_ID } from '../data'
 import { modalScore, probabilities, profile, type SimOutcome } from './model'
 import { adjustments, type Env } from './world'
@@ -34,11 +35,11 @@ export function explain(a: string, b: string, params: ModelParams, res?: SimOutc
     label, a: x, b: y, edge: Math.abs(x - y) < 0.5 ? 'eq' : x > y ? 'a' : 'b', note,
   })
   const factors: Factor[] = [
-    mk('Calidad del once', A.quality, B.quality, 'promedio de valoraciones de los 11 titulares'),
-    mk('Ataque vs defensa rival', A.attack - B.defense + 90, B.attack - A.defense + 90, 'ataque propio contra defensa del rival'),
-    mk('Portería', A.gk, B.gk, 'valoración del arquero'),
-    mk('Equilibrio', A.balance, B.balance, 'homogeneidad del once y formación'),
-    mk('Experiencia', A.experience, B.experience, 'promedio de las cinco mayores figuras'),
+    mk(tr('Calidad del once'), A.quality, B.quality, tr('promedio de valoraciones de los 11 titulares')),
+    mk(tr('Ataque vs defensa rival'), A.attack - B.defense + 90, B.attack - A.defense + 90, tr('ataque propio contra defensa del rival')),
+    mk(tr('Portería'), A.gk, B.gk, tr('valoración del arquero')),
+    mk(tr('Equilibrio'), A.balance, B.balance, tr('homogeneidad del once y formación')),
+    mk(tr('Experiencia'), A.experience, B.experience, tr('promedio de las cinco mayores figuras')),
   ]
 
   const reasons: string[] = []
@@ -47,28 +48,28 @@ export function explain(a: string, b: string, params: ModelParams, res?: SimOutc
   const gap = A.strength - B.strength
   const strong = gap >= 0 ? a : b
   const weak = gap >= 0 ? b : a
-  if (Math.abs(gap) < 1) reasons.push(`Los dos equipos tienen una fuerza casi idéntica (${f1(A.strength)} contra ${f1(B.strength)}): el modelo los ve parejos.`)
-  else reasons.push(`${nameOf(strong)} tiene más fuerza global: ${f1(Math.max(A.strength, B.strength))} contra ${f1(Math.min(A.strength, B.strength))} de ${nameOf(weak)}, una diferencia de ${f1(Math.abs(gap))} puntos.`)
+  if (Math.abs(gap) < 1) reasons.push(tr('Los dos equipos tienen una fuerza casi idéntica ({a} contra {b}): el modelo los ve parejos.', { a: f1(A.strength), b: f1(B.strength) }))
+  else reasons.push(tr('{s} tiene más fuerza global: {a} contra {b} de {w}, una diferencia de {d} puntos.', { s: nameOf(strong), a: f1(Math.max(A.strength, B.strength)), b: f1(Math.min(A.strength, B.strength)), w: nameOf(weak), d: f1(Math.abs(gap)) }))
   const best = [...factors].filter((x) => x.edge !== 'eq').sort((x, y) => Math.abs(y.a - y.b) - Math.abs(x.a - x.b))[0]
-  if (best) reasons.push(`La mayor diferencia está en «${best.label.toLowerCase()}»: ${nameOf(best.edge === 'a' ? a : b)} ${f1(Math.max(best.a, best.b))} frente a ${f1(Math.min(best.a, best.b))}.`)
+  if (best) reasons.push(tr('La mayor diferencia está en «{l}»: {t} {a} frente a {b}.', { l: best.label.toLowerCase(), t: nameOf(best.edge === 'a' ? a : b), a: f1(Math.max(best.a, best.b)), b: f1(Math.min(best.a, best.b)) }))
   if (env?.ctx) {
     const vn = VENUE_BY_ID[env.ctx.venueId]
     const c = env.ctx
-    reasons.push(`Sede: ${vn.name} (${vn.city}, ${HOST_OF_VENUE[vn.id].name}), ${c.roof ? 'techado y climatizado' : `${Math.round(c.temp)} °C${c.rain > 0 ? `, lluvia ${c.rain > 0.66 ? 'fuerte' : 'ligera'}` : ', sin lluvia'}`}, ${vn.alt} m de altitud.`)
+    reasons.push(tr('Sede: {v} ({c}, {h}), {w}, {a} m de altitud.', { v: vn.name, c: vn.city, h: HOST_OF_VENUE[vn.id].name, w: c.roof ? tr('techado y climatizado') : `${Math.round(c.temp)} °C${c.rain > 0 ? tr(', lluvia {i}', { i: c.rain > 0.66 ? tr('fuerte') : tr('ligera') }) : tr(', sin lluvia')}`, a: vn.alt }))
     for (const id of [a, b]) {
       const ad = adjustments(id, env)
-      if (ad.parts.length) reasons.push(`${nameOf(id)}: ${ad.parts.map((p) => `${p.label} (${p.v > 0 ? '+' : ''}${(p.v * 100).toFixed(1)} %)`).join('; ')}.`)
-      else reasons.push(`${nameOf(id)}: sin ventajas ni desventajas de lugar o clima.`)
+      if (ad.parts.length) reasons.push(tr('{t}: {x}.', { t: nameOf(id), x: ad.parts.map((p) => `${p.label} (${p.v > 0 ? '+' : ''}${(p.v * 100).toFixed(1)} %)`).join('; ') }))
+      else reasons.push(tr('{t}: sin ventajas ni desventajas de lugar o clima.', { t: nameOf(id) }))
     }
   }
   const pr3 = (env?.world?.primes ?? []).filter((id) => PLAYER_BY_ID[id] && (PLAYER_BY_ID[id].teamId === a || PLAYER_BY_ID[id].teamId === b))
-  if (pr3.length) reasons.push(`En su prime (+4 de valoración): ${pr3.map((id) => `${PLAYER_BY_ID[id].name} (${TEAM_BY_ID[PLAYER_BY_ID[id].teamId].name})`).join(', ')}.`)
+  if (pr3.length) reasons.push(tr('En su prime (+4 de valoración): {n}.', { n: pr3.map((id) => `${PLAYER_BY_ID[id].name} (${TEAM_BY_ID[PLAYER_BY_ID[id].teamId].name})`).join(', ') }))
   const ta = top(a), tb = top(b)
-  reasons.push(`Figuras: ${ta.name} (${ta.ovr}) por ${TA.name} y ${tb.name} (${tb.ovr}) por ${TB.name}.`)
-  reasons.push(`Con eso el modelo espera ${f1(la)} goles de ${TA.name} y ${f1(lb)} de ${TB.name}; el marcador más probable es ${modal.ga}-${modal.gb} (${pct(modal.p)} de probabilidad por sí solo).`)
+  reasons.push(tr('Figuras: {a} ({o}) por {t} y {b} ({p}) por {u}.', { a: ta.name, o: ta.ovr, t: TA.name, b: tb.name, p: tb.ovr, u: TB.name }))
+  reasons.push(tr('Con eso el modelo espera {a} goles de {t} y {b} de {u}; el marcador más probable es {x}-{y} ({p} de probabilidad por sí solo).', { a: f1(la), t: TA.name, b: f1(lb), u: TB.name, x: modal.ga, y: modal.gb, p: pct(modal.p) }))
 
   let verdict: Explanation['verdict'] = 'parejo'
-  let verdictText = `Partido parejo: ${pct(pr.win)} / ${pct(pr.draw)} / ${pct(pr.loss)}.`
+  let verdictText = tr('Partido parejo: {a} / {b} / {c}.', { a: pct(pr.win), b: pct(pr.draw), c: pct(pr.loss) })
   if (res) {
     const win = res.winner ?? (res.ga > res.gb ? a : res.gb > res.ga ? b : undefined)
     const gdiff = Math.abs(res.ga - res.gb)
@@ -76,19 +77,19 @@ export function explain(a: string, b: string, params: ModelParams, res?: SimOutc
     if (win && win !== favorite && pFav >= 0.5) {
       verdict = 'sorpresa'
       const pw = win === a ? pr.win : pr.loss
-      verdictText = `Resultado sorpresa: el modelo daba solo ${pct(pw)} de victoria a ${nameOf(win)} en 90 minutos (favorito: ${nameOf(favorite)} con ${pct(favP)}). Pasa en torno a 1 de cada ${Math.max(2, Math.round(1 / pw))} partidos como este.`
-      reasons.push(`Cómo se explica: ${nameOf(win)} tuvo un día efectivo (${win === a ? res.ga : res.gb} goles, sobre ${f1(win === a ? la : lb)} esperados) y ${nameOf(favorite)} quedó por debajo de lo esperado (${favorite === a ? res.ga : res.gb} sobre ${f1(favorite === a ? la : lb)}).`)
+      verdictText = tr('Resultado sorpresa: el modelo daba solo {p} de victoria a {w} en 90 minutos (favorito: {f} con {q}). Pasa en torno a 1 de cada {n} partidos como este.', { p: pct(pw), w: nameOf(win), f: nameOf(favorite), q: pct(favP), n: Math.max(2, Math.round(1 / pw)) })
+      reasons.push(tr('Cómo se explica: {w} tuvo un día efectivo ({g} goles, sobre {e} esperados) y {f} quedó por debajo de lo esperado ({h} sobre {i}).', { w: nameOf(win), g: win === a ? res.ga : res.gb, e: f1(win === a ? la : lb), f: nameOf(favorite), h: favorite === a ? res.ga : res.gb, i: f1(favorite === a ? la : lb) }))
     } else if (win && win === favorite) {
       verdict = 'esperado'
-      verdictText = `Resultado coherente con el modelo: ganó el favorito (${nameOf(favorite)}, ${pct(favP)}).`
-      reasons.push(`Se impuso ${nameOf(favorite)} por ${gdiff} gol${gdiff === 1 ? '' : 'es'}; esperaba ${f1(favorite === a ? la : lb)} y marcó ${favorite === a ? res.ga : res.gb}.`)
+      verdictText = tr('Resultado coherente con el modelo: ganó el favorito ({f}, {p}).', { f: nameOf(favorite), p: pct(favP) })
+      reasons.push(tr('Se impuso {f} por {d} {g}; esperaba {e} y marcó {m}.', { f: nameOf(favorite), d: gdiff, g: gdiff === 1 ? tr('gol') : tr('goles'), e: f1(favorite === a ? la : lb), m: favorite === a ? res.ga : res.gb }))
     } else if (!win) {
-      verdictText = `Empate: ocurre ${pct(pr.draw)} de las veces en este cruce.`
+      verdictText = tr('Empate: ocurre {p} de las veces en este cruce.', { p: pct(pr.draw) })
     }
-    if (res.pens) reasons.push(`Se definió por penales (${res.pens[0]}–${res.pens[1]}): con la prórroga igualada pesa la valoración del arquero (${f1(A.gk)} contra ${f1(B.gk)}).`)
+    if (res.pens) reasons.push(tr('Se definió por penales ({a}–{b}): con la prórroga igualada pesa la valoración del arquero ({x} contra {y}).', { a: res.pens[0], b: res.pens[1], x: f1(A.gk), y: f1(B.gk) }))
     const sc = res.goals.filter((g) => g.phase !== 'et').reduce<Record<string, number>>((m, g) => { m[g.scorerId] = (m[g.scorerId] ?? 0) + 1; return m }, {})
     const names = Object.entries(sc).map(([id, n]) => `${PLAYER_BY_ID[id].name}${n > 1 ? ` (${n})` : ''}`)
-    if (names.length) reasons.push(`Goleadores: ${names.join(', ')}. Se eligen según su peso goleador (posición y valoración).`)
+    if (names.length) reasons.push(tr('Goleadores: {n}. Se eligen según su peso goleador (posición y valoración).', { n: names.join(', ') }))
   }
   return { probs: { win: pr.win, draw: pr.draw, loss: pr.loss }, expected: [la, lb], modal, favorite, favP, factors, reasons, verdict, verdictText }
 }

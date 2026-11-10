@@ -1,3 +1,4 @@
+import { rich } from '../i18n/rich'
 import { useEffect, useMemo, useState } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { STORY_MATCHES } from '../data'
@@ -33,7 +34,7 @@ export function Hero() {
       {SLIDES.map((id) => <Preload key={id} p={PLAYER_BY_ID[id]} />)}
       <div className="hb-t">
         <p className="kicker">{tr('Transmisión especial · Torneo imposible')}</p>
-        <h1>{LANG === 'en' ? <>Impossible<br /><span>World Cup</span></> : <>Mundial<br /><span>Imposible</span></>}</h1>
+        <h1>{LANG === 'es' ? <>Mundial<br /><span>Imposible</span></> : <>{tr('HERO·1')}<br /><span>{tr('HERO·2')}</span></>}</h1>
         <p className="lead">{tr('32 selecciones, las mayores leyendas de la historia, todos a los 27 años. Un solo campeón. Sigue cada partido como si fuera en vivo.')}</p>
         <div className="cta">
           <a className="btn pri" href="#/historia">{tr('Ver el torneo')}</a>
@@ -121,7 +122,7 @@ export function ChampionPicker() {
           <Flag id={pick} size={56} />
           <div>
             <b>{tr('Tu campeón: {team}', { team: TEAM_BY_ID[pick].name })}</b>
-            <span>{LANG === 'en' ? <>The model gives them a <strong>{((odds[pick] ?? 0) * 100).toFixed(1)}%</strong> chance of winning from the round of 16: favorite #{rank} of 16.</> : <>El modelo le da <strong>{((odds[pick] ?? 0) * 100).toFixed(1)}%</strong> de ganar el torneo desde octavos: es la favorita n.º {rank} de 16.</>}</span>
+            <span>{rich('El modelo le da <b>{p}%</b> de ganar el torneo desde octavos: es la favorita n.º {r} de 16.', { p: ((odds[pick] ?? 0) * 100).toFixed(1), r: rank })}</span>
           </div>
           <div className="pk-a"><button className="btn pri" onClick={share}>{tr('Compartir')}</button><button className="btn ghost" onClick={() => setPick(null)}>{tr('Cambiar')}</button></div>
         </div>

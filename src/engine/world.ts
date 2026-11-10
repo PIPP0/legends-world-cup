@@ -1,3 +1,4 @@
+import { tr } from '../i18n'
 import { HOST_BY_ID, HOST_OF_VENUE, TEAM_HOME, VENUE_BY_ID, monthTemp, seasonOfMonth, venueTemp } from '../data/world'
 import { TEAM_BY_ID } from '../data'
 import { hashString, makeRng, normal } from './rng'
@@ -16,19 +17,19 @@ export function adjustments(teamId: string, env?: Env): Adj {
   const vn = VENUE_BY_ID[ctx.venueId]
   const host = HOST_OF_VENUE[ctx.venueId]
   const home = TEAM_HOME[teamId]
-  if (host?.teamId === teamId) parts.push({ label: 'Juega en casa (público local)', v: 0.12 })
+  if (host?.teamId === teamId) parts.push({ label: tr('Juega en casa (público local)'), v: 0.12 })
   if (home && vn && !ctx.roof) {
     const dT = Math.abs(ctx.temp - home.t)
-    if (dT > 5) parts.push({ label: `Clima distinto al habitual (${Math.round(ctx.temp)} °C vs ${home.t} °C)`, v: -0.004 * (dT - 5) })
+    if (dT > 5) parts.push({ label: tr('Clima distinto al habitual ({a} °C vs {b} °C)', { a: Math.round(ctx.temp), b: home.t }), v: -0.004 * (dT - 5) })
     const dH = Math.abs(vn.hum - home.h)
-    if (dH > 0.2) parts.push({ label: 'Humedad distinta a la habitual', v: -0.1 * (dH - 0.2) })
+    if (dH > 0.2) parts.push({ label: tr('Humedad distinta a la habitual'), v: -0.1 * (dH - 0.2) })
     const dA = vn.alt - home.alt - 500
-    if (dA > 0) parts.push({ label: `Altitud (${vn.alt} m) mayor a la que está acostumbrado`, v: -0.00006 * dA })
+    if (dA > 0) parts.push({ label: tr('Altitud ({a} m) mayor a la que está acostumbrado', { a: vn.alt }), v: -0.00006 * dA })
   }
   const h = env?.world?.history[`${teamId}|${ctx.venueId}`]
   if (h && h.n > 0) {
     const v = clamp(0.03 * (h.gd / h.n) * (h.n / (h.n + 4)), -0.06, 0.06)
-    if (Math.abs(v) >= 0.004) parts.push({ label: `Historial en este estadio (${h.n} partido${h.n > 1 ? 's' : ''}, dif. ${h.gd > 0 ? '+' : ''}${h.gd})`, v })
+    if (Math.abs(v) >= 0.004) parts.push({ label: tr('Historial en este estadio ({n} {p}, dif. {d})', { n: h.n, p: h.n > 1 ? tr('partidos') : tr('partido'), d: `${h.gd > 0 ? '+' : ''}${h.gd}` }), v })
   }
   return { total: parts.reduce((a, p) => a + p.v, 0), parts }
 }

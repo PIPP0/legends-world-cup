@@ -1,3 +1,4 @@
+import { rich } from '../i18n/rich'
 import { LANG, tr } from '../i18n'
 import { useEffect, useRef, useState } from 'react'
 import { TEAM_BY_ID, PLAYER_BY_ID } from '../data/lookup'
@@ -45,7 +46,7 @@ export function Stats() {
     <Section title={tr('Estadísticas')} sub={useAlt ? tr('Torneo alternativo, calculado desde los eventos.') : tr('Historia original.')}>
       {alt && <Tabs value={src} onChange={setSrc} items={[['story', tr('Historia original')], ['alt', tr('Torneo alternativo')]]} />}
       <Tabs value={tab} onChange={setTab} items={[['g', tr('Goleadores')], ['a', tr('Asistencias')], ['ga', tr('Goles + asist.')], ['t', tr('Selecciones')]]} />
-      {!useAlt && <Note tone="est">{LANG === 'en' ? <><b>Tournament total:</b> group-stage goals (as declared by the original simulation, partial list) plus knockout goals; assists in the group stage are <b>estimated</b>. {level > 0 ? <>Knockouts: calculated from each match’s events, up to the stage you have reached ({phaseLabel(level)}). Penalty shoot-outs count as draws.</> : <>Knockout matches are added as you advance stage by stage in <a href="#/cuadro">Knockouts</a>.</>}</> : <><b>Total del torneo:</b> goles de la fase de grupos (declarados por la simulación original, lista parcial) más los de las eliminatorias; asistencias <b>estimadas</b> en grupos. {level > 0 ? <>Eliminatorias: calculadas desde los eventos de cada partido, hasta la fase que ya avanzaste ({phaseLabel(level)}). Los penales cuentan como empate.</> : <>Las eliminatorias se suman a medida que avanzas fase por fase en <a href="#/cuadro">Eliminatorias</a>.</>}</>}</Note>}
+      {!useAlt && <Note tone="est">{rich('<b>Total del torneo:</b> goles de la fase de grupos (declarados por la simulación original, lista parcial) más los de las eliminatorias; asistencias <b>estimadas</b> en grupos.')} {level > 0 ? tr('Eliminatorias: calculadas desde los eventos de cada partido, hasta la fase que ya avanzaste ({f}). Los penales cuentan como empate.', { f: phaseLabel(level) }) : <>{tr('Las eliminatorias se suman a medida que avanzas fase por fase en')} <a href="#/cuadro">{tr('Eliminatorias')}</a>.</>}</Note>}
       {tab === 'g' && rowsP(players((s) => s.goals), (s) => s.goals, tr('Goles'))}
       {tab === 'a' && rowsP(players((s) => s.assists), (s) => s.assists, useAlt ? tr('Asist.') : tr('Asist. (est.)'))}
       {tab === 'ga' && rowsP(players((s) => s.goals + s.assists), (s) => s.goals + s.assists, 'G+A')}
@@ -279,7 +280,7 @@ function FreeMatch() {
             <div className="predict">
               <h4>{tr('Predicción del modelo')}</h4>
               <p className="pscore"><Flag id={a} size={28} /> {TEAM_BY_ID[a].name} <b>{ex.modal.ga}–{ex.modal.gb}</b> {TEAM_BY_ID[b].name} <Flag id={b} size={28} /></p>
-              <p className="small muted">{LANG === 'en' ? <>Most likely score. Expected goals: {ex.expected[0].toFixed(1)} – {ex.expected[1].toFixed(1)}. Favorite: <b>{TEAM_BY_ID[ex.favorite].name}</b> ({Math.round(ex.favP * 100)} % to win in 90 min).</> : <>Marcador más probable. Goles esperados: {ex.expected[0].toFixed(1)} – {ex.expected[1].toFixed(1)}. Favorito: <b>{TEAM_BY_ID[ex.favorite].name}</b> ({Math.round(ex.favP * 100)} % de ganar en 90 min).</>}</p>
+              <p className="small muted">{rich('Marcador más probable. Goles esperados: {a} – {b}. Favorito: <b>{f}</b> ({p} % de ganar en 90 min).', { a: ex.expected[0].toFixed(1), b: ex.expected[1].toFixed(1), f: TEAM_BY_ID[ex.favorite].name, p: Math.round(ex.favP * 100) })}</p>
               <ul className="why">{ex.reasons.slice(0, 4).map((r, i) => <li key={i}>{r}</li>)}</ul>
             </div>
           )}

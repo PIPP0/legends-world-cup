@@ -1,3 +1,4 @@
+import { tr } from '../i18n'
 // Pagos: hay dos modos.
 //  · REAL: si existen VITE_PAYPAL_CLIENT_ID y VITE_PAYMENT_API (variables públicas del build), se cobra US$ 1 con PayPal
 //    (los botones de PayPal capturan los datos de pago; esta web nunca ve tarjetas) y un Worker confirma el cobro.
@@ -14,9 +15,9 @@ export const PAYMENTS_LIVE = Boolean(PAYPAL_CLIENT_ID && PAYMENT_API)
 export const cobroActivo = (interruptor: boolean) => COBRO_ACTIVO || (interruptor && PAYMENTS_LIVE)
 // Productos (el servidor valida el precio real; esto es solo para mostrar). Mantén los mismos precios en worker/src/index.ts.
 export const PRODUCTS = [
-  { id: 'uno', credits: 1, usd: 1, name: '1 mundial' },
-  { id: 'pack5', credits: 5, usd: 3, name: 'Pack de 5 mundiales' },
-  { id: 'pack10', credits: 10, usd: 5, name: 'Pack de 10 mundiales' },
+  { id: 'uno', credits: 1, usd: 1, name: tr('1 mundial') },
+  { id: 'pack5', credits: 5, usd: 3, name: tr('Pack de 5 mundiales') },
+  { id: 'pack10', credits: 10, usd: 5, name: tr('Pack de 10 mundiales') },
 ] as const
 export type ProductId = (typeof PRODUCTS)[number]['id']
 export const PRICE_USD = 1

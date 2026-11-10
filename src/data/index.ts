@@ -1,3 +1,4 @@
+import { tr } from '../i18n'
 import { RAW_TEAMS, RAW_RESULTS } from './raw'
 import { BENCH } from './squads'
 import { teamName } from '../i18n/nombres'
@@ -15,11 +16,11 @@ const FORMATIONS: Record<string, Pos[][]> = {
 }
 
 export const FORMATION_NOTES: Record<string, string> = {
-  '4-2-3-1': 'Doble pivote que protege la zaga y tres creadores detrás de un único delantero.',
-  '4-3-3': 'Tres mediocampistas para controlar el centro y extremos que ensanchan la cancha.',
-  '4-3-1-2': 'Un enganche conecta el mediocampo con una dupla de ataque; el juego se concentra por dentro.',
-  '4-2-4': 'Cuatro atacantes y dos volantes: máximo riesgo ofensivo, deja espacios a la espalda.',
-  '4-4-2': 'Dos líneas de cuatro y dos delanteros: equilibrio clásico y orden defensivo.',
+  '4-2-3-1': tr('Doble pivote que protege la zaga y tres creadores detrás de un único delantero.'),
+  '4-3-3': tr('Tres mediocampistas para controlar el centro y extremos que ensanchan la cancha.'),
+  '4-3-1-2': tr('Un enganche conecta el mediocampo con una dupla de ataque; el juego se concentra por dentro.'),
+  '4-2-4': tr('Cuatro atacantes y dos volantes: máximo riesgo ofensivo, deja espacios a la espalda.'),
+  '4-4-2': tr('Dos líneas de cuatro y dos delanteros: equilibrio clásico y orden defensivo.'),
 }
 
 export const slug = (s: string) =>

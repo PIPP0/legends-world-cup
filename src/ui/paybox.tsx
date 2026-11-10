@@ -1,3 +1,4 @@
+import { tr } from '../i18n'
 import { useEffect, useRef, useState } from 'react'
 import { useFunciones } from '../cloud/funciones'
 import { DONATE_URL, PAYMENTS_LIVE, PAYMENT_API, PAYPAL_CLIENT_ID, PRODUCTS, pay, saveReceipt, type ProductId } from '../engine/payment'
@@ -40,34 +41,34 @@ export function PayBox({ what, product, onPaid, disabled }: { what: string; prod
           const r = await fetch(`${PAYMENT_API}/api/capture`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderID: data.orderID }) })
           const d = (await r.json()) as { ok: boolean; receipt?: string; credits?: number }
           setBusy(false)
-          if (!d.ok || !d.receipt) { setErr('El pago no pudo confirmarse. Si PayPal te cobró, escríbenos con el número de orden: ' + data.orderID); return }
+          if (!d.ok || !d.receipt) { setErr(tr('El pago no pudo confirmarse. Si PayPal te cobró, escríbenos con el número de orden: ') + data.orderID); return }
           saveReceipt(d.receipt, what, false)
           paid.current(d.receipt, d.credits ?? prod.credits)
         },
-        onCancel: () => setErr('Cancelaste el pago. No se cobró nada.'),
-        onError: () => setErr('No se pudo iniciar el pago. Intenta de nuevo.'),
+        onCancel: () => setErr(tr('Cancelaste el pago. No se cobró nada.')),
+        onError: () => setErr(tr('No se pudo iniciar el pago. Intenta de nuevo.')),
       })
       btn = b
       void b.render(ref.current)
-    }).catch(() => setErr('No se pudo cargar PayPal. Revisa tu conexión e intenta de nuevo.'))
+    }).catch(() => setErr(tr('No se pudo cargar PayPal. Revisa tu conexión e intenta de nuevo.')))
     return () => { dead = true; btn?.close() }
   }, [what, product])
 
   if (!PAYMENTS_LIVE) {
     return (
       <>
-        <p className="note warn">Modo de demostración: no se cobra nada ni se piden datos de tarjeta.</p>
+        <p className="note warn">{tr('Modo de demostración: no se cobra nada ni se piden datos de tarjeta.')}</p>
         <button className="btn pri" disabled={busy || disabled} onClick={async () => { setBusy(true); const r = await pay(what); setBusy(false); paid.current(r.id, prod.credits) }}>
-          {busy ? 'Procesando pago…' : `Pagar US$ ${prod.usd}.00 (simulado)`}
+          {busy ? tr('Procesando pago…') : tr('Pagar US$ {u}.00 (simulado)', { u: prod.usd })}
         </button>
       </>
     )
   }
   return (
     <>
-      <p className="small muted">Pago seguro con PayPal (tarjeta o cuenta PayPal). Esta web no ve ni guarda tus datos de pago. Total: US$ {prod.usd}.00 por {prod.name.toLowerCase()}.</p>
+      <p className="small muted">{tr('Pago seguro con PayPal (tarjeta o cuenta PayPal). Esta web no ve ni guarda tus datos de pago. Total: US$ {u}.00 por {n}.', { u: prod.usd, n: prod.name.toLowerCase() })}</p>
       <div ref={ref} aria-busy={busy} style={{ minHeight: 48, maxWidth: 360 }} />
-      {busy && <p className="small muted">Confirmando el pago…</p>}
+      {busy && <p className="small muted">{tr('Confirmando el pago…')}</p>}
       {err && <p className="note warn">{err}</p>}
     </>
   )
@@ -79,8 +80,8 @@ export function DonateBox() {
   if (!f.donaciones || !DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
   return (
     <div className="note">
-      ¿Te gustó? El mundial es gratis; si quieres, puedes <b>apoyar el proyecto</b> de forma voluntaria.{' '}
-      <a className="btn" href={DONATE_URL} target="_blank" rel="noopener noreferrer">☕ Apoyar (opcional)</a>
+      {tr('¿Te gustó? El mundial es gratis; si quieres, puedes apoyar el proyecto de forma voluntaria.')}{' '}
+      <a className="btn" href={DONATE_URL} target="_blank" rel="noopener noreferrer">{tr('☕ Apoyar (opcional)')}</a>
     </div>
   )
 }

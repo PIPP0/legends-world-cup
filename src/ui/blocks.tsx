@@ -22,7 +22,7 @@ export function KoRow({ m }: { m: KoMatch }) {
       <span className="mr-t r">{t[m.a!].name}<Flag id={m.a!} size={22} /></span>
       <span className="mr-s"><b className={m.winner === m.a ? 'w' : ''}>{m.ga}</b><i>–</i><b className={m.winner === m.b ? 'w' : ''}>{m.gb}</b></span>
       <span className="mr-t"><Flag id={m.b!} size={22} />{t[m.b!].name}</span>
-      <span className="mr-g">{m.round === 'r16' ? 'Octavos' : m.round === 'qf' ? 'Cuartos' : m.round === 'sf' ? 'Semifinal' : m.round === 'third' ? 'Tercer puesto' : 'Final'}{m.pens ? ` · pen. ${m.pens[0]}–${m.pens[1]}` : m.et ? ' · prórroga' : ''}</span>
+      <span className="mr-g">{m.round === 'r16' ? tr('Octavos') : m.round === 'qf' ? tr('Cuartos') : m.round === 'sf' ? tr('Semifinal') : m.round === 'third' ? tr('Tercer puesto') : tr('Final')}{m.pens ? tr(' · pen. {a}–{b}', { a: m.pens[0], b: m.pens[1] }) : m.et ? tr(' · prórroga') : ''}</span>
     </a>
   )
 }
@@ -30,7 +30,7 @@ export function KoRow({ m }: { m: KoMatch }) {
 export function GroupTable({ rows, qualify = true }: { rows: TableRow[]; qualify?: boolean }) {
   return (
     <table className="gt">
-      <thead><tr><th>#</th><th className="l">Selección</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead>
+      <thead><tr><th>#</th><th className="l">{tr('Selección')}</th><th>{tr('PJ')}</th><th>{tr('G')}</th><th>{tr('E')}</th><th>{tr('P')}</th><th>{tr('GF')}</th><th>{tr('GC')}</th><th>{tr('DG')}</th><th>{tr('Pts')}</th></tr></thead>
       <tbody>
         {rows.map((r, i) => (
           <tr key={r.teamId} className={qualify && i < 2 ? 'q' : ''}>

@@ -1,3 +1,4 @@
+import { rich } from '../i18n/rich'
 import { useMemo } from 'react'
 import { GROUPS, PLAYERS, STORY_MATCHES, TEAMS, teamsOfGroup } from '../data'
 import { DECLARED_R16 } from '../data/raw'
@@ -72,7 +73,7 @@ export function Home() {
             )
           })}
         </div>
-        <p className="muted small">{LANG === 'en' ? <>Highest average level according to the model: Group <b>{groupStrength[0].g}</b>. Lowest: Group <b>{groupStrength[groupStrength.length - 1].g}</b>.</> : <>Mayor nivel medio según el modelo: Grupo <b>{groupStrength[0].g}</b>. Menor: Grupo <b>{groupStrength[groupStrength.length - 1].g}</b>.</>}</p>
+        <p className="muted small">{rich('Mayor nivel medio según el modelo: Grupo <b>{a}</b>. Menor: Grupo <b>{b}</b>.', { a: groupStrength[0].g, b: groupStrength[groupStrength.length - 1].g })}</p>
       </Section>
 
       <Section title={tr('Goleadores')} sub={tr('Declarados por la simulación original')} action={<a className="more" href="#/estadisticas">{tr('Estadísticas →')}</a>}>
@@ -127,7 +128,7 @@ export function Story() {
           <li>{tr('Pasan los dos primeros. Luego octavos, cuartos, semifinales, tercer puesto y final.')}</li>
           <li>{tr('En eliminatorias, los empates se resuelven con prórroga o penales.')}</li>
         </ul>
-        <Note tone="info">{LANG === 'en' ? <>There are three kinds of information: <b>historical</b> (real names and careers), <b>estimated</b> (the model’s ratings and attributes) and <b>fictional</b> (the tournament results).</> : <>Hay tres tipos de información: <b>histórica</b> (nombres y trayectorias reales), <b>estimada</b> (valoraciones y atributos del modelo) y <b>ficticia</b> (los resultados del torneo).</>}</Note>
+        <Note tone="info">{rich('Hay tres tipos de información: <b>histórica</b> (nombres y trayectorias reales), <b>estimada</b> (valoraciones y atributos del modelo) y <b>ficticia</b> (los resultados del torneo).')}</Note>
       </div>
 
       <div className="chapter" data-n="">
@@ -153,7 +154,7 @@ export function Story() {
             </div>
           ))}
         </div>
-        <Note tone="est">{LANG === 'en' ? <>Pots inferred from the order the groups were published; the original material does not detail them. Highest average level according to the model: <b>{gs[0].g}</b>. Lowest: <b>{gs[gs.length - 1].g}</b>.</> : <>Bombos deducidos del orden en que se publicaron los grupos; el material original no los detalla. Grupo de mayor nivel medio según el modelo: <b>{gs[0].g}</b>. De menor nivel: <b>{gs[gs.length - 1].g}</b>.</>}</Note>
+        <Note tone="est">{rich('Bombos deducidos del orden en que se publicaron los grupos; el material original no los detalla. Grupo de mayor nivel medio según el modelo: <b>{a}</b>. De menor nivel: <b>{b}</b>.', { a: gs[0].g, b: gs[gs.length - 1].g })}</Note>
       </div>
 
       <div className="chapter" data-n="">

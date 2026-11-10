@@ -102,10 +102,11 @@ export const ESTIMATED_ASSISTS: { name: string; assists: number }[] = [
 ]
 
 // Textos de crónica entregados por el autor del proyecto (se usan tal cual).
+import { tr } from '../i18n'
 export const AUTHOR_CHRONICLES: Record<string, string> = {
-  'bra-eng': 'El torneo comienza con un enfrentamiento que parece una final anticipada. Pelé dirige el ataque brasileño, Ronaldo Nazário amenaza el área y Bobby Moore organiza la resistencia inglesa. Inglaterra golpea con Kane, pero Brasil termina imponiéndose por 2–1.',
-  'ita-hun': 'Una de las primeras grandes sorpresas del campeonato. La defensa italiana, considerada una de las mejores de todos los tiempos, no consigue detener el talento de Ferenc Puskás y Sándor Kocsis. Hungría vence 2–1 y demuestra que su generación dorada puede competir contra cualquier potencia.',
-  'ned-chi': 'Dos escuelas futbolísticas se encuentran. Cruyff dirige el juego neerlandés, pero Chile responde con la intensidad de Vidal, la creatividad de Valdivia y el desequilibrio de Alexis Sánchez. El empate 2–2 mantiene intactas las posibilidades chilenas.',
+  'bra-eng': tr('El torneo comienza con un enfrentamiento que parece una final anticipada. Pelé dirige el ataque brasileño, Ronaldo Nazário amenaza el área y Bobby Moore organiza la resistencia inglesa. Inglaterra golpea con Kane, pero Brasil termina imponiéndose por 2–1.'),
+  'ita-hun': tr('Una de las primeras grandes sorpresas del campeonato. La defensa italiana, considerada una de las mejores de todos los tiempos, no consigue detener el talento de Ferenc Puskás y Sándor Kocsis. Hungría vence 2–1 y demuestra que su generación dorada puede competir contra cualquier potencia.'),
+  'ned-chi': tr('Dos escuelas futbolísticas se encuentran. Cruyff dirige el juego neerlandés, pero Chile responde con la intensidad de Vidal, la creatividad de Valdivia y el desequilibrio de Alexis Sánchez. El empate 2–2 mantiene intactas las posibilidades chilenas.'),
 }
 
 // Nombres de lineups que conviene verificar (auditoría de datos).

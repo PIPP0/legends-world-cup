@@ -1,3 +1,4 @@
+import { tr } from '../i18n'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Flag } from './common'
@@ -8,7 +9,7 @@ const vacio = (m: KoMatch): KoMatch => ({ id: m.id, round: m.round })
 const loser = (m: KoMatch) => (m.winner === m.a ? m.b : m.a)
 const rondaDe = (m: KoMatch) => (m.round === 'r16' ? 0 : m.round === 'qf' ? 1 : m.round === 'sf' ? 2 : 3)
 const rondasDe = (full: Bracket): KoMatch[][] => [full.r16, full.qf, full.sf, [full.third, full.final]]
-const NOMBRES = ['Octavos de final', 'Cuartos de final', 'Semifinales', 'Tercer puesto y gran final']
+const NOMBRES = [tr('Octavos de final'), tr('Cuartos de final'), tr('Semifinales'), tr('Tercer puesto y gran final')]
 
 // Siguiente partido al que avanza el ganador (y, desde semifinales, el perdedor al tercer puesto).
 const SIGUE: Record<string, string> = { O1: 'C1', O2: 'C1', O3: 'C2', O4: 'C2', O5: 'C3', O6: 'C3', O7: 'C4', O8: 'C4', C1: 'S1', C2: 'S1', C3: 'S2', C4: 'S2', S1: 'F', S2: 'F', F: 'TRO' }
@@ -50,14 +51,14 @@ function construir(full: Bracket, from: number, to: number): { eventos: { t: num
       const esFinal = r === 3 && m.id === 'F'
       t += esFinal ? 2600 : j === 0 ? 600 : r === 0 ? 240 : 320 // suspenso antes de la gran final
       cur.revealed.add(m.id); cur.pop.add(m.id)
-      cur.estado = esFinal ? 'La gran final…' : `Ganadores de ${NOMBRES[r].toLowerCase()}`
+      cur.estado = esFinal ? tr('La gran final…') : tr('Ganadores de {r}', { r: NOMBRES[r].toLowerCase() })
       push()
     })
   }
   const avanzar = (r: number) => {
     t += 700
     cur.pop = new Set(); cur.moved.add(r); cur.avanzan = new Set(rondas[r].map((m) => m.id))
-    cur.estado = r === 3 ? 'El campeón llega a la cima' : `Los ganadores avanzan a ${NOMBRES[r + 1].toLowerCase()}`
+    cur.estado = r === 3 ? tr('El campeón llega a la cima') : tr('Los ganadores avanzan a {r}', { r: NOMBRES[r + 1].toLowerCase() })
     push()
     t += r === 3 ? 1600 : 1850 // lo que tarda la línea en dibujarse y los equipos en llegar
     cur.avanzan = new Set(); rondas[r].forEach((m) => cur.hechas.add(m.id))
@@ -67,7 +68,7 @@ function construir(full: Bracket, from: number, to: number): { eventos: { t: num
     avanzar(r)
     if (r + 1 < to) marcar(r + 1)
   }
-  cur.estado = to >= 4 ? '🏆 ¡Ya hay campeón!' : 'Avance completo'
+  cur.estado = to >= 4 ? tr('🏆 ¡Ya hay campeón!') : tr('Avance completo')
   t += 200; push()
   return { eventos, fin: t + (to >= 4 ? 2600 : 600) }
 }
@@ -75,7 +76,7 @@ function construir(full: Bracket, from: number, to: number): { eventos: { t: num
 // Animación: se reproduce la línea de tiempo en un solo hilo de temporizadores (sin saltos entre fases).
 export function BracketAnimado({ full, from, to, onEnd, skipKey }: Props) {
   const plan = useMemo(() => construir(full, from, to), [full, from, to])
-  const vacia = useMemo<Vista>(() => ({ revealed: new Set(), moved: new Set(), avanzan: new Set(), hechas: new Set(), pop: new Set(), estado: 'Preparando el cuadro…' }), [])
+  const vacia = useMemo<Vista>(() => ({ revealed: new Set(), moved: new Set(), avanzan: new Set(), hechas: new Set(), pop: new Set(), estado: tr('Preparando el cuadro…') }), [])
   const [v, setV] = useState<Vista>(vacia)
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   useEffect(() => {
@@ -155,18 +156,18 @@ function Grid({ br, pop, avanzan, hechas, full, camino }: { br: ReturnType<typeo
             return <path key={l.key} d={l.d} pathLength={1} className={`lin ${l.perd ? 'perd' : ''} ${hechas.has(l.from) ? 'hecho' : ''} ${avanzan.has(l.from) ? 'avanza' : ''} ${oro ? 'oro' : ''}`} />
           })}
         </svg>
-        <h4 className="bh" style={{ gridColumn: 1, gridRow: 1 }}>Octavos</h4>
-        <h4 className="bh" style={{ gridColumn: 2, gridRow: 1 }}>Cuartos</h4>
-        <h4 className="bh" style={{ gridColumn: 3, gridRow: 1 }}>Semifinales</h4>
-        <h4 className="bh" style={{ gridColumn: 4, gridRow: 1 }}>Final</h4>
+        <h4 className="bh" style={{ gridColumn: 1, gridRow: 1 }}>{tr('Octavos')}</h4>
+        <h4 className="bh" style={{ gridColumn: 2, gridRow: 1 }}>{tr('Cuartos')}</h4>
+        <h4 className="bh" style={{ gridColumn: 3, gridRow: 1 }}>{tr('Semifinales')}</h4>
+        <h4 className="bh" style={{ gridColumn: 4, gridRow: 1 }}>{tr('Final')}</h4>
         {br.r16.map((m, i) => cell(m, `${i + 2} / span 1`, 1))}
         {br.qf.map((m, i) => cell(m, `${2 * i + 2} / span 2`, 2))}
         {br.sf.map((m, i) => cell(m, `${4 * i + 2} / span 4`, 3))}
         <div ref={(el) => { refs.current.F = el }} className={`bcell c4 ${pop.has('F') ? 'pop' : ''}`} style={{ gridColumn: 4, gridRow: '4 / span 3' }}><KoCard m={br.final} entra={llegan.F} /></div>
         <div ref={(el) => { refs.current.TRO = el }} className="bcell c4 trofeo" style={{ gridColumn: 4, gridRow: '2 / span 2' }}>
-          <div className={`champ ${br.champion ? 'big reveal' : ''}`}>{br.champion ? <><Flag id={br.champion} size={56} /><div><span>Campeón</span><b>🏆 {TEAM_BY_ID[br.champion].name}</b></div></> : <span className="muted">🏆 Campeón por definir</span>}</div>
+          <div className={`champ ${br.champion ? 'big reveal' : ''}`}>{br.champion ? <><Flag id={br.champion} size={56} /><div><span>{tr('Campeón')}</span><b>🏆 {TEAM_BY_ID[br.champion].name}</b></div></> : <span className="muted">{tr('🏆 Campeón por definir')}</span>}</div>
         </div>
-        <div ref={(el) => { refs.current.T = el }} className={`bcell c4 ${pop.has('T') ? 'pop' : ''}`} style={{ gridColumn: 4, gridRow: '7 / span 2' }}><h4>Tercer puesto</h4><KoCard m={br.third} entra={llegan.T} /></div>
+        <div ref={(el) => { refs.current.T = el }} className={`bcell c4 ${pop.has('T') ? 'pop' : ''}`} style={{ gridColumn: 4, gridRow: '7 / span 2' }}><h4>{tr('Tercer puesto')}</h4><KoCard m={br.third} entra={llegan.T} /></div>
       </div>
     </div>
   )

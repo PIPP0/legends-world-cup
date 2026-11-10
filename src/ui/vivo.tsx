@@ -1,3 +1,4 @@
+import { tr } from '../i18n'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { GROUPS } from '../data'
 import { HOST_BY_ID } from '../data/world'
@@ -46,12 +47,12 @@ function DrawGroups({ groups, hostTeam, onDone }: { groups: Record<string, strin
     <>
       <div className="drawgrid">
         {GROUPS.map((g, gi) => (
-          <div key={g} className="dgroup"><h5>Grupo {g}{g === 'A' && hostTeam && groups.A[0] === hostTeam ? ' · anfitrión' : ''}</h5>
+          <div key={g} className="dgroup"><h5>{tr('Grupo')} {g}{g === 'A' && hostTeam && groups.A[0] === hostTeam ? tr(' · anfitrión') : ''}</h5>
             {[0, 1, 2, 3].map((p) => { const idx = p * 8 + gi; return <Slot key={p} id={groups[g][p]} state={idx < k ? 'done' : idx === k ? 'spin' : 'empty'} /> })}
           </div>
         ))}
       </div>
-      {k <= 32 && <button className="btn ghost" onClick={skip}>Saltar sorteo</button>}
+      {k <= 32 && <button className="btn ghost" onClick={skip}>{tr('Saltar sorteo')}</button>}
     </>
   )
 }
@@ -73,7 +74,7 @@ function PairDraw({ pairs, onDone }: { pairs: Pair[]; onDone: () => void }) {
           )
         })}
       </div>
-      {k <= pairs.length && <button className="btn ghost" onClick={skip}>Saltar sorteo</button>}
+      {k <= pairs.length && <button className="btn ghost" onClick={skip}>{tr('Saltar sorteo')}</button>}
     </>
   )
 }
@@ -84,7 +85,7 @@ function Tables({ t, upTo }: { t: AltTournament; upTo: number }) {
       {GROUPS.map((g) => {
         const rows = table(t.groups![g], t.groupMatches.filter((m) => m.group === g && m.matchday <= upTo))
         return (
-          <div key={g} className="mt"><h5>Grupo {g}</h5>
+          <div key={g} className="mt"><h5>{tr('Grupo')} {g}</h5>
             {rows.map((r, i) => <p key={r.teamId} className={i < 2 ? 'q' : ''}><Flag id={r.teamId} size={16} /><span>{TEAM_BY_ID[r.teamId].name}</span><i>{r.gd > 0 ? '+' : ''}{r.gd}</i><b>{r.pts}</b></p>)}
           </div>
         )
@@ -95,8 +96,8 @@ function Tables({ t, upTo }: { t: AltTournament; upTo: number }) {
 
 type Round = 'r16' | 'qf' | 'sf'
 type Step = { kind: 'draw' } | { kind: 'md'; n: 1 | 2 | 3 } | { kind: 'pair'; r: Round | 'final' } | { kind: 'play'; r: Round } | { kind: 'third' } | { kind: 'final' } | { kind: 'end' }
-const RN: Record<Round, string> = { r16: 'octavos de final', qf: 'cuartos de final', sf: 'semifinales' }
-const PLAYING: Record<Round, string> = { r16: 'Se juegan los octavos de final', qf: 'Se juegan los cuartos de final', sf: 'Se juegan las semifinales' }
+const RN: Record<Round, string> = { r16: tr('octavos de final'), qf: tr('cuartos de final'), sf: tr('semifinales') }
+const PLAYING: Record<Round, string> = { r16: tr('Se juegan los octavos de final'), qf: tr('Se juegan los cuartos de final'), sf: tr('Se juegan las semifinales') }
 
 const toItem = (m: KoMatch, tag?: string): Item => ({ id: m.id, a: m.a!, b: m.b!, goals: m.goals ?? [], ga: m.ga!, gb: m.gb!, et: m.et, pens: m.pens, winner: m.winner, ctx: m.ctx, tag })
 const toRes = (m: KoMatch) => ({ ga: m.ga!, gb: m.gb!, goals: m.goals ?? [], et: !!m.et, pens: m.pens, winner: m.winner })
@@ -124,18 +125,18 @@ export function Vivo() {
     if (step?.kind === 'end' && t && !saved.current) { saved.current = true; recordHistory(t); void registrarMundial(t); setAlt({ ...t, recorded: true }) }
   }, [step, t, setAlt])
 
-  if (!t) return <Section title="Sin torneo en curso"><p className="note">No hay un mundial por vivir. <a href="#/mundial">Arma uno</a> o <a href="#/simulador">ve el simulador</a>.</p></Section>
+  if (!t) return <Section title={tr('Sin torneo en curso')}><p className="note">{tr('No hay un mundial por vivir.')} <a href="#/mundial">{tr('Arma uno')}</a>{tr(' o ')}<a href="#/simulador">{tr('ve el simulador')}</a>.</p></Section>
   if (step.kind === 'end') return <Reveal t={t} onAgain={() => { location.hash = '#/mundial' }} />
 
   const br = t.bracket
   const stageTitle = (): string => {
     switch (step.kind) {
-      case 'draw': return 'Sorteo de grupos'
-      case 'md': return `Resultados por grupos · fecha ${step.n}`
-      case 'pair': return step.r === 'final' ? 'Emparejamientos: tercer puesto y gran final' : `Sorteo de ${RN[step.r]}`
+      case 'draw': return tr('Sorteo de grupos')
+      case 'md': return tr('Resultados por grupos · fecha {n}', { n: step.n })
+      case 'pair': return step.r === 'final' ? tr('Emparejamientos: tercer puesto y gran final') : tr('Sorteo de {r}', { r: RN[step.r] })
       case 'play': return PLAYING[step.r]
-      case 'third': return 'Partido por el tercer puesto'
-      default: return 'La gran final'
+      case 'third': return tr('Partido por el tercer puesto')
+      default: return tr('La gran final')
     }
   }
   const body = () => {
@@ -143,24 +144,24 @@ export function Vivo() {
       case 'draw': return <DrawGroups key="d" groups={t.groups!} hostTeam={t.world ? HOST_BY_ID[t.world.hostId]?.teamId : undefined} onDone={done} />
       case 'md': {
         const ms = t.groupMatches.filter((m) => m.matchday === step.n)
-        const items: Item[] = ms.map((m) => ({ id: m.id, a: m.home, b: m.away, goals: m.goals ?? [], ga: m.hg, gb: m.ag, ctx: m.ctx, tag: `Grupo ${m.group}`, pr: prOf(m.home, m.away, m.ctx) }))
-        return <><Board key={`md${step.n}`} items={items} tick={55} onDone={done} />{ready && <><h4 className="sub">Así quedan los grupos</h4><Tables t={t} upTo={step.n} /></>}</>
+        const items: Item[] = ms.map((m) => ({ id: m.id, a: m.home, b: m.away, goals: m.goals ?? [], ga: m.hg, gb: m.ag, ctx: m.ctx, tag: `${tr('Grupo')} ${m.group}`, pr: prOf(m.home, m.away, m.ctx) }))
+        return <><Board key={`md${step.n}`} items={items} tick={55} onDone={done} />{ready && <><h4 className="sub">{tr('Así quedan los grupos')}</h4><Tables t={t} upTo={step.n} /></>}</>
       }
       case 'pair': {
         const ms = step.r === 'final' ? [br.third, br.final] : br[step.r]
-        return <PairDraw key={`p${step.r}`} pairs={ms.map((m) => ({ a: m.a!, b: m.b!, ctx: m.ctx, label: m.id === 'F' ? 'Gran final' : m.id === 'T' ? 'Tercer puesto' : undefined }))} onDone={done} />
+        return <PairDraw key={`p${step.r}`} pairs={ms.map((m) => ({ a: m.a!, b: m.b!, ctx: m.ctx, label: m.id === 'F' ? tr('Gran final') : m.id === 'T' ? tr('Tercer puesto') : undefined }))} onDone={done} />
       }
       case 'play': return <Board key={`b${step.r}`} items={br[step.r].map((m) => ({ ...toItem(m), pr: prOf(m.a!, m.b!, m.ctx) }))} tick={60} onDone={done} />
-      case 'third': return <><LiveReplay key="t" a={br.third.a!} b={br.third.b!} res={resThird!} onSkip={done} onDone={done} winLabel="se queda con el tercer lugar" /><CtxLine ctx={br.third.ctx} /></>
-      default: return <div className="finalbox"><p className="gf">GRAN FINAL</p><LiveReplay key="f" a={br.final.a!} b={br.final.b!} res={resFinal!} onSkip={done} onDone={done} winLabel="es el campeón del mundial" /><CtxLine ctx={br.final.ctx} /></div>
+      case 'third': return <><LiveReplay key="t" a={br.third.a!} b={br.third.b!} res={resThird!} onSkip={done} onDone={done} winLabel={tr('se queda con el tercer lugar')} /><CtxLine ctx={br.third.ctx} /></>
+      default: return <div className="finalbox"><p className="gf">{tr('GRAN FINAL')}</p><LiveReplay key="f" a={br.final.a!} b={br.final.b!} res={resFinal!} onSkip={done} onDone={done} winLabel={tr('es el campeón del mundial')} /><CtxLine ctx={br.final.ctx} /></div>
     }
   }
   const last = step.kind === 'final'
   return (
-    <Section title={`Paso ${i + 1} de ${steps.length - 1}`} sub={`${stageTitle()} · semilla «${t.seed}»`}>
+    <Section title={tr('Paso {i} de {n}', { i: i + 1, n: steps.length - 1 })} sub={tr('{s} · semilla «{x}»', { s: stageTitle(), x: t.seed })}>
       <div className="vprog"><i style={{ width: `${(i / (steps.length - 1)) * 100}%` }} /></div>
       {body()}
-      <div className="cta wiz"><span />{ready && <button className="btn pri" onClick={next}>{last ? 'Conocer al campeón' : 'Continuar'}</button>}</div>
+      <div className="cta wiz"><span />{ready && <button className="btn pri" onClick={next}>{last ? tr('Conocer al campeón') : tr('Continuar')}</button>}</div>
     </Section>
   )
 }

@@ -35,7 +35,7 @@ export function Board({ items, tick, onDone }: { items: Item[]; tick: number; on
               {fin && it.pens && <p className="mc-p">{tr('Penales {a}–{b}', { a: it.pens[0], b: it.pens[1] })}</p>}
               {fin && it.et && !it.pens && <p className="mc-p">{tr('Prórroga')}</p>}
               {it.pr && <p className="mc-pr">Antes del partido: {TEAM_BY_ID[it.a].name} {Math.round(it.pr[0] * 100)} % · Empate {Math.round(it.pr[1] * 100)} % · {TEAM_BY_ID[it.b].name} {Math.round(it.pr[2] * 100)} %</p>}
-              {fin && it.pr && ((sa > sb && it.pr[0] < 0.25) || (sb > sa && it.pr[2] < 0.25)) && <p className="mc-s">⚡ Sorpresa: ganó con solo {Math.round((sa > sb ? it.pr[0] : it.pr[2]) * 100)} % de probabilidad</p>}
+              {fin && it.pr && ((sa > sb && it.pr[0] < 0.25) || (sb > sa && it.pr[2] < 0.25)) && <p className="mc-s">{tr('⚡ Sorpresa: ganó con solo {p} % de probabilidad', { p: Math.round((sa > sb ? it.pr[0] : it.pr[2]) * 100) })}</p>}
               <CtxLine ctx={it.ctx} />
             </div>
           )
