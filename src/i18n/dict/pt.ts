@@ -746,5 +746,6 @@ const D: string[] = [
   "Você verá a fase de grupos sem conta; a partir das oitavas de final, vamos pedir que entre com o Gmail para descobrir o campeão.",
   "Filtro de coerência: quando uma equipe é claramente superior, o acaso não produz resultados absurdos (por exemplo, o favorito perdendo de goleada); só em raríssimas ocasiões ela tropeça.",
   "Lendas no auge: elevam a avaliação do jogador e dão um impulso de ataque à sua seleção; se vierem do banco, entram no time titular quando superam o mais fraco do seu setor.",
+  "campeão da sua última Copa do Mundo",
 ]
 export default D

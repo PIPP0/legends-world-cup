@@ -746,5 +746,6 @@ const D: string[] = [
   "Tu pourras voir la phase de groupes sans compte ; à partir des huitièmes de finale, nous te demanderons de te connecter avec Gmail pour découvrir le champion.",
   "Filtre de cohérence : quand une équipe est nettement supérieure, le hasard ne produit pas de résultats absurdes (par exemple, le favori battu sur un score fleuve) ; ce n’est que très rarement qu’elle trébuche.",
   "Légendes à leur apogée : elles augmentent la note du joueur et donnent un élan offensif à leur sélection ; si elles viennent du banc, elles entrent dans le onze quand elles dépassent le plus faible de leur ligne.",
+  "champion de ta dernière Coupe du monde",
 ]
 export default D

@@ -746,4 +746,5 @@ export const KEYS: string[] = [
   "Verás la fase de grupos sin cuenta; desde los octavos de final te pediremos entrar con Gmail para descubrir al campeón.",
   "Filtro de coherencia: cuando un equipo es claramente superior, el azar no produce resultados absurdos (por ejemplo, el favorito perdiendo por goleada); solo en rarísimas ocasiones tropieza.",
   "Leyendas en su prime: suben la valoración del jugador y dan un impulso de ataque a su selección; si llegan desde el banco, entran al once cuando superan al más flojo de su línea.",
+  "campeón de tu último mundial",
 ]
