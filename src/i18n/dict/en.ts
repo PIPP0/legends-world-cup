@@ -772,5 +772,6 @@ const D: string[] = [
   "Do you agree with the champion?",
   "Agree",
   "Disagree",
+  "Starting reference percentages; people’s votes are added on top (one per account).",
 ]
 export default D

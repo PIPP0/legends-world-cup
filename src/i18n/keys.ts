@@ -772,4 +772,5 @@ export const KEYS: string[] = [
   "¿Estás de acuerdo con el campeón?",
   "De acuerdo",
   "En desacuerdo",
+  "Porcentajes iniciales de referencia; los votos de la gente se van sumando (uno por cuenta).",
 ]

@@ -51,6 +51,38 @@ export async function votarAcuerdo(voto: Acuerdo): Promise<boolean> {
     return true
   } catch { return false }
 }
+export async function leerMiAcuerdo(): Promise<Acuerdo | null> {
+  if (!NUBE_ACTIVA) return null
+  try {
+    const n = await nube(); const u = await uid(); if (!u) return null
+    const d = await n.fs.getDoc(n.fs.doc(n.db, 'acuerdoVotos', u))
+    return d.exists() ? (d.data().voto as Acuerdo) : null
+  } catch { return null }
+}
+// En vivo: cada cambio en la nube llega al instante a todas las personas que tienen la página abierta.
+export async function escucharAcuerdo(cb: (r: { si: number; no: number }) => void): Promise<() => void> {
+  if (!NUBE_ACTIVA) return () => undefined
+  try {
+    const n = await nube()
+    return n.fs.onSnapshot(n.fs.doc(n.db, 'acuerdoConteo', 'campeon'), (d) => cb(d.exists() ? { si: (d.data().si as number) ?? 0, no: (d.data().no as number) ?? 0 } : { si: 0, no: 0 }), () => undefined)
+  } catch { return () => undefined }
+}
+export async function escucharRankingMvp(cb: (r: VotoMvp[]) => void): Promise<() => void> {
+  if (!NUBE_ACTIVA) return () => undefined
+  try {
+    const n = await nube()
+    const q = n.fs.query(n.fs.collection(n.db, 'mvpConteo'), n.fs.orderBy('n', 'desc'), n.fs.limit(40))
+    return n.fs.onSnapshot(q, (s) => cb(s.docs.map((d) => ({ id: d.id, n: d.data().n as number })).filter((x) => x.n > 0)), () => undefined)
+  } catch { return () => undefined }
+}
+export async function leerMiMvp(): Promise<string | null> {
+  if (!NUBE_ACTIVA) return null
+  try {
+    const n = await nube(); const u = await uid(); if (!u) return null
+    const d = await n.fs.getDoc(n.fs.doc(n.db, 'mvpVotos', u))
+    return d.exists() ? (d.data().jugador as string) : null
+  } catch { return null }
+}
 export async function leerAcuerdo(): Promise<{ si: number; no: number } | null> {
   if (!NUBE_ACTIVA) return null
   try {

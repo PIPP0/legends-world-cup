@@ -772,5 +772,6 @@ const D: string[] = [
   "Apakah kamu setuju dengan juaranya?",
   "Setuju",
   "Tidak setuju",
+  "Persentase awal sebagai acuan; suara orang-orang ditambahkan (satu per akun).",
 ]
 export default D

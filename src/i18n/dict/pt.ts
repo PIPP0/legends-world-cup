@@ -772,5 +772,6 @@ const D: string[] = [
   "Você concorda com o campeão?",
   "Concordo",
   "Discordo",
+  "Porcentagens iniciais de referência; os votos das pessoas vão sendo somados (um por conta).",
 ]
 export default D

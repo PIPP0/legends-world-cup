@@ -59,9 +59,9 @@ service cloud.firestore {
       allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
       allow delete: if signedIn() && request.auth.uid == uid;
     }
-    // ¿De acuerdo con el campeón? Cada persona guarda su voto (solo ella y Admin lo leen); los contadores son públicos y solo suben o bajan de a 1.
+    // ¿De acuerdo con el campeón? Un voto por cuenta (hay que entrar con Google); solo ella y Admin leen su voto; los contadores son públicos y solo suben o bajan de a 1.
     match /acuerdoVotos/{uid} {
-      allow create, update: if signedIn() && request.auth.uid == uid
+      allow create, update: if signedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['voto', 'creada'])
         && request.resource.data.voto in ['si', 'no'] && request.resource.data.creada is int;
       allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
@@ -69,10 +69,10 @@ service cloud.firestore {
     }
     match /acuerdoConteo/{id} {
       allow read: if true;
-      allow create: if signedIn() && id == 'campeon' && request.resource.data.keys().hasOnly(['si', 'no'])
+      allow create: if signedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous' && id == 'campeon' && request.resource.data.keys().hasOnly(['si', 'no'])
         && request.resource.data.si is int && request.resource.data.no is int
         && request.resource.data.si >= 0 && request.resource.data.si <= 1 && request.resource.data.no >= 0 && request.resource.data.no <= 1;
-      allow update: if signedIn() && request.resource.data.keys().hasOnly(['si', 'no'])
+      allow update: if signedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous' && request.resource.data.keys().hasOnly(['si', 'no'])
         && request.resource.data.si is int && request.resource.data.no is int
         && request.resource.data.si >= 0 && request.resource.data.no >= 0
         && request.resource.data.si - resource.data.si in [-1, 0, 1] && request.resource.data.no - resource.data.no in [-1, 0, 1];

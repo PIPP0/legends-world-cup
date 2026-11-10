@@ -772,5 +772,6 @@ const D: string[] = [
   "Bist du mit dem Champion einverstanden?",
   "Einverstanden",
   "Nicht einverstanden",
+  "Start-Prozentwerte als Orientierung; die Stimmen der Leute werden addiert (eine pro Konto).",
 ]
 export default D

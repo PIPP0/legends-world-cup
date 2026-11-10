@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { PLAYERS } from '../data'
 import { LOCALE, tr } from '../i18n'
-import { leerRankingMvp, votarMvp, type VotoMvp } from '../cloud/datos'
+import { escucharRankingMvp, leerMiMvp, votarMvp, type VotoMvp } from '../cloud/datos'
+import { NUBE_ACTIVA, esperarCambiosDeSesion } from '../cloud/firebase'
 import { Avatar, Flag, useLocalState } from './common'
 import { posLabel } from '../i18n/nombres'
 
@@ -36,8 +37,24 @@ export function MvpPage() {
     const base = PLAYERS.filter((p) => linea === 'ALL' || p.line === linea)
     return (t.length >= 2 ? base.filter((p) => p.name.toLowerCase().includes(t)) : [...base].sort((a, b) => b.ovr - a.ovr)).slice(0, 24)
   }, [q, linea])
-  const cargar = () => { void leerRankingMvp().then((r) => { if (r) setReales(r) }) }
-  useEffect(cargar, [])
+  // ranking en vivo para todas las personas
+  useEffect(() => {
+    let off: (() => void) | undefined, fuera = false
+    void escucharRankingMvp(setReales).then((f) => { if (fuera) f(); else off = f })
+    return () => { fuera = true; off?.() }
+  }, [])
+  // el voto de esta cuenta/navegador: si la nube aún no lo tiene (falló antes o se votó sin conexión), se guarda ahora
+  useEffect(() => {
+    if (!NUBE_ACTIVA) return
+    let off: (() => void) | undefined, fuera = false
+    void esperarCambiosDeSesion(() => {
+      void leerMiMvp().then((v) => {
+        if (v && PLAYER_BY_ID[v]) setVoto(v)
+        else { try { const l = localStorage.getItem('lwc:mvp'); if (l && PLAYER_BY_ID[l]) void votarMvp(l) } catch { /* sin almacenamiento */ } }
+      })
+    }).then((f) => { if (fuera) f(); else off = f })
+    return () => { fuera = true; off?.() }
+  }, [])
   const elegir = async (id: string) => {
     if (id === voto) return
     // al instante en pantalla: se resta el voto anterior y se suma el nuevo; la nube se sincroniza por detrás
@@ -50,8 +67,7 @@ export function MvpPage() {
     })
     setVoto(id); setAviso('')
     const ok = await votarMvp(id)
-    if (!ok) setAviso(tr('Tu voto quedó guardado en este navegador; el ranking compartido no está disponible ahora.'))
-    cargar()
+    if (!ok) { setAviso(tr('Tu voto quedó guardado en este navegador; el ranking compartido no está disponible ahora.')); window.addEventListener('online', () => void votarMvp(id), { once: true }) }
   }
   const max = Math.max(1, ...ranking.map((r) => r.n))
   const mio = voto ? PLAYER_BY_ID[voto] : undefined

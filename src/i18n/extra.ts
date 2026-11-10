@@ -34,4 +34,5 @@ export const EXTRA: Array<[string, string]> = [
   ['¿Estás de acuerdo con el campeón?', 'Do you agree with the champion?'],
   ['De acuerdo', 'Agree'],
   ['En desacuerdo', 'Disagree'],
+  ['Porcentajes iniciales de referencia; los votos de la gente se van sumando (uno por cuenta).', 'Starting reference percentages; people’s votes are added on top (one per account).'],
 ]
