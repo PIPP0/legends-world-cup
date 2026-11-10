@@ -56,7 +56,11 @@ export function t(es: string, vars?: Record<string, string | number>): string {
 export const nombre = (clave: string, es: string) => (LANG === 'es' ? es : DICT[clave] ?? es)
 export const tr = t
 
-if (typeof document !== 'undefined') document.documentElement.lang = LANG
+const TITULOS: Record<Lang, string> = {
+  en: 'Legends World Cup — The Impossible World Cup', es: 'Legends World Cup — El Mundial Imposible', pt: 'Legends World Cup — A Copa do Mundo Impossível',
+  fr: 'Legends World Cup — La Coupe du monde impossible', it: 'Legends World Cup — Il Mondiale Impossibile', de: 'Legends World Cup — Die unmögliche WM', id: 'Legends World Cup — Piala Dunia Mustahil',
+}
+if (typeof document !== 'undefined') { document.documentElement.lang = LANG; document.title = TITULOS[LANG] }
 
 // Ordinales por idioma: 1st · 1.º · 1er · 1° · 1. · ke-1
 export const ordinal = (n: number): string => {

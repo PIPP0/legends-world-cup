@@ -3,7 +3,7 @@ const D: string[] = [
   "Start",
   "Nationen",
   "Spiele",
-  "Turnierbaum",
+  "Turnier",
   "Geschichte",
   "Gruppen",
   "Statistiken",

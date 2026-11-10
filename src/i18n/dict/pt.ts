@@ -3,7 +3,7 @@ const D: string[] = [
   "Início",
   "Seleções",
   "Jogos",
-  "Chaveamento",
+  "Chave",
   "História",
   "Grupos",
   "Estatísticas",
