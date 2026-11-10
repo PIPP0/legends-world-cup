@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { PLAYERS } from '../data'
-import { tr } from '../i18n'
+import { LOCALE, tr } from '../i18n'
 import { leerRankingMvp, votarMvp, type VotoMvp } from '../cloud/datos'
 import { Avatar, Flag, useLocalState } from './common'
 import { posLabel } from '../i18n/nombres'
@@ -14,7 +14,7 @@ const VOTOS_INICIALES: Record<string, number> = {
 const conIniciales = (reales: VotoMvp[]): VotoMvp[] => {
   const m = new Map<string, number>(Object.entries(VOTOS_INICIALES))
   for (const r of reales) m.set(r.id, (m.get(r.id) ?? 0) + r.n)
-  return [...m.entries()].map(([id, n]) => ({ id, n })).sort((a, b) => b.n - a.n).slice(0, 10)
+  return [...m.entries()].map(([id, n]) => ({ id, n })).sort((a, b) => b.n - a.n)
 }
 
 type Linea = 'ALL' | 'GK' | 'DEF' | 'MID' | 'ATT'
@@ -24,7 +24,10 @@ const LINEAS: [Linea, string][] = [['ALL', 'Todas las líneas'], ['GK', 'Portero
 export function MvpPage() {
   const [voto, setVoto] = useLocalState<string | null>('lwc:mvp', null)
   const [reales, setReales] = useState<VotoMvp[]>([]) // votos reales de la nube; el ranking se arma con ellos + los iniciales
-  const ranking = useMemo(() => conIniciales(reales), [reales])
+  const todos = useMemo(() => conIniciales(reales), [reales])
+  const ranking = todos.slice(0, 10)
+  const total = Math.max(1, todos.reduce((a, r) => a + r.n, 0))
+  const pct = (n: number) => `${new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1, minimumFractionDigits: 1 }).format((n / total) * 100)} %`
   const [q, setQ] = useState('')
   const [linea, setLinea] = useState<Linea>('ALL')
   const [aviso, setAviso] = useState('')
@@ -54,7 +57,7 @@ export function MvpPage() {
   const mio = voto ? PLAYER_BY_ID[voto] : undefined
   const validos = ranking.filter((r) => PLAYER_BY_ID[r.id])
   const podio = validos.slice(0, 3), resto = validos.slice(3)
-  const nVotos = (n: number) => (n === 1 ? tr('{n} voto', { n }) : tr('{n} votos', { n }))
+  const nVotos = (n: number) => pct(n)
   return (
     <div className="mvp-page">
       <a className="mvp-back" href="#/">← {tr('Volver al inicio')}</a>
