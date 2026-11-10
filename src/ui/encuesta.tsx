@@ -94,7 +94,7 @@ export function EncuestaMundial({ seed, datos }: { seed: string; datos: string }
     let hecha = false
     try { hecha = localStorage.getItem(clave) === '1' } catch { /* sin almacenamiento */ }
     if (hecha) return
-    const t = setTimeout(() => setAbierta(true), 2500)
+    const t = setTimeout(() => setAbierta(true), 5000)
     return () => clearTimeout(t)
   }, [clave])
   const cerrar = () => { setAbierta(false); try { localStorage.setItem(clave, '1') } catch { /* sin almacenamiento */ } }
