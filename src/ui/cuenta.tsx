@@ -3,19 +3,29 @@ import { useEffect, useState } from 'react'
 import { NUBE_ACTIVA, anotarUsuario, asegurarVisitante, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { sincronizarNivel } from '../engine/storyLevel'
 import { useFunciones } from '../cloud/funciones'
+import { leerFavoritaNube } from '../cloud/datos'
+import { ponerFavorita } from '../engine/favorita'
+import { ElegirFavorita } from './favorita'
 
 // Registro opcional con Google: junto al icono de opinión. Sin cuenta se juega igual (visitante anónimo).
 export function CuentaHeader() {
   const f = useFunciones()
   const [c, setC] = useState<Cuenta | null>(null)
   const [abierto, setAbierto] = useState(false)
+  const [eligiendo, setEligiendo] = useState(false)
   const [error, setError] = useState('')
   useEffect(() => {
     if (!NUBE_ACTIVA) return
     let off: (() => void) | undefined
     void (async () => {
       await asegurarVisitante()
-      off = await esperarCambiosDeSesion((cuenta) => { setC(cuenta); if (cuenta) { void anotarUsuario(); void sincronizarNivel() } })
+      off = await esperarCambiosDeSesion((cuenta) => {
+        setC(cuenta)
+        if (cuenta) { void anotarUsuario(); void sincronizarNivel() }
+        // la selección favorita es de quien tiene cuenta: se trae de la nube y, si aún no eligió una, se le pide
+        if (cuenta && !cuenta.anonimo) void leerFavoritaNube().then((f) => { if (f) ponerFavorita(f); else if (f === null) setEligiendo(true) })
+        else ponerFavorita(null)
+      })
     })()
     return () => off?.()
   }, [])
@@ -35,9 +45,11 @@ export function CuentaHeader() {
         <div className="cuenta-menu" role="menu">
           <p><b>{c!.nombre || tr('Mi cuenta')}</b><br /><span className="muted small">{c!.email}</span></p>
           <p className="small muted">{tr('Tu avance de la historia se guarda en la nube.')}</p>
+          <button className="btn ghost" onClick={() => { setAbierto(false); setEligiendo(true) }}>{tr('Cambiar mi selección favorita')}</button>
           <button className="btn ghost" onClick={() => { setAbierto(false); void salir().then(() => asegurarVisitante()) }}>{tr('Cerrar sesión')}</button>
         </div>
       )}
+      {eligiendo && <ElegirFavorita onClose={() => setEligiendo(false)} />}
       {error && <span className="cuenta-err small" role="alert">{error}</span>}
     </div>
   )

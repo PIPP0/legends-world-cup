@@ -761,5 +761,12 @@ const D: string[] = [
   "Você ainda não escolheu o seu MVP.",
   "Nenhum jogador corresponde.",
   "Ranking inicial de referência: os votos da comunidade vão sendo somados a esses valores.",
+  "Escolha a sua seleção favorita",
+  "Você a verá com uma ★ em todo o site. Pode mudá-la quando quiser.",
+  "Sua seleção favorita",
+  "Mudar minha seleção favorita",
+  "Escolha entre as 32 seleções. Seu voto fica salvo neste navegador.",
+  "Seguem na disputa",
+  "Eliminadas na fase de grupos",
 ]
 export default D

@@ -98,6 +98,6 @@ export async function anotarUsuario(): Promise<void> {
       idioma: (navigator.language || '').slice(0, 12), dispositivo: tablet ? 'tablet' : movil ? 'móvil' : 'computador',
       // Datos técnicos del navegador (sin IP): país aproximado por zona horaria, sistema, navegador, pantalla, de dónde llegó e idioma elegido en la web.
       pais: paisAproximado(), zona: zonaHoraria(), sistema: sn.sistema, navegador: sn.navegador, pantalla: `${screen.width}x${screen.height}`.slice(0, 12), origen: origenVisita(), idiomaWeb: LANG,
-    })
+    }, { merge: true })
   } catch { /* si falla, la web sigue igual */ }
 }

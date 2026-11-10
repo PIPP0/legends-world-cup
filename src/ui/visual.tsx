@@ -2,7 +2,7 @@ import { LANG, tr } from '../i18n'
 import { posLabel, attrAbbr } from '../i18n/nombres'
 import { useState, type ReactNode } from 'react'
 import { TEAM_BY_ID } from '../data/lookup'
-import { Flag, usePhoto } from './common'
+import { FavStar, Flag, usePhoto } from './common'
 import type { Player, Team } from '../types'
 
 export const tierOf = (o: number) => (o >= 96 ? 'icon' : o >= 92 ? 'gold' : o >= 86 ? 'silver' : 'base')
@@ -46,7 +46,7 @@ export function TeamCard({ t, star, extra, mini }: { t: Team; star: Player; extr
       <span className="team-bg" aria-hidden />
       <span className="team-ph">{photo ? <img src={photo.url} alt="" loading="lazy" /> : <i>{initials(star.name)}</i>}</span>
       <span className="team-b">
-        <b><Flag id={t.id} size={22} />{t.name}</b>
+        <b><Flag id={t.id} size={22} />{t.name}<FavStar id={t.id} /></b>
         <em>{star.name} · {star.ovr}</em>
         {extra}
       </span>

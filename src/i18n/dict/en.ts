@@ -761,5 +761,12 @@ const D: string[] = [
   "You have not picked your MVP yet.",
   "No player matches.",
   "Starting reference ranking: the community’s votes are added on top of these values.",
+  "Pick your favorite national team",
+  "You will see it with a ★ all over the site. You can change it whenever you like.",
+  "Your favorite team",
+  "Change my favorite team",
+  "Choose from the 32 national teams. Your vote is saved in this browser.",
+  "Still in the running",
+  "Out in the groups",
 ]
 export default D

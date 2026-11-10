@@ -31,6 +31,20 @@ export async function registrarMundial(t: AltTournament): Promise<void> {
   } catch { /* no interrumpe el juego */ }
 }
 
+// ---- selección favorita (por cuenta): vive en la ficha del usuario ----
+export async function leerFavoritaNube(): Promise<string | null | undefined> {
+  if (!NUBE_ACTIVA) return undefined
+  try {
+    const n = await nube(); const u = await uid(); if (!u) return undefined
+    const d = await n.fs.getDoc(n.fs.doc(n.db, 'usuarios', u))
+    return d.exists() && typeof d.data().favorita === 'string' ? (d.data().favorita as string) : null
+  } catch { return undefined }
+}
+export async function guardarFavoritaNube(id: string): Promise<void> {
+  if (!NUBE_ACTIVA || !/^[a-z]{2,4}$/.test(id)) return
+  try { const n = await nube(); const u = await uid(); if (!u) return; await n.fs.setDoc(n.fs.doc(n.db, 'usuarios', u), { favorita: id }, { merge: true }) } catch { /* sin conexión */ }
+}
+
 // ---- MVP: un voto por persona (se puede cambiar); el ranking sale de contadores por jugador ----
 export interface VotoMvp { id: string; n: number }
 export async function votarMvp(jugadorId: string): Promise<boolean> {

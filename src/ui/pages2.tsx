@@ -9,7 +9,7 @@ import { useStoryLevel } from '../engine/storyLevel'
 import { revealed, teamStatus } from '../engine/historia'
 import { teamBlurb } from '../engine/narrative'
 import { groupTable } from '../engine/standings'
-import { Avatar, Bar, Flag, Note, PlayerCard, Radar, Section, TeamLink, usePhoto, go } from './common'
+import { Avatar, Bar, FavStar, Flag, Note, PlayerCard, Radar, Section, TeamLink, usePhoto, go } from './common'
 import { FutCard, Pitch, TeamCard } from './visual'
 import { KoRow, MatchRow } from './blocks'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
@@ -63,7 +63,7 @@ export function Team({ id }: { id: string }) {
       <div className="thead">
         <Flag id={id} size={64} />
         <div>
-          <h1>{t.name}</h1>
+          <h1>{t.name}<FavStar id={t.id} /></h1>
           <p className="muted">{tr('Grupo {g} · {f} · {p} del grupo · #{r} de 32 en el modelo', { g: t.group, f: t.formation, p: ordinal(pos), r: rankOf(all.map((a) => a.strength), prof.strength) })}</p>
         </div>
       </div>

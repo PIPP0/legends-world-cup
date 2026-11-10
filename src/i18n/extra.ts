@@ -23,4 +23,11 @@ export const EXTRA: Array<[string, string]> = [
   ['Aún no has elegido a tu MVP.', 'You have not picked your MVP yet.'],
   ['Ningún jugador coincide.', 'No player matches.'],
   ['Ranking inicial de referencia: los votos de la comunidad se van sumando a estos valores.', 'Starting reference ranking: the community’s votes are added on top of these values.'],
+  ['Elige tu selección favorita', 'Pick your favorite national team'],
+  ['La verás con una ★ en todo el sitio. Puedes cambiarla cuando quieras.', 'You will see it with a ★ all over the site. You can change it whenever you like.'],
+  ['Tu selección favorita', 'Your favorite team'],
+  ['Cambiar mi selección favorita', 'Change my favorite team'],
+  ['Elige entre las 32 selecciones. Tu voto se guarda en este navegador.', 'Choose from the 32 national teams. Your vote is saved in this browser.'],
+  ['Siguen en carrera', 'Still in the running'],
+  ['Eliminadas en grupos', 'Out in the groups'],
 ]

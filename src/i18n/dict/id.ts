@@ -761,5 +761,12 @@ const D: string[] = [
   "Kamu belum memilih MVP-mu.",
   "Tidak ada pemain yang cocok.",
   "Peringkat awal sebagai acuan: suara komunitas akan terus ditambahkan ke nilai-nilai ini.",
+  "Pilih tim nasional favoritmu",
+  "Kamu akan melihatnya dengan ★ di seluruh situs. Kamu bisa mengubahnya kapan saja.",
+  "Tim nasional favoritmu",
+  "Ganti tim nasional favoritku",
+  "Pilih di antara 32 tim nasional. Suaramu disimpan di peramban ini.",
+  "Masih bertahan",
+  "Tersingkir di fase grup",
 ]
 export default D

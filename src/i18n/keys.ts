@@ -761,4 +761,11 @@ export const KEYS: string[] = [
   "Aún no has elegido a tu MVP.",
   "Ningún jugador coincide.",
   "Ranking inicial de referencia: los votos de la comunidad se van sumando a estos valores.",
+  "Elige tu selección favorita",
+  "La verás con una ★ en todo el sitio. Puedes cambiarla cuando quieras.",
+  "Tu selección favorita",
+  "Cambiar mi selección favorita",
+  "Elige entre las 32 selecciones. Tu voto se guarda en este navegador.",
+  "Siguen en carrera",
+  "Eliminadas en grupos",
 ]

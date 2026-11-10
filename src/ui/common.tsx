@@ -1,3 +1,4 @@
+import { useFavorita } from '../engine/favorita'
 import { LANG } from '../i18n'
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import photoData from '../data/photos.json'
@@ -26,11 +27,17 @@ export function Flag({ id, size = 24 }: { id: string; size?: number }) {
   )
 }
 
+// Pequeña estrella junto a la selección favorita de quien entró con su cuenta.
+export function FavStar({ id }: { id: string }) {
+  const fav = useFavorita()
+  return fav === id ? <span className="fav-star" title={tr('Tu selección favorita')} aria-label={tr('Tu selección favorita')}>★</span> : null
+}
+
 export function TeamLink({ id, flag = true, size = 22 }: { id?: string; flag?: boolean; size?: number }) {
   if (!id) return <span className="muted">{tr('Por definir')}</span>
   return (
     <a className="tl" href={`#/equipo/${id}`}>
-      {flag && <Flag id={id} size={size} />}<span>{TEAM_BY_ID[id].name}</span>
+      {flag && <Flag id={id} size={size} />}<span>{TEAM_BY_ID[id].name}</span><FavStar id={id} />
     </a>
   )
 }

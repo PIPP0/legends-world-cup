@@ -1,7 +1,7 @@
 import { rich } from '../i18n/rich'
 import { useEffect, useMemo, useState } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
-import { STORY_MATCHES } from '../data'
+import { STORY_MATCHES, TEAMS } from '../data'
 import { useStoryLevel } from '../engine/storyLevel'
 import { LANG, tr } from '../i18n'
 import { attrLabel, posLabel } from '../i18n/nombres'
@@ -105,9 +105,15 @@ export function ChampionPicker() {
     const h = setTimeout(() => setOdds(oddsPortada()), 60)
     return () => clearTimeout(h)
   }, [])
-  const teams = DECLARED_R16.flat()
-  const ranked = [...teams].sort((a, b) => (odds[b] ?? 0) - (odds[a] ?? 0))
+  const enCarrera = DECLARED_R16.flat()
+  // las 32 selecciones: primero las 16 que siguen en carrera y luego el resto por orden alfabético
+  const resto = TEAMS.filter((t) => !enCarrera.includes(t.id)).sort((a, b) => a.name.localeCompare(b.name)).map((t) => t.id)
+  const [pagina, setPagina] = useState<0 | 1>(pick && resto.includes(pick) ? 1 : 0)
+  const teams = pagina === 0 ? enCarrera : resto
+  const [x0, setX0] = useState<number | null>(null)
+  const ranked = [...enCarrera].sort((a, b) => (odds[b] ?? 0) - (odds[a] ?? 0))
   const rank = pick ? ranked.indexOf(pick) + 1 : 0
+  const fueraDeCarrera = !!pick && rank === 0
   const text = pick ? tr('Yo apuesto a que {team} gana el Mundial Imposible de Leyendas. ¿Y tú?', { team: TEAM_BY_ID[pick].name }) : ''
   const url = typeof location !== 'undefined' ? location.href.split('#')[0] : ''
   const share = async () => {
@@ -118,21 +124,30 @@ export function ChampionPicker() {
     <section className="pick">
       <div className="pk-h">
         <div><p className="kicker">{tr('Los fans opinan')}</p><h2>{tr('¿Quién será el campeón?')}</h2></div>
-        <p className="muted small">{tr('Elige entre las 16 selecciones que siguen en carrera. Tu voto se guarda en este navegador.')}</p>
+        <p className="muted small">{tr('Elige entre las 32 selecciones. Tu voto se guarda en este navegador.')}</p>
       </div>
-      <div className="pk-g">
+      <div className="pk-tabs" role="tablist">
+        <button type="button" role="tab" aria-selected={pagina === 0} className={`mvp-chip${pagina === 0 ? ' on' : ''}`} onClick={() => setPagina(0)}>{tr('Siguen en carrera')} · 16</button>
+        <button type="button" role="tab" aria-selected={pagina === 1} className={`mvp-chip${pagina === 1 ? ' on' : ''}`} onClick={() => setPagina(1)}>{tr('Eliminadas en grupos')} · 16</button>
+      </div>
+      <div className="pk-car" onTouchStart={(e) => setX0(e.touches[0].clientX)} onTouchEnd={(e) => { if (x0 !== null) { const dx = e.changedTouches[0].clientX - x0; if (dx < -50) setPagina(1); else if (dx > 50) setPagina(0) } setX0(null) }}>
+        <button type="button" className="pk-arrow" aria-label={tr('Atrás')} disabled={pagina === 0} onClick={() => setPagina(0)}>‹</button>
+        <div className="pk-g" key={pagina}>
         {teams.map((id) => (
           <button key={id} className={`pk-b ${pick === id ? 'on' : ''}`} onClick={() => setPick(id)} aria-pressed={pick === id}>
             <Flag id={id} size={34} /><span>{TEAM_BY_ID[id].name}</span>
           </button>
         ))}
+        </div>
+        <button type="button" className="pk-arrow" aria-label={tr('Siguiente')} disabled={pagina === 1} onClick={() => setPagina(1)}>›</button>
       </div>
+      <div className="pk-dots" aria-hidden>{[0, 1].map((i) => <i key={i} className={pagina === i ? 'on' : ''} />)}</div>
       {pick && (
         <div className="pk-r">
           <Flag id={pick} size={56} />
           <div>
             <b>{tr('Tu campeón: {team}', { team: TEAM_BY_ID[pick].name })}</b>
-            <span>{rich('El modelo le da <b>{p}%</b> de ganar el torneo desde octavos: es la favorita n.º {r} de 16.', { p: ((odds[pick] ?? 0) * 100).toFixed(1), r: rank })}</span>
+            <span>{fueraDeCarrera ? tr('Eliminada en la fase de grupos.') : rich('El modelo le da <b>{p}%</b> de ganar el torneo desde octavos: es la favorita n.º {r} de 16.', { p: ((odds[pick] ?? 0) * 100).toFixed(1), r: rank })}</span>
           </div>
           <div className="pk-a"><button className="btn pri" onClick={share}>{tr('Compartir')}</button><button className="btn ghost" onClick={() => setPick(null)}>{tr('Cambiar')}</button></div>
         </div>

@@ -761,5 +761,12 @@ const D: string[] = [
   "Du hast deinen MVP noch nicht gewählt.",
   "Kein Spieler passt.",
   "Start-Rangliste als Orientierung: Die Stimmen der Community werden nach und nach zu diesen Werten addiert.",
+  "Wähle deine Lieblingsnation",
+  "Du siehst sie mit einem ★ auf der ganzen Seite. Du kannst sie jederzeit ändern.",
+  "Deine Lieblingsnation",
+  "Meine Lieblingsnation ändern",
+  "Wähle unter den 32 Nationen. Deine Stimme wird in diesem Browser gespeichert.",
+  "Noch im Rennen",
+  "In der Gruppenphase ausgeschieden",
 ]
 export default D

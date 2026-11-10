@@ -46,7 +46,8 @@ service cloud.firestore {
         && request.resource.data.get('navegador', '') is string && request.resource.data.get('navegador', '').size() <= 20
         && request.resource.data.get('pantalla', '') is string && request.resource.data.get('pantalla', '').size() <= 12
         && request.resource.data.get('origen', '') is string && request.resource.data.get('origen', '').size() <= 40
-        && request.resource.data.get('idiomaWeb', '') is string && request.resource.data.get('idiomaWeb', '').size() <= 4;
+        && request.resource.data.get('idiomaWeb', '') is string && request.resource.data.get('idiomaWeb', '').size() <= 4
+        && request.resource.data.get('favorita', '') is string && request.resource.data.get('favorita', '').size() <= 4;
       allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
       allow delete: if signedIn() && request.auth.uid == uid;
     }
