@@ -98,6 +98,29 @@ export async function anotarUsuario(): Promise<void> {
       idioma: (navigator.language || '').slice(0, 12), dispositivo: tablet ? 'tablet' : movil ? 'móvil' : 'computador',
       // Datos técnicos del navegador (sin IP): país aproximado por zona horaria, sistema, navegador, pantalla, de dónde llegó e idioma elegido en la web.
       pais: paisAproximado(), zona: zonaHoraria(), sistema: sn.sistema, navegador: sn.navegador, pantalla: `${screen.width}x${screen.height}`.slice(0, 12), origen: origenVisita(), idiomaWeb: LANG,
+      auto: pareceAutomatico(),
     }, { merge: true })
+    seguirActividad(ref, n.fs.setDoc)
   } catch { /* si falla, la web sigue igual */ }
+}
+
+// Señales para distinguir personas de robots (sin IP, sin contenido): ¿el navegador se declara automatizado?
+function pareceAutomatico(): boolean {
+  try { return navigator.webdriver === true || /HeadlessChrome|bot|crawl|spider|preview|lighthouse|facebookexternalhit/i.test(navigator.userAgent) } catch { return false }
+}
+// Actividad de la visita: si hubo interacción (clic, tecla, scroll, toque), segundos con la pestaña visible y pantallas vistas.
+// Se guarda poco (máx. 5 escrituras por visita) para no gastar.
+function seguirActividad(ref: unknown, setDoc: (r: never, d: object, o: object) => Promise<void>): void {
+  let seg = 0, inter = false, pags = 1, sucio = false, envios = 0
+  const enviar = () => {
+    if (!sucio || envios >= 5) return
+    sucio = false; envios++
+    void setDoc(ref as never, { inter, seg, pags }, { merge: true }).catch(() => undefined)
+  }
+  const marca = () => { if (!inter) { inter = true; sucio = true; setTimeout(enviar, 4000) } }
+  for (const e of ['pointerdown', 'keydown', 'scroll', 'touchstart']) addEventListener(e, marca, { passive: true })
+  addEventListener('hashchange', () => { pags = Math.min(200, pags + 1); sucio = true })
+  setInterval(() => { if (document.visibilityState === 'visible') { seg = Math.min(86400, seg + 1); sucio = sucio || inter && seg % 30 === 0 } }, 1000)
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { sucio = true; enviar() } })
+  setTimeout(() => { sucio = true; enviar() }, 60000)
 }

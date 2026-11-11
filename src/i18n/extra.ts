@@ -175,4 +175,11 @@ export const EXTRA: Array<[string, string]> = [
   ['Armé mi Once Ideal en Legends World Cup. ¿Puedes superarlo?', 'I built my Ideal Eleven in Legends World Cup. Can you beat it?'],
   ['Abrir {red}', 'Open {red}'],
   ['Descarga la imagen y adjúntala en tu publicación.', 'Download the image and attach it to your post.'],
+  ['Privacidad', 'Privacy'],
+  ['Qué datos guardamos y para qué', 'What data we keep and why'],
+  ['Esta web no te pide nombre ni correo para usarla. Al entrar, tu navegador recibe una cuenta anónima (un identificador al azar) para guardar tus votos y tu progreso.', "This site doesn't ask for your name or email. When you arrive, your browser gets an anonymous account (a random identifier) to save your votes and progress."],
+  ['Con esa cuenta guardamos datos técnicos del navegador: país aproximado (por zona horaria, no por IP), sistema, navegador, tamaño de pantalla, idioma, desde dónde llegaste, si hubo interacción y cuánto tiempo estuviste. Sirven para mejorar la web y distinguir personas de robots.', 'With that account we keep technical browser data: approximate country (from time zone, not IP), system, browser, screen size, language, where you came from, whether you interacted and how long you stayed. It helps us improve the site and tell people from bots.'],
+  ['No guardamos tu dirección IP, no vendemos datos ni usamos publicidad de terceros.', "We don't store your IP address, sell data or use third-party advertising."],
+  ['Si entras con Google, guardamos además tu nombre, correo y foto, solo para identificar tu voto o tu equipo.', 'If you sign in with Google, we also keep your name, email and photo, only to identify your vote or your team.'],
+  ['Tus equipos y preferencias se guardan en tu navegador (almacenamiento local). Puedes borrarlos limpiando los datos del sitio.', "Your teams and preferences are saved in your browser (local storage). You can erase them by clearing the site's data."],
 ]

@@ -32,7 +32,7 @@ service cloud.firestore {
     // Visitantes y personas con cuenta. Cada uno crea y actualiza el suyo (sin poder cambiar campos ajenos); Admin los lee todos.
     match /usuarios/{uid} {
       allow create, update: if signedIn() && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['uid', 'email', 'nombre', 'foto', 'anonimo', 'creado', 'ultimo', 'visitas', 'idioma', 'dispositivo', 'pais', 'zona', 'sistema', 'navegador', 'pantalla', 'origen', 'idiomaWeb', 'favorita'])
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'nombre', 'foto', 'anonimo', 'creado', 'ultimo', 'visitas', 'idioma', 'dispositivo', 'pais', 'zona', 'sistema', 'navegador', 'pantalla', 'origen', 'idiomaWeb', 'favorita', 'auto', 'inter', 'seg', 'pags'])
         && request.resource.data.uid == uid
         && request.resource.data.get('email', '') in ['', miCorreo()]
         && request.resource.data.get('nombre', '') is string && request.resource.data.get('nombre', '').size() <= 120
@@ -47,6 +47,9 @@ service cloud.firestore {
         && request.resource.data.get('pantalla', '') is string && request.resource.data.get('pantalla', '').size() <= 12
         && request.resource.data.get('origen', '') is string && request.resource.data.get('origen', '').size() <= 40
         && request.resource.data.get('idiomaWeb', '') is string && request.resource.data.get('idiomaWeb', '').size() <= 4
+        && request.resource.data.get('auto', false) is bool && request.resource.data.get('inter', false) is bool
+        && request.resource.data.get('seg', 0) is int && request.resource.data.get('seg', 0) <= 86400
+        && request.resource.data.get('pags', 0) is int && request.resource.data.get('pags', 0) <= 200
         && request.resource.data.get('favorita', '') is string && request.resource.data.get('favorita', '').size() <= 4;
       allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
       allow delete: if signedIn() && request.auth.uid == uid;

@@ -913,4 +913,11 @@ export const KEYS: string[] = [
   "Armé mi Once Ideal en Legends World Cup. ¿Puedes superarlo?",
   "Abrir {red}",
   "Descarga la imagen y adjúntala en tu publicación.",
+  "Privacidad",
+  "Qué datos guardamos y para qué",
+  "Esta web no te pide nombre ni correo para usarla. Al entrar, tu navegador recibe una cuenta anónima (un identificador al azar) para guardar tus votos y tu progreso.",
+  "Con esa cuenta guardamos datos técnicos del navegador: país aproximado (por zona horaria, no por IP), sistema, navegador, tamaño de pantalla, idioma, desde dónde llegaste, si hubo interacción y cuánto tiempo estuviste. Sirven para mejorar la web y distinguir personas de robots.",
+  "No guardamos tu dirección IP, no vendemos datos ni usamos publicidad de terceros.",
+  "Si entras con Google, guardamos además tu nombre, correo y foto, solo para identificar tu voto o tu equipo.",
+  "Tus equipos y preferencias se guardan en tu navegador (almacenamiento local). Puedes borrarlos limpiando los datos del sitio.",
 ]

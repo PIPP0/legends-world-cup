@@ -913,5 +913,12 @@ const D: string[] = [
   "Aku menyusun Sebelas Ideal di Legends World Cup. Bisakah kamu mengalahkannya?",
   "Buka {red}",
   "Unduh gambar dan lampirkan ke postinganmu.",
+  "Privasi",
+  "Data apa yang kami simpan dan untuk apa",
+  "Situs ini tidak meminta nama atau email. Saat masuk, browsermu menerima akun anonim (pengenal acak) untuk menyimpan suara dan progresmu.",
+  "Dengan akun itu kami menyimpan data teknis browser: perkiraan negara (dari zona waktu, bukan IP), sistem, browser, ukuran layar, bahasa, asal kunjungan, apakah ada interaksi, dan berapa lama kamu tinggal. Ini membantu memperbaiki situs dan membedakan manusia dari bot.",
+  "Kami tidak menyimpan alamat IP-mu, tidak menjual data, dan tidak memakai iklan pihak ketiga.",
+  "Jika masuk dengan Google, kami juga menyimpan nama, email, dan fotomu, hanya untuk mengenali suara atau timmu.",
+  "Tim dan preferensimu disimpan di browsermu (penyimpanan lokal). Kamu bisa menghapusnya dengan membersihkan data situs.",
 ]
 export default D

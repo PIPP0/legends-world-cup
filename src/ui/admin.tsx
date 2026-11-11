@@ -105,6 +105,8 @@ function Stat({ n, l, activo, onClick }: { n: string | number; l: string; activo
 type Clave = 'visitantes' | 'cuentas' | 'nuevos' | 'activos' | 'mundiales' | 'mundiales7' | 'satisfaccion' | 'entretenido' | 'realismo'
 const estrellasTxt = (n: number) => '★'.repeat(n) + '☆'.repeat(Math.max(0, 5 - n))
 const corto = (uid: string) => '…' + uid.slice(-6)
+// ¿Persona o robot? Solo señales del navegador: automatizado declarado, interacción real y tiempo en pantalla.
+const senal = (x: UsuarioReg) => x.auto ? '🤖 Posible bot' : x.inter ? '✅ Humano probable' : x.seg !== undefined ? '⚪ Sin actividad' : '— Sin datos'
 
 function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: ProgresoReg[] }) {
   const [sel, setSel] = useState<string | null>(null)
@@ -117,8 +119,8 @@ function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: Progre
   return (
     <>
       <p className="muted small">Toca una fila para ver todo lo que se sabe de esa persona. El país es aproximado (por zona horaria del navegador, no por IP).</p>
-      <div className="tscroll"><table className="gt"><thead><tr><th className="l">ID</th><th className="l">Persona</th><th className="l">País</th><th>Último</th><th>Visitas</th><th className="l">Dispositivo</th><th className="l">Sistema · navegador</th><th className="l">Idioma</th></tr></thead>
-        <tbody>{l.map((x) => <tr key={x.uid} className={`fila-sel${sel === x.uid ? ' on' : ''}`} onClick={() => setSel(sel === x.uid ? null : x.uid)} style={{ cursor: 'pointer' }}><td className="l" title={x.uid}>{corto(x.uid)}</td><td className="l">{x.nombre || x.email || (x.anonimo ? 'Anónimo' : '—')}</td><td className="l">{paisTxt(x)}</td><td>{fecha(x.ultimo)}</td><td>{x.visitas}</td><td className="l">{x.dispositivo || '—'}</td><td className="l">{x.sistema ? `${x.sistema} · ${x.navegador ?? ''}` : '—'}</td><td className="l">{x.idiomaWeb || x.idioma || '—'}</td></tr>)}</tbody></table></div>
+      <div className="tscroll"><table className="gt"><thead><tr><th className="l">ID</th><th className="l">Persona</th><th className="l">País</th><th>Último</th><th>Visitas</th><th className="l">Dispositivo</th><th className="l">Sistema · navegador</th><th className="l">Idioma</th><th className="l">Señal</th></tr></thead>
+        <tbody>{l.map((x) => <tr key={x.uid} className={`fila-sel${sel === x.uid ? ' on' : ''}`} onClick={() => setSel(sel === x.uid ? null : x.uid)} style={{ cursor: 'pointer' }}><td className="l" title={x.uid}>{corto(x.uid)}</td><td className="l">{x.nombre || x.email || (x.anonimo ? 'Anónimo' : '—')}</td><td className="l">{paisTxt(x)}</td><td>{fecha(x.ultimo)}</td><td>{x.visitas}</td><td className="l">{x.dispositivo || '—'}</td><td className="l">{x.sistema ? `${x.sistema} · ${x.navegador ?? ''}` : '—'}</td><td className="l">{x.idiomaWeb || x.idioma || '—'}</td><td className="l">{senal(x)}</td></tr>)}</tbody></table></div>
       {barra}
       {u && (
         <div className="detalle-stat"><h4 className="sub">{u.nombre || u.email || `Visitante ${corto(u.uid)}`}</h4>
@@ -127,7 +129,7 @@ function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: Progre
             {fila('País (aproximado)', paisTxt(u))}{fila('Zona horaria', u.zona)}
             {fila('Idioma del navegador', u.idioma)}{fila('Idioma en que se abrió la web', u.idiomaWeb)}
             {fila('Dispositivo', u.dispositivo)}{fila('Sistema', u.sistema)}{fila('Navegador', u.navegador)}{fila('Pantalla', u.pantalla)}
-            {fila('Llegó desde', u.origen)}{fila('Primera visita', fecha(u.creado))}{fila('Última visita', fecha(u.ultimo))}{fila('Visitas', u.visitas)}
+            {fila('Señal', senal(u))}{fila('Tiempo con la pestaña visible', u.seg === undefined ? undefined : `${u.seg} s`)}{fila('Pantallas vistas (última visita)', u.pags)}{fila('Llegó desde', u.origen)}{fila('Primera visita', fecha(u.creado))}{fila('Última visita', fecha(u.ultimo))}{fila('Visitas', u.visitas)}
             {fila('Avance en la historia', prog ? `${NIVELES[prog.nivel] ?? prog.nivel} (actualizado ${fecha(prog.actualizado)})` : 'Sin avance guardado')}
           </tbody></table>
         </div>

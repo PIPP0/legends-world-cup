@@ -1,7 +1,7 @@
 import { NUBE_ACTIVA, nube } from './firebase'
 import type { AltTournament } from '../types'
 
-export interface UsuarioReg { uid: string; email: string; nombre: string; foto: string; anonimo: boolean; creado: number; ultimo: number; visitas: number; idioma?: string; dispositivo?: string; pais?: string; zona?: string; sistema?: string; navegador?: string; pantalla?: string; origen?: string; idiomaWeb?: string }
+export interface UsuarioReg { uid: string; email: string; nombre: string; foto: string; anonimo: boolean; creado: number; ultimo: number; visitas: number; idioma?: string; dispositivo?: string; pais?: string; zona?: string; sistema?: string; navegador?: string; pantalla?: string; origen?: string; idiomaWeb?: string; auto?: boolean; inter?: boolean; seg?: number; pags?: number }
 export interface EncuestaReg { id: string; uid: string; tipo: 'general' | 'mundial'; estrellas: number; estrellas2?: number; comentario?: string; datos?: string; pantalla?: string; creada: number }
 export interface MundialReg { id: string; uid: string; sede: string; mes: number; clima: string; primes: number; formato: string; campeon: string; semilla: string; creada: number }
 export interface ProgresoReg { uid: string; nivel: number; actualizado: number }

@@ -913,5 +913,12 @@ const D: string[] = [
   "Montei meu Time Ideal no Legends World Cup. Você consegue superá-lo?",
   "Abrir {red}",
   "Baixe a imagem e anexe-a à sua publicação.",
+  "Privacidade",
+  "Que dados guardamos e para quê",
+  "Este site não pede seu nome nem e-mail para ser usado. Ao entrar, seu navegador recebe uma conta anônima (um identificador aleatório) para guardar seus votos e seu progresso.",
+  "Com essa conta guardamos dados técnicos do navegador: país aproximado (pelo fuso horário, não pelo IP), sistema, navegador, tamanho da tela, idioma, de onde você veio, se houve interação e quanto tempo ficou. Servem para melhorar o site e distinguir pessoas de robôs.",
+  "Não guardamos seu endereço IP, não vendemos dados nem usamos publicidade de terceiros.",
+  "Se você entrar com o Google, guardamos também seu nome, e-mail e foto, apenas para identificar seu voto ou seu time.",
+  "Seus times e preferências ficam no seu navegador (armazenamento local). Você pode apagá-los limpando os dados do site.",
 ]
 export default D

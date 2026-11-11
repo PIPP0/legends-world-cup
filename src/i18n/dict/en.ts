@@ -913,5 +913,12 @@ const D: string[] = [
   "I built my Ideal Eleven in Legends World Cup. Can you beat it?",
   "Open {red}",
   "Download the image and attach it to your post.",
+  "Privacy",
+  "What data we keep and why",
+  "This site doesn't ask for your name or email. When you arrive, your browser gets an anonymous account (a random identifier) to save your votes and progress.",
+  "With that account we keep technical browser data: approximate country (from time zone, not IP), system, browser, screen size, language, where you came from, whether you interacted and how long you stayed. It helps us improve the site and tell people from bots.",
+  "We don't store your IP address, sell data or use third-party advertising.",
+  "If you sign in with Google, we also keep your name, email and photo, only to identify your vote or your team.",
+  "Your teams and preferences are saved in your browser (local storage). You can erase them by clearing the site's data.",
 ]
 export default D

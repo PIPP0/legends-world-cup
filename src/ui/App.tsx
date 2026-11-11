@@ -10,6 +10,7 @@ import { Home, Story } from './pages1'
 import { Compare, PlayerPage, Players, Team, Teams } from './pages2'
 import { Groups, MatchPage, Matches } from './pages3'
 import { Bracket, Simulator, Stats } from './pages4'
+import { Privacidad } from './privacidad'
 import { Credits } from './credits'
 import { Mundial } from './mundial'
 import { Vivo } from './vivo'
@@ -60,6 +61,7 @@ function Page({ route }: { route: string }) {
     case 'mvp': return <MvpPage />
     case 'duelo': return fun.duelo ? <Duelo /> : <Note>{t('El duelo no está disponible por ahora.')} <a href="#/">{t('Volver al inicio')}</a></Note>
     case 'creditos': return <Credits />
+    case 'privacidad': return <Privacidad />
     case 'mundial': return fun.simulaMundial ? <Mundial /> : <Note>{t('«Simula tu mundial» no está disponible por ahora.')} <a href="#/">{t('Volver al inicio')}</a></Note>
     case 'vivo': return <Vivo />
     case 'admin': return <Admin />
@@ -105,7 +107,7 @@ export default function App() {
       <footer>
         <Logo />
         <p>{t('Proyecto de ficción deportiva. Los nombres y trayectorias son históricos; las valoraciones, atributos, resultados del torneo y estadísticas son ficticios o estimados por el modelo.')}</p>
-        <p>{t('Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre.')} <a href="#/creditos" style={{ textDecoration: 'underline' }}>{t('Ver créditos de cada foto')}</a>. <DonateLink /></p>
+        <p>{t('Banderas: flagcdn.com · Fotografías: Wikipedia/Wikimedia Commons con licencia libre.')} <a href="#/creditos" style={{ textDecoration: 'underline' }}>{t('Ver créditos de cada foto')}</a> · <a href="#/privacidad" style={{ textDecoration: 'underline' }}>{t('Privacidad')}</a>. <DonateLink /></p>
       </footer>
       {more && <div className="sheet-bg" onClick={() => setMore(false)} />}
       {more && (

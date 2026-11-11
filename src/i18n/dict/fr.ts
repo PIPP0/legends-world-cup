@@ -913,5 +913,12 @@ const D: string[] = [
   "J’ai composé mon Onze idéal sur Legends World Cup. Peux-tu le battre ?",
   "Ouvrir {red}",
   "Télécharge l’image et joins-la à ta publication.",
+  "Confidentialité",
+  "Quelles données nous gardons et pourquoi",
+  "Ce site ne te demande ni nom ni e-mail. En arrivant, ton navigateur reçoit un compte anonyme (un identifiant aléatoire) pour enregistrer tes votes et ta progression.",
+  "Avec ce compte, nous gardons des données techniques du navigateur : pays approximatif (d’après le fuseau horaire, pas l’IP), système, navigateur, taille d’écran, langue, d’où tu viens, s’il y a eu une interaction et combien de temps tu es resté. Elles servent à améliorer le site et à distinguer les personnes des robots.",
+  "Nous ne stockons pas ton adresse IP, ne vendons pas de données et n’utilisons pas de publicité tierce.",
+  "Si tu te connectes avec Google, nous gardons aussi ton nom, ton e-mail et ta photo, uniquement pour identifier ton vote ou ton équipe.",
+  "Tes équipes et préférences sont enregistrées dans ton navigateur (stockage local). Tu peux les effacer en supprimant les données du site.",
 ]
 export default D
