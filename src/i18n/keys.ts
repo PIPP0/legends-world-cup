@@ -773,4 +773,7 @@ export const KEYS: string[] = [
   "De acuerdo",
   "En desacuerdo",
   "Porcentajes iniciales de referencia; los votos de la gente se van sumando (uno por cuenta).",
+  "¿Disfrutaste tu mundial? Nos ayudas a crecer y seguir mejorando con un apoyo voluntario.",
+  "Esta historia sigue creciendo gracias a ti. Nos ayudas a crecer y seguir mejorando con un apoyo voluntario.",
+  "Nos ayudas a crecer y seguir mejorando. Si te gusta el proyecto, puedes apoyarlo de forma voluntaria.",
 ]

@@ -773,5 +773,8 @@ const D: string[] = [
   "Agree",
   "Disagree",
   "Starting reference percentages; people’s votes are added on top (one per account).",
+  "Did you enjoy your World Cup? You help us grow and keep improving with a voluntary contribution.",
+  "This story keeps growing thanks to you. You help us grow and keep improving with a voluntary contribution.",
+  "You help us grow and keep improving. If you like the project, you can support it voluntarily.",
 ]
 export default D

@@ -35,4 +35,7 @@ export const EXTRA: Array<[string, string]> = [
   ['De acuerdo', 'Agree'],
   ['En desacuerdo', 'Disagree'],
   ['Porcentajes iniciales de referencia; los votos de la gente se van sumando (uno por cuenta).', 'Starting reference percentages; people’s votes are added on top (one per account).'],
+  ['¿Disfrutaste tu mundial? Nos ayudas a crecer y seguir mejorando con un apoyo voluntario.', 'Did you enjoy your World Cup? You help us grow and keep improving with a voluntary contribution.'],
+  ['Esta historia sigue creciendo gracias a ti. Nos ayudas a crecer y seguir mejorando con un apoyo voluntario.', 'This story keeps growing thanks to you. You help us grow and keep improving with a voluntary contribution.'],
+  ['Nos ayudas a crecer y seguir mejorando. Si te gusta el proyecto, puedes apoyarlo de forma voluntaria.', 'You help us grow and keep improving. If you like the project, you can support it voluntarily.'],
 ]

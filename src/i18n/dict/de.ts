@@ -773,5 +773,8 @@ const D: string[] = [
   "Einverstanden",
   "Nicht einverstanden",
   "Start-Prozentwerte als Orientierung; die Stimmen der Leute werden addiert (eine pro Konto).",
+  "Hat dir deine WM gefallen? Du hilfst uns zu wachsen und uns weiter zu verbessern – mit einer freiwilligen Unterstützung.",
+  "Diese Geschichte wächst dank dir weiter. Du hilfst uns zu wachsen und uns weiter zu verbessern – mit einer freiwilligen Unterstützung.",
+  "Du hilfst uns zu wachsen und uns weiter zu verbessern. Wenn dir das Projekt gefällt, kannst du es freiwillig unterstützen.",
 ]
 export default D

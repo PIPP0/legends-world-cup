@@ -773,5 +773,8 @@ const D: string[] = [
   "Setuju",
   "Tidak setuju",
   "Persentase awal sebagai acuan; suara orang-orang ditambahkan (satu per akun).",
+  "Suka dengan Piala Dunia-mu? Kamu membantu kami tumbuh dan terus berbenah lewat dukungan sukarela.",
+  "Kisah ini terus tumbuh berkat kamu. Kamu membantu kami tumbuh dan terus berbenah lewat dukungan sukarela.",
+  "Kamu membantu kami tumbuh dan terus berbenah. Jika kamu suka proyek ini, kamu bisa mendukungnya secara sukarela.",
 ]
 export default D

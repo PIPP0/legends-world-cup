@@ -223,7 +223,7 @@ export function Reveal({ t, onAgain }: { t: AltTournament; onAgain: () => void }
         <WorldSummary alt={t} />
         <p className="center">{tr('Final: {x}', { x: '' })}<b>{TEAM_BY_ID[f.a!].name} {f.ga}–{f.gb} {TEAM_BY_ID[f.b!].name}</b>{f.pens ? tr(' (penales {a}–{b})', { a: f.pens[0], b: f.pens[1] }) : f.et ? tr(' (prórroga)') : ''}</p>
         <div className="why-box"><h4>{tr('¿Qué influyó en la final?')}</h4><p>{why.verdictText}</p><ul className="why">{why.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul></div>
-        {!COBRO_ACTIVO && <DonateBox />}
+        {!COBRO_ACTIVO && <DonateBox momento="mundial" />}
         <EncuestaMundial seed={t.seed} datos={`${t.world ? HOST_BY_ID[t.world.hostId].name : tr('neutral')} · ${t.world?.month ? MONTHS[t.world.month - 1] : ''} · ${tr('campeón {n}', { n: TEAM_BY_ID[champ].name })}`.slice(0, 120)} />
         <div className="cta"><button className="btn pri" onClick={onAgain}>{tr('Simular otro mundial')}</button><a className="btn" href="#/cuadro">{tr('Ver en Eliminatorias')}</a></div>
       </Section>

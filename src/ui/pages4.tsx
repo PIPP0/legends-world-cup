@@ -135,7 +135,7 @@ function CampeonDetalle() {
       <p className="small muted">{tr('Solo cuenta los goles de octavos, cuartos, semifinales, tercer puesto y final. No incluye la fase de grupos. El total del torneo está en Estadísticas.')}</p>
       <ol className="rules">{top.map(([id, n]) => <li key={id}><a href={`#/jugador/${id}`}>{PLAYER_BY_ID[id].name}</a> ({TEAM_BY_ID[PLAYER_BY_ID[id].teamId].name}) · {n > 1 ? tr('{n} goles', { n }) : tr('{n} gol', { n })}</li>)}</ol>
       <p className="small muted">{tr('Las estadísticas, los partidos, las selecciones y los jugadores ya incluyen estos resultados. En Estadísticas, los goles son del torneo completo: fase de grupos más estas eliminatorias.')}</p>
-      <DonateBox />
+      <DonateBox momento="campeon" />
     </Section>
   )
 }

@@ -773,5 +773,8 @@ const D: string[] = [
   "Concordo",
   "Discordo",
   "Porcentagens iniciais de referência; os votos das pessoas vão sendo somados (um por conta).",
+  "Curtiu a sua Copa do Mundo? Você nos ajuda a crescer e seguir melhorando com um apoio voluntário.",
+  "Esta história continua crescendo graças a você. Você nos ajuda a crescer e seguir melhorando com um apoio voluntário.",
+  "Você nos ajuda a crescer e seguir melhorando. Se gostou do projeto, pode apoiá-lo de forma voluntária.",
 ]
 export default D

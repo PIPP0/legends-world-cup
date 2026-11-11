@@ -89,13 +89,34 @@ export function DonateIcon() {
 }
 
 // Apoyo voluntario: no desbloquea nada, solo agradece. Solo se muestra si hay un enlace configurado.
-export function DonateBox() {
+// Invitación de apoyo con mensaje según el momento. Reglas para no ser invasiva:
+//  · los momentos de alegría (campeón, fin de tu mundial) siempre pueden mostrarla; los demás, solo si no se mostró ya otra en esta visita;
+//  · si la persona la cierra o hace clic, no se le vuelve a mostrar por 30 días (queda el enlace pequeño del pie de página);
+//  · nunca bloquea nada ni muestra montos.
+type MomentoDonar = 'general' | 'mundial' | 'campeon'
+const OCULTAR_DIAS = 30
+const leerOculta = (): boolean => { try { const t = Number(localStorage.getItem('lwc:donar:oculta')); return t > 0 && Date.now() - t < OCULTAR_DIAS * 86_400_000 } catch { return false } }
+const ocultar = () => { try { localStorage.setItem('lwc:donar:oculta', String(Date.now())) } catch { /* sin almacenamiento */ } }
+let mostradaEnVisita = false
+
+export function DonateBox({ momento = 'general' }: { momento?: MomentoDonar }) {
   const f = useFunciones()
-  if (!f.donaciones || !DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
+  const [visible, setVisible] = useState(() => {
+    if (leerOculta()) return false
+    return momento !== 'general' || !mostradaEnVisita
+  })
+  useEffect(() => { if (visible) mostradaEnVisita = true }, [visible])
+  if (!visible || !f.donaciones || !DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
+  const texto = momento === 'mundial'
+    ? tr('¿Disfrutaste tu mundial? Nos ayudas a crecer y seguir mejorando con un apoyo voluntario.')
+    : momento === 'campeon'
+      ? tr('Esta historia sigue creciendo gracias a ti. Nos ayudas a crecer y seguir mejorando con un apoyo voluntario.')
+      : tr('Nos ayudas a crecer y seguir mejorando. Si te gusta el proyecto, puedes apoyarlo de forma voluntaria.')
   return (
-    <div className="note">
-      {tr('¿Te gustó? El mundial es gratis; si quieres, puedes apoyar el proyecto de forma voluntaria.')}{' '}
-      <a className="btn" href={DONATE_URL} target="_blank" rel="noopener noreferrer">{tr('☕ Apoyar (opcional)')}</a>
+    <div className="note donar-box">
+      <span>{texto}</span>{' '}
+      <a className="btn" href={DONATE_URL} target="_blank" rel="noopener noreferrer" onClick={ocultar}>{tr('☕ Apoyar (opcional)')}</a>
+      <button type="button" className="donar-x" aria-label={tr('Cerrar')} title={tr('Cerrar')} onClick={() => { ocultar(); setVisible(false) }}>✕</button>
     </div>
   )
 }
