@@ -62,7 +62,7 @@ function Nodo({ p, x, y, marca, onClick, etiqueta, activo }: { p?: Player; x: nu
       <text x={x + 5.6} y={Y + 5.4} textAnchor="middle" className="pnn">{p.ovr}</text>
       <rect x={x - w / 2} y={Y + 6.8} width={w} height="3.8" rx="1.9" className="tag" />
       <text x={x} y={Y + 9.5} textAnchor="middle" className="pnl">{nm}</text>
-      {marca === 'atacante' && <text x={x - 5.8} y={Y - 3.6} className="mk" textAnchor="middle">⚔</text>}
+      {marca === 'atacante' && <text x={x - 5.8} y={Y - 3.6} className="mk" textAnchor="middle">⚽</text>}
       {marca === 'defensor' && <text x={x - 5.8} y={Y - 3.6} className="mk" textAnchor="middle">🛡</text>}
       {marca === 'cansado' && <text x={x - 5.8} y={Y - 3.6} className="mk" textAnchor="middle">💤</text>}
     </g>
@@ -142,7 +142,7 @@ function Detalle({ p, bonus = 0, rol, children }: { p: Player; bonus?: number; r
         <div><b>{p.name}</b><span><Flag id={p.teamId} size={16} /> {t.name} · {posLabel(p.pos)}</span></div>
         <em className="d-ovr">{p.ovr}{bonus > 0 && <small>+{bonus}</small>}</em>
       </div>
-      <div className="d-poder"><span>⚔ {tr('Poder de ataque')} <b>{Math.round(poderAtaque(p))}</b>{bonus > 0 && <small>+{bonus}</small>}</span><span>🛡 {tr('Poder de defensa')} <b>{Math.round(poderDefensa(p))}</b>{bonus > 0 && <small>+{bonus}</small>}</span></div>
+      <div className="d-poder"><span>⚽ {tr('Poder de ataque')} <b>{Math.round(poderAtaque(p))}</b>{bonus > 0 && <small>+{bonus}</small>}</span><span>🛡 {tr('Poder de defensa')} <b>{Math.round(poderDefensa(p))}</b>{bonus > 0 && <small>+{bonus}</small>}</span></div>
       <p className="d-explica">{p.line === 'GK' ? tr('Los arqueros no atacan ni defienden: su valor está en las paradas.') : <>{rol !== 'def' && <>{tr('Poder de ataque')}: {textoFormula(formulaAtaque(p))}. </>}{rol !== 'atk' && <>{tr('Poder de defensa')}: {textoFormula(formulaDefensa(p))}. </>}{tr('No es la valoración general ({n}): solo cuenta lo que importa en esa jugada.', { n: p.ovr })}{bonus > 0 && <> {tr('«+{n}» es la sinergia de su país.', { n: bonus })}</>}</>}</p>
       <div>{atributos.map((a) => <Bar key={a.k} label={attrLabel(a.k)} v={a.v} min={40} />)}</div>
       {children}
@@ -209,7 +209,7 @@ function Presentacion({ armar }: { armar: () => void }) {
     <div className="duelo d-land">
       <section className="d-portada">
         <div className="d-portada-txt">
-          <p className="kicker">⚔ {tr('Nuevo')}</p>
+          <p className="kicker">⚽ {tr('Nuevo')}</p>
           <h1>{tr('Prepárate para competir y ganar')}<br /><span>{tr('con tu equipo ideal.')}</span></h1>
           <p className="d-bajada">{tr('Elige a las mayores leyendas de la historia, entrena en duelos de 5 rondas contra la máquina y prepárate para competir contra otras personas.')}</p>
           <ul className="d-chips-top"><li>⏱ {tr('4 minutos por duelo')}</li><li>🎲 {tr('Cada draft es distinto')}</li><li>🔒 {tr('Tu equipo es para siempre')}</li><li className="d-pronto">🏆 {tr('Pronto: ranking y duelos contra otras personas')}</li></ul>
@@ -224,7 +224,7 @@ function Presentacion({ armar }: { armar: () => void }) {
       </section>
       <ol className="d-pasos2">
         <li><span className="d-paso-n">1</span><div className="d-trio">{TRIO.map((id) => <Avatar key={id} p={PLAYER_BY_ID[id]} size={44} />)}</div><b>{tr('Elige 1 de 3')}</b><p>{tr('En cada puesto te ofrecemos tres leyendas. Tú decides quién entra a tu once.')}</p></li>
-        <li><span className="d-paso-n">2</span><div className="d-iconos"><i>⚔</i><i>🛡</i></div><b>{tr('Ataca y defiende')}</b><p>{tr('Cada ronda eliges un atacante y un defensor. Los que uses se cansan: rota a tu plantel.')}</p></li>
+        <li><span className="d-paso-n">2</span><div className="d-iconos"><i>⚽</i><i>🛡</i></div><b>{tr('Ataca y defiende')}</b><p>{tr('Cada ronda eliges un atacante y un defensor. Los que uses se cansan: rota a tu plantel.')}</p></li>
         <li><span className="d-paso-n">3</span><div className="d-medallas"><i className="n-bronce" /><i className="n-plata" /><i className="n-oro" /><i className="n-leyenda" /></div><b>{tr('Sube de nivel')}</b><p>{tr('Vence a la máquina de Bronce a Leyenda y prepárate para el ranking.')}</p></li>
       </ol>
       <p className="d-sinergia">🤝 {tr('Tres jugadores de un mismo país dan una sinergia: más fuerza para todo tu equipo.')}</p>
@@ -390,14 +390,20 @@ function RanuraRonda({ tipo, id, activa, onQuitar, bonus = 0 }: { tipo: 'atk' | 
   const atk = tipo === 'atk'
   return (
     <div className={`d-slot ${tipo}${p ? ' lleno' : ''}${activa ? ' activa' : ''}`}>
-      <span className="d-slot-ic" aria-hidden>{atk ? '⚔' : '🛡'}</span>
+      <span className="d-slot-ic" aria-hidden>{atk ? '⚽' : '🛡'}</span>
       <div className="d-slot-tx">
         <b>{atk ? tr('Tu ataque') : tr('Tu defensa')}</b>
         <span className="muted small">{atk ? tr('Intenta marcar un gol') : tr('Frena el ataque rival')}</span>
       </div>
-      {p ? (
-        <div className="d-slot-j"><div className="d-slot-av"><Avatar p={p} size={44} /></div><span><b>{p.name}</b><i title={tr('Poder base {a} + sinergia {b}', { a: Math.round(atk ? poderAtaque(p) : poderDefensa(p)), b: bonus })}>{tr(atk ? 'Poder de ataque {n}' : 'Poder de defensa {n}', { n: Math.round(atk ? poderAtaque(p) : poderDefensa(p)) + bonus })}{bonus > 0 && <small> ({Math.round(atk ? poderAtaque(p) : poderDefensa(p))} +{bonus})</small>}</i></span><button type="button" className="d-slot-x" onClick={onQuitar} aria-label={tr('Quitar')} title={tr('Quitar')}>✕</button></div>
-      ) : <span className="d-slot-vacio">{activa ? '👆 ' : ''}{tr('Toca a un jugador de tu cancha')}</span>}
+      {p ? (() => {
+        const base = Math.round(atk ? poderAtaque(p) : poderDefensa(p)), total = base + bonus
+        return (
+          <div className="d-slot-j"><div className="d-slot-av"><Avatar p={p} size={44} /></div>
+            <span><b>{p.name}</b><em>{atk ? tr('Poder de ataque') : tr('Poder de defensa')}</em><span className="d-slot-bar" aria-hidden><i style={{ width: `${Math.max(4, Math.min(100, ((total - 40) / 60) * 100))}%` }} /></span></span>
+            <div className="d-slot-n" title={tr('Poder base {a} + sinergia {b}', { a: base, b: bonus })}><b>{total}</b>{bonus > 0 && <small>{base} +{bonus}</small>}</div>
+            <button type="button" className="d-slot-x" onClick={onQuitar} aria-label={tr('Quitar')} title={tr('Quitar')}>✕</button></div>
+        )
+      })() : <span className="d-slot-vacio">{activa ? '👆 ' : ''}{tr('Toca a un jugador de tu cancha')}</span>}
     </div>
   )
 }
@@ -508,7 +514,7 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
                         <div className="cta">
                           {(() => {
                             // El botón principal es el del paso que toca (primero ataque, luego defensa); el otro rol queda como opción discreta.
-                            const bAtk = <button key="a" className={`btn ${atk && def ? '' : 'pri'}`} disabled={!puedeUsar(p.id) || def === p.id} onClick={() => { setAtk(p.id); setSel(null) }}>⚔ {tr('Atacar con él')}</button>
+                            const bAtk = <button key="a" className={`btn ${atk && def ? '' : 'pri'}`} disabled={!puedeUsar(p.id) || def === p.id} onClick={() => { setAtk(p.id); setSel(null) }}>⚽ {tr('Atacar con él')}</button>
                             const bDef = <button key="d" className={`btn ${atk && def ? '' : 'pri'}`} disabled={!puedeUsar(p.id) || atk === p.id} onClick={() => { setDef(p.id); setSel(null) }}>🛡 {tr('Defender con él')}</button>
                             // Solo el rol que toca; con las dos ranuras llenas, ambos (para cambiar).
                             return !atk ? [bAtk] : !def ? [bDef] : [bAtk, bDef]
@@ -557,8 +563,8 @@ function EscenaJugada({ j, mio, titulo }: { j: ResultadoRonda['mia']; mio: boole
     <div className={`d-escena ${j.resultado}${mio ? ' mio' : ' su'}`}>
       <p className="d-esc-t">{titulo}</p>
       <div className="d-esc-fila">
-        <div className="d-esc-j a"><Avatar p={at} size={92} /><b>{at.name}</b><small>⚔ {Math.round(poderAtaque(at))}</small></div>
-        <span className="d-esc-x" aria-hidden>⚔</span>
+        <div className="d-esc-j a"><Avatar p={at} size={92} /><b>{at.name}</b><small>⚽ {Math.round(poderAtaque(at))}</small></div>
+        <span className="d-esc-x" aria-hidden>⚽</span>
         <div className={`d-esc-j d ${pasa ? 'vencido' : 'gana'}`}><Avatar p={df} size={92} /><b>{df.name}</b><small>🛡 {Math.round(poderDefensa(df))}</small><em>{pasa ? tr('Superado') : tr('Corta')}</em></div>
         {pasa && <><span className="d-esc-x l2" aria-hidden>→</span>
           <div className={`d-esc-j g ${j.resultado === 'gol' ? 'vencido' : 'gana'}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤 {Math.round(poderArquero(gk))}</small><em>{j.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
