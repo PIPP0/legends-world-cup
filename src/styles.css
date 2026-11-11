@@ -523,3 +523,4 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-dado{font-size:58px;filter:drop-shadow(0 0 18px rgba(0,229,255,.6));animation:dBota 2.6s ease-in-out infinite}@keyframes dBota{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-10px) rotate(10deg)}}
 .d-o{display:flex;align-items:center;gap:10px;width:100%;color:#8a96b8;font-size:12px;letter-spacing:1px;text-transform:uppercase}.d-o::before,.d-o::after{content:'';flex:1;height:1px;background:var(--line)}
 @media(prefers-reduced-motion:reduce){.d-dado{animation:none}}
+.d-chips-top li.d-pronto{border-color:rgba(255,213,74,.55);background:rgba(255,213,74,.1);color:#ffe9a0}

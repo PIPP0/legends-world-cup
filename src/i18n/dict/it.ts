@@ -877,5 +877,10 @@ const D: string[] = [
   "centravanti",
   "È ora di costruire la tua formazione!",
   "oppure scegli tu il ruolo",
+  "Preparati alla classifica.",
+  "Scegli le più grandi leggende della storia, allenati in duelli di 5 round contro la macchina e preparati a sfidare altre persone.",
+  "Presto: classifica e duelli contro altre persone",
+  "Batti la macchina dal Bronzo alla Leggenda e preparati alla classifica.",
+  "la tua formazione ideale, duelli di 5 round e presto la classifica",
 ]
 export default D

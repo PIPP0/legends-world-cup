@@ -877,5 +877,10 @@ const D: string[] = [
   "penyerang tengah",
   "Saatnya menyusun sebelasanmu!",
   "atau pilih posisinya sendiri",
+  "Bersiaplah untuk peringkat.",
+  "Pilih legenda terhebat dalam sejarah, berlatih lewat duel 5 ronde melawan mesin, dan bersiaplah bersaing dengan orang lain.",
+  "Segera hadir: peringkat dan duel melawan orang lain",
+  "Kalahkan mesin dari Perunggu hingga Legenda dan bersiaplah untuk peringkat.",
+  "sebelas idealmu, duel 5 ronde, dan segera peringkat",
 ]
 export default D

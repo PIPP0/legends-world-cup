@@ -139,4 +139,9 @@ export const EXTRA: Array<[string, string]> = [
   ['POSN·DC', 'striker'],
   ['¡Hora de armar tu once!', 'Time to build your eleven!'],
   ['o elige tú el puesto', 'or pick the spot yourself'],
+  ['Prepárate para el ranking.', 'Get ready for the ranking.'],
+  ['Elige a las mayores leyendas de la historia, entrena en duelos de 5 rondas contra la máquina y prepárate para competir contra otras personas.', 'Pick the greatest legends in history, train in 5-round duels against the machine and get ready to compete against other people.'],
+  ['Pronto: ranking y duelos contra otras personas', 'Coming soon: ranking and duels against other people'],
+  ['Vence a la máquina de Bronce a Leyenda y prepárate para el ranking.', 'Beat the machine from Bronze to Legend and get ready for the ranking.'],
+  ['tu once ideal, duelos de 5 rondas y pronto ranking', 'your ideal eleven, 5-round duels and a ranking soon'],
 ]

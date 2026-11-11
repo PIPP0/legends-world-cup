@@ -877,5 +877,10 @@ const D: string[] = [
   "centroavante",
   "Hora de montar seu time!",
   "ou escolha você a posição",
+  "Prepare-se para o ranking.",
+  "Escolha as maiores lendas da história, treine em duelos de 5 rodadas contra a máquina e prepare-se para competir contra outras pessoas.",
+  "Em breve: ranking e duelos contra outras pessoas",
+  "Vença a máquina do Bronze à Lenda e prepare-se para o ranking.",
+  "seu time ideal, duelos de 5 rodadas e em breve ranking",
 ]
 export default D

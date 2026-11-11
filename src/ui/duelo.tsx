@@ -131,9 +131,9 @@ function Presentacion({ armar }: { armar: () => void }) {
       <section className="d-portada">
         <div className="d-portada-txt">
           <p className="kicker">⚔ {tr('Nuevo')}</p>
-          <h1>{tr('Arma tu once ideal.')}<br /><span>{tr('Desafía a la máquina.')}</span></h1>
-          <p className="d-bajada">{tr('Elige a las mayores leyendas de la historia, juega duelos de 5 rondas en 4 minutos y sube del Bronce a la Leyenda.')}</p>
-          <ul className="d-chips-top"><li>⏱ {tr('4 minutos por duelo')}</li><li>🎲 {tr('Cada draft es distinto')}</li><li>🔒 {tr('Tu equipo es para siempre')}</li></ul>
+          <h1>{tr('Arma tu once ideal.')}<br /><span>{tr('Prepárate para el ranking.')}</span></h1>
+          <p className="d-bajada">{tr('Elige a las mayores leyendas de la historia, entrena en duelos de 5 rondas contra la máquina y prepárate para competir contra otras personas.')}</p>
+          <ul className="d-chips-top"><li>⏱ {tr('4 minutos por duelo')}</li><li>🎲 {tr('Cada draft es distinto')}</li><li>🔒 {tr('Tu equipo es para siempre')}</li><li className="d-pronto">🏆 {tr('Pronto: ranking y duelos contra otras personas')}</li></ul>
           <div className="cta"><button className="btn pri d-gran" onClick={armar}>{tr('Armar mi equipo')} →</button></div>
           <p className="small muted">{tr('Toma 2 minutos y es gratis.')}</p>
         </div>
@@ -146,7 +146,7 @@ function Presentacion({ armar }: { armar: () => void }) {
       <ol className="d-pasos2">
         <li><span className="d-paso-n">1</span><div className="d-trio">{TRIO.map((id) => <Avatar key={id} p={PLAYER_BY_ID[id]} size={44} />)}</div><b>{tr('Elige 1 de 3')}</b><p>{tr('En cada puesto te ofrecemos tres leyendas. Tú decides quién entra a tu once.')}</p></li>
         <li><span className="d-paso-n">2</span><div className="d-iconos"><i>⚔</i><i>🛡</i></div><b>{tr('Ataca y defiende')}</b><p>{tr('Cada ronda eliges un atacante y un defensor. Los que uses se cansan: rota a tu plantel.')}</p></li>
-        <li><span className="d-paso-n">3</span><div className="d-medallas"><i className="n-bronce" /><i className="n-plata" /><i className="n-oro" /><i className="n-leyenda" /></div><b>{tr('Sube de nivel')}</b><p>{tr('Vence a la máquina de Bronce a Leyenda y arma tu racha de victorias.')}</p></li>
+        <li><span className="d-paso-n">3</span><div className="d-medallas"><i className="n-bronce" /><i className="n-plata" /><i className="n-oro" /><i className="n-leyenda" /></div><b>{tr('Sube de nivel')}</b><p>{tr('Vence a la máquina de Bronce a Leyenda y prepárate para el ranking.')}</p></li>
       </ol>
       <p className="d-sinergia">🤝 {tr('Tres jugadores de un mismo país dan una sinergia: más fuerza para todo tu equipo.')}</p>
       <div className="cta d-cierre"><button className="btn pri d-gran" onClick={armar}>{tr('Armar mi equipo')} →</button></div>

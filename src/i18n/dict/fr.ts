@@ -877,5 +877,10 @@ const D: string[] = [
   "avant-centre",
   "C’est l’heure de composer ton onze !",
   "ou choisis toi-même le poste",
+  "Prépare-toi pour le classement.",
+  "Choisis les plus grandes légendes de l’histoire, entraîne-toi dans des duels de 5 manches contre la machine et prépare-toi à affronter d’autres personnes.",
+  "Bientôt : classement et duels contre d’autres personnes",
+  "Bats la machine du Bronze à la Légende et prépare-toi pour le classement.",
+  "ton onze idéal, des duels de 5 manches et bientôt un classement",
 ]
 export default D

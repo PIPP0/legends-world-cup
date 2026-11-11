@@ -877,5 +877,10 @@ const D: string[] = [
   "Mittelstürmer",
   "Zeit, deine Elf zusammenzustellen!",
   "oder wähle die Position selbst",
+  "Mach dich bereit für die Rangliste.",
+  "Wähle die größten Legenden der Geschichte, trainiere in Duellen über 5 Runden gegen die Maschine und bereite dich darauf vor, gegen andere Menschen anzutreten.",
+  "Bald: Rangliste und Duelle gegen andere Menschen",
+  "Besiege die Maschine von Bronze bis Legende und mach dich bereit für die Rangliste.",
+  "deine Traum-Elf, Duelle über 5 Runden und bald eine Rangliste",
 ]
 export default D
