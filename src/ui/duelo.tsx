@@ -18,6 +18,21 @@ const nuevaSemilla = (p: string) => `${p}-${Math.random().toString(36).slice(2, 
 const apellido = (n: string) => n.split(' ').slice(-1)[0]
 const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 
+// Cierra el detalle abierto al tocar fuera del recuadro (o con Esc). Tocar otro jugador o el propio detalle no lo cierra: eso lo maneja cada fila.
+function useCerrarFuera(abierto: boolean, cerrar: () => void) {
+  useEffect(() => {
+    if (!abierto) return
+    const fuera = (e: MouseEvent | TouchEvent) => {
+      const t = e.target as Element | null
+      if (t && t.closest('.d-det, .d-fila, .pn[role="button"]')) return
+      cerrar()
+    }
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') cerrar() }
+    document.addEventListener('mousedown', fuera); document.addEventListener('touchstart', fuera); document.addEventListener('keydown', esc)
+    return () => { document.removeEventListener('mousedown', fuera); document.removeEventListener('touchstart', fuera); document.removeEventListener('keydown', esc) }
+  }, [abierto, cerrar])
+}
+
 // ---------- cancha con los jugadores (mismo estilo que la «Alineación histórica») ----------
 type Marca = 'atacante' | 'defensor' | 'cansado' | 'elegible' | 'actual'
 function Nodo({ p, x, y, marca, onClick }: { p?: Player; x: number; y: number; marca?: Marca; onClick?: () => void }) {
@@ -109,6 +124,7 @@ export function Duelo() {
 // ---------- inicio: tu equipo + elegir rival ----------
 function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equipo | null; stats: Stats; nivel: Nivel; setNivel: (n: Nivel) => void; armar: () => void; jugar: () => void }) {
   const [sel, setSel] = useState<string | null>(null)
+  useCerrarFuera(sel !== null, () => setSel(null))
   if (!equipo) {
     return (
       <div className="duelo">
@@ -159,6 +175,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
   const terminado = formacion !== null && paso >= N_PICKS
   const opciones = useMemo(() => (formacion && !terminado ? ofertas(seed, formacion, paso, elegidos) : []), [formacion, paso, seed, terminado]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => setVista(null), [paso])
+  useCerrarFuera(vista !== null, () => setVista(null))
   if (!formacion) {
     return (
       <div className="duelo">
@@ -228,6 +245,7 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
   const [hist, setHist] = useState<Ronda[]>([])
   const [fase, setFase] = useState<'elegir' | 'resultado' | 'fin'>('elegir')
   const [guardado, setGuardado] = useState(false)
+  useCerrarFuera(sel !== null, () => setSel(null))
   const golesMios = hist.reduce((s, r) => s + r.res.golesMios, 0), golesSu = hist.reduce((s, r) => s + r.res.golesRival, 0)
   const bonus = useMemo(() => sinergias([...equipo.once, ...equipo.suplentes]), [equipo])
   const disponibles = [...equipo.once, ...(ronda >= 3 ? equipo.suplentes : [])]
