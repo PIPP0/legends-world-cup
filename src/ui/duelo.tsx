@@ -459,12 +459,17 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
   const p = sel ? PLAYER_BY_ID[sel] : null
   // escena de la ronda: se revela primero tu ataque y luego el del rival (con el rival mostrando lo que eligió)
   const [paso, setPaso] = useState(0)
+  const [beat, setBeat] = useState(1)
+  const [vel, setVel] = useLocalState<'normal' | 'rapida'>('lwc:duelo:vel', 'normal')
+  const ritmo = vel === 'rapida' ? { tiempo: 700, final: 1100 } : { tiempo: 1700, final: 2600 }
+  const avanzar = () => { if (paso >= 2) return; if (beat < 3) setBeat((b) => b + 1); else { setPaso((x) => x + 1); setBeat(1) } }
+  useEffect(() => { if (fase === 'resultado') { setPaso(0); setBeat(1) } }, [fase, ronda])
   useEffect(() => {
-    if (fase !== 'resultado') return
-    setPaso(0)
-    const t1 = setTimeout(() => setPaso(1), 2600), t2 = setTimeout(() => setPaso(2), 5200)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [fase, ronda])
+    if (fase !== 'resultado' || paso >= 2) return
+    const tm = setTimeout(avanzar, beat < 3 ? ritmo.tiempo : ritmo.final)
+    return () => clearTimeout(tm)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fase, paso, beat, vel])
   if (fase === 'resultado' && ultima) {
     // al revelar, se marca en cada cancha quién atacó y quién defendió
     marcas[ultima.mio.atacante] = 'atacante'; marcas[ultima.mio.defensor] = 'defensor'
@@ -526,16 +531,16 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
                   </>
                 ) : (
                   ultima && (
-                    <div className="d-escena-wrap">
-                      {paso === 0 && <EscenaJugada key="a" j={ultima.res.mia} mio titulo={tr('Tu ataque')} />}
-                      {paso === 1 && <EscenaJugada key="b" j={ultima.res.rival} mio={false} titulo={tr('Su ataque')} />}
+                    <div className="d-escena-wrap" onClick={paso < 2 ? avanzar : undefined} style={{ cursor: paso < 2 ? 'pointer' : undefined }}>
+                      {paso === 0 && <EscenaJugada key="a" j={ultima.res.mia} mio titulo={tr('Tu ataque')} beat={beat} />}
+                      {paso === 1 && <EscenaJugada key="b" j={ultima.res.rival} mio={false} titulo={tr('Su ataque')} beat={beat} />}
                       {paso === 2 && (
                         <div className="d-resumen">
                           <b>{tr('Resultado de la ronda {r}', { r: ronda })}</b>
                           <div className="d-resumen-fila"><span className={`d-pill ${ultima.res.mia.resultado}`}>{tr('Tu ataque')}: {resTxt(ultima.res.mia.resultado)}</span><span className={`d-pill ${ultima.res.rival.resultado}`}>{tr('Su ataque')}: {resTxt(ultima.res.rival.resultado)}</span></div>
                         </div>
                       )}
-                      <div className="cta">{paso < 2 ? <button className="btn ghost" onClick={() => setPaso(2)}>{tr('Saltar animación')}</button> : <button className="btn pri d-gran" onClick={siguiente}>{ronda >= RONDAS ? tr('Ver resultado final') : tr('Siguiente ronda')}</button>}</div>
+                      <div className="cta" onClick={(e) => e.stopPropagation()}>{paso < 2 ? <><button className="btn ghost" onClick={() => setPaso(2)}>{tr('Saltar animación')}</button><button className="btn ghost" onClick={() => setVel(vel === 'normal' ? 'rapida' : 'normal')}>{vel === 'normal' ? tr('Velocidad: normal') : tr('Velocidad: rápida')}</button></> : <button className="btn pri d-gran" onClick={siguiente}>{ronda >= RONDAS ? tr('Ver resultado final') : tr('Siguiente ronda')}</button>}</div>
                     </div>
                   )
                 )}
@@ -556,21 +561,24 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
 const resTxt = (r: 'gol' | 'atajada' | 'corte') => (r === 'gol' ? tr('¡GOL!') : r === 'atajada' ? tr('¡Atajada!') : tr('¡Cortado!'))
 
 // Una jugada animada: atacante contra defensor y, si lo supera, contra el arquero.
-function EscenaJugada({ j, mio, titulo }: { j: ResultadoRonda['mia']; mio: boolean; titulo: string }) {
+// La jugada se revela por tiempos: 1) atacante contra defensor, 2) quién supera a quién (y el arquero), 3) el resultado.
+function EscenaJugada({ j, mio, titulo, beat }: { j: ResultadoRonda['mia']; mio: boolean; titulo: string; beat: number }) {
   const at = PLAYER_BY_ID[j.atacante], df = PLAYER_BY_ID[j.defensor], gk = PLAYER_BY_ID[j.arquero]
   const pasa = j.resultado !== 'corte'
+  const v = (n: number) => (beat >= n ? 'rev' : 'oculto')
   return (
-    <div className={`d-escena ${j.resultado}${mio ? ' mio' : ' su'}`}>
+    <div className={`d-escena beats ${j.resultado}${mio ? ' mio' : ' su'}`}>
       <p className="d-esc-t">{titulo}</p>
+      <p className="d-esc-cap">{beat <= 1 ? tr('Atacante contra defensor') : beat === 2 ? (pasa ? tr('Si lo supera, remata contra el arquero') : tr('El defensor corta la jugada')) : '\u00a0'}</p>
       <div className="d-esc-fila">
-        <div className="d-esc-j a"><Avatar p={at} size={92} /><b>{at.name}</b><small>⚽ {Math.round(poderAtaque(at))}</small></div>
-        <span className="d-esc-x" aria-hidden>⚽</span>
-        <div className={`d-esc-j d ${pasa ? 'vencido' : 'gana'}`}><Avatar p={df} size={92} /><b>{df.name}</b><small>🛡 {Math.round(poderDefensa(df))}</small><em>{pasa ? tr('Superado') : tr('Corta')}</em></div>
-        {pasa && <><span className="d-esc-x l2" aria-hidden>→</span>
-          <div className={`d-esc-j g ${j.resultado === 'gol' ? 'vencido' : 'gana'}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤 {Math.round(poderArquero(gk))}</small><em>{j.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
+        <div className="d-esc-j a rev"><Avatar p={at} size={92} /><b>{at.name}</b><small>⚽ {Math.round(poderAtaque(at))}</small></div>
+        <span className={`d-esc-x ${v(1)}`} aria-hidden>⚽</span>
+        <div className={`d-esc-j d ${beat >= 2 ? (pasa ? 'vencido' : 'gana') : ''} rev`}><Avatar p={df} size={92} /><b>{df.name}</b><small>🛡 {Math.round(poderDefensa(df))}</small><em className={v(2)}>{pasa ? tr('Superado') : tr('Corta')}</em></div>
+        {pasa && <><span className={`d-esc-x l2 ${v(2)}`} aria-hidden>→</span>
+          <div className={`d-esc-j g ${beat >= 3 ? (j.resultado === 'gol' ? 'vencido' : 'gana') : ''} ${v(2)}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤 {Math.round(poderArquero(gk))}</small><em className={v(3)}>{j.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
       </div>
-      <div className="d-esc-res">{resTxt(j.resultado)}</div>
-      <small className="d-esc-p">{tr('Probabilidad de gol: {p} %', { p: Math.round(j.pGol * 100) })}</small>
+      <div className={`d-esc-res ${v(3)}`}>{resTxt(j.resultado)}</div>
+      <small className={`d-esc-p ${v(3)}`}>{tr('Probabilidad de gol: {p} %', { p: Math.round(j.pGol * 100) })}</small>
     </div>
   )
 }

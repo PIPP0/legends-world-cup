@@ -202,4 +202,9 @@ export const EXTRA: Array<[string, string]> = [
   ['Poder de ataque', 'Attack power'],
   ['Poder de defensa', 'Defence power'],
   ['No es la valoración general ({n}): solo cuenta lo que importa en esa jugada.', 'It is not the overall rating ({n}): only what matters in that play counts.'],
+  ['Atacante contra defensor', 'Attacker vs defender'],
+  ['Si lo supera, remata contra el arquero', 'If he beats him, he shoots at the keeper'],
+  ['El defensor corta la jugada', 'The defender stops the play'],
+  ['Velocidad: normal', 'Speed: normal'],
+  ['Velocidad: rápida', 'Speed: fast'],
 ]

@@ -940,5 +940,10 @@ const D: string[] = [
   "Puissance d’attaque",
   "Puissance de défense",
   "Ce n’est pas la note générale ({n}) : seul compte ce qui importe dans cette action.",
+  "Attaquant contre défenseur",
+  "S’il le dépasse, il tire sur le gardien",
+  "Le défenseur coupe l’action",
+  "Vitesse : normale",
+  "Vitesse : rapide",
 ]
 export default D

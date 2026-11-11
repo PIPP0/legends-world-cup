@@ -940,5 +940,10 @@ const D: string[] = [
   "Poder de ataque",
   "Poder de defesa",
   "Não é a avaliação geral ({n}): só conta o que importa naquela jogada.",
+  "Atacante contra defensor",
+  "Se o superar, finaliza contra o goleiro",
+  "O defensor corta a jogada",
+  "Velocidade: normal",
+  "Velocidade: rápida",
 ]
 export default D

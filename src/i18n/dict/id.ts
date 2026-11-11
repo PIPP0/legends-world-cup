@@ -940,5 +940,10 @@ const D: string[] = [
   "Kekuatan serangan",
   "Kekuatan bertahan",
   "Bukan rating umum ({n}): hanya yang penting dalam aksi itu yang dihitung.",
+  "Penyerang melawan bek",
+  "Jika melewatinya, ia menembak ke kiper",
+  "Bek menghentikan serangan",
+  "Kecepatan: normal",
+  "Kecepatan: cepat",
 ]
 export default D

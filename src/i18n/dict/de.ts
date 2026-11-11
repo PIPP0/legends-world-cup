@@ -940,5 +940,10 @@ const D: string[] = [
   "Angriffsstärke",
   "Abwehrstärke",
   "Das ist nicht die Gesamtwertung ({n}): Es zählt nur, was in dieser Aktion wichtig ist.",
+  "Angreifer gegen Verteidiger",
+  "Wenn er ihn überwindet, schießt er auf den Torwart",
+  "Der Verteidiger unterbindet die Aktion",
+  "Tempo: normal",
+  "Tempo: schnell",
 ]
 export default D

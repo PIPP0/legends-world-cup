@@ -940,4 +940,9 @@ export const KEYS: string[] = [
   "Poder de ataque",
   "Poder de defensa",
   "No es la valoración general ({n}): solo cuenta lo que importa en esa jugada.",
+  "Atacante contra defensor",
+  "Si lo supera, remata contra el arquero",
+  "El defensor corta la jugada",
+  "Velocidad: normal",
+  "Velocidad: rápida",
 ]

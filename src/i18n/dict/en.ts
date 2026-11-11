@@ -940,5 +940,10 @@ const D: string[] = [
   "Attack power",
   "Defence power",
   "It is not the overall rating ({n}): only what matters in that play counts.",
+  "Attacker vs defender",
+  "If he beats him, he shoots at the keeper",
+  "The defender stops the play",
+  "Speed: normal",
+  "Speed: fast",
 ]
 export default D
