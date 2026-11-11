@@ -172,4 +172,7 @@ export const EXTRA: Array<[string, string]> = [
   ['Elige un defensor', 'Pick a defender'],
   ['Elige un atacante', 'Pick an attacker'],
   ['Elige atacante y defensor', 'Pick attacker and defender'],
+  ['Armé mi Once Ideal en Legends World Cup. ¿Puedes superarlo?', 'I built my Ideal Eleven in Legends World Cup. Can you beat it?'],
+  ['Abrir {red}', 'Open {red}'],
+  ['Descarga la imagen y adjúntala en tu publicación.', 'Download the image and attach it to your post.'],
 ]

@@ -1,4 +1,4 @@
-import { CompartirEquipo } from './compartir'
+import { CompartirEquipo, type Red } from './compartir'
 import { useEffect, useMemo, useState } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { tr } from '../i18n'
@@ -82,6 +82,13 @@ function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta }: {
       })}
     </svg>
   )
+}
+
+// Iconos de las redes (trazos simples, un solo color).
+function IconoRed({ red }: { red: 'instagram' | 'facebook' | 'x' }) {
+  if (red === 'instagram') return <svg viewBox="0 0 24 24" aria-hidden><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="1.1" className="rl" /></svg>
+  if (red === 'facebook') return <svg viewBox="0 0 24 24" aria-hidden><path d="M14 8.5h2.4V5.2H14c-2.2 0-3.7 1.5-3.7 3.7v1.8H8v3.2h2.3V21h3.3v-7.3H16l.5-3.2h-2.9V9c0-.3.2-.5.4-.5z" className="rl" /></svg>
+  return <svg viewBox="0 0 24 24" aria-hidden><path d="M17.6 4h2.9l-6.3 7.2L21.6 20h-5.8l-4.5-5.9L6.1 20H3.2l6.7-7.7L2.6 4h5.9l4.1 5.4zm-1 14.3h1.6L7.5 5.6H5.8z" className="rl" /></svg>
 }
 
 // Botón de compartir, discreto: icono + una palabra, sin competir con las acciones principales.
@@ -194,7 +201,7 @@ function Presentacion({ armar }: { armar: () => void }) {
 // ---------- inicio: tu equipo + elegir rival ----------
 function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equipo | null; stats: Stats; nivel: Nivel; setNivel: (n: Nivel) => void; armar: () => void; jugar: () => void }) {
   const [sel, setSel] = useState<string | null>(null)
-  const [compartir, setCompartir] = useState(false)
+  const [compartir, setCompartir] = useState<Red | boolean>(false)
   useCerrarFuera(sel !== null, () => setSel(null))
   if (!equipo) return <Presentacion armar={armar} />
   const ids = [...equipo.once, ...equipo.suplentes]
@@ -204,8 +211,8 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
   const mejor = ids.map((id) => PLAYER_BY_ID[id]).sort((a, b) => b.ovr - a.ovr)[0]
   return (
     <div className="duelo">
-      {compartir && <CompartirEquipo equipo={equipo} onClose={() => setCompartir(false)} />}
-      <header className="d-hero"><p className="kicker">{tr('Mi Once Ideal: Duelo')}</p><BotonCompartir onClick={() => setCompartir(true)} /><h1>{tr('Tu equipo')}</h1>
+      {compartir && <CompartirEquipo equipo={equipo} red={typeof compartir === 'string' ? compartir : undefined} onClose={() => setCompartir(false)} />}
+      <header className="d-hero"><p className="kicker">{tr('Mi Once Ideal: Duelo')}</p><h1>{tr('Tu equipo')}</h1>
         <p className="muted">{equipo.formacion} · {tr('Valoración media')} {valorEquipo(equipo)}{pais.length > 0 && <> · {tr('Sinergias')}: {pais.map((s) => `${TEAM_BY_ID[s.teamId].name} +${s.bonus}`).join(', ')}</>}</p></header>
       <div className="d-cols">
         <div>
@@ -222,6 +229,10 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
                 <div><b>{pais.length}</b><span>{tr('Sinergias')}</span></div>
               </div>
               <p className="muted small">{tr('Toca a un jugador de la cancha para ver su detalle.')}</p>
+              <div className="d-redes" role="group" aria-label={tr('Compartir mi equipo')}>
+                <span>{tr('Compartir')}</span>
+                {(['instagram', 'facebook', 'x'] as Red[]).map((r) => <button key={r} type="button" className={`d-red ${r}`} onClick={() => setCompartir(r)} title={`${tr('Compartir mi equipo')} · ${r === 'x' ? 'X' : r[0].toUpperCase() + r.slice(1)}`} aria-label={r === 'x' ? 'X' : r[0].toUpperCase() + r.slice(1)}><IconoRed red={r} /></button>)}
+              </div>
             </div>
           )}
           <h3 className="sub">{tr('Elige a tu rival')}</h3>

@@ -910,4 +910,7 @@ export const KEYS: string[] = [
   "Elige un defensor",
   "Elige un atacante",
   "Elige atacante y defensor",
+  "Armé mi Once Ideal en Legends World Cup. ¿Puedes superarlo?",
+  "Abrir {red}",
+  "Descarga la imagen y adjúntala en tu publicación.",
 ]

@@ -910,5 +910,8 @@ const D: string[] = [
   "Pilih bek",
   "Pilih penyerang",
   "Pilih penyerang dan bek",
+  "Aku menyusun Sebelas Ideal di Legends World Cup. Bisakah kamu mengalahkannya?",
+  "Buka {red}",
+  "Unduh gambar dan lampirkan ke postinganmu.",
 ]
 export default D

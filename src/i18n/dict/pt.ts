@@ -910,5 +910,8 @@ const D: string[] = [
   "Escolha um defensor",
   "Escolha um atacante",
   "Escolha atacante e defensor",
+  "Montei meu Time Ideal no Legends World Cup. Você consegue superá-lo?",
+  "Abrir {red}",
+  "Baixe a imagem e anexe-a à sua publicação.",
 ]
 export default D
