@@ -158,13 +158,25 @@ function FilaJugador({ p, activo, estado, onClick }: { p: Player; activo?: boole
 }
 
 // ======================================================================================
+// Partida en curso: se guarda en el navegador para que, al actualizar o salir y volver, siga donde estaba.
+const CLAVE_PARTIDA = 'lwc:duelo:partida'
+interface Guardada { creado: number; nivel: Nivel; seed: string; ronda: number; cMio: string[]; cSu: string[]; hist: Ronda[]; fase: 'elegir' | 'resultado'; atk: string | null; def: string | null }
+const leerPartida = (): Guardada | null => { try { const s = localStorage.getItem(CLAVE_PARTIDA); return s ? (JSON.parse(s) as Guardada) : null } catch { return null } }
+const borrarPartida = () => { try { localStorage.removeItem(CLAVE_PARTIDA) } catch { /* sin almacenamiento */ } }
+function partidaVigente(): Guardada | null {
+  const g = leerPartida(); if (!g) return null
+  try { const e = JSON.parse(localStorage.getItem(CLAVE_EQUIPO) ?? 'null') as Equipo | null; if (e && e.creado === g.creado && Array.isArray(g.hist)) return g } catch { /* equipo ilegible */ }
+  borrarPartida(); return null
+}
+
 export function Duelo() {
   const [equipo, setEquipo] = useLocalState<Equipo | null>(CLAVE_EQUIPO, null)
   const [stats, setStats] = useLocalState<Stats>(CLAVE_STATS, STATS0)
-  const [vista, setVista] = useState<'inicio' | 'draft' | 'duelo'>('inicio')
-  const [nivel, setNivel] = useState<Nivel>('plata')
+  const [guardada] = useState(partidaVigente)
+  const [vista, setVista] = useState<'inicio' | 'draft' | 'duelo'>(guardada ? 'duelo' : 'inicio')
+  const [nivel, setNivel] = useState<Nivel>(guardada?.nivel ?? 'plata')
   if (vista === 'draft') return <Draft alTerminar={(e) => { setEquipo(e); setVista('inicio') }} alCancelar={() => setVista('inicio')} />
-  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} alTerminar={(g) => { const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
+  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} inicial={guardada && guardada.creado === equipo.creado ? guardada : undefined} alTerminar={(g) => { const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
   return <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} armar={() => setVista('draft')} jugar={() => setVista('duelo')} />
 }
 
@@ -369,18 +381,18 @@ function RanuraRonda({ tipo, id, activa, onQuitar }: { tipo: 'atk' | 'def'; id: 
   )
 }
 
-function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel: Nivel; alTerminar: (gane: boolean) => void; alSalir: () => void }) {
-  const [seed] = useState(() => nuevaSemilla('duelo'))
+function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equipo; nivel: Nivel; inicial?: Guardada; alTerminar: (gane: boolean) => void; alSalir: () => void }) {
+  const [seed] = useState(() => inicial?.seed ?? nuevaSemilla('duelo'))
   const rival = useMemo(() => equipoMaquina(nivel, seed), [nivel, seed])
   const ctx: MatchCtx = useMemo(() => sedeDuelo(seed), [seed])
-  const [ronda, setRonda] = useState(1)
-  const [cMio, setCMio] = useState<string[]>([])
-  const [cSu, setCSu] = useState<string[]>([])
-  const [atk, setAtk] = useState<string | null>(null)
-  const [def, setDef] = useState<string | null>(null)
+  const [ronda, setRonda] = useState(inicial?.ronda ?? 1)
+  const [cMio, setCMio] = useState<string[]>(inicial?.cMio ?? [])
+  const [cSu, setCSu] = useState<string[]>(inicial?.cSu ?? [])
+  const [atk, setAtk] = useState<string | null>(inicial?.atk ?? null)
+  const [def, setDef] = useState<string | null>(inicial?.def ?? null)
   const [sel, setSel] = useState<string | null>(null)
-  const [hist, setHist] = useState<Ronda[]>([])
-  const [fase, setFase] = useState<'elegir' | 'resultado' | 'fin'>('elegir')
+  const [hist, setHist] = useState<Ronda[]>(inicial?.hist ?? [])
+  const [fase, setFase] = useState<'elegir' | 'resultado' | 'fin'>(inicial?.fase ?? 'elegir')
   const [guardado, setGuardado] = useState(false)
   const [compartir, setCompartir] = useState(false)
   useCerrarFuera(sel !== null, () => setSel(null))
@@ -394,7 +406,12 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
   rival.once.concat(rival.suplentes).forEach((id) => { if (cSu.includes(id)) marcasSu[id] = 'cansado' })
   const penal = useMemo(() => (fase === 'fin' && golesMios === golesSu ? penales(seed, equipo, rival) : null), [fase, golesMios, golesSu, seed, equipo, rival])
   const gane = fase === 'fin' ? (penal ? penal.yo > penal.rival : golesMios > golesSu) : false
-  useEffect(() => { if (fase === 'fin' && !guardado) { setGuardado(true); alTerminar(gane) } }, [fase, guardado, gane, alTerminar])
+  useEffect(() => { if (fase === 'fin' && !guardado) { setGuardado(true); borrarPartida(); alTerminar(gane) } }, [fase, guardado, gane, alTerminar])
+  // cada cambio de la partida queda guardado (hasta que termina)
+  useEffect(() => {
+    if (fase === 'fin') return
+    try { localStorage.setItem(CLAVE_PARTIDA, JSON.stringify({ creado: equipo.creado, nivel, seed, ronda, cMio, cSu, hist, fase, atk, def } satisfies Guardada)) } catch { /* sin almacenamiento */ }
+  }, [equipo.creado, nivel, seed, ronda, cMio, cSu, hist, fase, atk, def])
   const puedeUsar = (id: string) => disponibles.includes(id) && !cMio.includes(id) && PLAYER_BY_ID[id].line !== 'GK'
   const jugar = () => {
     if (!atk || !def) return
