@@ -508,3 +508,12 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-sinergia{margin:0;text-align:center;color:#b9c4e6;font-size:15px}.d-cierre{justify-content:center}
 @media(max-width:860px){.d-portada{grid-template-columns:1fr;padding:22px}.d-pasos2{grid-template-columns:1fr}.d-portada-img{order:-1}.d-portada-img .duelo-pitch{max-width:230px}}
 @media(prefers-reduced-motion:reduce){.d-gran,.d-portada-img .duelo-pitch{animation:none}}
+
+/* draft: elegir puesto, sacar jugadores */
+.pn.vacio.tocable{cursor:pointer}.pn.vacio.tocable .hueco{stroke:rgba(0,229,255,.7);animation:dPulso 1.6s ease-in-out infinite}.pn.vacio.tocable:hover .hueco{fill:rgba(0,229,255,.35)}.pn .pnl.vac{font:700 2.4px Inter;fill:rgba(255,255,255,.75)}.pn.vacio .pni{font-size:6px}
+.d-banca{display:grid;gap:8px;margin:10px 0}.d-banca-v{padding:14px;border:1px dashed rgba(0,229,255,.5);border-radius:12px;background:rgba(0,229,255,.05);color:var(--text);font:700 15px 'Barlow Condensed';letter-spacing:.8px;text-transform:uppercase;cursor:pointer}.d-banca-v:hover,.d-banca-v.on{background:rgba(0,229,255,.16);border-style:solid}
+.d-vacio{display:grid;gap:14px;justify-items:center;text-align:center;padding:34px 18px;border:1px dashed var(--line);border-radius:16px;background:rgba(255,255,255,.03)}.d-vacio>span{font-size:44px}.d-vacio p{margin:0}.d-baraja>span{animation:dDado .5s linear infinite}@keyframes dDado{to{transform:rotate(360deg)}}
+.d-toco{margin:0 0 8px;font:800 22px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.5px;color:var(--cy)}
+.d-sobre .d-fila{animation:dVuelta .55s cubic-bezier(.2,.9,.3,1.2) both}.d-sobre .d-fila:nth-child(2){animation-delay:.18s}.d-sobre .d-fila:nth-child(3){animation-delay:.36s}
+@keyframes dVuelta{from{opacity:0;transform:perspective(600px) rotateX(-70deg) translateY(-10px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.d-sobre .d-fila,.d-baraja>span{animation:none}}

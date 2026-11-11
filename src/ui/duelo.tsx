@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { tr } from '../i18n'
-import { attrLabel, posLabel } from '../i18n/nombres'
+import { attrLabel, posLabel, posNombre } from '../i18n/nombres'
 import {
-  FORMACIONES, NIVELES, NOMBRES_FORMACION, N_PICKS, N_SUPLENTES, RONDAS, equipoMaquina, eligeMaquina, jugarRonda, ofertas, paisesConSinergia, penales, poderAtaque, poderDefensa,
+  FORMACIONES, NIVELES, NOMBRES_FORMACION, N_PICKS, RONDAS, equipoMaquina, eligeMaquina, jugarRonda, ofertas, paisesConSinergia, penales, poderAtaque, poderDefensa,
   sedeDuelo, sinergias, valorEquipo, onceDeEjemplo, type Cambio, type Equipo, type Nivel, type ResultadoRonda,
 } from '../engine/duelo'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
@@ -35,14 +35,15 @@ function useCerrarFuera(abierto: boolean, cerrar: () => void) {
 
 // ---------- cancha con los jugadores (mismo estilo que la «Alineación histórica») ----------
 type Marca = 'atacante' | 'defensor' | 'cansado' | 'elegible' | 'actual'
-function Nodo({ p, x, y, marca, onClick }: { p?: Player; x: number; y: number; marca?: Marca; onClick?: () => void }) {
+function Nodo({ p, x, y, marca, onClick, etiqueta }: { p?: Player; x: number; y: number; marca?: Marca; onClick?: () => void; etiqueta?: string }) {
   const photo = usePhoto(p ?? PLAYER_BY_ID[Object.keys(PLAYER_BY_ID)[0]])
   const Y = 8 + (y / 100) * 104
   if (!p) {
     return (
-      <g className={`pn vacio${marca === 'actual' ? ' actual' : ''}`}>
+      <g className={`pn vacio${marca === 'actual' ? ' actual' : ''}${onClick ? ' tocable' : ''}`} role={onClick ? 'button' : undefined} tabIndex={onClick ? 0 : undefined} onClick={onClick} onKeyDown={(e) => { if (onClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick() } }} aria-label={etiqueta}>
         <circle cx={x} cy={Y} r="5.6" className="hueco" />
-        <text x={x} y={Y + 1.5} textAnchor="middle" className="pni">?</text>
+        <text x={x} y={Y + 1.5} textAnchor="middle" className="pni">{onClick ? '+' : '?'}</text>
+        {etiqueta && <text x={x} y={Y + 9.2} textAnchor="middle" className="pnl vac">{etiqueta}</text>}
       </g>
     )
   }
@@ -64,7 +65,7 @@ function Nodo({ p, x, y, marca, onClick }: { p?: Player; x: number; y: number; m
     </g>
   )
 }
-function Cancha({ formacion, ids, marcas, onNodo, actual, etiqueta }: { formacion: string; ids: (string | undefined)[]; marcas?: Record<string, Marca>; onNodo?: (i: number) => void; actual?: number; etiqueta: string }) {
+function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta }: { formacion: string; ids: (string | undefined)[]; marcas?: Record<string, Marca>; onNodo?: (i: number) => void; onVacio?: (i: number) => void; actual?: number; etiqueta: string }) {
   const huecos = FORMACIONES[formacion]
   return (
     <svg viewBox="0 0 100 118" className="pitch duelo-pitch" role="group" aria-label={etiqueta}>
@@ -76,7 +77,7 @@ function Cancha({ formacion, ids, marcas, onNodo, actual, etiqueta }: { formacio
       <g className="pl"><rect x="3" y="3" width="94" height="112" rx="1" /><line x1="3" y1="59" x2="97" y2="59" /><circle cx="50" cy="59" r="10" /><rect x="24" y="3" width="52" height="16" /><rect x="36" y="3" width="28" height="6" /><rect x="24" y="99" width="52" height="16" /><rect x="36" y="109" width="28" height="6" /></g>
       {huecos.map((h, i) => {
         const id = ids[i]; const p = id ? PLAYER_BY_ID[id] : undefined
-        return <Nodo key={i} p={p} x={h.x} y={h.y} marca={actual === i ? 'actual' : id ? marcas?.[id] : undefined} onClick={p && onNodo ? () => onNodo(i) : undefined} />
+        return <Nodo key={i} p={p} x={h.x} y={h.y} marca={actual === i ? 'actual' : id ? marcas?.[id] : undefined} onClick={p ? (onNodo ? () => onNodo(i) : undefined) : (onVacio ? () => onVacio(i) : undefined)} etiqueta={!p ? posNombre(h.pos) : undefined} />
       })}
     </svg>
   )
@@ -189,15 +190,15 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
 }
 
 // ---------- draft: armar el equipo ----------
+// La persona elige el puesto en la cancha, toca «Sacar jugadores» y le tocan tres al azar (con un reveal); elige uno. Cada puesto guarda lo que le tocó.
 function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; alCancelar: () => void }) {
   const [formacion, setFormacion] = useState<string | null>(null)
   const [seed] = useState(() => nuevaSemilla('draft'))
-  const [elegidos, setElegidos] = useState<string[]>([])
+  const [picks, setPicks] = useState<(string | undefined)[]>(() => new Array(N_PICKS).fill(undefined))
+  const [slot, setSlot] = useState<number | null>(null)
+  const [sacadas, setSacadas] = useState<Record<number, string[]>>({})
   const [vista, setVista] = useState<string | null>(null)
-  const paso = elegidos.length
-  const terminado = formacion !== null && paso >= N_PICKS
-  const opciones = useMemo(() => (formacion && !terminado ? ofertas(seed, formacion, paso, elegidos) : []), [formacion, paso, seed, terminado]) // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => setVista(null), [paso])
+  const [barajando, setBarajando] = useState(false)
   useCerrarFuera(vista !== null, () => setVista(null))
   if (!formacion) {
     return (
@@ -211,42 +212,70 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
     )
   }
   const huecos = FORMACIONES[formacion]
-  const once = elegidos.slice(0, 11)
-  const sup = elegidos.slice(11)
-  const ids11: (string | undefined)[] = huecos.map((_, i) => once[i])
-  const hueco = paso < 11 ? huecos[paso] : null
-  const preview = vista ? PLAYER_BY_ID[vista] : null
-  const elegir = (id: string) => setElegidos((x) => [...x, id])
-  if (terminado) {
+  const elegidos = picks.filter((x): x is string => !!x)
+  const completo = elegidos.length === N_PICKS
+  const once = picks.slice(0, 11) as string[]
+  const sup = picks.slice(11) as string[]
+  const nombreSlot = (i: number) => (i < 11 ? posNombre(huecos[i].pos) : tr('Suplente'))
+  const sacar = () => {
+    if (slot === null) return
+    setBarajando(true); setVista(null)
+    setTimeout(() => { setSacadas((m) => ({ ...m, [slot]: ofertas(seed, formacion, slot, elegidos).map((p) => p.id) })); setBarajando(false) }, 650)
+  }
+  const elegir = (id: string) => {
+    if (slot === null) return
+    setPicks((x) => { const y = [...x]; y[slot] = id; return y })
+    setSlot(null); setVista(null)
+  }
+  if (completo) {
     const e: Equipo = { formacion, once, suplentes: sup, creado: Date.now() }
     return (
       <div className="duelo">
         <header className="d-hero"><p className="kicker">{tr('Último paso')}</p><h1>{tr('Tu equipo está listo')}</h1><p className="muted">{formacion} · {tr('Valoración media')} {valorEquipo(e)}</p></header>
         <div className="d-cols">
-          <div><Cancha formacion={formacion} ids={once} etiqueta={tr('Tu equipo')} /><h4 className="sub">{tr('Suplentes')}</h4><div className="d-lista">{sup.map((id) => <FilaJugador key={id} p={PLAYER_BY_ID[id]} estado="suplente" />)}</div></div>
+          <div><Cancha formacion={formacion} ids={once} onNodo={(i) => setVista(once[i])} etiqueta={tr('Tu equipo')} /><h4 className="sub">{tr('Suplentes')}</h4><div className="d-lista">{sup.map((id) => <FilaJugador key={id} p={PLAYER_BY_ID[id]} estado="suplente" onClick={() => setVista(id)} />)}</div></div>
           <div>
+            {vista && <Detalle p={PLAYER_BY_ID[vista]} />}
             <p className="note warn">{tr('Este equipo no se podrá cambiar una vez que lo confirmes.')}</p>
-            <div className="cta"><button className="btn pri" onClick={() => alTerminar(e)}>{tr('Confirmar mi equipo')}</button><button className="btn ghost" onClick={() => { setElegidos([]); setFormacion(null) }}>{tr('Empezar de nuevo')}</button></div>
+            <div className="cta"><button className="btn pri" onClick={() => alTerminar(e)}>{tr('Confirmar mi equipo')}</button><button className="btn ghost" onClick={() => { setPicks(new Array(N_PICKS).fill(undefined)); setSacadas({}); setSlot(null); setFormacion(null) }}>{tr('Empezar de nuevo')}</button></div>
           </div>
         </div>
       </div>
     )
   }
+  const ofrecidos = slot !== null ? sacadas[slot] : undefined
+  const preview = vista ? PLAYER_BY_ID[vista] : null
+  const esOferta = !!(preview && ofrecidos?.includes(preview.id))
   return (
     <div className="duelo">
-      <header className="d-hero"><p className="kicker">{tr('Elección {n} de {t}', { n: paso + 1, t: N_PICKS })}</p>
-        <h1>{hueco ? tr('Elige a tu {pos}', { pos: posLabel(hueco.pos) }) : tr('Elige un suplente ({n} de {t})', { n: paso - 10, t: N_SUPLENTES })}</h1>
-        <div className="vprog"><i style={{ width: `${(paso / N_PICKS) * 100}%` }} /></div></header>
+      <header className="d-hero"><p className="kicker">{tr('Puestos armados: {n} de {t}', { n: elegidos.length, t: N_PICKS })}</p>
+        <h1>{slot === null ? tr('Elige un puesto') : slot < 11 ? tr('Elige a tu {pos}', { pos: nombreSlot(slot) }) : tr('Elige a tu suplente')}</h1>
+        <div className="vprog"><i style={{ width: `${(elegidos.length / N_PICKS) * 100}%` }} /></div></header>
       <div className="d-cols">
         <div>
-          <Cancha formacion={formacion} ids={ids11} actual={hueco ? paso : undefined} etiqueta={tr('Tu equipo')} />
-          {sup.length > 0 && <><h4 className="sub">{tr('Suplentes')}</h4><div className="d-lista">{sup.map((id) => <FilaJugador key={id} p={PLAYER_BY_ID[id]} estado="suplente" />)}</div></>}
+          <Cancha formacion={formacion} ids={picks.slice(0, 11)} actual={slot !== null && slot < 11 ? slot : undefined} onNodo={(i) => setVista(picks[i] ?? null)} onVacio={(i) => { setSlot(i); setVista(null) }} etiqueta={tr('Tu equipo')} />
+          <h4 className="sub">{tr('Suplentes')}</h4>
+          <div className="d-banca">{[11, 12, 13].map((i, n) => picks[i]
+            ? <FilaJugador key={i} p={PLAYER_BY_ID[picks[i]!]} estado="suplente" onClick={() => setVista(picks[i]!)} />
+            : <button key={i} type="button" className={`d-banca-v${slot === i ? ' on' : ''}`} onClick={() => { setSlot(i); setVista(null) }}>＋ {tr('Suplente')} {n + 1}</button>)}</div>
         </div>
         <div>
-          <div className="d-lista">{opciones.map((p) => <FilaJugador key={p.id} p={p} activo={vista === p.id} onClick={() => setVista(p.id)} />)}</div>
-          {preview ? (
-            <Detalle p={preview}><div className="cta"><button className="btn pri" onClick={() => elegir(preview.id)}>{tr('Elegir a {n}', { n: apellido(preview.name) })}</button></div></Detalle>
-          ) : <p className="muted small">{tr('Toca a un jugador para ver su detalle y elegirlo.')}</p>}
+          {slot === null ? (
+            <div className="d-vacio"><span aria-hidden>👆</span><p>{tr('Toca un puesto vacío de la cancha para sacar jugadores.')}</p></div>
+          ) : barajando ? (
+            <div className="d-vacio d-baraja"><span aria-hidden>🎲</span><p>{tr('Sacando jugadores…')}</p></div>
+          ) : !ofrecidos ? (
+            <div className="d-vacio"><p><b>{slot < 11 ? nombreSlot(slot) : tr('Suplente')}</b></p><button className="btn pri d-gran" onClick={sacar}>🎲 {tr('Sacar jugadores')}</button><p className="small muted">{tr('Te tocarán tres leyendas al azar para este puesto.')}</p></div>
+          ) : (
+            <>
+              <p className="d-toco">{tr('Te tocaron estos tres. ¡Elige a uno!')}</p>
+              <div className="d-lista d-sobre">{ofrecidos.map((id) => <FilaJugador key={id} p={PLAYER_BY_ID[id]} activo={vista === id} onClick={() => setVista(id)} />)}</div>
+              {preview && esOferta ? (
+                <Detalle p={preview}><div className="cta"><button className="btn pri" onClick={() => elegir(preview.id)}>{tr('Elegir a {n}', { n: apellido(preview.name) })}</button></div></Detalle>
+              ) : <p className="muted small">{tr('Toca a un jugador para ver su detalle y elegirlo.')}</p>}
+            </>
+          )}
+          {preview && !esOferta && <Detalle p={preview} />}
         </div>
       </div>
     </div>
