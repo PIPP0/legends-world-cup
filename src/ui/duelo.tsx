@@ -467,8 +467,12 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
                     {p ? (
                       <Detalle p={p} bonus={bonus[p.id] ?? 0}>
                         <div className="cta">
-                          <button className="btn pri" disabled={!puedeUsar(p.id) || def === p.id} onClick={() => { setAtk(p.id); setSel(null) }}>⚔ {tr('Atacar con él')}</button>
-                          <button className="btn" disabled={!puedeUsar(p.id) || atk === p.id} onClick={() => { setDef(p.id); setSel(null) }}>🛡 {tr('Defender con él')}</button>
+                          {(() => {
+                            // El botón principal es el del paso que toca (primero ataque, luego defensa); el otro rol queda como opción discreta.
+                            const bAtk = <button key="a" className={`btn ${atk && !def ? 'ghost' : 'pri'}`} disabled={!puedeUsar(p.id) || def === p.id} onClick={() => { setAtk(p.id); setSel(null) }}>⚔ {tr('Atacar con él')}</button>
+                            const bDef = <button key="d" className={`btn ${atk && !def ? 'pri' : 'ghost'}`} disabled={!puedeUsar(p.id) || atk === p.id} onClick={() => { setDef(p.id); setSel(null) }}>🛡 {tr('Defender con él')}</button>
+                            return atk && !def ? [bDef, bAtk] : [bAtk, bDef]
+                          })()}
                         </div>
                         {!puedeUsar(p.id) && <p className="small muted">{PLAYER_BY_ID[p.id].line === 'GK' ? tr('El arquero defiende siempre solo.') : cMio.includes(p.id) ? tr('Está cansado: descansa esta ronda.') : tr('Entra desde la ronda 3.')}</p>}
                       </Detalle>
