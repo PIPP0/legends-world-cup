@@ -606,3 +606,8 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-jugar-gran:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(0,229,255,.9),inset 0 -4px 0 rgba(0,0,0,.18)}.d-jugar-gran:active{transform:translateY(1px)}
 @keyframes djbrillo{0%,60%{left:-80px}100%{left:120%}}
 @media(prefers-reduced-motion:reduce){.d-jugar-gran::after{animation:none}}
+
+/* botón Jugar duelo: mismo lenguaje que .btn (paralelogramo, color plano), a ancho completo */
+.btn.pri.d-jugar-gran{display:flex;width:100%;margin-top:14px;padding:18px 20px;min-height:60px;font-size:24px;letter-spacing:3px;border-radius:0;background:var(--cy);color:#02131a;box-shadow:none;clip-path:polygon(18px 0,100% 0,calc(100% - 18px) 100%,0 100%)}
+.btn.pri.d-jugar-gran::after{display:none}
+.btn.pri.d-jugar-gran:hover{background:#5df0ff;box-shadow:none;transform:translateY(-1px)}.btn.pri.d-jugar-gran:active{transform:none}

@@ -239,7 +239,7 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
           <div className="d-niveles" role="radiogroup" aria-label={tr('Nivel del rival')}>
             {NIVELES.map((n) => <button key={n.id} type="button" role="radio" aria-checked={nivel === n.id} className={`d-nivel n-${n.id}${nivel === n.id ? ' on' : ''}`} onClick={() => setNivel(n.id)}><i aria-hidden className="d-estr">{'★'.repeat(NIVELES.findIndex((x) => x.id === n.id) + 1)}</i><span>{tr(n.nombre)}</span></button>)}
           </div>
-          <button type="button" className="d-jugar-gran" onClick={jugar}><span>▶ {tr('Jugar duelo')}</span></button>
+          <button type="button" className="btn pri d-jugar-gran" onClick={jugar}>{tr('Jugar duelo')} →</button>
           <p className="small muted">{tr('Partidos: {j} · Ganados: {g} · Perdidos: {p} · Racha: {r} (mejor {m})', { j: stats.jugados, g: stats.ganados, p: stats.perdidos, r: stats.racha, m: stats.mejorRacha })}</p>
         </div>
       </div>
