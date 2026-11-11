@@ -585,3 +585,5 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-share:hover,.d-share:focus-visible{color:var(--cy);border-color:rgba(0,229,255,.6);background:rgba(0,229,255,.08)}
 .d-share.sutil{border:0;background:none;padding:6px 8px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.25)}
 @media(max-width:640px){.d-hero .d-share span{display:none}.d-hero .d-share{padding:9px}}
+
+.d-guia{margin:0;padding:10px 12px;border-radius:10px;background:rgba(0,229,255,.08);border:1px dashed rgba(0,229,255,.4);font-size:14px;color:#cfd8f5}.d-instr .d-jugar{width:100%}.d-instr .d-jugar:disabled{opacity:.55}

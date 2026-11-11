@@ -427,17 +427,18 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
                 {fase === 'elegir' ? (
                   <>
                     <div className="d-instr"><b>{tr('Ronda {r}: elige tu ataque y tu defensa', { r: ronda })}</b>
-                      <div className="d-chips"><span className={`d-chip${atk ? ' ok' : ''}`}>⚔ {atk ? nombre(atk) : tr('Atacante')}</span><span className={`d-chip${def ? ' ok' : ''}`}>🛡 {def ? nombre(def) : tr('Defensor')}</span>
-                        <button className="btn pri d-jugar" disabled={!atk || !def} onClick={jugar}>{tr('Jugar ronda')}</button></div></div>
+                      <div className="d-chips"><span className={`d-chip${atk ? ' ok' : ''}`}>⚔ {atk ? nombre(atk) : tr('Atacante')}</span><span className={`d-chip${def ? ' ok' : ''}`}>🛡 {def ? nombre(def) : tr('Defensor')}</span></div>
+                      <button className={`btn pri d-jugar${atk && def ? ' d-gran' : ''}`} disabled={!atk || !def} onClick={jugar}>{atk && def ? `▶ ${tr('Jugar ronda')}` : atk ? tr('Elige un defensor') : def ? tr('Elige un atacante') : tr('Elige atacante y defensor')}</button>
+                      <p className="d-guia">{atk && def ? tr('¡Listo! Pulsa «Jugar ronda».') : atk ? tr('Ahora elige a tu defensor.') : def ? tr('Ahora elige a tu atacante.') : tr('Toca a un jugador de tu cancha para elegir tu atacante y tu defensor.')}</p></div>
                     {p ? (
                       <Detalle p={p} bonus={bonus[p.id] ?? 0}>
                         <div className="cta">
-                          <button className="btn pri" disabled={!puedeUsar(p.id) || def === p.id} onClick={() => setAtk(p.id)}>⚔ {tr('Atacar con él')}</button>
-                          <button className="btn" disabled={!puedeUsar(p.id) || atk === p.id} onClick={() => setDef(p.id)}>🛡 {tr('Defender con él')}</button>
+                          <button className="btn pri" disabled={!puedeUsar(p.id) || def === p.id} onClick={() => { setAtk(p.id); setSel(null) }}>⚔ {tr('Atacar con él')}</button>
+                          <button className="btn" disabled={!puedeUsar(p.id) || atk === p.id} onClick={() => { setDef(p.id); setSel(null) }}>🛡 {tr('Defender con él')}</button>
                         </div>
                         {!puedeUsar(p.id) && <p className="small muted">{PLAYER_BY_ID[p.id].line === 'GK' ? tr('El arquero defiende siempre solo.') : cMio.includes(p.id) ? tr('Está cansado: descansa esta ronda.') : tr('Entra desde la ronda 3.')}</p>}
                       </Detalle>
-                    ) : <p className="muted small">{tr('Toca a un jugador en la cancha o en la lista para ver su detalle y usarlo.')}</p>}
+                    ) : null}
                   </>
                 ) : (
                   ultima && (

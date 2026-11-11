@@ -903,5 +903,12 @@ const D: string[] = [
   "Tertepis!",
   "Terhadang!",
   "Ketuk pemain di lapangan untuk melihat detailnya.",
+  "Siap! Tekan «Mainkan ronde».",
+  "Sekarang pilih bekmu.",
+  "Sekarang pilih penyerangmu.",
+  "Ketuk pemain di lapanganmu untuk memilih penyerang dan bek.",
+  "Pilih bek",
+  "Pilih penyerang",
+  "Pilih penyerang dan bek",
 ]
 export default D

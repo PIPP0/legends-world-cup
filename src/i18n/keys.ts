@@ -903,4 +903,11 @@ export const KEYS: string[] = [
   "¡Atajada!",
   "¡Cortado!",
   "Toca a un jugador de la cancha para ver su detalle.",
+  "¡Listo! Pulsa «Jugar ronda».",
+  "Ahora elige a tu defensor.",
+  "Ahora elige a tu atacante.",
+  "Toca a un jugador de tu cancha para elegir tu atacante y tu defensor.",
+  "Elige un defensor",
+  "Elige un atacante",
+  "Elige atacante y defensor",
 ]

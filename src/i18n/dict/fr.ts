@@ -903,5 +903,12 @@ const D: string[] = [
   "Arrêté !",
   "Coupé !",
   "Touche un joueur sur le terrain pour voir ses détails.",
+  "Prêt ! Appuie sur « Jouer la manche ».",
+  "Choisis maintenant ton défenseur.",
+  "Choisis maintenant ton attaquant.",
+  "Touche un joueur de ton terrain pour choisir ton attaquant et ton défenseur.",
+  "Choisis un défenseur",
+  "Choisis un attaquant",
+  "Choisis attaquant et défenseur",
 ]
 export default D

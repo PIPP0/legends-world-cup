@@ -165,4 +165,11 @@ export const EXTRA: Array<[string, string]> = [
   ['¡Atajada!', 'Saved!'],
   ['¡Cortado!', 'Cut out!'],
   ['Toca a un jugador de la cancha para ver su detalle.', 'Tap a player on the pitch to see his details.'],
+  ['¡Listo! Pulsa «Jugar ronda».', 'Ready! Press “Play round”.'],
+  ['Ahora elige a tu defensor.', 'Now pick your defender.'],
+  ['Ahora elige a tu atacante.', 'Now pick your attacker.'],
+  ['Toca a un jugador de tu cancha para elegir tu atacante y tu defensor.', 'Tap a player on your pitch to pick your attacker and your defender.'],
+  ['Elige un defensor', 'Pick a defender'],
+  ['Elige un atacante', 'Pick an attacker'],
+  ['Elige atacante y defensor', 'Pick attacker and defender'],
 ]
