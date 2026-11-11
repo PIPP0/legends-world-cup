@@ -192,7 +192,7 @@ describe('probabilidades de la portada', () => {
   })
 })
 
-import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, TOPE_SUPLENTE, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
+import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, onceDeEjemplo, TOPE_SUPLENTE, bloqueados, aplicarPoderes, eligePoderMaquina, reemplazoMaquina, candidatos, todosLosPoderes, TIPOS_PODER, type Poder, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
 describe('duelo «Mi Once Ideal»', () => {
   it('las ofertas del draft son 3, distintas, compatibles con el puesto y repetibles con la misma semilla', () => {
     const a = ofertas('s1', '4-3-3', 0, []), b = ofertas('s1', '4-3-3', 0, [])
@@ -232,5 +232,40 @@ describe('duelo «Mi Once Ideal»', () => {
     const gana = (na: Nivel, nb: Nivel) => { let w = 0; const N = 400; for (let i = 0; i < N; i++) { const s = 't' + i; if (duelo(s, equipoMaquina(na, s), equipoMaquina(nb, s + 'x'), na, nb)) w++ } return w / N }
     expect(Math.abs(gana('oro', 'oro') - 0.5)).toBeLessThan(0.1)
     expect(gana('leyenda', 'bronce')).toBeGreaterThan(0.72)
+  })
+
+  it('poderes: impulso suma, debilitar resta, bloqueo obliga a cambiar y un poder sobre quien ya no juega se pierde', () => {
+    const yo = { formacion: '4-3-3', once: onceDeEjemplo('4-3-3'), suplentes: [] as string[], creado: 1 }
+    const rival = equipoMaquina('plata', 'pw1')
+    const mio = { atacante: yo.once[8], defensor: yo.once[1] }, su = { atacante: rival.once[9], defensor: rival.once[2] }
+    const base = jugarRonda('pw', 1, yo, rival, mio, su, undefined)
+    const { ajustes, efectos } = aplicarPoderes({ tipo: 'impulso', objetivo: mio.atacante }, { tipo: 'debilitar', objetivo: mio.atacante }, mio, su)
+    expect(ajustes.mio[mio.atacante]).toBe(2 - 3)
+    expect(efectos.every((e) => e.aplicado)).toBe(true)
+    const mejor = aplicarPoderes({ tipo: 'impulso', objetivo: mio.atacante }, undefined, mio, su)
+    const con = jugarRonda('pw', 1, yo, rival, mio, su, undefined, mejor.ajustes)
+    expect(con.mia.pPase).toBeGreaterThan(base.mia.pPase)
+    // bloqueo: detecta el puesto bloqueado; si el jugador impulsado fue cambiado, el impulso se pierde
+    expect(bloqueados({ tipo: 'bloqueo', objetivo: su.atacante }, undefined, mio, su).su).toBe('atacante')
+    const cambiado = { ...mio, atacante: yo.once[7] }
+    expect(aplicarPoderes({ tipo: 'impulso', objetivo: mio.atacante }, undefined, cambiado, su).efectos[0].aplicado).toBe(false)
+    const rem = reemplazoMaquina('pw', 1, rival, [], 'plata', su, 'atacante', su.atacante)
+    expect(rem.atacante).not.toBe(su.atacante); expect(rem.atacante).not.toBe(rem.defensor)
+    expect(candidatos(rival, 1, [], [su.atacante]).includes(su.atacante)).toBe(false)
+  })
+  it('la máquina usa cada poder como máximo una vez y los gasta todos en una partida de 5 rondas', () => {
+    for (const nivel of ['bronce', 'plata', 'oro', 'leyenda'] as const) {
+      for (let n = 0; n < 20; n++) {
+        const yo = { formacion: '4-3-3', once: onceDeEjemplo('4-3-3'), suplentes: [] as string[], creado: 1 }
+        const rival = equipoMaquina(nivel, `m${n}`)
+        const disp = todosLosPoderes(); const usados: string[] = []
+        for (let ronda = 1; ronda <= 5; ronda++) {
+          const pw = eligePoderMaquina(`m${n}`, ronda, nivel, disp, { atacante: rival.once[9], defensor: rival.once[2] }, { atacante: yo.once[8], defensor: yo.once[1] })
+          if (pw) { expect(disp[pw.tipo]).toBe(true); disp[pw.tipo] = false; usados.push(pw.tipo) }
+        }
+        expect(new Set(usados).size).toBe(usados.length)
+        expect(usados.length).toBe(TIPOS_PODER.length)
+      }
+    }
   })
 })

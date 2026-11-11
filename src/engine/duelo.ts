@@ -71,6 +71,8 @@ export function ofertas(seed: string, formacion: string, paso: number, elegidos:
 const attr = (p: Player, k: string): number => p.attrs.find((a) => a.k === k)?.v ?? p.ovr
 const mezcla = (p: Player, pesos: [string, number][]) => pesos.reduce((s, [k, w]) => s + attr(p, k) * w, 0) / pesos.reduce((s, [, w]) => s + w, 0)
 
+// Los mejores delanteros rondan 93 de ataque y los mejores defensas 90 de defensa: este ajuste los iguala para que elegir defensas importe tanto como elegir delanteros.
+export const AJUSTE_DEFENSAS = 3
 // Cómo se calcula el poder de cada jugador: mezcla de atributos según su línea (y un ajuste si juega fuera de lo suyo).
 export interface Formula { pesos: [string, number][]; ajuste: number }
 export const formulaAtaque = (p: Player): Formula | null => {
@@ -81,7 +83,7 @@ export const formulaAtaque = (p: Player): Formula | null => {
 }
 export const formulaDefensa = (p: Player): Formula | null => {
   if (p.line === 'GK') return null
-  if (p.line === 'DEF') return { pesos: [['Defensa', 0.4], ['Físico', 0.25], ['Ritmo', 0.2], ['Pase', 0.15]], ajuste: 0 }
+  if (p.line === 'DEF') return { pesos: [['Defensa', 0.4], ['Físico', 0.25], ['Ritmo', 0.2], ['Pase', 0.15]], ajuste: AJUSTE_DEFENSAS }
   if (p.line === 'MID') return { pesos: [['Defensa', 0.35], ['Físico', 0.25], ['Pase', 0.25], ['Ritmo', 0.15]], ajuste: 0 }
   return { pesos: [['Defensa', 0.3], ['Físico', 0.3], ['Ritmo', 0.25], ['Regate', 0.15]], ajuste: -8 }
 }
@@ -135,11 +137,13 @@ export interface Cambio { atacante: string; defensor: string } // ids elegidos p
 export interface Jugada { atacante: string; defensor: string; arquero: string; resultado: 'gol' | 'atajada' | 'corte'; pPase: number; pGol: number; pA?: number; pD?: number; rem?: number; arq?: number; pTiro?: number; clima?: number; t1?: number; t2?: number }
 export interface ResultadoRonda { mia: Jugada; rival: Jugada; golesMios: number; golesRival: number }
 
+// Con defensas más fuertes caían pocos goles (2,7 por partida): este factor lleva el promedio a ~3,7 para que haya más festejos.
+export const FACTOR_REMATE = 1.4
 const sig = (x: number) => 1 / (1 + Math.exp(-x))
 function jugada(att: Player, def: Player, gk: Player, bonusAtt: number, bonusDef: number, ctx: MatchCtx | undefined, rng: Rng): Jugada {
   const A = poderAtaque(att) + bonusAtt, D = poderDefensa(def) + bonusDef
   const pPase = sig((A - D) / 11) // gana el duelo contra el defensor
-  const pGolSiPasa = Math.min(0.9, sig((poderRemate(att) + bonusAtt - poderArquero(gk)) / 10) * 0.95 * weatherFactor(ctx).goals)
+  const pGolSiPasa = Math.min(0.9, sig((poderRemate(att) + bonusAtt - poderArquero(gk)) / 10) * FACTOR_REMATE * weatherFactor(ctx).goals)
   const pGol = pPase * pGolSiPasa
   const detalle = { pA: A, pD: D, rem: poderRemate(att) + bonusAtt, arq: poderArquero(gk), pTiro: pGolSiPasa, clima: weatherFactor(ctx).goals }
   const t1 = rng() // el «dado» del duelo con el defensor: se supera si sale menos que pPase
@@ -148,13 +152,14 @@ function jugada(att: Player, def: Player, gk: Player, bonusAtt: number, bonusDef
   return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: t2 < pGolSiPasa ? 'gol' : 'atajada', pPase, pGol, ...detalle, t1, t2 }
 }
 
-export function jugarRonda(seed: string, ronda: number, yo: Equipo, rival: Equipo, miEleccion: Cambio, suEleccion: Cambio, ctx: MatchCtx | undefined): ResultadoRonda {
+export function jugarRonda(seed: string, ronda: number, yo: Equipo, rival: Equipo, miEleccion: Cambio, suEleccion: Cambio, ctx: MatchCtx | undefined, aj?: Ajustes): ResultadoRonda {
+  const aM = (id: string) => aj?.mio[id] ?? 0, aS = (id: string) => aj?.su[id] ?? 0
   const rng = makeRng(`${seed}:ronda:${ronda}`)
   const sinMio = sinergias([...yo.once, ...yo.suplentes]), sinSu = sinergias([...rival.once, ...rival.suplentes])
   const P = (id: string) => PLAYER_BY_ID[id]
   const gkYo = P(yo.once[0]), gkSu = P(rival.once[0])
-  const mia = jugada(P(miEleccion.atacante), P(suEleccion.defensor), gkSu, sinMio[miEleccion.atacante] ?? 0, sinSu[suEleccion.defensor] ?? 0, ctx, rng)
-  const rv = jugada(P(suEleccion.atacante), P(miEleccion.defensor), gkYo, sinSu[suEleccion.atacante] ?? 0, sinMio[miEleccion.defensor] ?? 0, ctx, rng)
+  const mia = jugada(P(miEleccion.atacante), P(suEleccion.defensor), gkSu, (sinMio[miEleccion.atacante] ?? 0) + aM(miEleccion.atacante), (sinSu[suEleccion.defensor] ?? 0) + aS(suEleccion.defensor), ctx, rng)
+  const rv = jugada(P(suEleccion.atacante), P(miEleccion.defensor), gkYo, (sinSu[suEleccion.atacante] ?? 0) + aS(suEleccion.atacante), (sinMio[miEleccion.defensor] ?? 0) + aM(miEleccion.defensor), ctx, rng)
   return { mia, rival: rv, golesMios: mia.resultado === 'gol' ? 1 : 0, golesRival: rv.resultado === 'gol' ? 1 : 0 }
 }
 
@@ -174,6 +179,72 @@ export function eligeMaquina(seed: string, ronda: number, equipo: Equipo, cansad
 
 // Penales si hay empate tras las rondas: 5 cada uno y, si sigue igual, muerte súbita.
 export interface Penal { lanza: 'yo' | 'rival'; jugador: string; gol: boolean }
+// ---------- poderes: una vez por partida cada uno, jugados en secreto tras ver los jugadores rivales ----------
+export type TipoPoder = 'impulso' | 'debilitar' | 'bloqueo'
+export const TIPOS_PODER: TipoPoder[] = ['impulso', 'debilitar', 'bloqueo']
+export const BONO_IMPULSO = 2
+export const CASTIGO_DEBILITAR = 3
+export type Rol = 'atacante' | 'defensor'
+export interface Poder { tipo: TipoPoder; objetivo: string } // objetivo: jugador propio (impulso) o rival (debilitar, bloqueo)
+export type Disponibles = Record<TipoPoder, boolean>
+export const todosLosPoderes = (): Disponibles => ({ impulso: true, debilitar: true, bloqueo: true })
+export interface Ajustes { mio: Record<string, number>; su: Record<string, number> }
+export interface Efecto { de: 'mio' | 'su'; tipo: TipoPoder; objetivo: string; aplicado: boolean }
+
+const rolDe = (c: Cambio, id: string): Rol | undefined => (c.atacante === id ? 'atacante' : c.defensor === id ? 'defensor' : undefined)
+// Qué jugador de cada equipo queda bloqueado (y en qué puesto) por el poder del otro.
+export function bloqueados(pm: Poder | undefined, ps: Poder | undefined, mio: Cambio, su: Cambio): { mio?: Rol; su?: Rol } {
+  return { su: pm?.tipo === 'bloqueo' ? rolDe(su, pm.objetivo) : undefined, mio: ps?.tipo === 'bloqueo' ? rolDe(mio, ps.objetivo) : undefined }
+}
+// Jugadores que un equipo puede poner en la cancha esta ronda (sin cansados, sin arquero, desde la ronda 3 también suplentes).
+export function candidatos(equipo: Equipo, ronda: number, cansados: string[], excluir: string[] = []): string[] {
+  return [...equipo.once, ...(ronda >= 3 ? equipo.suplentes : [])].filter((id) => !cansados.includes(id) && !excluir.includes(id) && PLAYER_BY_ID[id].line !== 'GK')
+}
+// Quién reemplaza al jugador bloqueado de la máquina: el mejor disponible para ese puesto.
+export function reemplazoMaquina(seed: string, ronda: number, equipo: Equipo, cansados: string[], nivel: Nivel, eleccion: Cambio, rol: Rol, bloqueado: string): Cambio {
+  const rng = makeRng(`${seed}:ia-reemplazo:${ronda}`)
+  const cfg = NIVELES.find((n) => n.id === nivel)!
+  const otro = rol === 'atacante' ? eleccion.defensor : eleccion.atacante
+  const f = rol === 'atacante' ? poderAtaque : poderDefensa
+  const c = candidatos(equipo, ronda, cansados, [bloqueado, otro])
+  if (!c.length) return eleccion // sin nadie más: se queda como estaba
+  const nuevo = c.sort((a, b) => (f(PLAYER_BY_ID[b]) + (rng() - 0.5) * 2 * cfg.ruido) - (f(PLAYER_BY_ID[a]) + (rng() - 0.5) * 2 * cfg.ruido))[0]
+  return rol === 'atacante' ? { atacante: nuevo, defensor: eleccion.defensor } : { atacante: eleccion.atacante, defensor: nuevo }
+}
+// Efectos de los poderes sobre los jugadores que finalmente juegan. Si el jugador objetivo ya no juega (fue bloqueado y cambiado), el poder se pierde.
+export function aplicarPoderes(pm: Poder | undefined, ps: Poder | undefined, mio: Cambio, su: Cambio): { ajustes: Ajustes; efectos: Efecto[] } {
+  const ajustes: Ajustes = { mio: {}, su: {} }
+  const efectos: Efecto[] = []
+  const juega = (c: Cambio, id: string) => c.atacante === id || c.defensor === id
+  const uno = (de: 'mio' | 'su', pw: Poder | undefined) => {
+    if (!pw) return
+    const propio = de === 'mio' ? mio : su, ajeno = de === 'mio' ? su : mio
+    const aj = de === 'mio' ? ajustes : { mio: ajustes.su, su: ajustes.mio }
+    if (pw.tipo === 'impulso') { const ok = juega(propio, pw.objetivo); if (ok) aj.mio[pw.objetivo] = (aj.mio[pw.objetivo] ?? 0) + BONO_IMPULSO; efectos.push({ de, tipo: pw.tipo, objetivo: pw.objetivo, aplicado: ok }) }
+    else if (pw.tipo === 'debilitar') { const ok = juega(ajeno, pw.objetivo); if (ok) aj.su[pw.objetivo] = (aj.su[pw.objetivo] ?? 0) - CASTIGO_DEBILITAR; efectos.push({ de, tipo: pw.tipo, objetivo: pw.objetivo, aplicado: ok }) }
+    else efectos.push({ de, tipo: pw.tipo, objetivo: pw.objetivo, aplicado: !juega(ajeno, pw.objetivo) }) // bloqueo: surtió efecto si el rival tuvo que cambiarlo
+  }
+  uno('mio', pm); uno('su', ps)
+  return { ajustes, efectos }
+}
+// La máquina decide en secreto si juega un poder y cuál. Más nivel = lo usa donde más pesa; todos los niveles terminan usando sus poderes.
+export function eligePoderMaquina(seed: string, ronda: number, nivel: Nivel, disp: Disponibles, su: Cambio, mio: Cambio): Poder | undefined {
+  const rng = makeRng(`${seed}:ia-poder:${ronda}`)
+  const libres = TIPOS_PODER.filter((t) => disp[t])
+  if (!libres.length) return undefined
+  const restantes = RONDAS - ronda + 1
+  const base = { bronce: 0.3, plata: 0.4, oro: 0.5, leyenda: 0.55 }[nivel]
+  const prob = libres.length >= restantes ? 1 : ronda >= 4 ? Math.max(base, 0.8) : base
+  if (rng() > prob) return undefined
+  const P = (id: string) => PLAYER_BY_ID[id]
+  // en qué duelo va peor la máquina: ahí un poder cambia más
+  const mAtk = poderAtaque(P(su.atacante)) - poderDefensa(P(mio.defensor)), mDef = poderDefensa(P(su.defensor)) - poderAtaque(P(mio.atacante))
+  const ataca = nivel === 'bronce' ? rng() < 0.5 : mAtk <= mDef
+  const tipo = nivel === 'leyenda' && libres.length > 1 ? (mAtk < 0 || mDef < 0 ? (libres.includes('bloqueo') ? 'bloqueo' : libres[0]) : libres.includes('impulso') ? 'impulso' : libres[0]) : libres[Math.floor(rng() * libres.length)]
+  if (tipo === 'impulso') return { tipo, objetivo: ataca ? su.atacante : su.defensor }
+  return { tipo, objetivo: ataca ? mio.defensor : mio.atacante } // si su atacante va peor, frena al defensor que lo enfrenta (y viceversa)
+}
+
 export function penales(seed: string, yo: Equipo, rival: Equipo): { tandas: Penal[]; yo: number; rival: number } {
   const rng = makeRng(`${seed}:penales`)
   const tiradores = (e: Equipo) => [...e.once, ...e.suplentes].filter((id) => PLAYER_BY_ID[id].line !== 'GK').sort((a, b) => poderRemate(PLAYER_BY_ID[b]) - poderRemate(PLAYER_BY_ID[a]))

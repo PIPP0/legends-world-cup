@@ -5,6 +5,7 @@ import { tr } from '../i18n'
 import { attrLabel, posLabel, posNombre } from '../i18n/nombres'
 import {
   FORMACIONES, NIVELES, NOMBRES_FORMACION, N_PICKS, RONDAS, equipoMaquina, eligeMaquina, jugarRonda, ofertas, paisesConSinergia, penales, poderAtaque, poderDefensa, poderArquero, formulaAtaque, formulaDefensa, type Formula,
+  TIPOS_PODER, BONO_IMPULSO, CASTIGO_DEBILITAR, todosLosPoderes, bloqueados, candidatos, reemplazoMaquina, aplicarPoderes, eligePoderMaquina, type Poder, type TipoPoder, type Rol, type Disponibles, type Efecto,
   sedeDuelo, sinergias, valorEquipo, onceDeEjemplo, type Cambio, type Equipo, type Nivel, type ResultadoRonda,
 } from '../engine/duelo'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
@@ -163,7 +164,7 @@ function FilaJugador({ p, activo, estado, onClick }: { p: Player; activo?: boole
 // ======================================================================================
 // Partida en curso: se guarda en el navegador para que, al actualizar o salir y volver, siga donde estaba.
 const CLAVE_PARTIDA = 'lwc:duelo:partida'
-interface Guardada { creado: number; nivel: Nivel; seed: string; ronda: number; cMio: string[]; cSu: string[]; hist: Ronda[]; fase: 'elegir' | 'resultado'; atk: string | null; def: string | null }
+interface Guardada { creado: number; nivel: Nivel; seed: string; ronda: number; cMio: string[]; cSu: string[]; hist: Ronda[]; fase: 'elegir' | 'poder' | 'bloqueado' | 'resultado'; atk: string | null; def: string | null; pwMios?: Disponibles; pwSu?: Disponibles; suRonda?: Cambio | null; pend?: Pendiente | null }
 const leerPartida = (): Guardada | null => { try { const s = localStorage.getItem(CLAVE_PARTIDA); return s ? (JSON.parse(s) as Guardada) : null } catch { return null } }
 const borrarPartida = () => { try { localStorage.removeItem(CLAVE_PARTIDA) } catch { /* sin almacenamiento */ } }
 function partidaVigente(): Guardada | null {
@@ -383,7 +384,11 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
 }
 
 // ---------- el duelo de 5 rondas ----------
-interface Ronda { n: number; res: ResultadoRonda; mio: Cambio; su: Cambio }
+// Qué pasó con los poderes en una ronda (para revelarlos y explicarlos).
+interface PoderRonda { mio?: Poder; su?: Poder; efectos: Efecto[]; cambioMio?: { rol: Rol; de: string; a: string }; cambioSu?: { rol: Rol; de: string; a: string } }
+interface Ronda { n: number; res: ResultadoRonda; mio: Cambio; su: Cambio; pw?: PoderRonda }
+// Ronda a medias: el rival bloqueó a uno de tus jugadores y falta que elijas su reemplazo.
+interface Pendiente { pm?: Poder; ps?: Poder; mioOrig: Cambio; su: Cambio; suOrig: Cambio; rol: Rol; bloqueado: string }
 // Una de las dos ranuras de la ronda: qué hace ese puesto, quién lo ocupa y cuánto aporta.
 function RanuraRonda({ tipo, id, activa, onQuitar, bonus = 0 }: { tipo: 'atk' | 'def'; id: string | null; activa: boolean; onQuitar: () => void; bonus?: number }) {
   const p = id ? PLAYER_BY_ID[id] : null
@@ -419,7 +424,13 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
   const [def, setDef] = useState<string | null>(inicial?.def ?? null)
   const [sel, setSel] = useState<string | null>(null)
   const [hist, setHist] = useState<Ronda[]>(inicial?.hist ?? [])
-  const [fase, setFase] = useState<'elegir' | 'resultado' | 'fin'>(inicial?.fase ?? 'elegir')
+  const [fase, setFase] = useState<'elegir' | 'poder' | 'bloqueado' | 'resultado' | 'fin'>(inicial?.fase ?? 'elegir')
+  const [pwMios, setPwMios] = useState<Disponibles>(inicial?.pwMios ?? todosLosPoderes())
+  const [pwSu, setPwSu] = useState<Disponibles>(inicial?.pwSu ?? todosLosPoderes())
+  const [suRonda, setSuRonda] = useState<Cambio | null>(inicial?.suRonda ?? null)
+  const [pend, setPend] = useState<Pendiente | null>(inicial?.pend ?? null)
+  const [pwTipo, setPwTipo] = useState<TipoPoder | null>(null)
+  const [pwObj, setPwObj] = useState<string | null>(null)
   const [guardado, setGuardado] = useState(false)
   const [compartir, setCompartir] = useState(false)
   useCerrarFuera(sel !== null, () => setSel(null))
@@ -428,30 +439,56 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
   const disponibles = [...equipo.once, ...(ronda >= 3 ? equipo.suplentes : [])]
   const marcas: Record<string, Marca> = {}
   equipo.once.concat(equipo.suplentes).forEach((id) => { if (cMio.includes(id)) marcas[id] = 'cansado' })
-  if (fase === 'elegir') { if (atk) marcas[atk] = 'atacante'; if (def) marcas[def] = 'defensor' }
+  if (fase === 'elegir' || fase === 'poder' || fase === 'bloqueado') { if (atk) marcas[atk] = 'atacante'; if (def) marcas[def] = 'defensor' }
   const marcasSu: Record<string, Marca> = {}
   rival.once.concat(rival.suplentes).forEach((id) => { if (cSu.includes(id)) marcasSu[id] = 'cansado' })
+  if ((fase === 'poder' || fase === 'bloqueado') && suRonda) { marcasSu[suRonda.atacante] = 'atacante'; marcasSu[suRonda.defensor] = 'defensor' }
   const penal = useMemo(() => (fase === 'fin' && golesMios === golesSu ? penales(seed, equipo, rival) : null), [fase, golesMios, golesSu, seed, equipo, rival])
   const gane = fase === 'fin' ? (penal ? penal.yo > penal.rival : golesMios > golesSu) : false
   useEffect(() => { if (fase === 'fin' && !guardado) { setGuardado(true); borrarPartida(); alTerminar(gane) } }, [fase, guardado, gane, alTerminar])
   // cada cambio de la partida queda guardado (hasta que termina)
   useEffect(() => {
     if (fase === 'fin') return
-    try { localStorage.setItem(CLAVE_PARTIDA, JSON.stringify({ creado: equipo.creado, nivel, seed, ronda, cMio, cSu, hist, fase, atk, def } satisfies Guardada)) } catch { /* sin almacenamiento */ }
-  }, [equipo.creado, nivel, seed, ronda, cMio, cSu, hist, fase, atk, def])
+    try { localStorage.setItem(CLAVE_PARTIDA, JSON.stringify({ creado: equipo.creado, nivel, seed, ronda, cMio, cSu, hist, fase, atk, def, pwMios, pwSu, suRonda, pend } satisfies Guardada)) } catch { /* sin almacenamiento */ }
+  }, [equipo.creado, nivel, seed, ronda, cMio, cSu, hist, fase, atk, def, pwMios, pwSu, suRonda, pend])
   const puedeUsar = (id: string) => disponibles.includes(id) && !cMio.includes(id) && PLAYER_BY_ID[id].line !== 'GK'
+  // 1) tus jugadores quedan elegidos: el rival elige los suyos, se ven, y si queda algún poder se decide en secreto
   const jugar = () => {
     if (!atk || !def) return
     const su = eligeMaquina(seed, ronda, rival, cSu, nivel)
-    const mio: Cambio = { atacante: atk, defensor: def }
-    const res = jugarRonda(seed, ronda, equipo, rival, mio, su, ctx)
-    setHist((h) => [...h, { n: ronda, res, mio, su }])
-    setCMio([atk, def]); setCSu([su.atacante, su.defensor])
-    setFase('resultado')
+    setSuRonda(su); setPwTipo(null); setPwObj(null)
+    if (TIPOS_PODER.some((x) => pwMios[x])) setFase('poder')
+    else resolver(undefined, { atacante: atk, defensor: def }, su)
+  }
+  // 2) poderes en secreto: la máquina decide el suyo, se aplican los bloqueos (cada uno obliga a cambiar a un jugador)
+  const resolver = (pm: Poder | undefined, mio: Cambio, su: Cambio) => {
+    const ps = eligePoderMaquina(seed, ronda, nivel, pwSu, su, mio)
+    const bl = bloqueados(pm, ps, mio, su)
+    const suFinal = bl.su && pm ? reemplazoMaquina(seed, ronda, rival, cSu, nivel, su, bl.su, pm.objetivo) : su
+    if (bl.mio && ps) { setPend({ pm, ps, mioOrig: mio, su: suFinal, suOrig: su, rol: bl.mio, bloqueado: ps.objetivo }); setFase('bloqueado'); return }
+    terminar(pm, ps, mio, mio, suFinal, su)
+  }
+  // 3) se juega la ronda con los jugadores finales y los efectos de los poderes
+  const terminar = (pm: Poder | undefined, ps: Poder | undefined, mioOrig: Cambio, mio: Cambio, su: Cambio, suOrig: Cambio) => {
+    const { ajustes, efectos } = aplicarPoderes(pm, ps, mio, su)
+    const res = jugarRonda(seed, ronda, equipo, rival, mio, su, ctx, ajustes)
+    const cambio = (o: Cambio, f: Cambio) => (o.atacante !== f.atacante ? { rol: 'atacante' as Rol, de: o.atacante, a: f.atacante } : o.defensor !== f.defensor ? { rol: 'defensor' as Rol, de: o.defensor, a: f.defensor } : undefined)
+    const pw: PoderRonda | undefined = pm || ps ? { mio: pm, su: ps, efectos, cambioMio: cambio(mioOrig, mio), cambioSu: cambio(suOrig, su) } : undefined
+    setHist((h) => [...h, { n: ronda, res, mio, su, pw }])
+    if (pm) setPwMios((d) => ({ ...d, [pm.tipo]: false }))
+    if (ps) setPwSu((d) => ({ ...d, [ps.tipo]: false }))
+    setAtk(mio.atacante); setDef(mio.defensor)
+    setCMio([mio.atacante, mio.defensor]); setCSu([su.atacante, su.defensor])
+    setPend(null); setFase('resultado')
+  }
+  const elegirReemplazo = (id: string) => {
+    if (!pend) return
+    const mio = pend.rol === 'atacante' ? { atacante: id, defensor: pend.mioOrig.defensor } : { atacante: pend.mioOrig.atacante, defensor: id }
+    terminar(pend.pm, pend.ps, pend.mioOrig, mio, pend.su, pend.suOrig)
   }
   const siguiente = () => {
     if (ronda >= RONDAS) { setFase('fin'); return }
-    setRonda((r) => r + 1); setAtk(null); setDef(null); setSel(null); setFase('elegir')
+    setRonda((r) => r + 1); setAtk(null); setDef(null); setSel(null); setSuRonda(null); setFase('elegir')
   }
   const ultima = hist[hist.length - 1]
   const nombre = (id: string) => PLAYER_BY_ID[id].name
@@ -462,11 +499,12 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
   const [beat, setBeat] = useState(1)
   const [vel, setVel] = useLocalState<'normal' | 'rapida'>('lwc:duelo:vel', 'normal')
   const ritmo = vel === 'rapida' ? { tiempo: 700, final: 1100 } : { tiempo: 1700, final: 2600 }
-  const avanzar = () => { if (paso >= 2) return; if (beat < 3) setBeat((b) => b + 1); else { setPaso((x) => x + 1); setBeat(1) } }
-  useEffect(() => { if (fase === 'resultado') { setPaso(0); setBeat(1) } }, [fase, ronda])
+  // pasos de la escena: 0 poderes revelados (si los hubo), 1 tu ataque, 2 su ataque, 3 resumen
+  const avanzar = () => { if (paso >= 3) return; if (paso === 0) { setPaso(1); setBeat(1); return } if (beat < 3) setBeat((b) => b + 1); else { setPaso((x) => x + 1); setBeat(1) } }
+  useEffect(() => { if (fase === 'resultado') { setPaso(hist[hist.length - 1]?.pw ? 0 : 1); setBeat(1) } }, [fase, ronda])
   useEffect(() => {
-    if (fase !== 'resultado' || paso >= 2) return
-    const tm = setTimeout(avanzar, beat < 3 ? ritmo.tiempo : ritmo.final)
+    if (fase !== 'resultado' || paso >= 3) return
+    const tm = setTimeout(avanzar, paso === 0 ? ritmo.final + 1200 : beat < 3 ? ritmo.tiempo : ritmo.final)
     return () => clearTimeout(tm)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fase, paso, beat, vel])
@@ -481,11 +519,11 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
     <div className="duelo d-versus">
       {compartir && <CompartirEquipo equipo={equipo} onClose={() => setCompartir(false)} />}
       <header className="d-marcador">
-        <div className="d-eq"><div className="d-lado-t"><span>{tr('Tú')}</span><small>{equipo.formacion} · {valorEquipo(equipo)}</small></div><b>{golesMios}</b></div>
+        <div className="d-eq"><div className="d-lado-t"><span>{tr('Tú')}</span><small>{equipo.formacion} · {valorEquipo(equipo)}</small></div><b key={`m${golesMios}`} className={golesMios ? 'd-gpop' : ''}>{golesMios}</b></div>
         <div className="d-centro"><small>{fase === 'fin' ? tr('Final') : tr('Ronda {r} de {t}', { r: ronda, t: RONDAS })}</small>
           <div className="d-rondas" aria-hidden>{cargaRonda.map((h, i) => <i key={i} className={h ? (h.res.golesMios > h.res.golesRival ? 'g' : h.res.golesMios < h.res.golesRival ? 'p' : 'e') : i + 1 === ronda ? 'ahora' : ''} />)}</div>
           <CtxLine ctx={ctx} /></div>
-        <div className="d-eq d-su"><b>{golesSu}</b><div className="d-lado-t"><span>{rivalNombre}</span><small>{rival.formacion} · {valorEquipo(rival)}</small></div></div>
+        <div className="d-eq d-su"><b key={`s${golesSu}`} className={golesSu ? 'd-gpop' : ''}>{golesSu}</b><div className="d-lado-t"><span>{rivalNombre}</span><small>{rival.formacion} · {valorEquipo(rival)}</small></div></div>
       </header>
       {fase === 'fin' ? (
         <div className="d-fin">
@@ -506,13 +544,18 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
             <div className="d-medio">
               <div className="d-vs" aria-hidden><span>VS</span></div>
               <div className="d-controles">
-                {fase === 'elegir' ? (
+                {fase === 'poder' && suRonda && atk && def ? (
+                  <PanelPoder mio={{ atacante: atk, defensor: def }} su={suRonda} disp={pwMios} tipo={pwTipo} obj={pwObj} setTipo={setPwTipo} setObj={setPwObj} onJugar={() => resolver(pwTipo && pwObj ? { tipo: pwTipo, objetivo: pwObj } : undefined, { atacante: atk, defensor: def }, suRonda)} />
+                ) : fase === 'bloqueado' && pend ? (
+                  <PanelBloqueo pend={pend} candidatos={candidatos(equipo, ronda, cMio, [pend.bloqueado, pend.rol === 'atacante' ? pend.mioOrig.defensor : pend.mioOrig.atacante])} onElegir={elegirReemplazo} />
+                ) : fase === 'elegir' ? (
                   <>
                     <div className="d-instr"><div className="d-rhead"><b>{tr('Ronda {r} de {t}', { r: ronda, t: RONDAS })}</b><span className="muted small">{tr('Elige quién ataca y quién defiende')}</span></div>
                       <div className="d-slots">
                         <RanuraRonda tipo="atk" id={atk} activa={!atk} bonus={atk ? bonus[atk] ?? 0 : 0} onQuitar={() => setAtk(null)} />
                         <RanuraRonda tipo="def" id={def} activa={!!atk && !def} bonus={def ? bonus[def] ?? 0 : 0} onQuitar={() => setDef(null)} />
                       </div>
+                      <FilaPoderes disp={pwMios} />
                       <button className={`btn pri d-jugar${atk && def ? ' d-gran' : ''}`} disabled={!atk || !def} onClick={jugar}>{atk && def ? `▶ ${tr('Jugar ronda')}` : atk ? tr('Elige un defensor') : def ? tr('Elige un atacante') : tr('Elige atacante y defensor')}</button></div>
                     {p ? (
                       <Detalle p={p} bonus={bonus[p.id] ?? 0} rol={!atk ? 'atk' : !def ? 'def' : undefined}>
@@ -531,16 +574,17 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
                   </>
                 ) : (
                   ultima && (
-                    <div className="d-escena-wrap" onClick={paso < 2 ? avanzar : undefined} style={{ cursor: paso < 2 ? 'pointer' : undefined }}>
-                      {paso === 0 && <EscenaJugada key="a" j={ultima.res.mia} mio titulo={tr('Tu ataque')} beat={beat} />}
-                      {paso === 1 && <EscenaJugada key="b" j={ultima.res.rival} mio={false} titulo={tr('Su ataque')} beat={beat} />}
-                      {paso === 2 && (
+                    <div className="d-escena-wrap" onClick={paso < 3 ? avanzar : undefined} style={{ cursor: paso < 3 ? 'pointer' : undefined }}>
+                      {paso === 0 && ultima.pw && <RevelaPoderes pw={ultima.pw} />}
+                      {paso === 1 && <EscenaJugada key="a" j={ultima.res.mia} mio titulo={tr('Tu ataque')} beat={beat} />}
+                      {paso === 2 && <EscenaJugada key="b" j={ultima.res.rival} mio={false} titulo={tr('Su ataque')} beat={beat} />}
+                      {paso === 3 && (
                         <div className="d-resumen">
                           <b>{tr('Resultado de la ronda {r}', { r: ronda })}</b>
                           <div className="d-resumen-fila"><span className={`d-pill ${ultima.res.mia.resultado}`}>{tr('Tu ataque')}: {resTxt(ultima.res.mia.resultado)}</span><span className={`d-pill ${ultima.res.rival.resultado}`}>{tr('Su ataque')}: {resTxt(ultima.res.rival.resultado)}</span></div>
                         </div>
                       )}
-                      <div className="cta" onClick={(e) => e.stopPropagation()}>{paso < 2 ? <><button className="btn ghost" onClick={() => setPaso(2)}>{tr('Saltar animación')}</button><button className="btn ghost" onClick={() => setVel(vel === 'normal' ? 'rapida' : 'normal')}>{vel === 'normal' ? tr('Velocidad: normal') : tr('Velocidad: rápida')}</button></> : <button className="btn pri d-gran" onClick={siguiente}>{ronda >= RONDAS ? tr('Ver resultado final') : tr('Siguiente ronda')}</button>}</div>
+                      <div className="cta" onClick={(e) => e.stopPropagation()}>{paso < 3 ? <><button className="btn ghost" onClick={() => setPaso(3)}>{tr('Saltar animación')}</button><button className="btn ghost" onClick={() => setVel(vel === 'normal' ? 'rapida' : 'normal')}>{vel === 'normal' ? tr('Velocidad: normal') : tr('Velocidad: rápida')}</button></> : <button className="btn pri d-gran" onClick={siguiente}>{ronda >= RONDAS ? tr('Ver resultado final') : tr('Siguiente ronda')}</button>}</div>
                     </div>
                   )
                 )}
@@ -587,31 +631,139 @@ function consejo(j: ResultadoRonda['mia'], mio: boolean): string {
   return j.pPase >= 0.5 ? tr('Su atacante ({a}) superó a tu defensor ({d}). Elige para defender a quien tenga más Defensa, no más valoración.', { a: A, d: D }) : tr('Tu defensor ({d}) era igual o mejor que su atacante ({a}), pero la suerte favoreció al rival esta vez.', { a: A, d: D })
 }
 
-// La jugada se revela por tiempos: 1) atacante contra defensor, 2) quién supera a quién (y el arquero), 3) el resultado.
+// ---------- poderes ----------
+const iconoPoder = (x: TipoPoder) => (x === 'impulso' ? '⚡' : x === 'debilitar' ? '🥶' : '🚫')
+const nombrePoder = (x: TipoPoder) => (x === 'impulso' ? tr('Impulso') : x === 'debilitar' ? tr('Debilitar') : tr('Bloqueo'))
+const descPoder = (x: TipoPoder) => (x === 'impulso' ? tr('Suma +{n} a un jugador tuyo en esta ronda.', { n: BONO_IMPULSO }) : x === 'debilitar' ? tr('Resta −{n} a un jugador rival en esta ronda.', { n: CASTIGO_DEBILITAR }) : tr('El rival no puede usar a un jugador: tiene que cambiarlo.'))
+const textoPoder = (p: Poder) => { const j = apellido(PLAYER_BY_ID[p.objetivo].name); return p.tipo === 'impulso' ? tr('Impulso: +{n} a {j}', { n: BONO_IMPULSO, j }) : p.tipo === 'debilitar' ? tr('Debilitar: −{n} a {j}', { n: CASTIGO_DEBILITAR, j }) : tr('Bloqueo a {j}', { j }) }
+
+// Los tres poderes de un vistazo (se ven los que aún tienes).
+function FilaPoderes({ disp }: { disp: Disponibles }) {
+  return (
+    <div className="d-poderes-fila" aria-label={tr('Tus poderes')}>
+      <span>{tr('Tus poderes')}</span>
+      {TIPOS_PODER.map((x) => <i key={x} className={`d-pw ${x}${disp[x] ? '' : ' usado'}`} title={`${nombrePoder(x)}: ${descPoder(x)}`}>{iconoPoder(x)}</i>)}
+    </div>
+  )
+}
+
+// Tras ver a los jugadores rivales: eliges un poder en secreto (o ninguno) y a quién va dirigido.
+function PanelPoder({ mio, su, disp, tipo, obj, setTipo, setObj, onJugar }: { mio: Cambio; su: Cambio; disp: Disponibles; tipo: TipoPoder | null; obj: string | null; setTipo: (x: TipoPoder | null) => void; setObj: (id: string | null) => void; onJugar: () => void }) {
+  const objetivos = tipo === 'impulso' ? [mio.atacante, mio.defensor] : [su.atacante, su.defensor]
+  const rolTxt = (c: Cambio, id: string) => (c.atacante === id ? '⚽' : '🛡')
+  const jugador = (id: string) => PLAYER_BY_ID[id]
+  return (
+    <div className="d-poder-panel">
+      <div className="d-rhead"><b>{tr('Elige un poder en secreto')}</b><span className="muted small">{tr('Solo puedes usar cada poder una vez por partida. El rival también tiene los suyos.')}</span></div>
+      <div className="d-rivales">
+        <span>{tr('El rival eligió')}</span>
+        {[su.atacante, su.defensor].map((id) => <em key={id}><Avatar p={jugador(id)} size={26} /> {rolTxt(su, id)} {apellido(jugador(id).name)}</em>)}
+      </div>
+      <div className="d-pw-cards">
+        {TIPOS_PODER.map((x) => (
+          <button key={x} type="button" disabled={!disp[x]} className={`d-pw-card ${x}${tipo === x ? ' on' : ''}`} onClick={() => { setTipo(tipo === x ? null : x); setObj(null) }}>
+            <span className="ic" aria-hidden>{iconoPoder(x)}</span><b>{nombrePoder(x)}</b><small>{disp[x] ? descPoder(x) : tr('Usado')}</small>
+          </button>
+        ))}
+      </div>
+      {tipo && (
+        <div className="d-pw-obj">
+          <span>{tr('Elige a quién')}</span>
+          <div>{objetivos.map((id) => (
+            <button key={id} type="button" className={`d-pw-j${obj === id ? ' on' : ''}`} onClick={() => setObj(id)}>
+              <Avatar p={jugador(id)} size={38} /><b>{apellido(jugador(id).name)}</b><small>{rolTxt(tipo === 'impulso' ? mio : su, id)}</small>
+            </button>))}</div>
+        </div>
+      )}
+      <button className={`btn pri d-jugar${!tipo || obj ? ' d-gran' : ''}`} disabled={!!tipo && !obj} onClick={onJugar}>
+        {tipo && obj ? `${iconoPoder(tipo)} ${tr('Jugar ronda con {p}', { p: nombrePoder(tipo) })}` : tipo ? tr('Elige a quién') : `▶ ${tr('Jugar sin poder')}`}
+      </button>
+    </div>
+  )
+}
+
+// El rival bloqueó a uno de tus jugadores: elige quién lo reemplaza, en vivo.
+function PanelBloqueo({ pend, candidatos: cs, onElegir }: { pend: Pendiente; candidatos: string[]; onElegir: (id: string) => void }) {
+  const bloq = PLAYER_BY_ID[pend.bloqueado]
+  const f = pend.rol === 'atacante' ? poderAtaque : poderDefensa
+  return (
+    <div className="d-poder-panel d-bloqueo">
+      <div className="d-bq-t"><span aria-hidden>🚫</span><div><b>{tr('¡El rival bloqueó a {n}!', { n: bloq.name })}</b><small>{pend.rol === 'atacante' ? tr('Elige quién ataca en su lugar') : tr('Elige quién defiende en su lugar')}</small></div></div>
+      {cs.length ? (
+        <div className="d-bq-lista">{cs.map((id) => { const p = PLAYER_BY_ID[id]; return <button key={id} type="button" className="d-pw-j" onClick={() => onElegir(id)}><Avatar p={p} size={44} /><b>{apellido(p.name)}</b><small>{Math.round(f(p))}</small></button> })}</div>
+      ) : <button className="btn pri" onClick={() => onElegir(pend.bloqueado)}>{tr('No queda nadie más: sigue con él')}</button>}
+    </div>
+  )
+}
+
+// Se revelan los dos poderes a la vez, con su efecto.
+function RevelaPoderes({ pw }: { pw: PoderRonda }) {
+  const lado = (de: 'mio' | 'su', p: Poder | undefined) => {
+    const ef = pw.efectos.find((e) => e.de === de)
+    const cambio = de === 'mio' ? pw.cambioSu : pw.cambioMio // un bloqueo mío cambia a un jugador suyo, y al revés
+    return (
+      <div className={`d-rev-pw ${de}${p ? ` ${p.tipo}` : ' ninguno'}`}>
+        <small>{de === 'mio' ? tr('Tu poder') : tr('Su poder')}</small>
+        {p ? <>
+          <span className="ic" aria-hidden>{iconoPoder(p.tipo)}</span>
+          <b>{nombrePoder(p.tipo)}</b>
+          <em>{textoPoder(p)}</em>
+          <i className={ef?.aplicado ? 'ok' : 'no'}>{p.tipo === 'bloqueo' && cambio ? tr('{d} tuvo que dejar su lugar a {a}.', { d: apellido(PLAYER_BY_ID[cambio.de].name), a: apellido(PLAYER_BY_ID[cambio.a].name) }) : ef?.aplicado ? tr('Surtió efecto.') : tr('Se perdió: ese jugador ya no jugó.')}</i>
+        </> : <><span className="ic" aria-hidden>·</span><em>{tr('Sin poder')}</em></>}
+      </div>
+    )
+  }
+  return (
+    <div className="d-escena d-poderes-rev">
+      <p className="d-esc-t">{tr('¡Poderes revelados!')}</p>
+      <div className="d-rev-fila">{lado('mio', pw.mio)}{lado('su', pw.su)}</div>
+    </div>
+  )
+}
+
+// Frases del narrador: una por jugada, con los nombres reales.
+function narrador(j: ResultadoRonda['mia']): string {
+  const a = apellido(PLAYER_BY_ID[j.atacante].name), d = apellido(PLAYER_BY_ID[j.defensor].name), k = apellido(PLAYER_BY_ID[j.arquero].name)
+  const h = [...(j.atacante + j.defensor)].reduce((s, c) => s + c.charCodeAt(0), 0)
+  if (j.resultado === 'gol') return [tr('¡{a} se saca a {d} de encima y la clava!', { a, d }), tr('¡{a} define sin piedad ante {k}! ¡Golazo!', { a, k }), tr('¡Remate imparable de {a}! {k} no pudo hacer nada.', { a, k })][h % 3]
+  if (j.resultado === 'atajada') return [tr('¡{k} vuela y se queda con el remate de {a}!', { a, k }), tr('¡Paradón de {k}! {a} no lo puede creer.', { a, k })][h % 2]
+  return [tr('¡{d} llega justo y corta el avance de {a}!', { a, d }), tr('¡Muro! {d} le cierra todos los caminos a {a}.', { a, d })][h % 2]
+}
+
+// La jugada se revela por tiempos y con una pelota que viaja: 1) atacante contra defensor, 2) quién supera a quién (y el arquero), 3) el resultado.
 function EscenaJugada({ j, mio, titulo, beat }: { j: ResultadoRonda['mia']; mio: boolean; titulo: string; beat: number }) {
   const at = PLAYER_BY_ID[j.atacante], df = PLAYER_BY_ID[j.defensor], gk = PLAYER_BY_ID[j.arquero]
   const pasa = j.resultado !== 'corte'
   const v = (n: number) => (beat >= n ? 'rev' : 'oculto')
+  // posición de la pelota (en % del ancho) según el momento de la jugada
+  const X = pasa ? { a: 15, d: 48, k: 84 } : { a: 27, d: 73, k: 73 }
+  const bola = beat <= 1 ? X.a : beat === 2 ? (pasa ? X.k : X.d) : j.resultado === 'gol' ? 104 : j.resultado === 'atajada' ? X.d + 8 : X.a + 6
+  const fin = beat >= 3
   return (
-    <div className={`d-escena beats ${j.resultado}${mio ? ' mio' : ' su'}`}>
+    <div className={`d-escena beats ${j.resultado}${mio ? ' mio' : ' su'}${fin ? ' fin' : ''}`}>
       <p className="d-esc-t">{titulo}</p>
       <p className="d-esc-cap">{beat <= 1 ? tr('Atacante contra defensor') : beat === 2 ? (pasa ? tr('Si lo supera, remata contra el arquero') : tr('El defensor corta la jugada')) : '\u00a0'}</p>
       <div className="d-esc-fila">
+        <span className={`d-pelota b${beat}${fin ? ` ${j.resultado}` : ''}`} style={{ left: `${bola}%` }} aria-hidden>⚽</span>
         <div className="d-esc-j a rev"><Avatar p={at} size={92} /><b>{at.name}</b><small>⚽ {Math.round(poderAtaque(at))}</small></div>
-        <span className={`d-esc-x ${v(1)}`} aria-hidden>⚽</span>
         <div className={`d-esc-j d ${beat >= 2 ? (pasa ? 'vencido' : 'gana') : ''} rev`}><Avatar p={df} size={92} /><b>{df.name}</b><small>🛡 {Math.round(poderDefensa(df))}</small><em className={v(2)}>{pasa ? tr('Superado') : tr('Corta')}</em></div>
         {pasa && <><span className={`d-esc-x l2 ${v(2)}`} aria-hidden>→</span>
           <div className={`d-esc-j g ${beat >= 3 ? (j.resultado === 'gol' ? 'vencido' : 'gana') : ''} ${v(2)}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤 {Math.round(poderArquero(gk))}</small><em className={v(3)}>{j.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
+        {fin && j.resultado === 'gol' && <div className="d-confeti" aria-hidden>{Array.from({ length: 16 }, (_, n) => <i key={n} style={{ ['--a' as string]: `${n * 22.5}deg`, ['--d' as string]: `${46 + (n % 4) * 14}px`, ['--c' as string]: ['#ffd54a', '#00e5ff', '#ff2e88', '#fff'][n % 4] }} />)}</div>}
       </div>
-      {j.pA !== undefined && j.pD !== undefined && j.t1 !== undefined && (
-        <BarraProb clase={v(2)} titulo={tr('Duelo: ataque {a} contra defensa {d}', { a: Math.round(j.pA), d: Math.round(j.pD) })} p={j.pPase} tirada={j.t1} ok={pasa} />
-      )}
-      {pasa && j.rem !== undefined && j.arq !== undefined && j.pTiro !== undefined && j.t2 !== undefined && (
-        <BarraProb clase={v(3)} titulo={tr('Remate {r} contra arquero {q}', { r: Math.round(j.rem), q: Math.round(j.arq) })} p={j.pTiro} tirada={j.t2} ok={j.resultado === 'gol'} nota={j.clima !== undefined && j.clima < 0.97 ? tr('El clima reduce la probabilidad de gol.') : j.clima !== undefined && j.clima > 1.03 ? tr('El clima aumenta la probabilidad de gol.') : undefined} />
-      )}
       <div className={`d-esc-res ${v(3)}`}>{resTxt(j.resultado)}</div>
-      {pasa && j.pTiro !== undefined && <small className={`d-esc-p ${v(3)}`}>{tr('Probabilidad total de gol: {a} % × {b} % = {c} %', { a: Math.round(j.pPase * 100), b: Math.round(j.pTiro * 100), c: Math.round(j.pGol * 100) })}</small>}
-      {j.pA !== undefined && <p className={`d-esc-tip ${v(3)}`}><b>{tr('Cómo mejorar')}</b> {consejo(j, mio)}</p>}
+      <p className={`d-narra ${v(3)}`}>{narrador(j)}</p>
+      {fin && j.pA !== undefined && j.pD !== undefined && j.t1 !== undefined && (
+        <details className="d-por-que">
+          <summary>{tr('¿Por qué?')}</summary>
+          <BarraProb clase="rev" titulo={tr('Duelo: ataque {a} contra defensa {d}', { a: Math.round(j.pA), d: Math.round(j.pD) })} p={j.pPase} tirada={j.t1} ok={pasa} />
+          {pasa && j.rem !== undefined && j.arq !== undefined && j.pTiro !== undefined && j.t2 !== undefined && (
+            <BarraProb clase="rev" titulo={tr('Remate {r} contra arquero {q}', { r: Math.round(j.rem), q: Math.round(j.arq) })} p={j.pTiro} tirada={j.t2} ok={j.resultado === 'gol'} nota={j.clima !== undefined && j.clima < 0.97 ? tr('El clima reduce la probabilidad de gol.') : j.clima !== undefined && j.clima > 1.03 ? tr('El clima aumenta la probabilidad de gol.') : undefined} />
+          )}
+          {pasa && j.pTiro !== undefined && <small className="d-esc-p rev">{tr('Probabilidad total de gol: {a} % × {b} % = {c} %', { a: Math.round(j.pPase * 100), b: Math.round(j.pTiro * 100), c: Math.round(j.pGol * 100) })}</small>}
+          <p className="d-esc-tip rev"><b>{tr('Cómo mejorar')}</b> {consejo(j, mio)}</p>
+        </details>
+      )}
     </div>
   )
 }
