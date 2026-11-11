@@ -592,3 +592,17 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-redes{display:flex;align-items:center;gap:10px;margin-top:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}.d-redes>span{font:700 12px Inter;letter-spacing:.8px;text-transform:uppercase;color:#8a96b8;margin-right:4px}
 .d-red{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:#b9c4e6;cursor:pointer;transition:.18s}.d-red svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.d-red svg .rl{fill:currentColor;stroke:none}
 .d-red:hover,.d-red:focus-visible{transform:translateY(-2px)}.d-red.instagram:hover{color:#ff5fa8;border-color:#ff5fa8;background:rgba(255,95,168,.1)}.d-red.facebook:hover{color:#5aa9ff;border-color:#5aa9ff;background:rgba(90,169,255,.1)}.d-red.x:hover{color:#fff;border-color:#fff;background:rgba(255,255,255,.1)}
+
+/* niveles y botón de jugar atractivos */
+.d-niveles{gap:10px}.d-nivel{position:relative;display:grid;gap:4px;justify-items:center;padding:14px 6px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));color:#c9d3f2;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+.d-nivel::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--nc)}
+.d-nivel .d-estr{font-style:normal;font-size:11px;letter-spacing:2px;color:var(--nc);opacity:.85}.d-nivel span{font:800 18px 'Barlow Condensed';letter-spacing:1.2px;text-transform:uppercase}
+.d-nivel.n-bronce{--nc:#e0955a}.d-nivel.n-plata{--nc:#cfd8dc}.d-nivel.n-oro{--nc:#ffd54a}.d-nivel.n-leyenda{--nc:#00e5ff}
+.d-nivel:hover{transform:translateY(-2px);border-color:var(--nc)}
+.d-nivel.on,.d-nivel.n-bronce.on,.d-nivel.n-plata.on,.d-nivel.n-oro.on,.d-nivel.n-leyenda.on{background:linear-gradient(180deg,color-mix(in srgb,var(--nc) 30%,transparent),color-mix(in srgb,var(--nc) 8%,transparent));border-color:var(--nc);color:#fff;box-shadow:0 0 0 1px var(--nc),0 8px 22px -8px var(--nc)}
+.d-nivel.on .d-estr{color:#fff}
+.d-jugar-gran{position:relative;display:block;width:100%;margin-top:14px;padding:18px 20px;border:0;border-radius:16px;cursor:pointer;overflow:hidden;color:#02131a;font:800 26px 'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;background:linear-gradient(100deg,#00e5ff,#7af0ff 50%,#00e5ff);box-shadow:0 10px 28px -8px rgba(0,229,255,.7),inset 0 -4px 0 rgba(0,0,0,.18);transition:transform .15s,box-shadow .15s}
+.d-jugar-gran::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);transform:skewX(-20deg);animation:djbrillo 3.2s infinite}
+.d-jugar-gran:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(0,229,255,.9),inset 0 -4px 0 rgba(0,0,0,.18)}.d-jugar-gran:active{transform:translateY(1px)}
+@keyframes djbrillo{0%,60%{left:-80px}100%{left:120%}}
+@media(prefers-reduced-motion:reduce){.d-jugar-gran::after{animation:none}}
