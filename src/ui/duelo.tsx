@@ -37,7 +37,7 @@ function useCerrarFuera(abierto: boolean, cerrar: () => void) {
 
 // ---------- cancha con los jugadores (mismo estilo que la «Alineación histórica») ----------
 type Marca = 'atacante' | 'defensor' | 'cansado' | 'elegible' | 'actual'
-function Nodo({ p, x, y, marca, onClick, etiqueta }: { p?: Player; x: number; y: number; marca?: Marca; onClick?: () => void; etiqueta?: string }) {
+function Nodo({ p, x, y, marca, onClick, etiqueta, activo }: { p?: Player; x: number; y: number; marca?: Marca; onClick?: () => void; etiqueta?: string; activo?: boolean }) {
   const photo = usePhoto(p ?? PLAYER_BY_ID[Object.keys(PLAYER_BY_ID)[0]])
   const Y = 8 + (y / 100) * 104
   if (!p) {
@@ -53,8 +53,9 @@ function Nodo({ p, x, y, marca, onClick, etiqueta }: { p?: Player; x: number; y:
   const nm = apellido(p.name)
   const w = Math.max(10, nm.length * 2 + 3)
   return (
-    <g className={`pn${marca ? ` m-${marca}` : ''}`} data-line={p.line} role={onClick ? 'button' : undefined} tabIndex={onClick ? 0 : undefined} onClick={onClick} onKeyDown={(e) => { if (onClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick() } }} style={{ cursor: onClick ? 'pointer' : 'default' }} aria-label={`${p.name}, ${p.ovr}`}>
+    <g className={`pn${marca ? ` m-${marca}` : ''}${activo ? ' sel' : ''}`} data-line={p.line} role={onClick ? 'button' : undefined} tabIndex={onClick ? 0 : undefined} onClick={onClick} onKeyDown={(e) => { if (onClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick() } }} style={{ cursor: onClick ? 'pointer' : 'default' }} aria-label={`${p.name}, ${p.ovr}`}>
       <clipPath id={cid}><circle cx={x} cy={Y} r="5.6" /></clipPath>
+      {activo && <><circle cx={x} cy={Y} r="6.4" className="pulso" /><circle cx={x} cy={Y} r="8.3" className="halo" /><circle cx={x} cy={Y} r="7.3" className="halo2" /></>}
       <circle cx={x} cy={Y} r="6.4" className="ring" />
       {photo ? <image href={photo.url} x={x - 5.6} y={Y - 5.6} width="11.2" height="11.2" preserveAspectRatio="xMidYMin slice" clipPath={`url(#${cid})`} /> : <><circle cx={x} cy={Y} r="5.6" className="fill" /><text x={x} y={Y + 1.5} textAnchor="middle" className="pni">{initials(p.name)}</text></>}
       <rect x={x + 2.6} y={Y + 2.6} width="6" height="3.8" rx="1.2" className="badge" />
@@ -67,7 +68,7 @@ function Nodo({ p, x, y, marca, onClick, etiqueta }: { p?: Player; x: number; y:
     </g>
   )
 }
-function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta }: { formacion: string; ids: (string | undefined)[]; marcas?: Record<string, Marca>; onNodo?: (i: number) => void; onVacio?: (i: number) => void; actual?: number; etiqueta: string }) {
+function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta, sel }: { sel?: string | null; formacion: string; ids: (string | undefined)[]; marcas?: Record<string, Marca>; onNodo?: (i: number) => void; onVacio?: (i: number) => void; actual?: number; etiqueta: string }) {
   const huecos = FORMACIONES[formacion]
   return (
     <svg viewBox="0 0 100 118" className="pitch duelo-pitch" role="group" aria-label={etiqueta}>
@@ -79,7 +80,7 @@ function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta }: {
       <g className="pl"><rect x="3" y="3" width="94" height="112" rx="1" /><line x1="3" y1="59" x2="97" y2="59" /><circle cx="50" cy="59" r="10" /><rect x="24" y="3" width="52" height="16" /><rect x="36" y="3" width="28" height="6" /><rect x="24" y="99" width="52" height="16" /><rect x="36" y="109" width="28" height="6" /></g>
       {huecos.map((h, i) => {
         const id = ids[i]; const p = id ? PLAYER_BY_ID[id] : undefined
-        return <Nodo key={i} p={p} x={h.x} y={h.y} marca={actual === i ? 'actual' : id ? marcas?.[id] : undefined} onClick={p ? (onNodo ? () => onNodo(i) : undefined) : (onVacio ? () => onVacio(i) : undefined)} etiqueta={!p ? posNombre(h.pos) : undefined} />
+        return <Nodo key={i} p={p} x={h.x} y={h.y} marca={actual === i ? 'actual' : id ? marcas?.[id] : undefined} onClick={p ? (onNodo ? () => onNodo(i) : undefined) : (onVacio ? () => onVacio(i) : undefined)} etiqueta={!p ? posNombre(h.pos) : undefined} activo={!!id && id === sel} />
       })}
     </svg>
   )
@@ -217,7 +218,7 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
         <p className="muted">{equipo.formacion} · {tr('Valoración media')} {valorEquipo(equipo)}{pais.length > 0 && <> · {tr('Sinergias')}: {pais.map((s) => `${TEAM_BY_ID[s.teamId].name} +${s.bonus}`).join(', ')}</>}</p></header>
       <div className="d-cols d-cols-eq">
         <div className="d-c-cancha">
-          <Cancha formacion={equipo.formacion} ids={equipo.once} onNodo={(i) => setSel(equipo.once[i])} etiqueta={tr('Tu equipo')} />
+          <Cancha formacion={equipo.formacion} ids={equipo.once} onNodo={(i) => setSel(equipo.once[i])} sel={sel} etiqueta={tr('Tu equipo')} />
         </div>
         <div className="d-c-banca">
           <h4 className="sub">{tr('Suplentes')}</h4>
@@ -295,7 +296,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
       <div className="duelo">
         <header className="d-hero"><p className="kicker">{tr('Último paso')}</p><h1>{tr('Tu equipo está listo')}</h1><p className="muted">{formacion} · {tr('Valoración media')} {valorEquipo(e)}</p></header>
         <div className="d-cols">
-          <div><Cancha formacion={formacion} ids={once} onNodo={(i) => setVista(once[i])} etiqueta={tr('Tu equipo')} /><h4 className="sub">{tr('Suplentes')}</h4><Banca slots={sup} activo={vista} onJugador={(id) => setVista(id)} /></div>
+          <div><Cancha formacion={formacion} ids={once} onNodo={(i) => setVista(once[i])} sel={vista} etiqueta={tr('Tu equipo')} /><h4 className="sub">{tr('Suplentes')}</h4><Banca slots={sup} activo={vista} onJugador={(id) => setVista(id)} /></div>
           <div>
             {vista && <Detalle p={PLAYER_BY_ID[vista]} />}
             <p className="note warn">{tr('Este equipo no se podrá cambiar una vez que lo confirmes.')}</p>
@@ -315,7 +316,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
         <div className="vprog"><i style={{ width: `${(elegidos.length / N_PICKS) * 100}%` }} /></div></header>
       <div className="d-cols">
         <div>
-          <Cancha formacion={formacion} ids={picks.slice(0, 11)} actual={slot !== null && slot < 11 ? slot : undefined} onNodo={(i) => setVista(picks[i] ?? null)} onVacio={(i) => { setSlot(i); setVista(null) }} etiqueta={tr('Tu equipo')} />
+          <Cancha formacion={formacion} ids={picks.slice(0, 11)} actual={slot !== null && slot < 11 ? slot : undefined} onNodo={(i) => setVista(picks[i] ?? null)} onVacio={(i) => { setSlot(i); setVista(null) }} sel={vista} etiqueta={tr('Tu equipo')} />
           <h4 className="sub">{tr('Suplentes')}</h4>
           <Banca slots={[picks[11], picks[12], picks[13]]} activo={vista} actual={slot} onJugador={(id) => setVista(id)} onVacio={(n) => { setSlot(11 + n); setVista(null) }} />
         </div>
@@ -450,7 +451,7 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
           <div className="d-arena">
             <section className="d-lado mio">
               <h4>{tr('Tu equipo')}</h4>
-              <Cancha formacion={equipo.formacion} ids={equipo.once} marcas={marcas} onNodo={fase === 'elegir' ? (i) => setSel(equipo.once[i]) : undefined} etiqueta={tr('Tu equipo')} />
+              <Cancha formacion={equipo.formacion} ids={equipo.once} marcas={marcas} onNodo={fase === 'elegir' ? (i) => setSel(equipo.once[i]) : undefined} sel={sel} etiqueta={tr('Tu equipo')} />
               <Banca slots={equipo.suplentes} activo={sel} estado={(id) => (cMio.includes(id) && fase === 'elegir' ? 'cansado' : ronda < 3 ? 'espera' : undefined)} onJugador={fase === 'elegir' ? (id) => setSel(id) : undefined} />
             </section>
             <div className="d-medio">

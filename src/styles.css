@@ -646,3 +646,13 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
   .d-medio .d-det{padding:10px;gap:8px;margin:6px 0 0}.d-medio .d-det>div:nth-of-type(3){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 14px}.d-medio .d-det .bar{grid-template-columns:50px minmax(0,1fr) 20px;gap:5px;margin:2px 0;font-size:12px;letter-spacing:.3px}.d-medio .d-det .bar .bv{text-align:right;min-width:0}
   .d-medio .d-det .cta{margin:0}
 }
+
+/* jugador seleccionado: sin el recuadro del navegador, con halo animado */
+.pn:focus,.pn:focus-visible{outline:none}
+.pn.sel .ring{stroke:var(--cy);stroke-width:1.5;filter:drop-shadow(0 0 1.6px rgba(0,229,255,.95))}
+.pn .halo{fill:none;stroke:var(--cy);stroke-width:.55;stroke-dasharray:2.2 1.6;transform-box:fill-box;transform-origin:center;animation:dGiro 5s linear infinite}
+.pn .halo2{fill:none;stroke:var(--pk);stroke-width:.35;stroke-dasharray:.8 2.4;transform-box:fill-box;transform-origin:center;animation:dGiro 3.2s linear infinite reverse}
+.pn .pulso{fill:rgba(0,229,255,.18);stroke:var(--cy);stroke-width:.4;transform-box:fill-box;transform-origin:center;animation:dOnda 1.8s ease-out infinite}
+@keyframes dGiro{to{transform:rotate(360deg)}}
+@keyframes dOnda{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.7);opacity:0}}
+@media(prefers-reduced-motion:reduce){.pn .halo,.pn .halo2{animation:none}.pn .pulso{animation:none;opacity:.35}}
