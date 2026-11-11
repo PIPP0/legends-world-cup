@@ -192,6 +192,8 @@ describe('probabilidades de la portada', () => {
   })
 })
 
+import { PLAYER_BY_ID } from '../data'
+import { MATRIZ, ATAQUES, DEFENSAS, segundosBarra, precision, resolverJugada, eligeAtaqueMaquina, eligeDefensaMaquina, toqueMaquina, encajeAtaque, estiloJugador, disponibles as disponiblesTurno } from './jugada'
 import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, onceDeEjemplo, TOPE_SUPLENTE, bloqueados, aplicarPoderes, eligePoderMaquina, reemplazoMaquina, candidatos, todosLosPoderes, TIPOS_PODER, type Poder, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
 describe('duelo «Mi Once Ideal»', () => {
   it('las ofertas del draft son 3, distintas, compatibles con el puesto y repetibles con la misma semilla', () => {
@@ -267,5 +269,29 @@ describe('duelo «Mi Once Ideal»', () => {
         expect(usados.length).toBe(TIPOS_PODER.length)
       }
     }
+  })
+
+  it('jugada: cada defensa frena a un ataque y sufre con otro, la barra va más lenta con mejor encaje y el centro rinde más', () => {
+    for (const d of DEFENSAS) { const col = ATAQUES.map((a) => MATRIZ[a][d]); expect(Math.min(...col)).toBeLessThan(0); expect(Math.max(...col)).toBeGreaterThanOrEqual(0) }
+    for (const a of ATAQUES) { const fila = DEFENSAS.map((d) => MATRIZ[a][d]); expect(Math.max(...fila)).toBeGreaterThan(0); expect(Math.min(...fila)).toBeLessThan(0) }
+    expect(segundosBarra(95)).toBeGreaterThan(segundosBarra(80)); expect(segundosBarra(80)).toBeGreaterThan(segundosBarra(60))
+    expect(precision(0.5)).toBe(1); expect(precision(0.05)).toBeLessThan(precision(0.4)); expect(precision(0)).toBe(0)
+    const yo = onceDeEjemplo('4-3-3'); const rival = equipoMaquina('plata', 'j1')
+    const base = { seed: 'j', turno: 1, ataca: 'mio' as const, ataque: 'contra' as const, defensa: 'presion' as const, trioA: [yo[9], yo[8], yo[10]], trioD: rival.once.slice(2, 5), ajA: {}, ajD: {}, ejecutor: yo[9], interceptor: rival.once[2], precD: 0, arquero: rival.once[0], clima: 1 }
+    const centro = resolverJugada({ ...base, precA: 1 }), borde = resolverJugada({ ...base, precA: 0 })
+    expect(centro.pRemate).toBeGreaterThan(borde.pRemate)
+    expect(resolverJugada({ ...base, precA: 1 }).resultado).toBe(centro.resultado) // misma semilla, mismo resultado
+    const sup = resolverJugada({ ...base, precA: 0.7 }), flojo = resolverJugada({ ...base, defensa: 'bloque', precA: 0.7 })
+    expect(sup.nivel).toBeGreaterThan(flojo.nivel); expect(sup.pPaso).toBeGreaterThan(flojo.pPaso)
+  })
+  it('jugada: la máquina elige 3 jugadores distintos, sin arquero ni cansados, y estilos coherentes', () => {
+    for (const nivel of ['bronce', 'plata', 'oro', 'leyenda'] as const) {
+      const eq = equipoMaquina(nivel, 'jm'); const cansados = eq.once.slice(1, 4)
+      const at = eligeAtaqueMaquina('jm', 2, eq, cansados, nivel, []), df = eligeDefensaMaquina('jm', 2, eq, cansados, nivel, [])
+      for (const trio of [at.trio, df.trio]) { expect(new Set(trio).size).toBe(3); expect(trio.every((id) => !cansados.includes(id) && disponiblesTurno(eq, 2, cansados).includes(id))).toBe(true) }
+      const x = toqueMaquina('jm', 2, nivel, 1, 'ataca'); expect(x).toBeGreaterThanOrEqual(0); expect(x).toBeLessThanOrEqual(1)
+    }
+    expect(encajeAtaque(onceDeEjemplo('4-3-3')[8], 'contra')).toBeGreaterThan(0)
+    expect(['veloz', 'regateador', 'fuerte', 'pasador', 'goleador', 'muro']).toContain(estiloJugador(PLAYER_BY_ID[onceDeEjemplo('4-3-3')[8]]))
   })
 })

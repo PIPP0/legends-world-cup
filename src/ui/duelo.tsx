@@ -1,13 +1,20 @@
 import { CompartirEquipo, type Red } from './compartir'
-import { Component, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { tr } from '../i18n'
 import { attrLabel, posLabel, posNombre } from '../i18n/nombres'
 import {
-  FORMACIONES, NIVELES, NOMBRES_FORMACION, N_PICKS, RONDAS, equipoMaquina, eligeMaquina, jugarRonda, ofertas, paisesConSinergia, penales, poderAtaque, poderDefensa, poderArquero, formulaAtaque, formulaDefensa, type Formula,
-  TIPOS_PODER, BONO_IMPULSO, CASTIGO_DEBILITAR, todosLosPoderes, bloqueados, candidatos, reemplazoMaquina, aplicarPoderes, eligePoderMaquina, type Poder, type TipoPoder, type Rol, type Disponibles, type Efecto,
-  sedeDuelo, sinergias, valorEquipo, onceDeEjemplo, type Cambio, type Equipo, type Nivel, type ResultadoRonda,
+  FORMACIONES, NIVELES, NOMBRES_FORMACION, N_PICKS, equipoMaquina, ofertas, paisesConSinergia, penales, poderAtaque, poderDefensa, formulaAtaque, formulaDefensa, type Formula,
+  TIPOS_PODER, todosLosPoderes, type Poder, type TipoPoder, type Disponibles, type Efecto,
+  sedeDuelo, sinergias, valorEquipo, onceDeEjemplo, type Equipo, type Nivel,
 } from '../engine/duelo'
+import {
+  ATAQUES, DEFENSAS, MATRIZ, PESOS_ATAQUE, PESOS_DEFENSA, TURNOS, IMPULSO_ENC, DEBILITAR_ENC, disponibles, encajeAtaque, encajeDefensa, estiloJugador,
+  segundosBarra, precision, resolverJugada, eligeAtaqueMaquina, eligeDefensaMaquina, toqueMaquina, mejorDelTrio, bloqueados, aplicarPoderesTrio, reemplazoTrio, eligePoderTrio,
+  type Ataque, type Defensa, type Estilo, type DetalleJugada, type HistorialJugada, type Aj,
+} from '../engine/jugada'
+import { weatherFactor } from '../engine/world'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
 import { CtxLine } from './world'
 import { favoritaActual } from '../engine/favorita'
@@ -38,7 +45,7 @@ function useCerrarFuera(abierto: boolean, cerrar: () => void) {
 
 // ---------- cancha con los jugadores (mismo estilo que la «Alineación histórica») ----------
 type Marca = 'atacante' | 'defensor' | 'cansado' | 'elegible' | 'actual'
-function Nodo({ p, x, y, marca, onClick, etiqueta, activo }: { p?: Player; x: number; y: number; marca?: Marca; onClick?: () => void; etiqueta?: string; activo?: boolean }) {
+function Nodo({ p, x, y, marca, onClick, etiqueta, activo, valor }: { p?: Player; x: number; y: number; marca?: Marca; onClick?: () => void; etiqueta?: string; activo?: boolean; valor?: { n: number; t: string } }) {
   const photo = usePhoto(p ?? PLAYER_BY_ID[Object.keys(PLAYER_BY_ID)[0]])
   const Y = 8 + (y / 100) * 104
   if (!p) {
@@ -54,13 +61,13 @@ function Nodo({ p, x, y, marca, onClick, etiqueta, activo }: { p?: Player; x: nu
   const nm = apellido(p.name)
   const w = Math.max(10, nm.length * 2 + 3)
   return (
-    <g className={`pn${marca ? ` m-${marca}` : ''}${activo ? ' sel' : ''}`} data-line={p.line} role={onClick ? 'button' : undefined} tabIndex={onClick ? 0 : undefined} onClick={onClick} onKeyDown={(e) => { if (onClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick() } }} style={{ cursor: onClick ? 'pointer' : 'default' }} aria-label={`${p.name}, ${p.ovr}`}>
+    <g className={`pn${marca ? ` m-${marca}` : ''}${activo ? ' sel' : ''}${valor ? ` fit-${valor.t}` : ''}`} data-line={p.line} role={onClick ? 'button' : undefined} tabIndex={onClick ? 0 : undefined} onClick={onClick} onKeyDown={(e) => { if (onClick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick() } }} style={{ cursor: onClick ? 'pointer' : 'default' }} aria-label={`${p.name}, ${p.ovr}`}>
       <clipPath id={cid}><circle cx={x} cy={Y} r="5.6" /></clipPath>
       {activo && <><circle cx={x} cy={Y} r="6.4" className="pulso" /><circle cx={x} cy={Y} r="8.3" className="halo" /><circle cx={x} cy={Y} r="7.3" className="halo2" /></>}
       <circle cx={x} cy={Y} r="6.4" className="ring" />
       {photo ? <image href={photo.url} x={x - 5.6} y={Y - 5.6} width="11.2" height="11.2" preserveAspectRatio="xMidYMin slice" clipPath={`url(#${cid})`} /> : <><circle cx={x} cy={Y} r="5.6" className="fill" /><text x={x} y={Y + 1.5} textAnchor="middle" className="pni">{initials(p.name)}</text></>}
       <rect x={x + 2.6} y={Y + 2.6} width="6" height="3.8" rx="1.2" className="badge" />
-      <text x={x + 5.6} y={Y + 5.4} textAnchor="middle" className="pnn">{p.ovr}</text>
+      <text x={x + 5.6} y={Y + 5.4} textAnchor="middle" className="pnn">{valor ? valor.n : p.ovr}</text>
       <rect x={x - w / 2} y={Y + 6.8} width={w} height="3.8" rx="1.9" className="tag" />
       <text x={x} y={Y + 9.5} textAnchor="middle" className="pnl">{nm}</text>
       {marca === 'atacante' && <text x={x - 5.8} y={Y - 3.6} className="mk" textAnchor="middle">⚽</text>}
@@ -69,7 +76,7 @@ function Nodo({ p, x, y, marca, onClick, etiqueta, activo }: { p?: Player; x: nu
     </g>
   )
 }
-function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta, sel }: { sel?: string | null; formacion: string; ids: (string | undefined)[]; marcas?: Record<string, Marca>; onNodo?: (i: number) => void; onVacio?: (i: number) => void; actual?: number; etiqueta: string }) {
+function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta, sel, valor }: { sel?: string | string[] | null; valor?: (id: string) => { n: number; t: string } | undefined; formacion: string; ids: (string | undefined)[]; marcas?: Record<string, Marca>; onNodo?: (i: number) => void; onVacio?: (i: number) => void; actual?: number; etiqueta: string }) {
   const huecos = FORMACIONES[formacion]
   return (
     <svg viewBox="0 0 100 118" className="pitch duelo-pitch" role="group" aria-label={etiqueta}>
@@ -81,7 +88,7 @@ function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta, sel
       <g className="pl"><rect x="3" y="3" width="94" height="112" rx="1" /><line x1="3" y1="59" x2="97" y2="59" /><circle cx="50" cy="59" r="10" /><rect x="24" y="3" width="52" height="16" /><rect x="36" y="3" width="28" height="6" /><rect x="24" y="99" width="52" height="16" /><rect x="36" y="109" width="28" height="6" /></g>
       {huecos.map((h, i) => {
         const id = ids[i]; const p = id ? PLAYER_BY_ID[id] : undefined
-        return <Nodo key={i} p={p} x={h.x} y={h.y} marca={actual === i ? 'actual' : id ? marcas?.[id] : undefined} onClick={p ? (onNodo ? () => onNodo(i) : undefined) : (onVacio ? () => onVacio(i) : undefined)} etiqueta={!p ? posNombre(h.pos) : undefined} activo={!!id && id === sel} />
+        return <Nodo key={i} p={p} x={h.x} y={h.y} marca={actual === i ? 'actual' : id ? marcas?.[id] : undefined} onClick={p ? (onNodo ? () => onNodo(i) : undefined) : (onVacio ? () => onVacio(i) : undefined)} etiqueta={!p ? posNombre(h.pos) : undefined} activo={!!id && (Array.isArray(sel) ? sel.includes(id) : id === sel)} valor={id ? valor?.(id) : undefined} />
       })}
     </svg>
   )
@@ -162,14 +169,14 @@ function FilaJugador({ p, activo, estado, onClick }: { p: Player; activo?: boole
 }
 
 // ======================================================================================
-// Partida en curso: se guarda en el navegador para que, al actualizar o salir y volver, siga donde estaba.
+// Partida en curso: solo un marcador, para saber si se abandonó (el partido es en vivo y no se retoma).
 const CLAVE_PARTIDA = 'lwc:duelo:partida'
-interface Guardada { creado: number; nivel: Nivel; seed: string; ronda: number; cMio: string[]; cSu: string[]; hist: Ronda[]; fase: 'elegir' | 'poder' | 'bloqueado' | 'resultado'; atk: string | null; def: string | null; pwMios?: Disponibles; pwSu?: Disponibles; suRonda?: Cambio | null; pend?: Pendiente | null }
+interface Guardada { creado: number }
 const leerPartida = (): Guardada | null => { try { const s = localStorage.getItem(CLAVE_PARTIDA); return s ? (JSON.parse(s) as Guardada) : null } catch { return null } }
 const borrarPartida = () => { try { localStorage.removeItem(CLAVE_PARTIDA) } catch { /* sin almacenamiento */ } }
 function partidaVigente(): Guardada | null {
   const g = leerPartida(); if (!g) return null
-  try { const e = JSON.parse(localStorage.getItem(CLAVE_EQUIPO) ?? 'null') as Equipo | null; if (e && e.creado === g.creado && Array.isArray(g.hist)) return g } catch { /* equipo ilegible */ }
+  try { const e = JSON.parse(localStorage.getItem(CLAVE_EQUIPO) ?? 'null') as Equipo | null; if (e && e.creado === g.creado) return g } catch { /* equipo ilegible */ }
   borrarPartida(); return null
 }
 
@@ -391,145 +398,202 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
   )
 }
 
-// ---------- el duelo de 5 rondas ----------
-// Qué pasó con los poderes en una ronda (para revelarlos y explicarlos).
-interface PoderRonda { mio?: Poder; su?: Poder; efectos: Efecto[]; cambioMio?: { rol: Rol; de: string; a: string }; cambioSu?: { rol: Rol; de: string; a: string } }
-interface Ronda { n: number; res: ResultadoRonda; mio: Cambio; su: Cambio; pw?: PoderRonda }
-// Ronda a medias: el rival bloqueó a uno de tus jugadores y falta que elijas su reemplazo.
-interface Pendiente { pm?: Poder; ps?: Poder; mioOrig: Cambio; su: Cambio; suOrig: Cambio; rol: Rol; bloqueado: string }
-// Una de las dos ranuras de la ronda: qué hace ese puesto, quién lo ocupa y cuánto aporta.
-function RanuraRonda({ tipo, id, activa, onQuitar, bonus = 0 }: { tipo: 'atk' | 'def'; id: string | null; activa: boolean; onQuitar: () => void; bonus?: number }) {
-  const p = id ? PLAYER_BY_ID[id] : null
-  const atk = tipo === 'atk'
+// ---------- el partido: armar la jugada ----------
+// Por turnos (10 en total): un equipo ataca y el otro defiende. Cada lado elige estrategia y 3 jugadores en secreto; se revelan, se
+// juegan poderes, y quien ejecuta la jugada detiene la barra: cuanto más cerca del centro, más probabilidad.
+const ICONO_ATAQUE: Record<Ataque, string> = { contra: '⚡', bandas: '↔', centro: '🎯', largo: '🚀' }
+const ICONO_DEFENSA: Record<Defensa, string> = { presion: '🔥', bloque: '🧱', marca: '🧲', cierre: '🚧' }
+const nombreAtaque = (e: Ataque) => (e === 'contra' ? tr('Contragolpe') : e === 'bandas' ? tr('Bandas') : e === 'centro' ? tr('Pase al centro') : tr('Balón largo'))
+const nombreDefensa = (e: Defensa) => (e === 'presion' ? tr('Presión alta') : e === 'bloque' ? tr('Bloque bajo') : e === 'marca' ? tr('Marca al hombre') : tr('Cerrar bandas'))
+const descAtaque = (e: Ataque) => (e === 'contra' ? tr('Salida veloz al espacio.') : e === 'bandas' ? tr('Centros y diagonales por los costados.') : e === 'centro' ? tr('Pared y pase filtrado por el medio.') : tr('Pelotazo al área para ganar arriba.'))
+const descDefensa = (e: Defensa) => (e === 'presion' ? tr('Roba arriba, pero deja espacio atrás.') : e === 'bloque' ? tr('Cierra el área con todos atrás.') : e === 'marca' ? tr('Cada defensa pega a su hombre.') : tr('Protege los costados y deja el centro.'))
+const nombreEst = (e: Ataque | Defensa, ataca: boolean) => (ataca ? nombreAtaque(e as Ataque) : nombreDefensa(e as Defensa))
+const iconoEst = (e: Ataque | Defensa, ataca: boolean) => (ataca ? ICONO_ATAQUE[e as Ataque] : ICONO_DEFENSA[e as Defensa])
+const pesosEst = (e: Ataque | Defensa, ataca: boolean) => (ataca ? PESOS_ATAQUE[e as Ataque] : PESOS_DEFENSA[e as Defensa])
+const ICONO_ESTILO: Record<Estilo, string> = { veloz: '⚡', regateador: '🌀', fuerte: '💪', pasador: '🧠', goleador: '🎯', muro: '🛡' }
+const nombreEstilo = (s: Estilo) => (s === 'veloz' ? tr('Veloz') : s === 'regateador' ? tr('Regateador') : s === 'fuerte' ? tr('Fuerte') : s === 'pasador' ? tr('Pasador') : s === 'goleador' ? tr('Goleador') : tr('Muro'))
+// Mensaje tipo Pokémon desde el punto de vista de quien lo lee (nivel +2 = muy a su favor).
+const mensajeEfecto = (n: number) => (n >= 2 ? tr('¡Súper efectivo!') : n === 1 ? tr('Efectivo') : n === 0 ? tr('Parejo') : n === -1 ? tr('Poco efectivo…') : tr('Casi no tiene efecto…'))
+const claseEfecto = (n: number) => (n >= 2 ? 'sup' : n === 1 ? 'efe' : n === 0 ? 'par' : n === -1 ? 'poc' : 'nul')
+
+// Una ficha de estrategia (para elegir o para mostrar revelada).
+function FichaEstrategia({ e, ataca, sel, onClick, mini }: { e: Ataque | Defensa; ataca: boolean; sel?: boolean; onClick?: () => void; mini?: boolean }) {
   return (
-    <div className={`d-slot ${tipo}${p ? ' lleno' : ''}${activa ? ' activa' : ''}`}>
-      <span className="d-slot-ic" aria-hidden>{atk ? '⚽' : '🛡'}</span>
-      <div className="d-slot-tx">
-        <b>{atk ? tr('Tu ataque') : tr('Tu defensa')}</b>
-        <span className="muted small">{atk ? tr('Intenta marcar un gol') : tr('Frena el ataque rival')}</span>
-      </div>
-      {p ? (() => {
-        const base = Math.round(atk ? poderAtaque(p) : poderDefensa(p)), total = base + bonus
-        return (
-          <div className="d-slot-j"><div className="d-slot-av"><Avatar p={p} size={44} /></div>
-            <span><b>{p.name}</b><em>{atk ? tr('Poder de ataque') : tr('Poder de defensa')}</em><span className="d-slot-bar" aria-hidden><i style={{ width: `${Math.max(4, Math.min(100, ((total - 40) / 60) * 100))}%` }} /></span></span>
-            <div className="d-slot-n" title={tr('Poder base {a} + sinergia {b}', { a: base, b: bonus })}><b>{total}</b>{bonus > 0 && <small>{base} +{bonus}</small>}</div>
-            <button type="button" className="d-slot-x" onClick={onQuitar} aria-label={tr('Quitar')} title={tr('Quitar')}>✕</button></div>
-        )
-      })() : <span className="d-slot-vacio">{activa ? '👆 ' : ''}{tr('Toca a un jugador de tu cancha')}</span>}
-    </div>
+    <button type="button" disabled={!onClick} onClick={onClick} className={`d-est ${ataca ? 'atk' : 'def'}${sel ? ' on' : ''}${mini ? ' mini' : ''}`}>
+      <span className="ic" aria-hidden>{iconoEst(e, ataca)}</span>
+      <b>{nombreEst(e, ataca)}</b>
+      {!mini && <small>{ataca ? descAtaque(e as Ataque) : descDefensa(e as Defensa)}</small>}
+      {!mini && <span className="d-est-attr">{pesosEst(e, ataca).slice(0, 2).map(([k]) => attrLabel(k)).join(' · ')}</span>}
+    </button>
   )
 }
 
-function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equipo; nivel: Nivel; inicial?: Guardada; alTerminar: (gane: boolean) => void; alSalir: () => void }) {
-  const [seed] = useState(() => inicial?.seed ?? nuevaSemilla('duelo'))
+// La tabla de efectividad (como la de tipos de Pokémon): siempre a mano.
+function TablaEfectividad({ onClose, ataca, actual }: { onClose: () => void; ataca: boolean; actual?: { a?: Ataque; d?: Defensa } }) {
+  useEffect(() => { const f = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }; window.addEventListener('keydown', f); return () => window.removeEventListener('keydown', f) }, [onClose])
+  const celda = (n: number) => (n >= 2 ? '✅✅' : n === 1 ? '✅' : n === 0 ? '➖' : n === -1 ? '❌' : '❌❌')
+  return createPortal(
+    <div className="modal-bg" role="dialog" aria-modal="true" aria-label={tr('Tabla de efectividad')} onClick={onClose}>
+      <div className="modal d-tabla" onClick={(e) => e.stopPropagation()}>
+        <h3>{tr('Tabla de efectividad')}</h3>
+        <p className="muted small">{tr('Cada estrategia de ataque contra cada defensa. ✅✅ súper efectivo para el ataque, ❌❌ la defensa casi lo anula.')}</p>
+        <div className="tscroll"><table className="gt">
+          <thead><tr><th className="l">{tr('Ataque')} ↓ / {tr('Defensa')} →</th>{DEFENSAS.map((d) => <th key={d} className={actual?.d === d ? 'hl' : ''}><span aria-hidden>{ICONO_DEFENSA[d]}</span> {nombreDefensa(d)}</th>)}</tr></thead>
+          <tbody>{ATAQUES.map((a) => <tr key={a} className={actual?.a === a ? 'hl' : ''}><th className="l"><span aria-hidden>{ICONO_ATAQUE[a]}</span> {nombreAtaque(a)}</th>{DEFENSAS.map((d) => <td key={d} className={`c${MATRIZ[a][d]}${actual?.a === a && actual?.d === d ? ' hl' : ''}`}>{celda(MATRIZ[a][d])}</td>)}</tr>)}</tbody>
+        </table></div>
+        <p className="small muted">{ataca ? tr('Tú atacas: busca la fila que mejor le gane a lo que crees que usará el rival.') : tr('Tú defiendes: busca la columna que frene lo que crees que atacará el rival.')}</p>
+        <div className="cta"><button className="btn pri" onClick={onClose}>{tr('Entendido')}</button></div>
+      </div>
+    </div>, document.body)
+}
+
+interface Eleccion { est: Ataque | Defensa; trio: string[] }
+interface TurnoHist { n: number; ataca: 'mio' | 'su'; det: DetalleJugada; pw?: { mio?: Poder; su?: Poder; efectos: Efecto[] } }
+const CLAVE_ABIERTA = CLAVE_PARTIDA // marcador de partido en curso (para detectar que se abandonó)
+
+function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel: Nivel; alTerminar: (gane: boolean) => void; alSalir: () => void }) {
+  const [seed] = useState(() => nuevaSemilla('duelo'))
   const rival = useMemo(() => equipoMaquina(nivel, seed), [nivel, seed])
   const ctx: MatchCtx = useMemo(() => sedeDuelo(seed), [seed])
-  const [ronda, setRonda] = useState(inicial?.ronda ?? 1)
-  const [cMio, setCMio] = useState<string[]>(inicial?.cMio ?? [])
-  const [cSu, setCSu] = useState<string[]>(inicial?.cSu ?? [])
-  const [atk, setAtk] = useState<string | null>(inicial?.atk ?? null)
-  const [def, setDef] = useState<string | null>(inicial?.def ?? null)
-  const [sel, setSel] = useState<string | null>(null)
-  const [hist, setHist] = useState<Ronda[]>(inicial?.hist ?? [])
-  const [fase, setFase] = useState<'elegir' | 'poder' | 'bloqueado' | 'resultado' | 'fin'>(inicial?.fase ?? 'elegir')
-  const [pwMios, setPwMios] = useState<Disponibles>(inicial?.pwMios ?? todosLosPoderes())
-  const [pwSu, setPwSu] = useState<Disponibles>(inicial?.pwSu ?? todosLosPoderes())
-  const [suRonda, setSuRonda] = useState<Cambio | null>(inicial?.suRonda ?? null)
-  const [pend, setPend] = useState<Pendiente | null>(inicial?.pend ?? null)
+  const [turno, setTurno] = useState(1)
+  const [fase, setFase] = useState<'eleccion' | 'poder' | 'revpoder' | 'bloqueado' | 'ejecutor' | 'barra' | 'resultado' | 'fin'>('eleccion')
+  const [est, setEst] = useState<Ataque | Defensa | null>(null)
+  const [trio, setTrio] = useState<string[]>([])
+  const [su, setSu] = useState<Eleccion | null>(null)
+  const [cMio, setCMio] = useState<string[]>([])
+  const [cSu, setCSu] = useState<string[]>([])
+  const [hist, setHist] = useState<TurnoHist[]>([])
+  const [pwMios, setPwMios] = useState<Disponibles>(todosLosPoderes())
+  const [pwSu, setPwSu] = useState<Disponibles>(todosLosPoderes())
   const [pwTipo, setPwTipo] = useState<TipoPoder | null>(null)
   const [pwObj, setPwObj] = useState<string | null>(null)
-  const [guardado, setGuardado] = useState(false)
+  const [pw, setPw] = useState<{ mio?: Poder; su?: Poder } | null>(null)
+  const [pend, setPend] = useState<{ bloqueado: string } | null>(null)
+  const [finMio, setFinMio] = useState<string[]>([])
+  const [finSu, setFinSu] = useState<string[]>([])
+  const [ajs, setAjs] = useState<{ mio: Aj; su: Aj; efectos: Efecto[] }>({ mio: {}, su: {}, efectos: [] })
+  const [ejec, setEjec] = useState<string | null>(null)
+  const [tabla, setTabla] = useState(false)
   const [compartir, setCompartir] = useState(false)
-  useCerrarFuera(sel !== null, () => setSel(null))
-  const golesMios = hist.reduce((s, r) => s + r.res.golesMios, 0), golesSu = hist.reduce((s, r) => s + r.res.golesRival, 0)
-  const bonus = useMemo(() => sinergias([...equipo.once, ...equipo.suplentes]), [equipo])
-  const disponibles = [...equipo.once, ...(ronda >= 3 ? equipo.suplentes : [])]
-  const marcas: Record<string, Marca> = {}
-  equipo.once.concat(equipo.suplentes).forEach((id) => { if (cMio.includes(id)) marcas[id] = 'cansado' })
-  if (fase === 'elegir' || fase === 'poder' || fase === 'bloqueado') { if (atk) marcas[atk] = 'atacante'; if (def) marcas[def] = 'defensor' }
-  const marcasSu: Record<string, Marca> = {}
-  rival.once.concat(rival.suplentes).forEach((id) => { if (cSu.includes(id)) marcasSu[id] = 'cansado' })
-  if ((fase === 'poder' || fase === 'bloqueado') && suRonda) { marcasSu[suRonda.atacante] = 'atacante'; marcasSu[suRonda.defensor] = 'defensor' }
+  const [guardado, setGuardado] = useState(false)
+  const [vel, setVel] = useLocalState<'normal' | 'rapida'>('lwc:duelo:vel', 'normal')
+  const ataca = turno % 2 === 1 // los turnos impares ataca la persona
+  const det = hist.length && hist[hist.length - 1].n === turno ? hist[hist.length - 1].det : null
+  const sin = useMemo(() => ({ mio: sinergias([...equipo.once, ...equipo.suplentes]), su: sinergias([...rival.once, ...rival.suplentes]) }), [equipo, rival])
+  const ajSin = (m: Record<string, number>): Aj => Object.fromEntries(Object.entries(m).map(([k, v]) => [k, v * 2]))
+  const histIA = (): HistorialJugada[] => hist.map((h) => ({ ataca: h.ataca === 'mio' ? 'su' : 'mio', ataque: h.det.est.ataque, defensa: h.det.est.defensa }))
+  const golesMios = hist.filter((h) => h.det.resultado === 'gol' && h.ataca === 'mio').length
+  const golesSu = hist.filter((h) => h.det.resultado === 'gol' && h.ataca === 'su').length
   const penal = useMemo(() => (fase === 'fin' && golesMios === golesSu ? penales(seed, equipo, rival) : null), [fase, golesMios, golesSu, seed, equipo, rival])
   const gane = fase === 'fin' ? (penal ? penal.yo > penal.rival : golesMios > golesSu) : false
   useEffect(() => { if (fase === 'fin' && !guardado) { setGuardado(true); borrarPartida(); alTerminar(gane) } }, [fase, guardado, gane, alTerminar])
-  // cada cambio de la partida queda guardado (hasta que termina)
-  useEffect(() => {
-    if (fase === 'fin') return
-    try { localStorage.setItem(CLAVE_PARTIDA, JSON.stringify({ creado: equipo.creado, nivel, seed, ronda, cMio, cSu, hist, fase, atk, def, pwMios, pwSu, suRonda, pend } satisfies Guardada)) } catch { /* sin almacenamiento */ }
-  }, [equipo.creado, nivel, seed, ronda, cMio, cSu, hist, fase, atk, def, pwMios, pwSu, suRonda, pend])
-  const puedeUsar = (id: string) => disponibles.includes(id) && !cMio.includes(id) && PLAYER_BY_ID[id].line !== 'GK'
-  // 1) tus jugadores quedan elegidos: el rival elige los suyos, se ven, y si queda algún poder se decide en secreto
-  const jugar = () => {
-    if (!atk || !def) return
-    const su = eligeMaquina(seed, ronda, rival, cSu, nivel)
-    setSuRonda(su); setPwTipo(null); setPwObj(null)
-    if (TIPOS_PODER.some((x) => pwMios[x])) setFase('poder')
-    else resolver(undefined, { atacante: atk, defensor: def }, su)
+  useEffect(() => { if (fase !== 'fin') { try { localStorage.setItem(CLAVE_ABIERTA, JSON.stringify({ creado: equipo.creado })) } catch { /* sin almacenamiento */ } } }, [fase, equipo.creado])
+
+  const libres = disponibles(equipo, turno, cMio)
+  const puede = (id: string) => libres.includes(id)
+  const fit = (id: string, e: Ataque | Defensa, aj: Aj = {}) => Math.round(ataca ? encajeAtaque(id, e as Ataque, aj) : encajeDefensa(id, e as Defensa, aj))
+  const tono = (n: number) => (n >= 85 ? 'alto' : n >= 70 ? 'medio' : 'bajo')
+
+  // 1) elección en secreto: la persona elige estrategia y trío; la máquina, los suyos
+  const toggleJugador = (id: string) => {
+    if (fase !== 'eleccion' || !est || !puede(id)) return
+    setTrio((t) => (t.includes(id) ? t.filter((x) => x !== id) : t.length < 3 ? [...t, id] : t))
   }
-  // 2) poderes en secreto: la máquina decide el suyo, se aplican los bloqueos (cada uno obliga a cambiar a un jugador)
-  const resolver = (pm: Poder | undefined, mio: Cambio, su: Cambio) => {
-    const ps = eligePoderMaquina(seed, ronda, nivel, pwSu, su, mio)
-    const bl = bloqueados(pm, ps, mio, su)
-    const suFinal = bl.su && pm ? reemplazoMaquina(seed, ronda, rival, cSu, nivel, su, bl.su, pm.objetivo) : su
-    if (bl.mio && ps) { setPend({ pm, ps, mioOrig: mio, su: suFinal, suOrig: su, rol: bl.mio, bloqueado: ps.objetivo }); setFase('bloqueado'); return }
-    terminar(pm, ps, mio, mio, suFinal, su)
+  const confirmar = () => {
+    if (!est || trio.length !== 3) return
+    const ia = ataca
+      ? (() => { const d = eligeDefensaMaquina(seed, turno, rival, cSu, nivel, histIA(), ajSin(sin.su)); return { est: d.defensa as Ataque | Defensa, trio: d.trio } })()
+      : (() => { const a = eligeAtaqueMaquina(seed, turno, rival, cSu, nivel, histIA(), ajSin(sin.su)); return { est: a.ataque as Ataque | Defensa, trio: a.trio } })()
+    setSu(ia); setPwTipo(null); setPwObj(null); setFase('poder')
   }
-  // 3) se juega la ronda con los jugadores finales y los efectos de los poderes
-  const terminar = (pm: Poder | undefined, ps: Poder | undefined, mioOrig: Cambio, mio: Cambio, su: Cambio, suOrig: Cambio) => {
-    const { ajustes, efectos } = aplicarPoderes(pm, ps, mio, su)
-    const res = jugarRonda(seed, ronda, equipo, rival, mio, su, ctx, ajustes)
-    const cambio = (o: Cambio, f: Cambio) => (o.atacante !== f.atacante ? { rol: 'atacante' as Rol, de: o.atacante, a: f.atacante } : o.defensor !== f.defensor ? { rol: 'defensor' as Rol, de: o.defensor, a: f.defensor } : undefined)
-    const pw: PoderRonda | undefined = pm || ps ? { mio: pm, su: ps, efectos, cambioMio: cambio(mioOrig, mio), cambioSu: cambio(suOrig, su) } : undefined
-    setHist((h) => [...h, { n: ronda, res, mio, su, pw }])
+  const ataqueDe = () => (ataca ? (est as Ataque) : (su!.est as Ataque))
+  const defensaDe = () => (ataca ? (su!.est as Defensa) : (est as Defensa))
+  const puntajeSu = (id: string, aj: Aj = {}) => (ataca ? encajeDefensa(id, defensaDe(), aj) : encajeAtaque(id, ataqueDe(), aj))
+  const puntajeMio = (id: string, aj: Aj = {}) => (ataca ? encajeAtaque(id, ataqueDe(), aj) : encajeDefensa(id, defensaDe(), aj))
+
+  // 2) poderes (secretos), bloqueos y reemplazos
+  const seguirPoderes = () => {
+    if (!su) return
+    const pm: Poder | undefined = pwTipo && pwObj ? { tipo: pwTipo, objetivo: pwObj } : undefined
+    const ps = eligePoderTrio(seed, turno, nivel, pwSu, su.trio, trio, (id) => puntajeSu(id), (id) => puntajeMio(id))
     if (pm) setPwMios((d) => ({ ...d, [pm.tipo]: false }))
     if (ps) setPwSu((d) => ({ ...d, [ps.tipo]: false }))
-    setAtk(mio.atacante); setDef(mio.defensor)
-    setCMio([mio.atacante, mio.defensor]); setCSu([su.atacante, su.defensor])
-    setPend(null); setFase('resultado')
+    setPw({ mio: pm, su: ps })
+    setFase(pm || ps ? 'revpoder' : 'ejecutor')
+    resolverBloqueos(pm, ps)
+  }
+  const resolverBloqueos = (pm?: Poder, ps?: Poder) => {
+    if (!su) return
+    const bl = bloqueados(pm, ps, trio, su.trio)
+    const suFinal = bl.su ? reemplazoTrio(rival, turno, cSu, su.trio, bl.su, (id) => puntajeSu(id)) : su.trio
+    setFinSu(suFinal)
+    if (bl.mio) { setPend({ bloqueado: bl.mio }); setFinMio(trio.filter((x) => x !== bl.mio)) } else { setPend(null); setFinMio(trio) }
+    setAjs({ mio: {}, su: {}, efectos: [] })
+    if (!bl.mio) prepararAjustes(pm, ps, trio, suFinal)
+  }
+  const prepararAjustes = (pm: Poder | undefined, ps: Poder | undefined, mioFinal: string[], suFinal: string[]) => {
+    const r = aplicarPoderesTrio(pm, ps, mioFinal, suFinal)
+    const merge = (a: Aj, b: Aj): Aj => { const o: Aj = { ...a }; for (const [k, v] of Object.entries(b)) o[k] = (o[k] ?? 0) + v; return o }
+    setAjs({ mio: merge(ajSin(sin.mio), r.ajMio), su: merge(ajSin(sin.su), r.ajSu), efectos: r.efectos })
   }
   const elegirReemplazo = (id: string) => {
     if (!pend) return
-    const mio = pend.rol === 'atacante' ? { atacante: id, defensor: pend.mioOrig.defensor } : { atacante: pend.mioOrig.atacante, defensor: id }
-    terminar(pend.pm, pend.ps, pend.mioOrig, mio, pend.su, pend.suOrig)
+    const mioFinal = [...finMio, id]
+    setFinMio(mioFinal); setPend(null)
+    prepararAjustes(pw?.mio, pw?.su, mioFinal, finSu)
+  }
+  const reemplazos = pend ? disponibles(equipo, turno, cMio, [...finMio, pend.bloqueado]) : []
+
+  // 3) quién ejecuta (o intercepta) y la barra
+  const segundos = (id: string) => segundosBarra(ataca ? encajeAtaque(id, ataqueDe(), ajs.mio) : encajeDefensa(id, defensaDe(), ajs.mio))
+  const resolver = (x: number) => {
+    if (!su || !ejec) return
+    const A = ataqueDe(), D = defensaDe()
+    const ajMio = ajs.mio, ajSu = ajs.su
+    const trioA = ataca ? finMio : finSu, trioD = ataca ? finSu : finMio
+    const ajA = ataca ? ajMio : ajSu, ajD = ataca ? ajSu : ajMio
+    const mejor = (t: string[], f: (id: string) => number) => mejorDelTrio(t, f)
+    const ejecutor = ataca ? ejec : mejor(finSu, (id) => encajeAtaque(id, A, ajSu))
+    const interceptor = ataca ? mejor(finSu, (id) => encajeDefensa(id, D, ajSu)) : ejec
+    const xMaq = toqueMaquina(seed, turno, nivel, ataca ? segundosBarra(encajeDefensa(interceptor, D, ajSu)) : segundosBarra(encajeAtaque(ejecutor, A, ajSu)), ataca ? 'defiende' : 'ataca')
+    const precA = precision(ataca ? x : xMaq), precD = precision(ataca ? xMaq : x)
+    const arquero = ataca ? rival.once[0] : equipo.once[0]
+    const d = resolverJugada({ seed, turno, ataca: ataca ? 'mio' : 'su', ataque: A, defensa: D, trioA, trioD, ajA, ajD, ejecutor, interceptor, precA, precD, arquero, clima: weatherFactor(ctx).goals })
+    setHist((h) => [...h, { n: turno, ataca: ataca ? 'mio' : 'su', det: d, pw: pw && (pw.mio || pw.su) ? { ...pw, efectos: ajs.efectos } : undefined }])
+    setCMio(finMio); setCSu(finSu)
+    setFase('resultado')
   }
   const siguiente = () => {
-    if (ronda >= RONDAS) { setFase('fin'); return }
-    setRonda((r) => r + 1); setAtk(null); setDef(null); setSel(null); setSuRonda(null); setFase('elegir')
+    if (turno >= TURNOS) { setFase('fin'); return }
+    setTurno((t) => t + 1); setEst(null); setTrio([]); setSu(null); setPw(null); setPend(null); setEjec(null); setFinMio([]); setFinSu([]); setPwTipo(null); setPwObj(null); setFase('eleccion')
   }
-  const ultima = hist[hist.length - 1]
-  const nombre = (id: string) => PLAYER_BY_ID[id].name
+
+  // marcas en las canchas
+  const marcas: Record<string, Marca> = {}
+  equipo.once.concat(equipo.suplentes).forEach((id) => { if (cMio.includes(id) && fase === 'eleccion') marcas[id] = 'cansado' })
+  const trioMarcado = fase === 'eleccion' ? trio : finMio.length ? finMio : trio
+  if (fase !== 'resultado') trioMarcado.forEach((id) => { marcas[id] = ataca ? 'atacante' : 'defensor' })
+  const marcasSu: Record<string, Marca> = {}
+  rival.once.concat(rival.suplentes).forEach((id) => { if (cSu.includes(id) && fase === 'eleccion') marcasSu[id] = 'cansado' })
+  if (su && fase !== 'eleccion' && fase !== 'resultado') (finSu.length ? finSu : su.trio).forEach((id) => { marcasSu[id] = ataca ? 'defensor' : 'atacante' })
+  if (fase === 'resultado' && det) { det.trioA.forEach((id) => { (det.ataca === 'mio' ? marcas : marcasSu)[id] = 'atacante' }); det.trioD.forEach((id) => { (det.ataca === 'mio' ? marcasSu : marcas)[id] = 'defensor' }) }
+  const valor = (id: string) => { if (!est || fase !== 'eleccion' || !puede(id)) return undefined; const n = fit(id, est); return { n, t: tono(n) } }
+  const estadoSu = (id: string) => (cSu.includes(id) && fase === 'eleccion' ? 'cansado' as const : turno < 4 ? 'espera' as const : undefined)
   const rivalNombre = tr('Rival {n}', { n: tr(NIVELES.find((n) => n.id === nivel)!.nombre) })
-  const p = sel ? PLAYER_BY_ID[sel] : null
-  // escena de la ronda: se revela primero tu ataque y luego el del rival (con el rival mostrando lo que eligió)
-  const [paso, setPaso] = useState(0)
-  const [beat, setBeat] = useState(1)
-  const [vel, setVel] = useLocalState<'normal' | 'rapida'>('lwc:duelo:vel', 'normal')
-  const ritmo = vel === 'rapida' ? { tiempo: 700, final: 1100 } : { tiempo: 1700, final: 2600 }
-  // pasos de la escena: 0 poderes revelados (si los hubo), 1 tu ataque, 2 su ataque, 3 resumen
-  const avanzar = () => { if (paso >= 3) return; if (paso === 0) { setPaso(1); setBeat(1); return } if (beat < 3) setBeat((b) => b + 1); else { setPaso((x) => x + 1); setBeat(1) } }
-  useEffect(() => { if (fase === 'resultado') { setPaso(hist[hist.length - 1]?.pw ? 0 : 1); setBeat(1) } }, [fase, ronda])
-  useEffect(() => {
-    if (fase !== 'resultado' || paso >= 3) return
-    const tm = setTimeout(avanzar, paso === 0 ? ritmo.final + 1200 : beat < 3 ? ritmo.tiempo : ritmo.final)
-    return () => clearTimeout(tm)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fase, paso, beat, vel])
-  if (fase === 'resultado' && ultima) {
-    // al revelar, se marca en cada cancha quién atacó y quién defendió
-    marcas[ultima.mio.atacante] = 'atacante'; marcas[ultima.mio.defensor] = 'defensor'
-    marcasSu[ultima.su.atacante] = 'atacante'; marcasSu[ultima.su.defensor] = 'defensor'
-  }
-  const estadoSu = (id: string) => (cSu.includes(id) && fase === 'elegir' ? 'cansado' as const : ronda < 3 ? 'espera' as const : undefined)
-  const cargaRonda = Array.from({ length: RONDAS }, (_, i) => hist[i])
+  const nivelHumano = (n: number) => (ataca ? n : -n)
+  const nivelMat = su && est ? MATRIZ[ataqueDe()][defensaDe()] : 0
+  const pips = Array.from({ length: TURNOS }, (_, i) => hist[i])
+  const nombre = (id: string) => PLAYER_BY_ID[id].name
+  const ritmoEscena = vel === 'rapida' ? { tiempo: 700, final: 1100 } : { tiempo: 1500, final: 2400 }
+
   return (
     <div className="duelo d-versus">
       {compartir && <CompartirEquipo equipo={equipo} onClose={() => setCompartir(false)} />}
+      {tabla && <TablaEfectividad ataca={ataca} actual={su && est ? { a: ataqueDe(), d: defensaDe() } : undefined} onClose={() => setTabla(false)} />}
       <header className="d-marcador">
         <div className="d-eq"><div className="d-lado-t"><span>{tr('Tú')}</span><small>{equipo.formacion} · {valorEquipo(equipo)}</small></div><b key={`m${golesMios}`} className={golesMios ? 'd-gpop' : ''}>{golesMios}</b></div>
-        <div className="d-centro"><small>{fase === 'fin' ? tr('Final') : tr('Ronda {r} de {t}', { r: ronda, t: RONDAS })}</small>
-          <div className="d-rondas" aria-hidden>{cargaRonda.map((h, i) => <i key={i} className={h ? (h.res.golesMios > h.res.golesRival ? 'g' : h.res.golesMios < h.res.golesRival ? 'p' : 'e') : i + 1 === ronda ? 'ahora' : ''} />)}</div>
+        <div className="d-centro"><small>{fase === 'fin' ? tr('Final') : tr('Turno {n} de {t}', { n: turno, t: TURNOS })}</small>
+          <div className="d-rondas" aria-hidden>{pips.map((h, i) => <i key={i} className={h ? (h.det.resultado === 'gol' ? (h.ataca === 'mio' ? 'g' : 'p') : 'e') : i + 1 === turno ? 'ahora' : ''} />)}</div>
           <CtxLine ctx={ctx} /></div>
         <div className="d-eq d-su"><b key={`s${golesSu}`} className={golesSu ? 'd-gpop' : ''}>{golesSu}</b><div className="d-lado-t"><span>{rivalNombre}</span><small>{rival.formacion} · {valorEquipo(rival)}</small></div></div>
       </header>
@@ -537,74 +601,50 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
         <div className="d-fin">
           <h1 className={gane ? 'gano' : 'perdio'}>{gane ? tr('¡Ganaste!') : tr('Perdiste')}</h1>
           <p className="muted">{golesMios} – {golesSu}{penal && <> · {tr('Penales {a}–{b}', { a: penal.yo, b: penal.rival })}</>}</p>
-          <ol className="d-hist">{hist.map((h) => <li key={h.n}><b>{tr('Ronda {n}', { n: h.n })}</b> <span>{h.res.golesMios}–{h.res.golesRival}</span> <small>{nombre(h.mio.atacante)} · {nombre(h.mio.defensor)}</small></li>)}</ol>
+          <ol className="d-hist">{hist.map((h) => <li key={h.n}><b>{tr('Turno {n}', { n: h.n })}</b> <span>{h.ataca === 'mio' ? '⚽' : '🛡'} {resTxt(h.det.resultado)}</span> <small>{nombreAtaque(h.det.est.ataque)} · {nombreDefensa(h.det.est.defensa)}</small></li>)}</ol>
           <div className="cta"><button className="btn pri" onClick={alSalir}>{tr('Volver a mi equipo')}</button></div>
           <BotonCompartir sutil onClick={() => setCompartir(true)} />
         </div>
       ) : (
-        <>
-          <div className="d-arena">
-            <section className="d-lado mio">
-              <h4>{tr('Tu equipo')}</h4>
-              <Cancha formacion={equipo.formacion} ids={equipo.once} marcas={marcas} onNodo={fase === 'elegir' ? (i) => setSel(equipo.once[i]) : undefined} sel={sel} etiqueta={tr('Tu equipo')} />
-              <Banca slots={equipo.suplentes} activo={sel} estado={(id) => (cMio.includes(id) && fase === 'elegir' ? 'cansado' : ronda < 3 ? 'espera' : undefined)} onJugador={fase === 'elegir' ? (id) => setSel(id) : undefined} />
-            </section>
-            <div className="d-medio">
-              <div className="d-vs" aria-hidden><span>VS</span></div>
-              <div className="d-controles">
-                {fase === 'poder' && suRonda && atk && def ? (
-                  <PanelPoder mio={{ atacante: atk, defensor: def }} su={suRonda} disp={pwMios} tipo={pwTipo} obj={pwObj} setTipo={setPwTipo} setObj={setPwObj} onJugar={() => resolver(pwTipo && pwObj ? { tipo: pwTipo, objetivo: pwObj } : undefined, { atacante: atk, defensor: def }, suRonda)} />
-                ) : fase === 'bloqueado' && pend ? (
-                  <PanelBloqueo pend={pend} candidatos={candidatos(equipo, ronda, cMio, [pend.bloqueado, pend.rol === 'atacante' ? pend.mioOrig.defensor : pend.mioOrig.atacante])} onElegir={elegirReemplazo} />
-                ) : fase === 'elegir' ? (
-                  <>
-                    <div className="d-instr"><div className="d-rhead"><b>{tr('Ronda {r} de {t}', { r: ronda, t: RONDAS })}</b><span className="muted small">{tr('Elige quién ataca y quién defiende')}</span></div>
-                      <div className="d-slots">
-                        <RanuraRonda tipo="atk" id={atk} activa={!atk} bonus={atk ? bonus[atk] ?? 0 : 0} onQuitar={() => setAtk(null)} />
-                        <RanuraRonda tipo="def" id={def} activa={!!atk && !def} bonus={def ? bonus[def] ?? 0 : 0} onQuitar={() => setDef(null)} />
-                      </div>
-                      <FilaPoderes disp={pwMios} />
-                      <button className={`btn pri d-jugar${atk && def ? ' d-gran' : ''}`} disabled={!atk || !def} onClick={jugar}>{atk && def ? `▶ ${tr('Jugar ronda')}` : atk ? tr('Elige un defensor') : def ? tr('Elige un atacante') : tr('Elige atacante y defensor')}</button></div>
-                    {p ? (
-                      <Detalle p={p} bonus={bonus[p.id] ?? 0} rol={!atk ? 'atk' : !def ? 'def' : undefined}>
-                        <div className="cta">
-                          {(() => {
-                            // El botón principal es el del paso que toca (primero ataque, luego defensa); el otro rol queda como opción discreta.
-                            const bAtk = <button key="a" className={`btn ${atk && def ? '' : 'pri'}`} disabled={!puedeUsar(p.id) || def === p.id} onClick={() => { setAtk(p.id); setSel(null) }}>⚽ {tr('Atacar con él')}</button>
-                            const bDef = <button key="d" className={`btn ${atk && def ? '' : 'pri'}`} disabled={!puedeUsar(p.id) || atk === p.id} onClick={() => { setDef(p.id); setSel(null) }}>🛡 {tr('Defender con él')}</button>
-                            // Solo el rol que toca; con las dos ranuras llenas, ambos (para cambiar).
-                            return !atk ? [bAtk] : !def ? [bDef] : [bAtk, bDef]
-                          })()}
-                        </div>
-                        {!puedeUsar(p.id) && <p className="small muted">{PLAYER_BY_ID[p.id].line === 'GK' ? tr('El arquero defiende siempre solo.') : cMio.includes(p.id) ? tr('Está cansado: descansa esta ronda.') : tr('Entra desde la ronda 3.')}</p>}
-                      </Detalle>
-                    ) : null}
-                  </>
-                ) : (
-                  ultima && (
-                    <div className="d-escena-wrap" onClick={paso < 3 ? avanzar : undefined} style={{ cursor: paso < 3 ? 'pointer' : undefined }}>
-                      {paso === 0 && ultima.pw && <RevelaPoderes pw={ultima.pw} />}
-                      {paso === 1 && <EscenaJugada key="a" j={ultima.res.mia} mio titulo={tr('Tu ataque')} beat={beat} />}
-                      {paso === 2 && <EscenaJugada key="b" j={ultima.res.rival} mio={false} titulo={tr('Su ataque')} beat={beat} />}
-                      {paso === 3 && (
-                        <div className="d-resumen">
-                          <b>{tr('Resultado de la ronda {r}', { r: ronda })}</b>
-                          <div className="d-resumen-fila"><span className={`d-pill ${ultima.res.mia.resultado}`}>{tr('Tu ataque')}: {resTxt(ultima.res.mia.resultado)}</span><span className={`d-pill ${ultima.res.rival.resultado}`}>{tr('Su ataque')}: {resTxt(ultima.res.rival.resultado)}</span></div>
-                        </div>
-                      )}
-                      <div className="cta" onClick={(e) => e.stopPropagation()}>{paso < 3 ? <><button className="btn ghost" onClick={() => setPaso(3)}>{tr('Saltar animación')}</button><button className="btn ghost" onClick={() => setVel(vel === 'normal' ? 'rapida' : 'normal')}>{vel === 'normal' ? tr('Velocidad: normal') : tr('Velocidad: rápida')}</button></> : <button className="btn pri d-gran" onClick={siguiente}>{ronda >= RONDAS ? tr('Ver resultado final') : tr('Siguiente ronda')}</button>}</div>
-                    </div>
-                  )
-                )}
-              </div>
+        <div className="d-arena">
+          <section className="d-lado mio">
+            <h4>{tr('Tu equipo')}</h4>
+            <Cancha formacion={equipo.formacion} ids={equipo.once} marcas={marcas} sel={fase === 'eleccion' ? trio : null} valor={valor} onNodo={fase === 'eleccion' && est ? (i) => toggleJugador(equipo.once[i]) : undefined} etiqueta={tr('Tu equipo')} />
+            <Banca slots={equipo.suplentes} activo={null} estado={(id) => (cMio.includes(id) && fase === 'eleccion' ? 'cansado' : turno < 4 ? 'espera' : undefined)} onJugador={fase === 'eleccion' && est ? (id) => toggleJugador(id) : undefined} />
+          </section>
+          <div className="d-medio">
+            <div className="d-vs" aria-hidden><span>VS</span></div>
+            <div className="d-controles">
+              {fase === 'eleccion' && (
+                <PanelEleccion turno={turno} ataca={ataca} est={est} setEst={(e) => { setEst(e); setTrio([]) }} trio={trio} quitar={(id) => setTrio((t) => t.filter((x) => x !== id))} fit={(id) => (est ? fit(id, est) : 0)} onConfirmar={confirmar} onTabla={() => setTabla(true)} disp={pwMios} />
+              )}
+              {fase === 'poder' && su && est && (
+                <PanelRevela ataca={ataca} est={est} su={su} trio={trio} nivelH={nivelHumano(nivelMat)} disp={pwMios} tipo={pwTipo} obj={pwObj} setTipo={setPwTipo} setObj={setPwObj} onSeguir={seguirPoderes} onTabla={() => setTabla(true)} />
+              )}
+              {fase === 'revpoder' && pw && <RevelaPoderes2 pw={pw} efectos={ajs.efectos} trioMio={finMio.length ? finMio : trio} onSeguir={() => setFase(pend ? 'bloqueado' : 'ejecutor')} auto={ritmoEscena.final + 1200} />}
+              {fase === 'bloqueado' && pend && (
+                <div className="d-poder-panel d-bloqueo">
+                  <div className="d-bq-t"><span aria-hidden>🚫</span><div><b>{tr('¡El rival bloqueó a {n}!', { n: nombre(pend.bloqueado) })}</b><small>{tr('Elige quién entra en su lugar')}</small></div></div>
+                  {reemplazos.length ? <div className="d-bq-lista">{reemplazos.map((id) => <button key={id} type="button" className="d-pw-j" onClick={() => { elegirReemplazo(id); setFase('ejecutor') }}><Avatar p={PLAYER_BY_ID[id]} size={44} /><b>{apellido(nombre(id))}</b><small>{fit(id, ataca ? ataqueDe() : defensaDe(), ajs.mio)}</small></button>)}</div> : <button className="btn pri" onClick={() => { setPend(null); prepararAjustes(pw?.mio, pw?.su, trio, finSu); setFinMio(trio); setFase('ejecutor') }}>{tr('No queda nadie más: sigue con él')}</button>}
+                </div>
+              )}
+              {fase === 'ejecutor' && su && (
+                <PanelEjecutor ataca={ataca} trio={finMio} est={ataca ? ataqueDe() : defensaDe()} aj={ajs.mio} segundos={segundos} onElegir={(id) => { setEjec(id); setFase('barra') }} />
+              )}
+              {fase === 'barra' && ejec && (
+                <PanelBarra ataca={ataca} ejec={ejec} segundos={segundos(ejec)} est={ataca ? ataqueDe() : defensaDe()} onStop={resolver} />
+              )}
+              {fase === 'resultado' && det && (
+                <EscenaTurno det={det} ritmo={ritmoEscena} turno={turno} esUltimo={turno >= TURNOS} onSiguiente={siguiente} vel={vel} setVel={setVel} />
+              )}
             </div>
-            <section className="d-lado su">
-              <h4>{rivalNombre}</h4>
-              <Cancha formacion={rival.formacion} ids={rival.once} marcas={marcasSu} etiqueta={rivalNombre} />
-              <Banca slots={rival.suplentes} estado={estadoSu} />
-            </section>
           </div>
-        </>
+          <section className="d-lado su">
+            <h4>{rivalNombre}</h4>
+            <Cancha formacion={rival.formacion} ids={rival.once} marcas={marcasSu} etiqueta={rivalNombre} />
+            <Banca slots={rival.suplentes} estado={estadoSu} />
+          </section>
+        </div>
       )}
     </div>
   )
@@ -612,166 +652,214 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
 
 const resTxt = (r: 'gol' | 'atajada' | 'corte') => (r === 'gol' ? tr('¡GOL!') : r === 'atajada' ? tr('¡Atajada!') : tr('¡Cortado!'))
 
-// Una jugada animada: atacante contra defensor y, si lo supera, contra el arquero.
-// Barra de probabilidad con un «dado» (0-100) que rueda hasta su número: se ve por qué salió así y cuánto faltó.
-function BarraProb({ clase, titulo, p, tirada, ok, nota }: { clase: string; titulo: string; p: number; tirada: number; ok: boolean; nota?: string }) {
-  const pct = Math.round(p * 100), n = Math.round(tirada * 100)
+// Elegir estrategia y trío.
+function PanelEleccion({ turno, ataca, est, setEst, trio, quitar, fit, onConfirmar, onTabla, disp }: { turno: number; ataca: boolean; est: Ataque | Defensa | null; setEst: (e: Ataque | Defensa) => void; trio: string[]; quitar: (id: string) => void; fit: (id: string) => number; onConfirmar: () => void; onTabla: () => void; disp: Disponibles }) {
+  const opciones = (ataca ? ATAQUES : DEFENSAS) as (Ataque | Defensa)[]
   return (
-    <div className={`d-prob ${clase} ${ok ? 'ok' : 'no'}`}>
-      <div className="d-prob-h"><b>{titulo}</b><span>{pct} %</span></div>
-      <div className="d-prob-bar" style={{ ['--x' as string]: `${Math.min(97, Math.max(3, tirada * 100))}%` }}><i style={{ width: `${pct}%` }} /><span className="d-dado" aria-hidden>🎲</span></div>
-      <p>{tr('El dado de la jugada salió {n}: se necesita {p} o menos.', { n, p: pct })} <b>{ok ? tr('¡Alcanzó!') : tr('No alcanzó.')}</b></p>
-      {nota && <p className="d-prob-nota">{nota}</p>}
+    <div className="d-eleccion">
+      <div className="d-rhead">
+        <span className={`d-rol ${ataca ? 'atk' : 'def'}`}>{ataca ? `⚽ ${tr('Tú atacas')}` : `🛡 ${tr('Tú defiendes')}`}</span>
+        <b>{tr('Turno {n} de {t}', { n: turno, t: TURNOS })}</b>
+        <span className="muted small">{ataca ? tr('Elige tu estrategia de ataque') : tr('Elige tu estrategia de defensa')}</span>
+      </div>
+      <div className="d-ests">{opciones.map((e) => <FichaEstrategia key={e} e={e} ataca={ataca} sel={est === e} onClick={() => setEst(e)} />)}</div>
+      <button type="button" className="d-link" onClick={onTabla}>📊 {tr('Tabla de efectividad')}</button>
+      {est && (
+        <div className="d-trio">
+          <p className="d-trio-t"><b>{tr('Elige 3 jugadores: {n} de 3', { n: trio.length })}</b><span className="muted small"> · {tr('El número de la cancha es su encaje con {e}.', { e: nombreEst(est, ataca) })}</span></p>
+          <div className="d-trio-slots">
+            {[0, 1, 2].map((i) => { const id = trio[i]; const p = id ? PLAYER_BY_ID[id] : null; return (
+              <div key={i} className={`d-trio-s${p ? ' lleno' : ''}`}>
+                {p ? <><div className="d-slot-av"><Avatar p={p} size={44} /></div><b>{apellido(p.name)}</b><small>{ICONO_ESTILO[estiloJugador(p)]} {nombreEstilo(estiloJugador(p))}</small><em>{fit(id)}</em><button type="button" className="d-slot-x" onClick={() => quitar(id)} aria-label={tr('Quitar')}>✕</button></> : <span className="vacio">+</span>}
+              </div>) })}
+          </div>
+        </div>
+      )}
+      <FilaPoderes disp={disp} />
+      <button className={`btn pri d-jugar${est && trio.length === 3 ? ' d-gran' : ''}`} disabled={!est || trio.length !== 3} onClick={onConfirmar}>{!est ? tr('Elige una estrategia') : trio.length === 3 ? `▶ ${tr('Confirmar jugada')}` : tr('Elige 3 jugadores')}</button>
     </div>
   )
 }
 
-// Consejo corto según lo que pasó, para entender cómo se analizó la jugada y cómo mejorar.
-function consejo(j: ResultadoRonda['mia'], mio: boolean): string {
-  const A = Math.round(j.pA ?? 0), D = Math.round(j.pD ?? 0), R = Math.round(j.rem ?? 0), Q = Math.round(j.arq ?? 0)
-  if (mio) {
-    if (j.resultado === 'corte') return j.pPase < 0.5 ? tr('Su defensa ({d}) era mayor que tu ataque ({a}). Elige un atacante con más poder de ataque para subir tus opciones.', { a: A, d: D }) : tr('Tenías ventaja ({p} %) y esta vez la suerte no acompañó. Repetir buenas decisiones gana a la larga.', { p: Math.round(j.pPase * 100) })
-    if (j.resultado === 'atajada') return R < Q ? tr('El arquero rival ({q}) supera el remate de tu atacante ({r}). Los atacantes con más Disparo marcan más.', { q: Q, r: R }) : tr('El remate era favorable ({p} %) pero el arquero tuvo suerte. Sigue eligiendo bien.', { p: Math.round((j.pTiro ?? 0) * 100) })
-    return tr('¡Buena jugada! Tenías {p} % de probabilidad total y se dio.', { p: Math.round(j.pGol * 100) })
+// Se revelan las dos estrategias y los dos tríos: mensaje de efectividad y poderes.
+function PanelRevela({ ataca, est, su, trio, nivelH, disp, tipo, obj, setTipo, setObj, onSeguir, onTabla }: { ataca: boolean; est: Ataque | Defensa; su: Eleccion; trio: string[]; nivelH: number; disp: Disponibles; tipo: TipoPoder | null; obj: string | null; setTipo: (x: TipoPoder | null) => void; setObj: (id: string | null) => void; onSeguir: () => void; onTabla: () => void }) {
+  const objetivos = tipo === 'impulso' ? trio : su.trio
+  return (
+    <div className="d-poder-panel">
+      <div className="d-rhead"><b>{tr('¡Estrategias reveladas!')}</b></div>
+      <div className="d-vsest">
+        <div><small>{ataca ? tr('Tu ataque') : tr('Tu defensa')}</small><FichaEstrategia e={est} ataca={ataca} mini /><div className="d-minis">{trio.map((id) => <Avatar key={id} p={PLAYER_BY_ID[id]} size={30} />)}</div></div>
+        <span className="vs" aria-hidden>VS</span>
+        <div><small>{ataca ? tr('Su defensa') : tr('Su ataque')}</small><FichaEstrategia e={su.est} ataca={!ataca} mini /><div className="d-minis">{su.trio.map((id) => <Avatar key={id} p={PLAYER_BY_ID[id]} size={30} />)}</div></div>
+      </div>
+      <div className={`d-efecto ${claseEfecto(nivelH)}`}><b>{mensajeEfecto(nivelH)}</b><button type="button" className="d-link" onClick={onTabla}>📊</button></div>
+      <p className="small muted">{tr('Elige un poder en secreto')} · {tr('Solo puedes usar cada poder una vez por partida. El rival también tiene los suyos.')}</p>
+      <div className="d-pw-cards">
+        {TIPOS_PODER.map((x) => (
+          <button key={x} type="button" disabled={!disp[x]} className={`d-pw-card ${x}${tipo === x ? ' on' : ''}`} onClick={() => { setTipo(tipo === x ? null : x); setObj(null) }}>
+            <span className="ic" aria-hidden>{iconoPoder(x)}</span><b>{nombrePoder(x)}</b><small>{disp[x] ? descPoder2(x) : tr('Usado')}</small>
+          </button>
+        ))}
+      </div>
+      {tipo && (
+        <div className="d-pw-obj"><span>{tr('Elige a quién')}</span>
+          <div>{objetivos.map((id) => <button key={id} type="button" className={`d-pw-j${obj === id ? ' on' : ''}`} onClick={() => setObj(id)}><Avatar p={PLAYER_BY_ID[id]} size={38} /><b>{apellido(PLAYER_BY_ID[id].name)}</b></button>)}</div>
+        </div>
+      )}
+      <button className={`btn pri d-jugar${!tipo || obj ? ' d-gran' : ''}`} disabled={!!tipo && !obj} onClick={onSeguir}>
+        {tipo && obj ? `${iconoPoder(tipo)} ${tr('Jugar con {p}', { p: nombrePoder(tipo) })}` : tipo ? tr('Elige a quién') : `▶ ${tr('Seguir sin poder')}`}
+      </button>
+    </div>
+  )
+}
+const descPoder2 = (x: TipoPoder) => (x === 'impulso' ? tr('Suma +{n} de encaje a un jugador tuyo.', { n: IMPULSO_ENC }) : x === 'debilitar' ? tr('Resta −{n} de encaje a un jugador rival.', { n: DEBILITAR_ENC }) : tr('El rival no puede usar a un jugador: tiene que cambiarlo.'))
+
+// Revelación de los poderes (a la vez).
+function RevelaPoderes2({ pw, efectos, trioMio, onSeguir, auto }: { pw: { mio?: Poder; su?: Poder }; efectos: Efecto[]; trioMio: string[]; onSeguir: () => void; auto: number }) {
+  useEffect(() => { const t = setTimeout(onSeguir, auto); return () => clearTimeout(t) }, [auto, onSeguir])
+  const lado = (de: 'mio' | 'su', p: Poder | undefined) => (
+    <div className={`d-rev-pw ${de}${p ? ` ${p.tipo}` : ' ninguno'}`}>
+      <small>{de === 'mio' ? tr('Tu poder') : tr('Su poder')}</small>
+      {p ? <><span className="ic" aria-hidden>{iconoPoder(p.tipo)}</span><b>{nombrePoder(p.tipo)}</b><em>{textoPoder(p)}</em></> : <><span className="ic" aria-hidden>·</span><em>{tr('Sin poder')}</em></>}
+    </div>
+  )
+  void efectos; void trioMio
+  return (
+    <div className="d-escena d-poderes-rev" onClick={onSeguir} style={{ cursor: 'pointer' }}>
+      <p className="d-esc-t">{tr('¡Poderes revelados!')}</p>
+      <div className="d-rev-fila">{lado('mio', pw.mio)}{lado('su', pw.su)}</div>
+      <small className="muted">{tr('Toca para seguir')}</small>
+    </div>
+  )
+}
+
+// Quién ejecuta la jugada (o quién la intercepta): cada uno mueve el balón a distinta velocidad.
+function PanelEjecutor({ ataca, trio, est, aj, segundos, onElegir }: { ataca: boolean; trio: string[]; est: Ataque | Defensa; aj: Aj; segundos: (id: string) => number; onElegir: (id: string) => void }) {
+  return (
+    <div className="d-poder-panel">
+      <div className="d-rhead"><b>{ataca ? tr('¿Quién la define?') : tr('¿Quién la intercepta?')}</b><span className="muted small">{tr('Cuanto mejor encaja con {e}, más lento va el balón y más fácil es detenerlo en el centro.', { e: nombreEst(est, ataca) })}</span></div>
+      <div className="d-ejec">
+        {trio.map((id) => { const p = PLAYER_BY_ID[id]; const s = segundos(id); const n = Math.round(ataca ? encajeAtaque(id, est as Ataque, aj) : encajeDefensa(id, est as Defensa, aj)); return (
+          <button key={id} type="button" className="d-ejec-c" onClick={() => onElegir(id)}>
+            <Avatar p={p} size={52} /><b>{apellido(p.name)}</b>
+            <small>{ICONO_ESTILO[estiloJugador(p)]} {nombreEstilo(estiloJugador(p))}</small>
+            <em>{tr('Encaje {n}', { n })}</em>
+            <span className={`d-vel ${s >= 1.4 ? 'lenta' : s >= 0.95 ? 'media' : 'rapida'}`}>{s >= 1.4 ? '🐢' : s >= 0.95 ? '🏃' : '🐇'} {s >= 1.4 ? tr('Balón lento') : s >= 0.95 ? tr('Balón medio') : tr('Balón rápido')}</span>
+          </button>) })}
+      </div>
+    </div>
+  )
+}
+
+// La barra: el balón va y viene; se detiene con un toque (o Espacio). Cuanto más cerca del centro, mejor.
+function PanelBarra({ ataca, ejec, segundos, est, onStop }: { ataca: boolean; ejec: string; segundos: number; est: Ataque | Defensa; onStop: (x: number) => void }) {
+  const [x, setX] = useState(0)
+  const [parada, setParada] = useState<number | null>(null)
+  const xRef = useRef(0)
+  const p = PLAYER_BY_ID[ejec]
+  useEffect(() => {
+    if (parada !== null) return
+    const t0 = performance.now(); let raf = 0
+    const loop = (t: number) => { const ph = (((t - t0) / 1000) / segundos) % 2; const v = ph < 1 ? ph : 2 - ph; xRef.current = v; setX(v); raf = requestAnimationFrame(loop) }
+    raf = requestAnimationFrame(loop)
+    const auto = setTimeout(() => setParada(xRef.current), 9000) // si no toca, se detiene solo
+    return () => { cancelAnimationFrame(raf); clearTimeout(auto) }
+  }, [segundos, parada])
+  useEffect(() => { if (parada === null) return; const t = setTimeout(() => onStop(parada), 1100); return () => clearTimeout(t) }, [parada, onStop])
+  useEffect(() => {
+    const f = (e: KeyboardEvent) => { if ((e.key === ' ' || e.key === 'Enter') && parada === null) { e.preventDefault(); setParada(xRef.current) } }
+    window.addEventListener('keydown', f); return () => window.removeEventListener('keydown', f)
+  }, [parada])
+  const pr = parada !== null ? precision(parada) : null
+  const etiqueta = pr === null ? '' : pr >= 0.95 ? tr('¡Perfecto!') : pr >= 0.7 ? tr('¡Muy bien!') : pr >= 0.4 ? tr('Regular') : tr('Flojo')
+  return (
+    <div className="d-poder-panel d-barra-panel">
+      <div className="d-rhead"><b>{ataca ? tr('¡Define!') : tr('¡Intercepta!')}</b><span className="muted small">{tr('Detén el balón en el centro verde.')}</span></div>
+      <div className="d-barra-j"><Avatar p={p} size={52} /><div><b>{p.name}</b><small>{iconoEst(est, ataca)} {nombreEst(est, ataca)}</small></div></div>
+      <div className={`d-barra${parada !== null ? ' parada' : ''}`} onClick={() => parada === null && setParada(xRef.current)} role="button" tabIndex={0} aria-label={tr('¡Detener!')}>
+        <i className="centro" />
+        <span className="d-bola" style={{ left: `${(parada ?? x) * 100}%` }} aria-hidden>⚽</span>
+      </div>
+      {pr !== null ? <p className={`d-precision p${pr >= 0.95 ? 3 : pr >= 0.7 ? 2 : pr >= 0.4 ? 1 : 0}`}><b>{Math.round(pr * 100)} %</b> {etiqueta}</p>
+        : <button className="btn pri d-jugar d-gran d-detener" onClick={() => setParada(xRef.current)}>{tr('¡Detener!')}</button>}
+    </div>
+  )
+}
+
+// Frases del narrador: según la estrategia del ataque y lo que pasó, con los nombres reales.
+function narradorTurno(d: DetalleJugada): string {
+  const a = apellido(PLAYER_BY_ID[d.ejecutor].name), df = apellido(PLAYER_BY_ID[d.interceptor ?? d.trioD[0]].name), k = apellido(PLAYER_BY_ID[d.arquero].name)
+  const h = [...(d.ejecutor + d.arquero)].reduce((s, c) => s + c.charCodeAt(0), 0)
+  if (d.resultado === 'gol') {
+    const e = d.est.ataque
+    return e === 'contra' ? tr('¡Contragolpe letal! {a} corre solo y define ante {k}.', { a, k }) : e === 'bandas' ? tr('¡Gran jugada por la banda! {a} la manda al fondo.', { a }) : e === 'centro' ? tr('¡Pase filtrado a {a}, que no perdona ante {k}!', { a, k }) : tr('¡Gana arriba {a} y la clava! {k} no pudo hacer nada.', { a, k })
   }
-  if (j.resultado === 'corte') return tr('Tu defensor ({d}) frenó a su atacante ({a}). Elegir defensores por poder de defensa funciona.', { a: A, d: D })
-  if (j.resultado === 'atajada') return tr('Tu arquero ({q}) detuvo el remate rival. ¡Un buen arquero salva partidos!', { q: Q })
-  return j.pPase >= 0.5 ? tr('Su atacante ({a}) superó a tu defensor ({d}). Elige para defender a quien tenga más Defensa, no más valoración.', { a: A, d: D }) : tr('Tu defensor ({d}) era igual o mejor que su atacante ({a}), pero la suerte favoreció al rival esta vez.', { a: A, d: D })
+  if (d.resultado === 'atajada') return [tr('¡{k} vuela y se queda con el remate de {a}!', { a, k }), tr('¡Paradón de {k}! {a} no lo puede creer.', { a, k })][h % 2]
+  return [tr('¡{d} llega justo y corta el avance de {a}!', { a, d: df }), tr('¡Muro! {d} le cierra todos los caminos a {a}.', { a, d: df })][h % 2]
+}
+
+// El resultado de la jugada, por tiempos y con pelota viajera.
+function EscenaTurno({ det, ritmo, turno, esUltimo, onSiguiente, vel, setVel }: { det: DetalleJugada; ritmo: { tiempo: number; final: number }; turno: number; esUltimo: boolean; onSiguiente: () => void; vel: 'normal' | 'rapida'; setVel: (v: 'normal' | 'rapida') => void }) {
+  const [beat, setBeat] = useState(1)
+  const [abierto, setAbierto] = useState(false)
+  useEffect(() => { setBeat(1) }, [turno])
+  useEffect(() => { if (beat >= 3) return; const t = setTimeout(() => setBeat((b) => b + 1), beat === 1 ? ritmo.tiempo : ritmo.tiempo); return () => clearTimeout(t) }, [beat, ritmo.tiempo])
+  const ej = PLAYER_BY_ID[det.ejecutor], ic = PLAYER_BY_ID[det.interceptor ?? det.trioD[0]], gk = PLAYER_BY_ID[det.arquero]
+  const pasa = det.resultado !== 'corte'
+  const v = (n: number) => (beat >= n ? 'rev' : 'oculto')
+  const X = pasa ? { a: 15, d: 48, k: 84 } : { a: 27, d: 73, k: 73 }
+  const bola = beat <= 1 ? X.a : beat === 2 ? (pasa ? X.k : X.d) : det.resultado === 'gol' ? 104 : det.resultado === 'atajada' ? X.d + 8 : X.a + 6
+  const fin = beat >= 3
+  const mio = det.ataca === 'mio'
+  const pctPaso = Math.round(det.pPaso * 100), pctRem = Math.round(det.pRemate * 100)
+  const nivelH = mio ? det.nivel : -det.nivel
+  return (
+    <div className="d-escena-wrap" onClick={!fin ? () => setBeat((b) => Math.min(3, b + 1)) : undefined} style={{ cursor: !fin ? 'pointer' : undefined }}>
+      <div className={`d-escena beats ${det.resultado}${mio ? ' mio' : ' su'}${fin ? ' fin' : ''}`}>
+        <p className="d-esc-t">{mio ? tr('Tu ataque') : tr('Su ataque')} · {nombreAtaque(det.est.ataque)}</p>
+        <p className="d-esc-cap">{beat <= 1 ? `${nombreAtaque(det.est.ataque)} ${tr('contra')} ${nombreDefensa(det.est.defensa)}` : beat === 2 ? (pasa ? tr('Si lo supera, remata contra el arquero') : tr('El defensor corta la jugada')) : ' '}</p>
+        <div className="d-esc-fila">
+          <span className={`d-pelota b${beat}${fin ? ` ${det.resultado}` : ''}`} style={{ left: `${bola}%` }} aria-hidden>⚽</span>
+          <div className="d-esc-j a rev"><Avatar p={ej} size={92} /><b>{ej.name}</b><small>{ICONO_ESTILO[estiloJugador(ej)]} {nombreEstilo(estiloJugador(ej))}</small></div>
+          <div className={`d-esc-j d ${beat >= 2 ? (pasa ? 'vencido' : 'gana') : ''} rev`}><Avatar p={ic} size={92} /><b>{ic.name}</b><small>🛡 {nombreDefensa(det.est.defensa)}</small><em className={v(2)}>{pasa ? tr('Superado') : tr('Corta')}</em></div>
+          {pasa && <><span className={`d-esc-x l2 ${v(2)}`} aria-hidden>→</span>
+            <div className={`d-esc-j g ${beat >= 3 ? (det.resultado === 'gol' ? 'vencido' : 'gana') : ''} ${v(2)}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤</small><em className={v(3)}>{det.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
+          {fin && det.resultado === 'gol' && <div className="d-confeti" aria-hidden>{Array.from({ length: 16 }, (_, n) => <i key={n} style={{ ['--a' as string]: `${n * 22.5}deg`, ['--d' as string]: `${46 + (n % 4) * 14}px`, ['--c' as string]: ['#ffd54a', '#00e5ff', '#ff2e88', '#fff'][n % 4] }} />)}</div>}
+        </div>
+        <div className={`d-factores ${v(2)}`}>
+          <span className={`f ${claseEfecto(nivelH)}`}>{mensajeEfecto(nivelH)}</span>
+          <span className="f">{tr('Encaje {a} contra {d}', { a: Math.round(det.calidadA), d: Math.round(det.calidadD) })}</span>
+          <span className="f">{tr('Tu toque {p} %', { p: Math.round((mio ? det.precA : det.precD) * 100) })}</span>
+        </div>
+        <div className={`d-meter ${v(3)}`}><div className="d-meter-h"><b>{tr('Probabilidad de gol: {p} %', { p: Math.round(det.pGol * 100) })}</b></div><div className="d-meter-bar"><i style={{ width: `${Math.round(det.pGol * 100)}%` }} /></div></div>
+        <div className={`d-esc-res ${v(3)}`}>{resTxt(det.resultado)}</div>
+        <p className={`d-narra ${v(3)}`}>{narradorTurno(det)}</p>
+        {fin && (
+          <details className="d-por-que" open={abierto} onToggle={(e) => setAbierto((e.target as HTMLDetailsElement).open)}>
+            <summary>{tr('¿Por qué?')}</summary>
+            <ul className="d-porque">
+              <li>{tr('Estrategia: {a} contra {d}: {m}', { a: nombreAtaque(det.est.ataque), d: nombreDefensa(det.est.defensa), m: mensajeEfecto(det.nivel) })}</li>
+              <li>{tr('Jugadores: encaje del ataque {a} contra la defensa {d}', { a: Math.round(det.calidadA), d: Math.round(det.calidadD) })}</li>
+              <li>{tr('Superar la defensa: {p} %', { p: pctPaso })} · <b>{det.resultado === 'corte' ? tr('No lo logró') : tr('Lo superó')}</b></li>
+              {pasa && <li>{tr('Remate: {p} % (tu toque {t} %, remate {r} contra arquero {q})', { p: pctRem, t: Math.round(det.precA * 100), r: Math.round(det.rem), q: Math.round(det.arq) })} · <b>{det.resultado === 'gol' ? tr('Es gol') : tr('Lo atajó')}</b></li>}
+            </ul>
+          </details>
+        )}
+      </div>
+      <div className="cta" onClick={(e) => e.stopPropagation()}>{!fin ? <><button className="btn ghost" onClick={() => setBeat(3)}>{tr('Saltar animación')}</button><button className="btn ghost" onClick={() => setVel(vel === 'normal' ? 'rapida' : 'normal')}>{vel === 'normal' ? tr('Velocidad: normal') : tr('Velocidad: rápida')}</button></> : <button className="btn pri d-gran" onClick={onSiguiente}>{esUltimo ? tr('Ver resultado final') : tr('Siguiente turno')}</button>}</div>
+    </div>
+  )
 }
 
 // ---------- poderes ----------
 const iconoPoder = (x: TipoPoder) => (x === 'impulso' ? '⚡' : x === 'debilitar' ? '🥶' : '🚫')
 const nombrePoder = (x: TipoPoder) => (x === 'impulso' ? tr('Impulso') : x === 'debilitar' ? tr('Debilitar') : tr('Bloqueo'))
-const descPoder = (x: TipoPoder) => (x === 'impulso' ? tr('Suma +{n} a un jugador tuyo en esta ronda.', { n: BONO_IMPULSO }) : x === 'debilitar' ? tr('Resta −{n} a un jugador rival en esta ronda.', { n: CASTIGO_DEBILITAR }) : tr('El rival no puede usar a un jugador: tiene que cambiarlo.'))
-const textoPoder = (p: Poder) => { const j = apellido(PLAYER_BY_ID[p.objetivo].name); return p.tipo === 'impulso' ? tr('Impulso: +{n} a {j}', { n: BONO_IMPULSO, j }) : p.tipo === 'debilitar' ? tr('Debilitar: −{n} a {j}', { n: CASTIGO_DEBILITAR, j }) : tr('Bloqueo a {j}', { j }) }
-
-// Los tres poderes de un vistazo (se ven los que aún tienes).
+const textoPoder = (p: Poder) => { const j = apellido(PLAYER_BY_ID[p.objetivo].name); return p.tipo === 'impulso' ? tr('Impulso: +{n} a {j}', { n: IMPULSO_ENC, j }) : p.tipo === 'debilitar' ? tr('Debilitar: −{n} a {j}', { n: DEBILITAR_ENC, j }) : tr('Bloqueo a {j}', { j }) }
 function FilaPoderes({ disp }: { disp: Disponibles }) {
   return (
     <div className="d-poderes-fila" aria-label={tr('Tus poderes')}>
       <span>{tr('Tus poderes')}</span>
-      {TIPOS_PODER.map((x) => <i key={x} className={`d-pw ${x}${disp[x] ? '' : ' usado'}`} title={`${nombrePoder(x)}: ${descPoder(x)}`}>{iconoPoder(x)}</i>)}
-    </div>
-  )
-}
-
-// Tras ver a los jugadores rivales: eliges un poder en secreto (o ninguno) y a quién va dirigido.
-function PanelPoder({ mio, su, disp, tipo, obj, setTipo, setObj, onJugar }: { mio: Cambio; su: Cambio; disp: Disponibles; tipo: TipoPoder | null; obj: string | null; setTipo: (x: TipoPoder | null) => void; setObj: (id: string | null) => void; onJugar: () => void }) {
-  const objetivos = tipo === 'impulso' ? [mio.atacante, mio.defensor] : [su.atacante, su.defensor]
-  const rolTxt = (c: Cambio, id: string) => (c.atacante === id ? '⚽' : '🛡')
-  const jugador = (id: string) => PLAYER_BY_ID[id]
-  return (
-    <div className="d-poder-panel">
-      <div className="d-rhead"><b>{tr('Elige un poder en secreto')}</b><span className="muted small">{tr('Solo puedes usar cada poder una vez por partida. El rival también tiene los suyos.')}</span></div>
-      <div className="d-rivales">
-        <span>{tr('El rival eligió')}</span>
-        {[su.atacante, su.defensor].map((id) => <em key={id}><Avatar p={jugador(id)} size={26} /> {rolTxt(su, id)} {apellido(jugador(id).name)}</em>)}
-      </div>
-      <div className="d-pw-cards">
-        {TIPOS_PODER.map((x) => (
-          <button key={x} type="button" disabled={!disp[x]} className={`d-pw-card ${x}${tipo === x ? ' on' : ''}`} onClick={() => { setTipo(tipo === x ? null : x); setObj(null) }}>
-            <span className="ic" aria-hidden>{iconoPoder(x)}</span><b>{nombrePoder(x)}</b><small>{disp[x] ? descPoder(x) : tr('Usado')}</small>
-          </button>
-        ))}
-      </div>
-      {tipo && (
-        <div className="d-pw-obj">
-          <span>{tr('Elige a quién')}</span>
-          <div>{objetivos.map((id) => (
-            <button key={id} type="button" className={`d-pw-j${obj === id ? ' on' : ''}`} onClick={() => setObj(id)}>
-              <Avatar p={jugador(id)} size={38} /><b>{apellido(jugador(id).name)}</b><small>{rolTxt(tipo === 'impulso' ? mio : su, id)}</small>
-            </button>))}</div>
-        </div>
-      )}
-      <button className={`btn pri d-jugar${!tipo || obj ? ' d-gran' : ''}`} disabled={!!tipo && !obj} onClick={onJugar}>
-        {tipo && obj ? `${iconoPoder(tipo)} ${tr('Jugar ronda con {p}', { p: nombrePoder(tipo) })}` : tipo ? tr('Elige a quién') : `▶ ${tr('Jugar sin poder')}`}
-      </button>
-    </div>
-  )
-}
-
-// El rival bloqueó a uno de tus jugadores: elige quién lo reemplaza, en vivo.
-function PanelBloqueo({ pend, candidatos: cs, onElegir }: { pend: Pendiente; candidatos: string[]; onElegir: (id: string) => void }) {
-  const bloq = PLAYER_BY_ID[pend.bloqueado]
-  const f = pend.rol === 'atacante' ? poderAtaque : poderDefensa
-  return (
-    <div className="d-poder-panel d-bloqueo">
-      <div className="d-bq-t"><span aria-hidden>🚫</span><div><b>{tr('¡El rival bloqueó a {n}!', { n: bloq.name })}</b><small>{pend.rol === 'atacante' ? tr('Elige quién ataca en su lugar') : tr('Elige quién defiende en su lugar')}</small></div></div>
-      {cs.length ? (
-        <div className="d-bq-lista">{cs.map((id) => { const p = PLAYER_BY_ID[id]; return <button key={id} type="button" className="d-pw-j" onClick={() => onElegir(id)}><Avatar p={p} size={44} /><b>{apellido(p.name)}</b><small>{Math.round(f(p))}</small></button> })}</div>
-      ) : <button className="btn pri" onClick={() => onElegir(pend.bloqueado)}>{tr('No queda nadie más: sigue con él')}</button>}
-    </div>
-  )
-}
-
-// Se revelan los dos poderes a la vez, con su efecto.
-function RevelaPoderes({ pw }: { pw: PoderRonda }) {
-  const lado = (de: 'mio' | 'su', p: Poder | undefined) => {
-    const ef = pw.efectos.find((e) => e.de === de)
-    const cambio = de === 'mio' ? pw.cambioSu : pw.cambioMio // un bloqueo mío cambia a un jugador suyo, y al revés
-    return (
-      <div className={`d-rev-pw ${de}${p ? ` ${p.tipo}` : ' ninguno'}`}>
-        <small>{de === 'mio' ? tr('Tu poder') : tr('Su poder')}</small>
-        {p ? <>
-          <span className="ic" aria-hidden>{iconoPoder(p.tipo)}</span>
-          <b>{nombrePoder(p.tipo)}</b>
-          <em>{textoPoder(p)}</em>
-          <i className={ef?.aplicado ? 'ok' : 'no'}>{p.tipo === 'bloqueo' && cambio ? tr('{d} tuvo que dejar su lugar a {a}.', { d: apellido(PLAYER_BY_ID[cambio.de].name), a: apellido(PLAYER_BY_ID[cambio.a].name) }) : ef?.aplicado ? tr('Surtió efecto.') : tr('Se perdió: ese jugador ya no jugó.')}</i>
-        </> : <><span className="ic" aria-hidden>·</span><em>{tr('Sin poder')}</em></>}
-      </div>
-    )
-  }
-  return (
-    <div className="d-escena d-poderes-rev">
-      <p className="d-esc-t">{tr('¡Poderes revelados!')}</p>
-      <div className="d-rev-fila">{lado('mio', pw.mio)}{lado('su', pw.su)}</div>
-    </div>
-  )
-}
-
-// Frases del narrador: una por jugada, con los nombres reales.
-function narrador(j: ResultadoRonda['mia']): string {
-  const a = apellido(PLAYER_BY_ID[j.atacante].name), d = apellido(PLAYER_BY_ID[j.defensor].name), k = apellido(PLAYER_BY_ID[j.arquero].name)
-  const h = [...(j.atacante + j.defensor)].reduce((s, c) => s + c.charCodeAt(0), 0)
-  if (j.resultado === 'gol') return [tr('¡{a} se saca a {d} de encima y la clava!', { a, d }), tr('¡{a} define sin piedad ante {k}! ¡Golazo!', { a, k }), tr('¡Remate imparable de {a}! {k} no pudo hacer nada.', { a, k })][h % 3]
-  if (j.resultado === 'atajada') return [tr('¡{k} vuela y se queda con el remate de {a}!', { a, k }), tr('¡Paradón de {k}! {a} no lo puede creer.', { a, k })][h % 2]
-  return [tr('¡{d} llega justo y corta el avance de {a}!', { a, d }), tr('¡Muro! {d} le cierra todos los caminos a {a}.', { a, d })][h % 2]
-}
-
-// La jugada se revela por tiempos y con una pelota que viaja: 1) atacante contra defensor, 2) quién supera a quién (y el arquero), 3) el resultado.
-function EscenaJugada({ j, mio, titulo, beat }: { j: ResultadoRonda['mia']; mio: boolean; titulo: string; beat: number }) {
-  const at = PLAYER_BY_ID[j.atacante], df = PLAYER_BY_ID[j.defensor], gk = PLAYER_BY_ID[j.arquero]
-  const pasa = j.resultado !== 'corte'
-  const v = (n: number) => (beat >= n ? 'rev' : 'oculto')
-  // posición de la pelota (en % del ancho) según el momento de la jugada
-  const X = pasa ? { a: 15, d: 48, k: 84 } : { a: 27, d: 73, k: 73 }
-  const bola = beat <= 1 ? X.a : beat === 2 ? (pasa ? X.k : X.d) : j.resultado === 'gol' ? 104 : j.resultado === 'atajada' ? X.d + 8 : X.a + 6
-  const fin = beat >= 3
-  return (
-    <div className={`d-escena beats ${j.resultado}${mio ? ' mio' : ' su'}${fin ? ' fin' : ''}`}>
-      <p className="d-esc-t">{titulo}</p>
-      <p className="d-esc-cap">{beat <= 1 ? tr('Atacante contra defensor') : beat === 2 ? (pasa ? tr('Si lo supera, remata contra el arquero') : tr('El defensor corta la jugada')) : '\u00a0'}</p>
-      <div className="d-esc-fila">
-        <span className={`d-pelota b${beat}${fin ? ` ${j.resultado}` : ''}`} style={{ left: `${bola}%` }} aria-hidden>⚽</span>
-        <div className="d-esc-j a rev"><Avatar p={at} size={92} /><b>{at.name}</b><small>⚽ {Math.round(poderAtaque(at))}</small></div>
-        <div className={`d-esc-j d ${beat >= 2 ? (pasa ? 'vencido' : 'gana') : ''} rev`}><Avatar p={df} size={92} /><b>{df.name}</b><small>🛡 {Math.round(poderDefensa(df))}</small><em className={v(2)}>{pasa ? tr('Superado') : tr('Corta')}</em></div>
-        {pasa && <><span className={`d-esc-x l2 ${v(2)}`} aria-hidden>→</span>
-          <div className={`d-esc-j g ${beat >= 3 ? (j.resultado === 'gol' ? 'vencido' : 'gana') : ''} ${v(2)}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤 {Math.round(poderArquero(gk))}</small><em className={v(3)}>{j.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
-        {fin && j.resultado === 'gol' && <div className="d-confeti" aria-hidden>{Array.from({ length: 16 }, (_, n) => <i key={n} style={{ ['--a' as string]: `${n * 22.5}deg`, ['--d' as string]: `${46 + (n % 4) * 14}px`, ['--c' as string]: ['#ffd54a', '#00e5ff', '#ff2e88', '#fff'][n % 4] }} />)}</div>}
-      </div>
-      <div className={`d-esc-res ${v(3)}`}>{resTxt(j.resultado)}</div>
-      <p className={`d-narra ${v(3)}`}>{narrador(j)}</p>
-      {fin && j.pA !== undefined && j.pD !== undefined && j.t1 !== undefined && (
-        <details className="d-por-que">
-          <summary>{tr('¿Por qué?')}</summary>
-          <BarraProb clase="rev" titulo={tr('Duelo: ataque {a} contra defensa {d}', { a: Math.round(j.pA), d: Math.round(j.pD) })} p={j.pPase} tirada={j.t1} ok={pasa} />
-          {pasa && j.rem !== undefined && j.arq !== undefined && j.pTiro !== undefined && j.t2 !== undefined && (
-            <BarraProb clase="rev" titulo={tr('Remate {r} contra arquero {q}', { r: Math.round(j.rem), q: Math.round(j.arq) })} p={j.pTiro} tirada={j.t2} ok={j.resultado === 'gol'} nota={j.clima !== undefined && j.clima < 0.97 ? tr('El clima reduce la probabilidad de gol.') : j.clima !== undefined && j.clima > 1.03 ? tr('El clima aumenta la probabilidad de gol.') : undefined} />
-          )}
-          {pasa && j.pTiro !== undefined && <small className="d-esc-p rev">{tr('Probabilidad total de gol: {a} % × {b} % = {c} %', { a: Math.round(j.pPase * 100), b: Math.round(j.pTiro * 100), c: Math.round(j.pGol * 100) })}</small>}
-          <p className="d-esc-tip rev"><b>{tr('Cómo mejorar')}</b> {consejo(j, mio)}</p>
-        </details>
-      )}
+      {TIPOS_PODER.map((x) => <i key={x} className={`d-pw ${x}${disp[x] ? '' : ' usado'}`} title={`${nombrePoder(x)}: ${descPoder2(x)}`}>{iconoPoder(x)}</i>)}
     </div>
   )
 }
