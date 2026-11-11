@@ -190,4 +190,7 @@ export const EXTRA: Array<[string, string]> = [
   ['Toca a un jugador de tu cancha', 'Tap a player on your pitch'],
   ['Quitar', 'Remove'],
   ['Poder {n}', 'Power {n}'],
+  ['Algo salió mal en el duelo', 'Something went wrong in the duel'],
+  ['Tu equipo está a salvo. Reinicia el duelo para seguir.', 'Your team is safe. Restart the duel to continue.'],
+  ['Reiniciar el duelo', 'Restart the duel'],
 ]

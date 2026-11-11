@@ -1,5 +1,5 @@
 import { CompartirEquipo, type Red } from './compartir'
-import { useEffect, useMemo, useState } from 'react'
+import { Component, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { tr } from '../i18n'
 import { attrLabel, posLabel, posNombre } from '../i18n/nombres'
@@ -169,7 +169,25 @@ function partidaVigente(): Guardada | null {
   borrarPartida(); return null
 }
 
-export function Duelo() {
+// Si algo falla dentro del duelo, en vez de dejar la pantalla en blanco se muestra un aviso y una forma de seguir (sin tocar tu equipo).
+class DueloSeguro extends Component<{ children: ReactNode }, { error: string | null }> {
+  state = { error: null as string | null }
+  static getDerivedStateFromError(e: unknown) { return { error: e instanceof Error ? e.message : String(e) } }
+  render() {
+    if (this.state.error === null) return this.props.children
+    return (
+      <div className="duelo" style={{ padding: '40px 0', textAlign: 'center' }}>
+        <h2>{tr('Algo salió mal en el duelo')}</h2>
+        <p className="muted">{tr('Tu equipo está a salvo. Reinicia el duelo para seguir.')}</p>
+        <p className="small muted" style={{ wordBreak: 'break-word' }}>{this.state.error}</p>
+        <div className="cta" style={{ justifyContent: 'center' }}><button className="btn pri" onClick={() => { borrarPartida(); location.reload() }}>{tr('Reiniciar el duelo')}</button></div>
+      </div>
+    )
+  }
+}
+export function Duelo() { return <DueloSeguro><DueloPantallas /></DueloSeguro> }
+
+function DueloPantallas() {
   const [equipo, setEquipo] = useLocalState<Equipo | null>(CLAVE_EQUIPO, null)
   const [stats, setStats] = useLocalState<Stats>(CLAVE_STATS, STATS0)
   const [guardada] = useState(partidaVigente)

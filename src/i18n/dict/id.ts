@@ -928,5 +928,8 @@ const D: string[] = [
   "Ketuk pemain di lapanganmu",
   "Hapus",
   "Kekuatan {n}",
+  "Terjadi kesalahan di duel",
+  "Timmu aman. Mulai ulang duel untuk melanjutkan.",
+  "Mulai ulang duel",
 ]
 export default D

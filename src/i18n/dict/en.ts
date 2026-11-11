@@ -928,5 +928,8 @@ const D: string[] = [
   "Tap a player on your pitch",
   "Remove",
   "Power {n}",
+  "Something went wrong in the duel",
+  "Your team is safe. Restart the duel to continue.",
+  "Restart the duel",
 ]
 export default D

@@ -928,5 +928,8 @@ const D: string[] = [
   "Tippe auf einen Spieler auf deinem Feld",
   "Entfernen",
   "Stärke {n}",
+  "Im Duell ist etwas schiefgelaufen",
+  "Dein Team ist sicher. Starte das Duell neu, um weiterzumachen.",
+  "Duell neu starten",
 ]
 export default D

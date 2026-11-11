@@ -928,5 +928,8 @@ const D: string[] = [
   "Toque em um jogador do seu campo",
   "Remover",
   "Poder {n}",
+  "Algo deu errado no duelo",
+  "Seu time está a salvo. Reinicie o duelo para continuar.",
+  "Reiniciar o duelo",
 ]
 export default D

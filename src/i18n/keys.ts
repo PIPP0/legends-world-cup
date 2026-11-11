@@ -928,4 +928,7 @@ export const KEYS: string[] = [
   "Toca a un jugador de tu cancha",
   "Quitar",
   "Poder {n}",
+  "Algo salió mal en el duelo",
+  "Tu equipo está a salvo. Reinicia el duelo para seguir.",
+  "Reiniciar el duelo",
 ]
