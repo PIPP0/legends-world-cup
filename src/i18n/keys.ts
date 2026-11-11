@@ -1005,4 +1005,5 @@ export const KEYS: string[] = [
   "¡{d} llega justo y corta el avance de {a}!",
   "¡Muro! {d} le cierra todos los caminos a {a}.",
   "¿Por qué?",
+  "Abandonaste el partido anterior al salir o actualizar la página: cuenta como derrota.",
 ]

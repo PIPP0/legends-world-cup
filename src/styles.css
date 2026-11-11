@@ -737,3 +737,5 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 @media(prefers-reduced-motion:reduce){.d-pelota{transition:none}.d-confeti i,.d-escena.gol.fin,.d-rev-pw,.d-gpop,.d-bq-t{animation:none}}
 
 .d-esc-fila{margin-top:22px}
+
+.d-aviso{margin:0 0 14px;padding:10px 14px;border-radius:10px;background:rgba(255,213,74,.1);border:1px solid rgba(255,213,74,.45);color:#ffe08a;font-size:14px}

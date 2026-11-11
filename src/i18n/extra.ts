@@ -267,4 +267,5 @@ export const EXTRA: Array<[string, string]> = [
   ['¡{d} llega justo y corta el avance de {a}!', "{d} arrives just in time and stops {a}'s run!"],
   ['¡Muro! {d} le cierra todos los caminos a {a}.', 'A wall! {d} shuts every path for {a}.'],
   ['¿Por qué?', 'Why?'],
+  ['Abandonaste el partido anterior al salir o actualizar la página: cuenta como derrota.', 'You left the previous match by leaving or refreshing the page: it counts as a loss.'],
 ]

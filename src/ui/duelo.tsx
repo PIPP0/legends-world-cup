@@ -194,12 +194,19 @@ export function Duelo() { return <DueloSeguro><DueloPantallas /></DueloSeguro> }
 function DueloPantallas() {
   const [equipo, setEquipo] = useLocalState<Equipo | null>(CLAVE_EQUIPO, null)
   const [stats, setStats] = useLocalState<Stats>(CLAVE_STATS, STATS0)
-  const [guardada] = useState(partidaVigente)
-  const [vista, setVista] = useState<'inicio' | 'draft' | 'duelo'>(guardada ? 'duelo' : 'inicio')
-  const [nivel, setNivel] = useState<Nivel>(guardada?.nivel ?? 'plata')
+  // El partido es en vivo: si se sale o se actualiza la página a mitad de partido, queda abandonado (cuenta como derrota) y no se retoma.
+  const [abandonada] = useState(() => partidaVigente() !== null)
+  const [vista, setVista] = useState<'inicio' | 'draft' | 'duelo'>('inicio')
+  const [nivel, setNivel] = useState<Nivel>('plata')
+  useEffect(() => {
+    if (!partidaVigente()) return
+    borrarPartida()
+    setStats({ ...stats, jugados: stats.jugados + 1, perdidos: stats.perdidos + 1, racha: 0 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   if (vista === 'draft') return <Draft alTerminar={(e) => { setEquipo(e); setVista('inicio') }} alCancelar={() => setVista('inicio')} />
-  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} inicial={guardada && guardada.creado === equipo.creado ? guardada : undefined} alTerminar={(g) => { const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
-  return <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} armar={() => setVista('draft')} jugar={() => setVista('duelo')} />
+  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} alTerminar={(g) => { const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
+  return <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} aviso={abandonada} armar={() => setVista('draft')} jugar={() => setVista('duelo')} />
 }
 
 // ---------- presentación (sin equipo todavía): lo que hay que ver para querer jugar ----------
@@ -235,7 +242,7 @@ function Presentacion({ armar }: { armar: () => void }) {
 }
 
 // ---------- inicio: tu equipo + elegir rival ----------
-function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equipo | null; stats: Stats; nivel: Nivel; setNivel: (n: Nivel) => void; armar: () => void; jugar: () => void }) {
+function Inicio({ equipo, stats, nivel, setNivel, armar, jugar, aviso }: { equipo: Equipo | null; stats: Stats; nivel: Nivel; setNivel: (n: Nivel) => void; armar: () => void; jugar: () => void; aviso?: boolean }) {
   const [sel, setSel] = useState<string | null>(null)
   const [compartir, setCompartir] = useState<Red | boolean>(false)
   useCerrarFuera(sel !== null, () => setSel(null))
@@ -250,6 +257,7 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
       {compartir && <CompartirEquipo equipo={equipo} red={typeof compartir === 'string' ? compartir : undefined} onClose={() => setCompartir(false)} />}
       <header className="d-hero"><p className="kicker">{tr('Mi Once Ideal: Duelo')}</p><h1>{tr('Tu equipo')}</h1>
         <p className="muted">{equipo.formacion} · {tr('Valoración media')} {valorEquipo(equipo)}{pais.length > 0 && <> · {tr('Sinergias')}: {pais.map((s) => `${TEAM_BY_ID[s.teamId].name} +${s.bonus}`).join(', ')}</>}</p></header>
+      {aviso && <p className="d-aviso" role="status">⚠ {tr('Abandonaste el partido anterior al salir o actualizar la página: cuenta como derrota.')}</p>}
       <div className="d-cols d-cols-eq">
         <div className="d-c-cancha">
           <Cancha formacion={equipo.formacion} ids={equipo.once} onNodo={(i) => setSel(equipo.once[i])} sel={sel} etiqueta={tr('Tu equipo')} />

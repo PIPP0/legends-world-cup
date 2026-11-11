@@ -1005,5 +1005,6 @@ const D: string[] = [
   "{d} arrive juste à temps et stoppe {a} !",
   "Un mur ! {d} ferme tous les chemins à {a}.",
   "Pourquoi ?",
+  "Tu as abandonné le match précédent en quittant ou en actualisant la page : cela compte comme une défaite.",
 ]
 export default D
