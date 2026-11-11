@@ -137,13 +137,16 @@ export interface Cambio { atacante: string; defensor: string } // ids elegidos p
 export interface Jugada { atacante: string; defensor: string; arquero: string; resultado: 'gol' | 'atajada' | 'corte'; pPase: number; pGol: number; pA?: number; pD?: number; rem?: number; arq?: number; pTiro?: number; clima?: number; t1?: number; t2?: number }
 export interface ResultadoRonda { mia: Jugada; rival: Jugada; golesMios: number; golesRival: number }
 
-// Con defensas más fuertes caían pocos goles (2,7 por partida): este factor lleva el promedio a ~3,7 para que haya más festejos.
-export const FACTOR_REMATE = 1.4
+// Con defensas más fuertes caían pocos goles: este factor, junto a las escalas, deja ~3,6 goles por partida.
+export const FACTOR_REMATE = 1.2
+// Cuánto pesa la ventaja: cuanto más chica la escala, más seguro es que gane el mejor (menos suerte). Con 5, +7 de ventaja da ~80 % y +13 da ~93 %.
+export const ESCALA_DUELO = 5
+export const ESCALA_TIRO = 5
 const sig = (x: number) => 1 / (1 + Math.exp(-x))
 function jugada(att: Player, def: Player, gk: Player, bonusAtt: number, bonusDef: number, ctx: MatchCtx | undefined, rng: Rng): Jugada {
   const A = poderAtaque(att) + bonusAtt, D = poderDefensa(def) + bonusDef
-  const pPase = sig((A - D) / 11) // gana el duelo contra el defensor
-  const pGolSiPasa = Math.min(0.9, sig((poderRemate(att) + bonusAtt - poderArquero(gk)) / 10) * FACTOR_REMATE * weatherFactor(ctx).goals)
+  const pPase = sig((A - D) / ESCALA_DUELO) // gana el duelo contra el defensor
+  const pGolSiPasa = Math.min(0.9, sig((poderRemate(att) + bonusAtt - poderArquero(gk)) / ESCALA_TIRO) * FACTOR_REMATE * weatherFactor(ctx).goals)
   const pGol = pPase * pGolSiPasa
   const detalle = { pA: A, pD: D, rem: poderRemate(att) + bonusAtt, arq: poderArquero(gk), pTiro: pGolSiPasa, clima: weatherFactor(ctx).goals }
   const t1 = rng() // el «dado» del duelo con el defensor: se supera si sale menos que pPase
