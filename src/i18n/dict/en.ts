@@ -931,5 +931,14 @@ const D: string[] = [
   "Something went wrong in the duel",
   "Your team is safe. Restart the duel to continue.",
   "Restart the duel",
+  "Goalkeepers don't attack or defend: their value is in the saves.",
+  "Power only uses what matters in each play, so it can be lower than the overall rating ({n}).",
+  "“+{n}” is his country's synergy bonus.",
+  "Base power {a} + synergy {b}",
+  "Attack power {n}",
+  "Defence power {n}",
+  "Attack power",
+  "Defence power",
+  "It is not the overall rating ({n}): only what matters in that play counts.",
 ]
 export default D

@@ -931,5 +931,14 @@ const D: string[] = [
   "Qualcosa è andato storto nel duello",
   "La tua squadra è al sicuro. Riavvia il duello per continuare.",
   "Riavvia il duello",
+  "I portieri non attaccano né difendono: il loro valore sta nelle parate.",
+  "La potenza usa solo ciò che conta in ogni azione; per questo può essere inferiore alla valutazione generale ({n}).",
+  "«+{n}» è la sinergia del suo paese.",
+  "Potenza base {a} + sinergia {b}",
+  "Potenza d’attacco {n}",
+  "Potenza di difesa {n}",
+  "Potenza d’attacco",
+  "Potenza di difesa",
+  "Non è la valutazione generale ({n}): conta solo ciò che serve in quell’azione.",
 ]
 export default D

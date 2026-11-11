@@ -71,20 +71,23 @@ export function ofertas(seed: string, formacion: string, paso: number, elegidos:
 const attr = (p: Player, k: string): number => p.attrs.find((a) => a.k === k)?.v ?? p.ovr
 const mezcla = (p: Player, pesos: [string, number][]) => pesos.reduce((s, [k, w]) => s + attr(p, k) * w, 0) / pesos.reduce((s, [, w]) => s + w, 0)
 
-export const poderAtaque = (p: Player): number => {
-  if (p.line === 'GK') return 35
-  const b = p.line === 'ATT' ? mezcla(p, [['Disparo', 0.35], ['Regate', 0.25], ['Ritmo', 0.2], ['Pase', 0.2]])
-    : p.line === 'MID' ? mezcla(p, [['Pase', 0.35], ['Regate', 0.25], ['Disparo', 0.2], ['Ritmo', 0.2]])
-      : mezcla(p, [['Ritmo', 0.3], ['Pase', 0.3], ['Físico', 0.2], ['Disparo', 0.2]]) - 6
-  return b
+// Cómo se calcula el poder de cada jugador: mezcla de atributos según su línea (y un ajuste si juega fuera de lo suyo).
+export interface Formula { pesos: [string, number][]; ajuste: number }
+export const formulaAtaque = (p: Player): Formula | null => {
+  if (p.line === 'GK') return null
+  if (p.line === 'ATT') return { pesos: [['Disparo', 0.35], ['Regate', 0.25], ['Ritmo', 0.2], ['Pase', 0.2]], ajuste: 0 }
+  if (p.line === 'MID') return { pesos: [['Pase', 0.35], ['Regate', 0.25], ['Disparo', 0.2], ['Ritmo', 0.2]], ajuste: 0 }
+  return { pesos: [['Ritmo', 0.3], ['Pase', 0.3], ['Físico', 0.2], ['Disparo', 0.2]], ajuste: -6 }
 }
-export const poderDefensa = (p: Player): number => {
-  if (p.line === 'GK') return 40
-  const b = p.line === 'DEF' ? mezcla(p, [['Defensa', 0.4], ['Físico', 0.25], ['Ritmo', 0.2], ['Pase', 0.15]])
-    : p.line === 'MID' ? mezcla(p, [['Defensa', 0.35], ['Físico', 0.25], ['Pase', 0.25], ['Ritmo', 0.15]])
-      : mezcla(p, [['Defensa', 0.3], ['Físico', 0.3], ['Ritmo', 0.25], ['Regate', 0.15]]) - 8
-  return b
+export const formulaDefensa = (p: Player): Formula | null => {
+  if (p.line === 'GK') return null
+  if (p.line === 'DEF') return { pesos: [['Defensa', 0.4], ['Físico', 0.25], ['Ritmo', 0.2], ['Pase', 0.15]], ajuste: 0 }
+  if (p.line === 'MID') return { pesos: [['Defensa', 0.35], ['Físico', 0.25], ['Pase', 0.25], ['Ritmo', 0.15]], ajuste: 0 }
+  return { pesos: [['Defensa', 0.3], ['Físico', 0.3], ['Ritmo', 0.25], ['Regate', 0.15]], ajuste: -8 }
 }
+const aplica = (p: Player, f: Formula | null, fijo: number) => (f ? mezcla(p, f.pesos) + f.ajuste : fijo)
+export const poderAtaque = (p: Player): number => aplica(p, formulaAtaque(p), 35)
+export const poderDefensa = (p: Player): number => aplica(p, formulaDefensa(p), 40)
 export const poderRemate = (p: Player): number => (p.line === 'GK' ? 30 : attr(p, 'Disparo'))
 export const poderArquero = (p: Player): number => mezcla(p, [['Paradas', 0.4], ['Reflejos', 0.35], ['Posición', 0.25]])
 

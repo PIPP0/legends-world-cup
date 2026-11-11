@@ -656,3 +656,7 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 @keyframes dTrazo{to{stroke-dashoffset:-15.2}}
 @keyframes dOnda{0%{r:6.4px;opacity:.9}100%{r:10.5px;opacity:0}}
 @media(prefers-reduced-motion:reduce){.pn .halo,.pn .halo2{animation:none}.pn .pulso{animation:none;opacity:.35}}
+
+.d-poder small{margin-left:3px;color:#7fe8a6;font-weight:700}.d-explica{margin:0;font-size:11.5px;line-height:1.4;color:#9fb0d8}
+.d-slot-j i small{font-size:11px;color:#9fb0d8;font-style:normal}
+@media(min-width:1101px){.d-medio .d-explica{font-size:10.5px;line-height:1.3}}

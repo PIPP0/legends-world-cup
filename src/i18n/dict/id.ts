@@ -931,5 +931,14 @@ const D: string[] = [
   "Terjadi kesalahan di duel",
   "Timmu aman. Mulai ulang duel untuk melanjutkan.",
   "Mulai ulang duel",
+  "Kiper tidak menyerang atau bertahan: nilainya ada pada penyelamatan.",
+  "Kekuatan hanya memakai yang penting di setiap aksi, jadi bisa lebih rendah dari rating umum ({n}).",
+  "«+{n}» adalah bonus sinergi negaranya.",
+  "Kekuatan dasar {a} + sinergi {b}",
+  "Kekuatan serangan {n}",
+  "Kekuatan bertahan {n}",
+  "Kekuatan serangan",
+  "Kekuatan bertahan",
+  "Bukan rating umum ({n}): hanya yang penting dalam aksi itu yang dihitung.",
 ]
 export default D

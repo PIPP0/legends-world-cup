@@ -193,4 +193,13 @@ export const EXTRA: Array<[string, string]> = [
   ['Algo salió mal en el duelo', 'Something went wrong in the duel'],
   ['Tu equipo está a salvo. Reinicia el duelo para seguir.', 'Your team is safe. Restart the duel to continue.'],
   ['Reiniciar el duelo', 'Restart the duel'],
+  ['Los arqueros no atacan ni defienden: su valor está en las paradas.', "Goalkeepers don't attack or defend: their value is in the saves."],
+  ['El poder usa solo lo que importa en cada jugada; por eso puede ser menor que la valoración general ({n}).', 'Power only uses what matters in each play, so it can be lower than the overall rating ({n}).'],
+  ['«+{n}» es la sinergia de su país.', "“+{n}” is his country's synergy bonus."],
+  ['Poder base {a} + sinergia {b}', 'Base power {a} + synergy {b}'],
+  ['Poder de ataque {n}', 'Attack power {n}'],
+  ['Poder de defensa {n}', 'Defence power {n}'],
+  ['Poder de ataque', 'Attack power'],
+  ['Poder de defensa', 'Defence power'],
+  ['No es la valoración general ({n}): solo cuenta lo que importa en esa jugada.', 'It is not the overall rating ({n}): only what matters in that play counts.'],
 ]

@@ -931,5 +931,14 @@ const D: string[] = [
   "Im Duell ist etwas schiefgelaufen",
   "Dein Team ist sicher. Starte das Duell neu, um weiterzumachen.",
   "Duell neu starten",
+  "Torhüter greifen weder an noch verteidigen sie: Ihr Wert liegt in den Paraden.",
+  "Die Stärke nutzt nur, was in jeder Aktion zählt; deshalb kann sie niedriger sein als die Gesamtwertung ({n}).",
+  "„+{n}“ ist der Synergiebonus seines Landes.",
+  "Basisstärke {a} + Synergie {b}",
+  "Angriffsstärke {n}",
+  "Abwehrstärke {n}",
+  "Angriffsstärke",
+  "Abwehrstärke",
+  "Das ist nicht die Gesamtwertung ({n}): Es zählt nur, was in dieser Aktion wichtig ist.",
 ]
 export default D

@@ -931,4 +931,13 @@ export const KEYS: string[] = [
   "Algo salió mal en el duelo",
   "Tu equipo está a salvo. Reinicia el duelo para seguir.",
   "Reiniciar el duelo",
+  "Los arqueros no atacan ni defienden: su valor está en las paradas.",
+  "El poder usa solo lo que importa en cada jugada; por eso puede ser menor que la valoración general ({n}).",
+  "«+{n}» es la sinergia de su país.",
+  "Poder base {a} + sinergia {b}",
+  "Poder de ataque {n}",
+  "Poder de defensa {n}",
+  "Poder de ataque",
+  "Poder de defensa",
+  "No es la valoración general ({n}): solo cuenta lo que importa en esa jugada.",
 ]

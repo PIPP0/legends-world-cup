@@ -4,7 +4,7 @@ import { PLAYER_BY_ID, TEAM_BY_ID } from '../data/lookup'
 import { tr } from '../i18n'
 import { attrLabel, posLabel, posNombre } from '../i18n/nombres'
 import {
-  FORMACIONES, NIVELES, NOMBRES_FORMACION, N_PICKS, RONDAS, equipoMaquina, eligeMaquina, jugarRonda, ofertas, paisesConSinergia, penales, poderAtaque, poderDefensa, poderArquero,
+  FORMACIONES, NIVELES, NOMBRES_FORMACION, N_PICKS, RONDAS, equipoMaquina, eligeMaquina, jugarRonda, ofertas, paisesConSinergia, penales, poderAtaque, poderDefensa, poderArquero, formulaAtaque, formulaDefensa, type Formula,
   sedeDuelo, sinergias, valorEquipo, onceDeEjemplo, type Cambio, type Equipo, type Nivel, type ResultadoRonda,
 } from '../engine/duelo'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
@@ -130,7 +130,9 @@ function Banca({ slots, onJugador, onVacio, estado, activo, actual }: { slots: (
 }
 
 // ---------- detalle de un jugador (al tocarlo) ----------
-function Detalle({ p, bonus = 0, children }: { p: Player; bonus?: number; children?: React.ReactNode }) {
+const textoFormula = (f: Formula | null) => (f ? f.pesos.map(([k, w]) => `${attrLabel(k)} ${Math.round(w * 100)}%`).join(' · ') + (f.ajuste ? ` ${f.ajuste}` : '') : '')
+
+function Detalle({ p, bonus = 0, rol, children }: { p: Player; bonus?: number; rol?: 'atk' | 'def'; children?: React.ReactNode }) {
   const t = TEAM_BY_ID[p.teamId]
   const atributos = p.attrs.filter((a) => a.v > 0)
   return (
@@ -140,7 +142,8 @@ function Detalle({ p, bonus = 0, children }: { p: Player; bonus?: number; childr
         <div><b>{p.name}</b><span><Flag id={p.teamId} size={16} /> {t.name} · {posLabel(p.pos)}</span></div>
         <em className="d-ovr">{p.ovr}{bonus > 0 && <small>+{bonus}</small>}</em>
       </div>
-      <div className="d-poder"><span>⚔ {tr('Ataque')} <b>{Math.round(poderAtaque(p))}</b></span><span>🛡 {tr('Defensa')} <b>{Math.round(poderDefensa(p))}</b></span></div>
+      <div className="d-poder"><span>⚔ {tr('Poder de ataque')} <b>{Math.round(poderAtaque(p))}</b>{bonus > 0 && <small>+{bonus}</small>}</span><span>🛡 {tr('Poder de defensa')} <b>{Math.round(poderDefensa(p))}</b>{bonus > 0 && <small>+{bonus}</small>}</span></div>
+      <p className="d-explica">{p.line === 'GK' ? tr('Los arqueros no atacan ni defienden: su valor está en las paradas.') : <>{rol !== 'def' && <>{tr('Poder de ataque')}: {textoFormula(formulaAtaque(p))}. </>}{rol !== 'atk' && <>{tr('Poder de defensa')}: {textoFormula(formulaDefensa(p))}. </>}{tr('No es la valoración general ({n}): solo cuenta lo que importa en esa jugada.', { n: p.ovr })}{bonus > 0 && <> {tr('«+{n}» es la sinergia de su país.', { n: bonus })}</>}</>}</p>
       <div>{atributos.map((a) => <Bar key={a.k} label={attrLabel(a.k)} v={a.v} min={40} />)}</div>
       {children}
     </div>
@@ -382,7 +385,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
 // ---------- el duelo de 5 rondas ----------
 interface Ronda { n: number; res: ResultadoRonda; mio: Cambio; su: Cambio }
 // Una de las dos ranuras de la ronda: qué hace ese puesto, quién lo ocupa y cuánto aporta.
-function RanuraRonda({ tipo, id, activa, onQuitar }: { tipo: 'atk' | 'def'; id: string | null; activa: boolean; onQuitar: () => void }) {
+function RanuraRonda({ tipo, id, activa, onQuitar, bonus = 0 }: { tipo: 'atk' | 'def'; id: string | null; activa: boolean; onQuitar: () => void; bonus?: number }) {
   const p = id ? PLAYER_BY_ID[id] : null
   const atk = tipo === 'atk'
   return (
@@ -393,7 +396,7 @@ function RanuraRonda({ tipo, id, activa, onQuitar }: { tipo: 'atk' | 'def'; id: 
         <span className="muted small">{atk ? tr('Intenta marcar un gol') : tr('Frena el ataque rival')}</span>
       </div>
       {p ? (
-        <div className="d-slot-j"><div className="d-slot-av"><Avatar p={p} size={44} /></div><span><b>{p.name}</b><i>{tr('Poder {n}', { n: Math.round(atk ? poderAtaque(p) : poderDefensa(p)) })}</i></span><button type="button" className="d-slot-x" onClick={onQuitar} aria-label={tr('Quitar')} title={tr('Quitar')}>✕</button></div>
+        <div className="d-slot-j"><div className="d-slot-av"><Avatar p={p} size={44} /></div><span><b>{p.name}</b><i title={tr('Poder base {a} + sinergia {b}', { a: Math.round(atk ? poderAtaque(p) : poderDefensa(p)), b: bonus })}>{tr(atk ? 'Poder de ataque {n}' : 'Poder de defensa {n}', { n: Math.round(atk ? poderAtaque(p) : poderDefensa(p)) + bonus })}{bonus > 0 && <small> ({Math.round(atk ? poderAtaque(p) : poderDefensa(p))} +{bonus})</small>}</i></span><button type="button" className="d-slot-x" onClick={onQuitar} aria-label={tr('Quitar')} title={tr('Quitar')}>✕</button></div>
       ) : <span className="d-slot-vacio">{activa ? '👆 ' : ''}{tr('Toca a un jugador de tu cancha')}</span>}
     </div>
   )
@@ -496,12 +499,12 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
                   <>
                     <div className="d-instr"><div className="d-rhead"><b>{tr('Ronda {r} de {t}', { r: ronda, t: RONDAS })}</b><span className="muted small">{tr('Elige quién ataca y quién defiende')}</span></div>
                       <div className="d-slots">
-                        <RanuraRonda tipo="atk" id={atk} activa={!atk} onQuitar={() => setAtk(null)} />
-                        <RanuraRonda tipo="def" id={def} activa={!!atk && !def} onQuitar={() => setDef(null)} />
+                        <RanuraRonda tipo="atk" id={atk} activa={!atk} bonus={atk ? bonus[atk] ?? 0 : 0} onQuitar={() => setAtk(null)} />
+                        <RanuraRonda tipo="def" id={def} activa={!!atk && !def} bonus={def ? bonus[def] ?? 0 : 0} onQuitar={() => setDef(null)} />
                       </div>
                       <button className={`btn pri d-jugar${atk && def ? ' d-gran' : ''}`} disabled={!atk || !def} onClick={jugar}>{atk && def ? `▶ ${tr('Jugar ronda')}` : atk ? tr('Elige un defensor') : def ? tr('Elige un atacante') : tr('Elige atacante y defensor')}</button></div>
                     {p ? (
-                      <Detalle p={p} bonus={bonus[p.id] ?? 0}>
+                      <Detalle p={p} bonus={bonus[p.id] ?? 0} rol={!atk ? 'atk' : !def ? 'def' : undefined}>
                         <div className="cta">
                           {(() => {
                             // El botón principal es el del paso que toca (primero ataque, luego defensa); el otro rol queda como opción discreta.
