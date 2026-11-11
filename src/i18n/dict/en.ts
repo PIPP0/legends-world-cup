@@ -875,5 +875,7 @@ const D: string[] = [
   "attacking midfielder",
   "winger",
   "striker",
+  "Time to build your eleven!",
+  "or pick the spot yourself",
 ]
 export default D

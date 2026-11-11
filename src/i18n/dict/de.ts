@@ -875,5 +875,7 @@ const D: string[] = [
   "offensiver Mittelfeldspieler",
   "Außenstürmer",
   "Mittelstürmer",
+  "Zeit, deine Elf zusammenzustellen!",
+  "oder wähle die Position selbst",
 ]
 export default D

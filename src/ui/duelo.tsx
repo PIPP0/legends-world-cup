@@ -217,11 +217,12 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
   const once = picks.slice(0, 11) as string[]
   const sup = picks.slice(11) as string[]
   const nombreSlot = (i: number) => (i < 11 ? posNombre(huecos[i].pos) : tr('Suplente'))
-  const sacar = () => {
-    if (slot === null) return
-    setBarajando(true); setVista(null)
-    setTimeout(() => { setSacadas((m) => ({ ...m, [slot]: ofertas(seed, formacion, slot, elegidos).map((p) => p.id) })); setBarajando(false) }, 650)
+  const sacar = (i: number | null = slot) => {
+    if (i === null) return
+    setSlot(i); setBarajando(true); setVista(null)
+    setTimeout(() => { setSacadas((m) => ({ ...m, [i]: m[i] ?? ofertas(seed, formacion, i, elegidos).map((p) => p.id) })); setBarajando(false) }, 650)
   }
+  const siguienteVacio = picks.findIndex((x) => !x)
   const elegir = (id: string) => {
     if (slot === null) return
     setPicks((x) => { const y = [...x]; y[slot] = id; return y })
@@ -261,11 +262,17 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
         </div>
         <div>
           {slot === null ? (
-            <div className="d-vacio"><span aria-hidden>👆</span><p>{tr('Toca un puesto vacío de la cancha para sacar jugadores.')}</p></div>
+            <div className="d-vacio d-ini">
+              <span className="d-dado" aria-hidden>🎲</span>
+              <h3>{tr('¡Hora de armar tu once!')}</h3>
+              <button className="btn pri d-gran" onClick={() => sacar(siguienteVacio)}>🎲 {tr('Sacar jugadores')} · {siguienteVacio < 11 ? nombreSlot(siguienteVacio) : tr('Suplente')}</button>
+              <p className="d-o"><span>{tr('o elige tú el puesto')}</span></p>
+              <p className="small muted">← {tr('Toca un puesto vacío de la cancha para sacar jugadores.')}</p>
+            </div>
           ) : barajando ? (
             <div className="d-vacio d-baraja"><span aria-hidden>🎲</span><p>{tr('Sacando jugadores…')}</p></div>
           ) : !ofrecidos ? (
-            <div className="d-vacio"><p><b>{slot < 11 ? nombreSlot(slot) : tr('Suplente')}</b></p><button className="btn pri d-gran" onClick={sacar}>🎲 {tr('Sacar jugadores')}</button><p className="small muted">{tr('Te tocarán tres leyendas al azar para este puesto.')}</p></div>
+            <div className="d-vacio"><p><b>{slot < 11 ? nombreSlot(slot) : tr('Suplente')}</b></p><button className="btn pri d-gran" onClick={() => sacar()}>🎲 {tr('Sacar jugadores')}</button><p className="small muted">{tr('Te tocarán tres leyendas al azar para este puesto.')}</p></div>
           ) : (
             <>
               <p className="d-toco">{tr('Te tocaron estos tres. ¡Elige a uno!')}</p>

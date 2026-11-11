@@ -875,4 +875,6 @@ export const KEYS: string[] = [
   "POSN·MCO",
   "POSN·EXT",
   "POSN·DC",
+  "¡Hora de armar tu once!",
+  "o elige tú el puesto",
 ]

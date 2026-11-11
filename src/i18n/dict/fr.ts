@@ -875,5 +875,7 @@ const D: string[] = [
   "milieu offensif",
   "ailier",
   "avant-centre",
+  "C’est l’heure de composer ton onze !",
+  "ou choisis toi-même le poste",
 ]
 export default D

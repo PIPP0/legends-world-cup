@@ -137,4 +137,6 @@ export const EXTRA: Array<[string, string]> = [
   ['POSN·MCO', 'attacking midfielder'],
   ['POSN·EXT', 'winger'],
   ['POSN·DC', 'striker'],
+  ['¡Hora de armar tu once!', 'Time to build your eleven!'],
+  ['o elige tú el puesto', 'or pick the spot yourself'],
 ]

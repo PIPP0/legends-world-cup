@@ -875,5 +875,7 @@ const D: string[] = [
   "trequartista",
   "ala",
   "centravanti",
+  "È ora di costruire la tua formazione!",
+  "oppure scegli tu il ruolo",
 ]
 export default D

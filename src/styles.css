@@ -517,3 +517,9 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-sobre .d-fila{animation:dVuelta .55s cubic-bezier(.2,.9,.3,1.2) both}.d-sobre .d-fila:nth-child(2){animation-delay:.18s}.d-sobre .d-fila:nth-child(3){animation-delay:.36s}
 @keyframes dVuelta{from{opacity:0;transform:perspective(600px) rotateX(-70deg) translateY(-10px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.d-sobre .d-fila,.d-baraja>span{animation:none}}
+
+.d-ini{position:relative;padding:34px 22px;border:1px solid rgba(0,229,255,.45);background:radial-gradient(420px 220px at 50% 0%,rgba(0,229,255,.2),transparent 70%),radial-gradient(360px 200px at 50% 100%,rgba(255,46,136,.18),transparent 70%),var(--s1);box-shadow:0 0 40px rgba(0,229,255,.12)}
+.d-ini h3{margin:0;font:800 clamp(28px,3.6vw,40px)/1 'Barlow Condensed';text-transform:uppercase;font-style:italic}
+.d-dado{font-size:58px;filter:drop-shadow(0 0 18px rgba(0,229,255,.6));animation:dBota 2.6s ease-in-out infinite}@keyframes dBota{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-10px) rotate(10deg)}}
+.d-o{display:flex;align-items:center;gap:10px;width:100%;color:#8a96b8;font-size:12px;letter-spacing:1px;text-transform:uppercase}.d-o::before,.d-o::after{content:'';flex:1;height:1px;background:var(--line)}
+@media(prefers-reduced-motion:reduce){.d-dado{animation:none}}

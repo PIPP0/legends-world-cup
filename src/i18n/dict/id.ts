@@ -875,5 +875,7 @@ const D: string[] = [
   "gelandang serang",
   "sayap",
   "penyerang tengah",
+  "Saatnya menyusun sebelasanmu!",
+  "atau pilih posisinya sendiri",
 ]
 export default D
