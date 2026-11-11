@@ -882,5 +882,7 @@ const D: string[] = [
   "Bald: Rangliste und Duelle gegen andere Menschen",
   "Besiege die Maschine von Bronze bis Legende und mach dich bereit für die Rangliste.",
   "deine Traum-Elf, Duelle über 5 Runden und bald eine Rangliste",
+  "Mach dich bereit zu kämpfen und zu gewinnen",
+  "mit deinem Traum-Team.",
 ]
 export default D

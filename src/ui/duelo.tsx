@@ -131,7 +131,7 @@ function Presentacion({ armar }: { armar: () => void }) {
       <section className="d-portada">
         <div className="d-portada-txt">
           <p className="kicker">⚔ {tr('Nuevo')}</p>
-          <h1>{tr('Arma tu once ideal.')}<br /><span>{tr('Prepárate para el ranking.')}</span></h1>
+          <h1>{tr('Prepárate para competir y ganar')}<br /><span>{tr('con tu equipo ideal.')}</span></h1>
           <p className="d-bajada">{tr('Elige a las mayores leyendas de la historia, entrena en duelos de 5 rondas contra la máquina y prepárate para competir contra otras personas.')}</p>
           <ul className="d-chips-top"><li>⏱ {tr('4 minutos por duelo')}</li><li>🎲 {tr('Cada draft es distinto')}</li><li>🔒 {tr('Tu equipo es para siempre')}</li><li className="d-pronto">🏆 {tr('Pronto: ranking y duelos contra otras personas')}</li></ul>
           <div className="cta"><button className="btn pri d-gran" onClick={armar}>{tr('Armar mi equipo')} →</button></div>

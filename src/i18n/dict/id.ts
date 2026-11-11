@@ -882,5 +882,7 @@ const D: string[] = [
   "Segera hadir: peringkat dan duel melawan orang lain",
   "Kalahkan mesin dari Perunggu hingga Legenda dan bersiaplah untuk peringkat.",
   "sebelas idealmu, duel 5 ronde, dan segera peringkat",
+  "Bersiaplah untuk bersaing dan menang",
+  "dengan tim idealmu.",
 ]
 export default D

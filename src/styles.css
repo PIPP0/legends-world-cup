@@ -490,7 +490,7 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-portada{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:center;padding:34px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:radial-gradient(900px 420px at 85% 10%,rgba(0,229,255,.22),transparent 60%),radial-gradient(700px 400px at 0% 100%,rgba(255,46,136,.22),transparent 60%),var(--s1)}
 .d-portada::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 26px);pointer-events:none}
 .d-portada-txt{position:relative;display:grid;gap:14px;justify-items:start}
-.d-portada h1{margin:0;font:800 clamp(40px,6.4vw,76px)/.95 'Barlow Condensed';text-transform:uppercase;font-style:italic}.d-portada h1 span{color:var(--cy);text-shadow:0 0 30px rgba(0,229,255,.45)}
+.d-portada h1{margin:0;font:800 clamp(38px,5.4vw,66px)/.98 'Barlow Condensed';text-transform:uppercase;font-style:italic}.d-portada h1 span{color:var(--cy);text-shadow:0 0 30px rgba(0,229,255,.45)}
 .d-bajada{margin:0;max-width:46ch;font-size:clamp(16px,1.7vw,19px);line-height:1.45;color:#cfd8f5}
 .d-chips-top{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}.d-chips-top li{padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);font-size:13px;font-weight:600}
 .d-gran{font-size:20px;padding:16px 34px;animation:dLate 2.4s ease-in-out infinite}.d-gran:hover{animation:none;transform:translateY(-2px) scale(1.02)}

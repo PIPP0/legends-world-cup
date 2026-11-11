@@ -882,4 +882,6 @@ export const KEYS: string[] = [
   "Pronto: ranking y duelos contra otras personas",
   "Vence a la máquina de Bronce a Leyenda y prepárate para el ranking.",
   "tu once ideal, duelos de 5 rondas y pronto ranking",
+  "Prepárate para competir y ganar",
+  "con tu equipo ideal.",
 ]

@@ -144,4 +144,6 @@ export const EXTRA: Array<[string, string]> = [
   ['Pronto: ranking y duelos contra otras personas', 'Coming soon: ranking and duels against other people'],
   ['Vence a la máquina de Bronce a Leyenda y prepárate para el ranking.', 'Beat the machine from Bronze to Legend and get ready for the ranking.'],
   ['tu once ideal, duelos de 5 rondas y pronto ranking', 'your ideal eleven, 5-round duels and a ranking soon'],
+  ['Prepárate para competir y ganar', 'Get ready to compete and win'],
+  ['con tu equipo ideal.', 'with your ideal team.'],
 ]

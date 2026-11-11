@@ -882,5 +882,7 @@ const D: string[] = [
   "Bientôt : classement et duels contre d’autres personnes",
   "Bats la machine du Bronze à la Légende et prépare-toi pour le classement.",
   "ton onze idéal, des duels de 5 manches et bientôt un classement",
+  "Prépare-toi à rivaliser et à gagner",
+  "avec ton équipe idéale.",
 ]
 export default D
