@@ -39,13 +39,15 @@ export const RONDAS = 5
 const barajar = <T,>(xs: T[], rng: Rng): T[] => { const a = [...xs]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] } return a }
 
 // Tres leyendas para el puesto n (0..10 = titulares en el orden de la formación; 11..13 = suplentes, de cualquier posición). Sin repetir a nadie ya elegido.
+// Tope de los suplentes: una estrella en la banca superaría a los titulares, así que ahí no salen leyendas (ni la oferta «de lujo»).
+export const TOPE_SUPLENTE = 87
 export function ofertas(seed: string, formacion: string, paso: number, elegidos: string[]): Player[] {
   const rng = makeRng(`${seed}:${paso}`)
   const hueco = FORMACIONES[formacion][paso]
   const usados = new Set(elegidos)
-  const pool = PLAYERS.filter((p) => !usados.has(p.id) && (hueco ? COMPATIBLES[hueco.pos].includes(p.pos) : p.line !== 'GK'))
+  const pool = PLAYERS.filter((p) => !usados.has(p.id) && (hueco ? COMPATIBLES[hueco.pos].includes(p.pos) : p.line !== 'GK' && p.ovr <= TOPE_SUPLENTE))
   // una oferta «de lujo» (más valoración) y dos al azar: siempre hay algo tentador y algo que decidir
-  const mejores = pool.filter((p) => p.ovr >= 88)
+  const mejores = hueco ? pool.filter((p) => p.ovr >= 88) : []
   const ordenada = barajar(pool, rng)
   const out: Player[] = []
   if (mejores.length && rng() < 0.55) out.push(mejores[Math.floor(rng() * mejores.length)])

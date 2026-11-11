@@ -192,7 +192,7 @@ describe('probabilidades de la portada', () => {
   })
 })
 
-import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
+import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, TOPE_SUPLENTE, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
 describe('duelo «Mi Once Ideal»', () => {
   it('las ofertas del draft son 3, distintas, compatibles con el puesto y repetibles con la misma semilla', () => {
     const a = ofertas('s1', '4-3-3', 0, []), b = ofertas('s1', '4-3-3', 0, [])
@@ -200,6 +200,7 @@ describe('duelo «Mi Once Ideal»', () => {
     expect(new Set(a.map((p) => p.id)).size).toBe(3)
     expect(a.every((p) => p.pos === 'PO')).toBe(true)
     expect(ofertas('s1', '4-3-3', 12, [a[0].id]).every((p) => p.line !== 'GK' && p.id !== a[0].id)).toBe(true)
+    for (let n = 0; n < 60; n++) for (const paso of [11, 12, 13]) expect(ofertas(`t${n}`, '4-3-3', paso, []).every((p) => p.ovr <= TOPE_SUPLENTE)).toBe(true)
   })
   it('un equipo de la máquina tiene 11 titulares y 3 suplentes sin repetir', () => {
     const e = equipoMaquina('oro', 'x')
