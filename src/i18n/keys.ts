@@ -945,4 +945,12 @@ export const KEYS: string[] = [
   "El defensor corta la jugada",
   "Velocidad: normal",
   "Velocidad: rápida",
+  "Ataque {a} contra defensa {d}: {p} % de superarlo.",
+  "Lo superó.",
+  "Esta vez no lo logró: el defensor corta la jugada.",
+  "Remate {r} contra arquero {q}: {p} % de gol.",
+  "Es gol.",
+  "El arquero ataja: el remate no fue suficiente.",
+  "El clima reduce la probabilidad de gol.",
+  "El clima aumenta la probabilidad de gol.",
 ]

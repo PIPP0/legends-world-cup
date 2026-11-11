@@ -945,5 +945,13 @@ const D: string[] = [
   "Bek menghentikan serangan",
   "Kecepatan: normal",
   "Kecepatan: cepat",
+  "Serangan {a} melawan pertahanan {d}: peluang {p} % untuk melewatinya.",
+  "Berhasil melewatinya.",
+  "Kali ini gagal: bek menghentikan serangan.",
+  "Tembakan {r} melawan kiper {q}: peluang gol {p} %.",
+  "Gol.",
+  "Kiper menyelamatkan: tembakannya tidak cukup.",
+  "Cuaca menurunkan peluang gol.",
+  "Cuaca menaikkan peluang gol.",
 ]
 export default D

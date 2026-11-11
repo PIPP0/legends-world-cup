@@ -131,7 +131,8 @@ export function equipoMaquina(nivel: Nivel, seed: string): Equipo {
 
 // ---------- una ronda ----------
 export interface Cambio { atacante: string; defensor: string } // ids elegidos por un equipo
-export interface Jugada { atacante: string; defensor: string; arquero: string; resultado: 'gol' | 'atajada' | 'corte'; pPase: number; pGol: number }
+// Los campos opcionales (por qué salió así) se guardan para explicarlo en pantalla; las partidas guardadas antes de existir no los tienen.
+export interface Jugada { atacante: string; defensor: string; arquero: string; resultado: 'gol' | 'atajada' | 'corte'; pPase: number; pGol: number; pA?: number; pD?: number; rem?: number; arq?: number; pTiro?: number; clima?: number }
 export interface ResultadoRonda { mia: Jugada; rival: Jugada; golesMios: number; golesRival: number }
 
 const sig = (x: number) => 1 / (1 + Math.exp(-x))
@@ -140,9 +141,10 @@ function jugada(att: Player, def: Player, gk: Player, bonusAtt: number, bonusDef
   const pPase = sig((A - D) / 11) // gana el duelo contra el defensor
   const pGolSiPasa = Math.min(0.9, sig((poderRemate(att) + bonusAtt - poderArquero(gk)) / 10) * 0.95 * weatherFactor(ctx).goals)
   const pGol = pPase * pGolSiPasa
+  const detalle = { pA: A, pD: D, rem: poderRemate(att) + bonusAtt, arq: poderArquero(gk), pTiro: pGolSiPasa, clima: weatherFactor(ctx).goals }
   const pasa = rng() < pPase
-  if (!pasa) return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: 'corte', pPase, pGol }
-  return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: rng() < pGolSiPasa ? 'gol' : 'atajada', pPase, pGol }
+  if (!pasa) return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: 'corte', pPase, pGol, ...detalle }
+  return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: rng() < pGolSiPasa ? 'gol' : 'atajada', pPase, pGol, ...detalle }
 }
 
 export function jugarRonda(seed: string, ronda: number, yo: Equipo, rival: Equipo, miEleccion: Cambio, suEleccion: Cambio, ctx: MatchCtx | undefined): ResultadoRonda {

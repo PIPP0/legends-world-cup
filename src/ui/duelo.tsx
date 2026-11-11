@@ -577,6 +577,14 @@ function EscenaJugada({ j, mio, titulo, beat }: { j: ResultadoRonda['mia']; mio:
         {pasa && <><span className={`d-esc-x l2 ${v(2)}`} aria-hidden>→</span>
           <div className={`d-esc-j g ${beat >= 3 ? (j.resultado === 'gol' ? 'vencido' : 'gana') : ''} ${v(2)}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤 {Math.round(poderArquero(gk))}</small><em className={v(3)}>{j.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
       </div>
+      {j.pA !== undefined && j.pD !== undefined && (
+        <div className="d-esc-why">
+          <p className={v(2)}>{tr('Ataque {a} contra defensa {d}: {p} % de superarlo.', { a: Math.round(j.pA), d: Math.round(j.pD), p: Math.round(j.pPase * 100) })} <b>{pasa ? tr('Lo superó.') : tr('Esta vez no lo logró: el defensor corta la jugada.')}</b></p>
+          {pasa && j.rem !== undefined && j.arq !== undefined && j.pTiro !== undefined && (
+            <p className={v(3)}>{tr('Remate {r} contra arquero {q}: {p} % de gol.', { r: Math.round(j.rem), q: Math.round(j.arq), p: Math.round(j.pTiro * 100) })} <b>{j.resultado === 'gol' ? tr('Es gol.') : tr('El arquero ataja: el remate no fue suficiente.')}</b>{j.clima !== undefined && j.clima < 0.97 && <> {tr('El clima reduce la probabilidad de gol.')}</>}{j.clima !== undefined && j.clima > 1.03 && <> {tr('El clima aumenta la probabilidad de gol.')}</>}</p>
+          )}
+        </div>
+      )}
       <div className={`d-esc-res ${v(3)}`}>{resTxt(j.resultado)}</div>
       <small className={`d-esc-p ${v(3)}`}>{tr('Probabilidad de gol: {p} %', { p: Math.round(j.pGol * 100) })}</small>
     </div>

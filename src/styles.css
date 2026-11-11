@@ -679,3 +679,6 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-esc-cap{margin:0;min-height:20px;font-size:13px;color:#9fb0d8;text-align:center}
 @keyframes dAparece{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.d-escena.beats .rev{animation:none!important}}
+
+.d-esc-why{display:grid;gap:6px;width:100%;max-width:340px;text-align:left}.d-esc-why p{margin:0;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04);font-size:12.5px;line-height:1.4;color:#c9d3f2}.d-esc-why b{color:#fff}
+.d-escena.beats .d-esc-why p.rev{animation:dAparece .5s ease both}.d-esc-why p.oculto{display:none}

@@ -945,5 +945,13 @@ const D: string[] = [
   "Der Verteidiger unterbindet die Aktion",
   "Tempo: normal",
   "Tempo: schnell",
+  "Angriff {a} gegen Abwehr {d}: {p} % Chance, ihn zu überwinden.",
+  "Er hat ihn überwunden.",
+  "Diesmal nicht: Der Verteidiger unterbindet die Aktion.",
+  "Schuss {r} gegen Torwart {q}: {p} % Torchance.",
+  "Es ist ein Tor.",
+  "Der Torwart hält: Der Schuss reichte nicht.",
+  "Das Wetter senkt die Torchance.",
+  "Das Wetter erhöht die Torchance.",
 ]
 export default D

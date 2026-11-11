@@ -945,5 +945,13 @@ const D: string[] = [
   "Le défenseur coupe l’action",
   "Vitesse : normale",
   "Vitesse : rapide",
+  "Attaque {a} contre défense {d} : {p} % de chances de le dépasser.",
+  "Il l’a dépassé.",
+  "Pas cette fois : le défenseur coupe l’action.",
+  "Tir {r} contre gardien {q} : {p} % de but.",
+  "C’est un but.",
+  "Le gardien arrête : le tir n’a pas suffi.",
+  "La météo réduit la probabilité de but.",
+  "La météo augmente la probabilité de but.",
 ]
 export default D

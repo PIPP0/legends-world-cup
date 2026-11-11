@@ -207,4 +207,12 @@ export const EXTRA: Array<[string, string]> = [
   ['El defensor corta la jugada', 'The defender stops the play'],
   ['Velocidad: normal', 'Speed: normal'],
   ['Velocidad: rápida', 'Speed: fast'],
+  ['Ataque {a} contra defensa {d}: {p} % de superarlo.', 'Attack {a} against defence {d}: {p}% chance to beat him.'],
+  ['Lo superó.', 'He beat him.'],
+  ['Esta vez no lo logró: el defensor corta la jugada.', 'Not this time: the defender stops the play.'],
+  ['Remate {r} contra arquero {q}: {p} % de gol.', 'Shot {r} against keeper {q}: {p}% chance of a goal.'],
+  ['Es gol.', "It's a goal."],
+  ['El arquero ataja: el remate no fue suficiente.', "The keeper saves it: the shot wasn't enough."],
+  ['El clima reduce la probabilidad de gol.', 'The weather lowers the chance of a goal.'],
+  ['El clima aumenta la probabilidad de gol.', 'The weather raises the chance of a goal.'],
 ]
