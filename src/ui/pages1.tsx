@@ -105,6 +105,7 @@ export function Home() {
           {TEAMS.map((t) => <TeamCard key={t.id} t={t} mini star={[...t.xi].sort((a, b) => b.ovr - a.ovr)[0]} />)}
         </div>
       </Section>
+      <DonateBox />
     </>
   )
 }
