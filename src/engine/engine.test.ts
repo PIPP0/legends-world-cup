@@ -200,6 +200,17 @@ describe('duelo «Mi Once Ideal»', () => {
     expect(new Set(a.map((p) => p.id)).size).toBe(3)
     expect(a.every((p) => p.pos === 'PO')).toBe(true)
     expect(ofertas('s1', '4-3-3', 12, [a[0].id]).every((p) => p.line !== 'GK' && p.id !== a[0].id)).toBe(true)
+    // nunca dos jugadores del mismo país en un sorteo; con favorita, exactamente en 3 sorteos distintos sale alguien de su país
+    for (let n = 0; n < 40; n++) {
+      let con = 0
+      for (let paso = 0; paso < 14; paso++) {
+        const o = ofertas(`f${n}`, '4-3-3', paso, [], 'bra')
+        expect(new Set(o.map((p) => p.teamId)).size).toBe(o.length)
+        if (o.some((p) => p.teamId === 'bra')) con++
+      }
+      expect(con).toBeLessThanOrEqual(3)
+      expect(con).toBeGreaterThanOrEqual(2)
+    }
     for (let n = 0; n < 60; n++) for (const paso of [11, 12, 13]) expect(ofertas(`t${n}`, '4-3-3', paso, []).every((p) => p.ovr <= TOPE_SUPLENTE)).toBe(true)
   })
   it('un equipo de la máquina tiene 11 titulares y 3 suplentes sin repetir', () => {

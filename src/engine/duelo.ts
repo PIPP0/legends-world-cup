@@ -41,17 +41,29 @@ const barajar = <T,>(xs: T[], rng: Rng): T[] => { const a = [...xs]; for (let i 
 // Tres leyendas para el puesto n (0..10 = titulares en el orden de la formación; 11..13 = suplentes, de cualquier posición). Sin repetir a nadie ya elegido.
 // Tope de los suplentes: una estrella en la banca superaría a los titulares, así que ahí no salen leyendas (ni la oferta «de lujo»).
 export const TOPE_SUPLENTE = 87
-export function ofertas(seed: string, formacion: string, paso: number, elegidos: string[]): Player[] {
+export const MAX_FAVORITA = 3
+// En cuántos sorteos (de 14) aparece un jugador de la selección favorita: 3 puestos distintos, fijos para esa semilla.
+export const pasosFavorita = (seed: string): number[] => barajar(Array.from({ length: N_PICKS }, (_, i) => i), makeRng(`${seed}:fav`)).slice(0, MAX_FAVORITA)
+
+// Reglas: nunca dos jugadores del mismo país entre las 3 opciones; si la persona tiene selección favorita, en 3 sorteos distintos
+// una de las opciones es de su país (si hay alguien disponible para ese puesto). Sin favorita, todo sigue igual.
+export function ofertas(seed: string, formacion: string, paso: number, elegidos: string[], favorita = ''): Player[] {
   const rng = makeRng(`${seed}:${paso}`)
   const hueco = FORMACIONES[formacion][paso]
   const usados = new Set(elegidos)
   const pool = PLAYERS.filter((p) => !usados.has(p.id) && (hueco ? COMPATIBLES[hueco.pos].includes(p.pos) : p.line !== 'GK' && p.ovr <= TOPE_SUPLENTE))
-  // una oferta «de lujo» (más valoración) y dos al azar: siempre hay algo tentador y algo que decidir
-  const mejores = hueco ? pool.filter((p) => p.ovr >= 88) : []
-  const ordenada = barajar(pool, rng)
   const out: Player[] = []
+  const ajeno = (p: Player) => !favorita || p.teamId !== favorita // fuera de sus 3 sorteos, la favorita no aparece por azar: el máximo es 3
+  const hayPais = (p: Player) => out.some((o) => o.teamId === p.teamId)
+  const ordenada = barajar(pool, rng)
+  // 1) una de la selección favorita, solo en los 3 sorteos que le tocan
+  if (favorita && pasosFavorita(seed).includes(paso)) { const f = ordenada.find((p) => p.teamId === favorita); if (f) out.push(f) }
+  // 2) una «de lujo» (88+), siempre hay algo tentador y algo que decidir
+  const mejores = hueco ? pool.filter((p) => p.ovr >= 88 && !hayPais(p) && ajeno(p)) : []
   if (mejores.length && rng() < 0.55) out.push(mejores[Math.floor(rng() * mejores.length)])
-  for (const p of ordenada) { if (out.length >= 3) break; if (!out.includes(p)) out.push(p) }
+  // 3) el resto al azar, de países distintos
+  for (const p of ordenada) { if (out.length >= 3) break; if (!out.includes(p) && !hayPais(p) && ajeno(p)) out.push(p) }
+  for (const p of ordenada) { if (out.length >= 3) break; if (!out.includes(p) && ajeno(p)) out.push(p) } // por si faltaran países distintos
   return barajar(out, rng).slice(0, 3)
 }
 

@@ -9,6 +9,7 @@ import {
 } from '../engine/duelo'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
 import { CtxLine } from './world'
+import { favoritaActual } from '../engine/favorita'
 import type { MatchCtx, Player } from '../types'
 
 const CLAVE_EQUIPO = 'lwc:duelo:equipo'
@@ -280,7 +281,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
   const sacar = (i: number | null = slot) => {
     if (i === null) return
     setSlot(i); setBarajando(true); setVista(null)
-    setTimeout(() => { setSacadas((m) => ({ ...m, [i]: m[i] ?? ofertas(seed, formacion, i, elegidos).map((p) => p.id) })); setBarajando(false) }, 650)
+    setTimeout(() => { setSacadas((m) => ({ ...m, [i]: m[i] ?? ofertas(seed, formacion, i, elegidos, favoritaActual() ?? '').map((p) => p.id) })); setBarajando(false) }, 650)
   }
   const siguienteVacio = picks.findIndex((x) => !x)
   const elegir = (id: string) => {
