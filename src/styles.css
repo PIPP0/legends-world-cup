@@ -630,3 +630,19 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-slot-x{border:0;background:rgba(255,255,255,.08);color:#c9d3f2;width:30px;height:30px;border-radius:50%;cursor:pointer}.d-slot-x:hover{background:rgba(255,255,255,.18)}
 @media(prefers-reduced-motion:no-preference){.d-slot.activa{animation:dslot 1.6s ease-in-out infinite}@keyframes dslot{50%{box-shadow:0 0 0 6px rgba(0,229,255,.06)}}}
 .d-slot-av{flex:none;width:44px;height:44px}.d-slot-av>*{width:44px;height:44px;flex:none}
+
+/* duelo en escritorio: todo el partido cabe en una pantalla (canchas según el alto disponible, centro compacto) */
+@media(min-width:1101px){
+  .d-marcador{padding:8px 18px}.d-marcador .d-eq b{font-size:40px}
+  .d-lado{padding:8px;gap:6px}.d-lado h4{font-size:17px}
+  .d-lado .duelo-pitch{display:block;margin:0 auto;width:min(100%,max(300px,calc((100vh - 430px)/1.18)))}
+  .d-lado .d-banca2{padding:6px}.d-lado .d-sup-c{width:46px;height:46px}.d-lado .d-sup-c .avatar{width:42px!important;height:42px!important}
+  .d-medio{gap:8px}.d-medio .d-vs span{width:50px;height:50px;font-size:24px}
+  .d-medio .d-controles{padding:10px}.d-medio .d-instr{gap:8px;margin-bottom:6px}.d-medio .d-rhead b{font-size:17px}
+  .d-medio .d-slots{gap:6px}.d-medio .d-slot{padding:8px 10px;gap:2px 10px}.d-medio .d-slot-ic{width:30px;height:30px;font-size:15px}.d-medio .d-slot-tx b{font-size:14px}
+  .d-medio .d-slot-vacio{padding:5px 8px;font-size:12px}.d-medio .d-slot-av,.d-medio .d-slot-av>*{width:34px!important;height:34px!important}
+  .d-medio .btn{min-height:38px;padding:8px 18px;font-size:14px}
+  /* detalle del jugador: lo esencial para decidir (valoración y poder de ataque/defensa), sin las barras */
+  .d-medio .d-det{padding:10px;gap:8px;margin:6px 0 0}.d-medio .d-det>div:nth-of-type(3){display:none}
+  .d-medio .d-det .cta{margin:0}
+}
