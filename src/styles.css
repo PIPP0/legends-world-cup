@@ -484,3 +484,27 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-fin{display:grid;gap:14px;justify-items:center;text-align:center;padding:24px}.d-fin h1{margin:0;font:800 clamp(40px,8vw,72px)/1 'Barlow Condensed';text-transform:uppercase;font-style:italic}.d-fin h1.gano{color:#ffd54a;text-shadow:0 0 30px rgba(255,213,74,.4)}.d-fin h1.perdio{color:#8a96b8}
 .d-hist{list-style:none;margin:0;padding:0;display:grid;gap:6px;width:min(520px,100%);text-align:left}.d-hist li{display:flex;gap:10px;align-items:baseline;padding:8px 12px;border-radius:8px;background:var(--s1)}.d-hist span{font:800 18px 'Barlow Condensed';color:var(--cy)}.d-hist small{opacity:.65;margin-left:auto}
 @media(max-width:860px){.d-cols,.d-pasos,.d-formaciones{grid-template-columns:1fr}.d-marcador{padding:12px}.d-eq b{font-size:40px}.d-niveles{grid-template-columns:repeat(2,1fr)}}
+
+/* presentación del duelo */
+.d-land{gap:26px}
+.d-portada{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:center;padding:34px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:radial-gradient(900px 420px at 85% 10%,rgba(0,229,255,.22),transparent 60%),radial-gradient(700px 400px at 0% 100%,rgba(255,46,136,.22),transparent 60%),var(--s1)}
+.d-portada::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 26px);pointer-events:none}
+.d-portada-txt{position:relative;display:grid;gap:14px;justify-items:start}
+.d-portada h1{margin:0;font:800 clamp(40px,6.4vw,76px)/.95 'Barlow Condensed';text-transform:uppercase;font-style:italic}.d-portada h1 span{color:var(--cy);text-shadow:0 0 30px rgba(0,229,255,.45)}
+.d-bajada{margin:0;max-width:46ch;font-size:clamp(16px,1.7vw,19px);line-height:1.45;color:#cfd8f5}
+.d-chips-top{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}.d-chips-top li{padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);font-size:13px;font-weight:600}
+.d-gran{font-size:20px;padding:16px 34px;animation:dLate 2.4s ease-in-out infinite}.d-gran:hover{animation:none;transform:translateY(-2px) scale(1.02)}
+@keyframes dLate{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,.55)}50%{box-shadow:0 0 0 14px rgba(0,229,255,0)}}
+.d-portada-img{position:relative;margin:0;display:grid;gap:8px;justify-items:center}.d-portada-img .duelo-pitch{transform:rotate(-2deg);box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 0 1px rgba(0,229,255,.3);animation:dFlota 6s ease-in-out infinite}
+@keyframes dFlota{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(-2deg) translateY(-8px)}}
+.d-brillo{position:absolute;inset:10% 5%;background:radial-gradient(closest-side,rgba(0,229,255,.35),transparent);filter:blur(30px);pointer-events:none}
+.d-pasos2{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.d-pasos2 li{position:relative;display:grid;gap:8px;align-content:start;padding:22px 20px 20px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));transition:.2s}.d-pasos2 li:hover{border-color:var(--cy);transform:translateY(-3px)}
+.d-pasos2 b{font:800 26px 'Barlow Condensed';text-transform:uppercase}.d-pasos2 p{margin:0;color:#b9c4e6;font-size:14px;line-height:1.45}
+.d-paso-n{position:absolute;top:14px;right:16px;font:800 44px/1 'Barlow Condensed';color:rgba(255,255,255,.1)}
+.d-trio{display:flex}.d-trio .avatar{margin-right:-10px;border:2px solid var(--s1)}
+.d-iconos{display:flex;gap:10px}.d-iconos i{font-style:normal;font-size:26px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.08)}
+.d-medallas{display:flex;gap:8px}.d-medallas i{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 -4px 8px rgba(0,0,0,.3)}.n-bronce{background:#e0955a}.n-plata{background:#cfd8dc}.n-oro{background:#ffd54a}.n-leyenda{background:var(--cy)}
+.d-sinergia{margin:0;text-align:center;color:#b9c4e6;font-size:15px}.d-cierre{justify-content:center}
+@media(max-width:860px){.d-portada{grid-template-columns:1fr;padding:22px}.d-pasos2{grid-template-columns:1fr}.d-portada-img{order:-1}.d-portada-img .duelo-pitch{max-width:230px}}
+@media(prefers-reduced-motion:reduce){.d-gran,.d-portada-img .duelo-pitch{animation:none}}

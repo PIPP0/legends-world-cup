@@ -4,7 +4,7 @@ import { tr } from '../i18n'
 import { attrLabel, posLabel } from '../i18n/nombres'
 import {
   FORMACIONES, NIVELES, NOMBRES_FORMACION, N_PICKS, N_SUPLENTES, RONDAS, equipoMaquina, eligeMaquina, jugarRonda, ofertas, paisesConSinergia, penales, poderAtaque, poderDefensa,
-  sedeDuelo, sinergias, valorEquipo, type Cambio, type Equipo, type Nivel, type ResultadoRonda,
+  sedeDuelo, sinergias, valorEquipo, onceDeEjemplo, type Cambio, type Equipo, type Nivel, type ResultadoRonda,
 } from '../engine/duelo'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
 import { CtxLine } from './world'
@@ -121,20 +121,43 @@ export function Duelo() {
   return <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} armar={() => setVista('draft')} jugar={() => setVista('duelo')} />
 }
 
+// ---------- presentación (sin equipo todavía): lo que hay que ver para querer jugar ----------
+const EJEMPLO = onceDeEjemplo('4-3-3')
+const TRIO = ['por-cristiano-ronaldo', 'arg-lionel-messi', 'bra-pele'].filter((id) => PLAYER_BY_ID[id])
+function Presentacion({ armar }: { armar: () => void }) {
+  return (
+    <div className="duelo d-land">
+      <section className="d-portada">
+        <div className="d-portada-txt">
+          <p className="kicker">⚔ {tr('Nuevo')}</p>
+          <h1>{tr('Arma tu once ideal.')}<br /><span>{tr('Desafía a la máquina.')}</span></h1>
+          <p className="d-bajada">{tr('Elige a las mayores leyendas de la historia, juega duelos de 5 rondas en 4 minutos y sube del Bronce a la Leyenda.')}</p>
+          <ul className="d-chips-top"><li>⏱ {tr('4 minutos por duelo')}</li><li>🎲 {tr('Cada draft es distinto')}</li><li>🔒 {tr('Tu equipo es para siempre')}</li></ul>
+          <div className="cta"><button className="btn pri d-gran" onClick={armar}>{tr('Armar mi equipo')} →</button></div>
+          <p className="small muted">{tr('Toma 2 minutos y es gratis.')}</p>
+        </div>
+        <figure className="d-portada-img">
+          <div className="d-brillo" aria-hidden />
+          <Cancha formacion="4-3-3" ids={EJEMPLO} etiqueta={tr('Un once de ejemplo: el tuyo será distinto.')} />
+          <figcaption className="small muted">{tr('Un once de ejemplo: el tuyo será distinto.')}</figcaption>
+        </figure>
+      </section>
+      <ol className="d-pasos2">
+        <li><span className="d-paso-n">1</span><div className="d-trio">{TRIO.map((id) => <Avatar key={id} p={PLAYER_BY_ID[id]} size={44} />)}</div><b>{tr('Elige 1 de 3')}</b><p>{tr('En cada puesto te ofrecemos tres leyendas. Tú decides quién entra a tu once.')}</p></li>
+        <li><span className="d-paso-n">2</span><div className="d-iconos"><i>⚔</i><i>🛡</i></div><b>{tr('Ataca y defiende')}</b><p>{tr('Cada ronda eliges un atacante y un defensor. Los que uses se cansan: rota a tu plantel.')}</p></li>
+        <li><span className="d-paso-n">3</span><div className="d-medallas"><i className="n-bronce" /><i className="n-plata" /><i className="n-oro" /><i className="n-leyenda" /></div><b>{tr('Sube de nivel')}</b><p>{tr('Vence a la máquina de Bronce a Leyenda y arma tu racha de victorias.')}</p></li>
+      </ol>
+      <p className="d-sinergia">🤝 {tr('Tres jugadores de un mismo país dan una sinergia: más fuerza para todo tu equipo.')}</p>
+      <div className="cta d-cierre"><button className="btn pri d-gran" onClick={armar}>{tr('Armar mi equipo')} →</button></div>
+    </div>
+  )
+}
+
 // ---------- inicio: tu equipo + elegir rival ----------
 function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equipo | null; stats: Stats; nivel: Nivel; setNivel: (n: Nivel) => void; armar: () => void; jugar: () => void }) {
   const [sel, setSel] = useState<string | null>(null)
   useCerrarFuera(sel !== null, () => setSel(null))
-  if (!equipo) {
-    return (
-      <div className="duelo">
-        <header className="d-hero"><p className="kicker">{tr('Nuevo')}</p><h1>{tr('Mi Once Ideal: Duelo')}</h1>
-          <p className="muted">{tr('Arma tu once con 3 suplentes eligiendo una leyenda entre tres por puesto. Tu equipo no se cambia: cada decisión cuenta. Luego juega duelos de 5 rondas de unos 4 minutos.')}</p>
-          <div className="cta"><button className="btn pri" onClick={armar}>{tr('Armar mi equipo')}</button></div></header>
-        <ol className="d-pasos"><li><b>1</b>{tr('Elige una formación y a tus 11 titulares y 3 suplentes.')}</li><li><b>2</b>{tr('Cada ronda eliges un atacante y un defensor; los que uses quedan cansados.')}</li><li><b>3</b>{tr('Gana quien meta más goles. ¡Sube de nivel y arma una racha!')}</li></ol>
-      </div>
-    )
-  }
+  if (!equipo) return <Presentacion armar={armar} />
   const ids = [...equipo.once, ...equipo.suplentes]
   const bonus = sinergias(ids)
   const pais = paisesConSinergia(ids)

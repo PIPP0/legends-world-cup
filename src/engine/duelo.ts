@@ -22,6 +22,15 @@ const COMPATIBLES: Record<Pos, Pos[]> = {
   PO: ['PO'], LD: ['LD'], LI: ['LI'], DFC: ['DFC'], MCD: ['MCD', 'MC'], MC: ['MC', 'MCD', 'MCO'], MI: ['MI', 'EXT'], MD: ['MD', 'EXT'], MCO: ['MCO', 'MC'], EXT: ['EXT', 'DC'], DC: ['DC', 'EXT'],
 }
 
+// Un once de ejemplo (los mejores de cada puesto) para mostrar cómo se ve el juego en la pantalla de inicio.
+export function onceDeEjemplo(formacion = '4-3-3'): string[] {
+  const usados = new Set<string>()
+  return FORMACIONES[formacion].map((h) => {
+    const c = PLAYERS.filter((p) => !usados.has(p.id) && COMPATIBLES[h.pos].includes(p.pos)).sort((a, b) => b.ovr - a.ovr)[0]
+    usados.add(c.id); return c.id
+  })
+}
+
 export interface Equipo { formacion: string; once: string[]; suplentes: string[]; creado: number }
 export const N_SUPLENTES = 3
 export const N_PICKS = 11 + N_SUPLENTES
