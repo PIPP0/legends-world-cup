@@ -111,4 +111,5 @@ export const ICONS: Record<string, ReactNode> = {
   stats: I('M5 20V10M12 20V4M19 20v-7'),
   players: I('M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 4-6 8-6s8 2 8 6'),
   sim: I('M5 3l14 9-14 9z'),
+  duel: I('M14.5 4l5.5 5.5-9 9L5.5 13zM4 20l4-4M9 15l2 2'),
 }

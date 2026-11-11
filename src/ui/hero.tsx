@@ -40,6 +40,7 @@ export function Hero() {
           <a className="btn pri" href="#/cuadro">{tr('Ver el torneo')}</a>
           {fun.simulaMundial && <a className="btn hot" href="#/mundial">{tr('Simula tu mundial')}</a>}
           <a className="btn" href="#/simulador">{tr('Simular un partido')}</a>
+          <a className="btn" href="#/mvp">{tr('Elige MVP')}</a>
         </div>
       </div>
       <div className="hb-v">

@@ -191,3 +191,34 @@ describe('probabilidades de la portada', () => {
     for (const [k, v] of Object.entries(vivo)) expect((oddsPortadaJson as Record<string, number>)[k] ?? 0).toBeCloseTo(v, 3)
   })
 })
+
+import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
+describe('duelo «Mi Once Ideal»', () => {
+  it('las ofertas del draft son 3, distintas, compatibles con el puesto y repetibles con la misma semilla', () => {
+    const a = ofertas('s1', '4-3-3', 0, []), b = ofertas('s1', '4-3-3', 0, [])
+    expect(a.map((p) => p.id)).toEqual(b.map((p) => p.id))
+    expect(new Set(a.map((p) => p.id)).size).toBe(3)
+    expect(a.every((p) => p.pos === 'PO')).toBe(true)
+    expect(ofertas('s1', '4-3-3', 12, [a[0].id]).every((p) => p.line !== 'GK' && p.id !== a[0].id)).toBe(true)
+  })
+  it('un equipo de la máquina tiene 11 titulares y 3 suplentes sin repetir', () => {
+    const e = equipoMaquina('oro', 'x')
+    expect(e.once.length).toBe(11); expect(e.suplentes.length).toBe(3)
+    expect(new Set([...e.once, ...e.suplentes]).size).toBe(N_PICKS)
+    expect(Object.keys(FORMACIONES)).toContain(e.formacion)
+  })
+  it('el duelo es justo: a igual nivel ~50 %, y el nivel alto vence al bajo', () => {
+    const duelo = (seed: string, a: Equipo, b: Equipo, na: Nivel, nb: Nivel) => {
+      const ctx = sedeDuelo(seed); let ga = 0, gb = 0, cA: string[] = [], cB: string[] = []
+      for (let r = 1; r <= RONDAS; r++) {
+        const ea = eligeMaquina(seed + 'a', r, a, cA, na), eb = eligeMaquina(seed + 'b', r, b, cB, nb)
+        const res = jugarRonda(seed, r, a, b, ea, eb, ctx); ga += res.golesMios; gb += res.golesRival; cA = [ea.atacante, ea.defensor]; cB = [eb.atacante, eb.defensor]
+      }
+      if (ga === gb) { const p = penales(seed, a, b); return p.yo > p.rival }
+      return ga > gb
+    }
+    const gana = (na: Nivel, nb: Nivel) => { let w = 0; const N = 400; for (let i = 0; i < N; i++) { const s = 't' + i; if (duelo(s, equipoMaquina(na, s), equipoMaquina(nb, s + 'x'), na, nb)) w++ } return w / N }
+    expect(Math.abs(gana('oro', 'oro') - 0.5)).toBeLessThan(0.1)
+    expect(gana('leyenda', 'bronce')).toBeGreaterThan(0.72)
+  })
+})

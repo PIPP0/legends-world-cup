@@ -1,3 +1,4 @@
+import { Duelo } from './duelo'
 import { MvpPage } from './mvp'
 import { DonateIcon, DonateLink } from './paybox'
 import { useEffect, useState } from 'react'
@@ -25,7 +26,7 @@ const MAIN: [string, string, string][] = [
 ]
 const MORE: [string, string, string][] = [
   ['/historia', t('Historia'), 'story'], ['/grupos', t('Grupos'), 'groups'], ['/estadisticas', t('Estadísticas'), 'stats'],
-  ['/jugadores', t('Jugadores'), 'players'], ['/simulador', t('Simulador'), 'sim'],
+  ['/jugadores', t('Jugadores'), 'players'], ['/simulador', t('Simulador'), 'sim'], ['/duelo', t('Duelo'), 'duel'],
 ]
 
 function useRoute() {
@@ -57,6 +58,7 @@ function Page({ route }: { route: string }) {
     case 'cuadro': return <Bracket />
     case 'simulador': return <Simulator />
     case 'mvp': return <MvpPage />
+    case 'duelo': return fun.duelo ? <Duelo /> : <Note>{t('El duelo no está disponible por ahora.')} <a href="#/">{t('Volver al inicio')}</a></Note>
     case 'creditos': return <Credits />
     case 'mundial': return fun.simulaMundial ? <Mundial /> : <Note>{t('«Simula tu mundial» no está disponible por ahora.')} <a href="#/">{t('Volver al inicio')}</a></Note>
     case 'vivo': return <Vivo />

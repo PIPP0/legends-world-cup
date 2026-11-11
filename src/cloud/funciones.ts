@@ -9,16 +9,18 @@ export interface Funciones {
   cobro: boolean // cobro por paquetes (además de la configuración de pago)
   animacionCuadro: boolean // animación del cuadro de eliminatorias
   cuentas: boolean // botón «Entrar con Google»
+  duelo: boolean // juego «Mi Once Ideal: Duelo» (tarjeta de la portada y página #/duelo)
   nivelHistoria: number // hasta qué fase de la historia oficial está liberada para todos (0 octavos … 4 todo)
   mantenimiento: string // aviso arriba de la web (vacío = sin aviso)
 }
-export const FUNCIONES_BASE: Funciones = { simulaMundial: true, encuestas: true, donaciones: true, cobro: false, animacionCuadro: true, cuentas: true, nivelHistoria: 4, mantenimiento: '' }
+export const FUNCIONES_BASE: Funciones = { simulaMundial: true, encuestas: true, donaciones: true, cobro: false, animacionCuadro: true, cuentas: true, duelo: true, nivelHistoria: 4, mantenimiento: '' }
 export const FUNCIONES_INFO: { clave: keyof Funciones; titulo: string; detalle: string }[] = [
   { clave: 'simulaMundial', titulo: 'Simula tu mundial', detalle: 'El asistente de sede, fecha, clima y leyendas en su prime, con sorteo y partidos en vivo.' },
   { clave: 'encuestas', titulo: 'Encuestas', detalle: 'El icono de opinión del header y la encuesta que se abre al terminar un mundial.' },
   { clave: 'donaciones', titulo: 'Apoyo voluntario', detalle: 'El botón «Apoyar (opcional)» al final de cada mundial (necesita un enlace configurado).' },
   { clave: 'cobro', titulo: 'Cobro por paquetes', detalle: 'Activa el pago. Solo funciona si además está conectado PayPal; no lo enciendas sin resolver lo tributario.' },
   { clave: 'animacionCuadro', titulo: 'Animación del cuadro', detalle: 'El cuadro de eliminatorias que avanza solo hasta el campeón.' },
+  { clave: 'duelo', titulo: 'Mi Once Ideal: Duelo', detalle: 'El juego de armar tu equipo y jugar duelos de 5 rondas (tarjeta de la portada y página Duelo). Apágalo si algo falla.' },
   { clave: 'cuentas', titulo: 'Entrar con Google', detalle: 'El botón del header para registrarse y guardar el avance en la nube.' },
 ]
 

@@ -1,3 +1,4 @@
+import { useFunciones } from '../cloud/funciones'
 import { rich } from '../i18n/rich'
 import { useMemo } from 'react'
 import { GROUPS, PLAYERS, STORY_MATCHES, TEAMS, teamsOfGroup } from '../data'
@@ -21,6 +22,7 @@ const groupGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
 
 export function Home() {
   const level = useStoryLevel()
+  const fun = useFunciones()
   const ko = revealed(level)
   const totalGoals = groupGoals + ko.reduce((a, m) => a + (m.ga ?? 0) + (m.gb ?? 0), 0)
   const top = useMemo(() => storyPlayerStats(level).filter((s) => s.goals >= 3).sort((a, b) => b.goals - a.goals), [level])
@@ -39,7 +41,7 @@ export function Home() {
         <div><b><Count to={32} /></b><span>{tr('selecciones')}</span></div>
         <div><b><Count to={STORY_MATCHES.length + ko.length} /></b><span>{tr('partidos jugados')}</span></div>
         <div><b><Count to={totalGoals} /></b><span>{tr('goles')}</span></div>
-        <a className="live mvp-cta" href="#/mvp"><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></a>
+        {fun.duelo ? <a className="live mvp-cta" href="#/duelo"><b><i />{tr('CREA TU EQUIPO')}</b><span>{tr('y desafía a la máquina: 5 rondas, tu once ideal')}</span></a> : <a className="live mvp-cta" href="#/mvp"><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></a>}
       </div>
 
       <ChampionPicker />
