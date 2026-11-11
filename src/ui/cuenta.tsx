@@ -1,5 +1,5 @@
 import { tr } from '../i18n'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NUBE_ACTIVA, anotarUsuario, asegurarVisitante, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { sincronizarNivel } from '../engine/storyLevel'
 import { useFunciones } from '../cloud/funciones'
@@ -16,6 +16,15 @@ export function CuentaHeader() {
   const [abierto, setAbierto] = useState(false)
   const [eligiendo, setEligiendo] = useState(false)
   const favorita = useFavorita()
+  const raiz = useRef<HTMLDivElement>(null)
+  // el menú se cierra al tocar fuera de él o con Esc
+  useEffect(() => {
+    if (!abierto) return
+    const fuera = (e: MouseEvent | TouchEvent) => { if (!raiz.current?.contains(e.target as Node)) setAbierto(false) }
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setAbierto(false) }
+    document.addEventListener('mousedown', fuera); document.addEventListener('touchstart', fuera); document.addEventListener('keydown', esc)
+    return () => { document.removeEventListener('mousedown', fuera); document.removeEventListener('touchstart', fuera); document.removeEventListener('keydown', esc) }
+  }, [abierto])
   const [error, setError] = useState('')
   useEffect(() => {
     if (!NUBE_ACTIVA) return
@@ -41,7 +50,7 @@ export function CuentaHeader() {
   const conCuenta = c && !c.anonimo
   const entrar = async () => { setError(''); try { await entrarConGoogle(); setAbierto(false) } catch (e) { const code = (e as { code?: string }).code ?? ''; console.warn('login Google:', code, e); if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setError(`${tr('No se pudo entrar. Inténtalo de nuevo.')} (${code.replace('auth/', '') || 'error'})`) } }
   return (
-    <div className="cuenta">
+    <div className="cuenta" ref={raiz}>
       {conCuenta ? (
         <button type="button" className="icon-btn av" aria-label={tr('Mi cuenta')} title={c!.nombre || c!.email} onClick={() => setAbierto(!abierto)}>
           {c!.foto ? <img src={c!.foto} alt="" referrerPolicy="no-referrer" /> : <b>{(c!.nombre || c!.email || '?')[0].toUpperCase()}</b>}

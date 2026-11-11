@@ -7,10 +7,10 @@ export function SelectorIdioma() {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!abierto) return
-    const fuera = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setAbierto(false) }
+    const fuera = (e: MouseEvent | TouchEvent) => { if (!ref.current?.contains(e.target as Node)) setAbierto(false) }
     const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setAbierto(false) }
-    document.addEventListener('mousedown', fuera); document.addEventListener('keydown', esc)
-    return () => { document.removeEventListener('mousedown', fuera); document.removeEventListener('keydown', esc) }
+    document.addEventListener('mousedown', fuera); document.addEventListener('touchstart', fuera); document.addEventListener('keydown', esc)
+    return () => { document.removeEventListener('mousedown', fuera); document.removeEventListener('touchstart', fuera); document.removeEventListener('keydown', esc) }
   }, [abierto])
   return (
     <div className="lang-wrap" ref={ref}>
