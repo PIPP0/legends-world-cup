@@ -139,7 +139,7 @@ function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: Progre
 }
 
 function TablaMundiales({ xs }: { xs: MundialReg[] }) {
-  const { visibles, barra } = usePaginado(xs)
+  const { visibles, barra } = usePaginado(useMemo(() => [...xs].sort((a, b) => b.creada - a.creada), [xs]))
   if (!xs.length) return <p className="muted">Todavía no hay mundiales simulados.</p>
   return (
     <>
@@ -151,7 +151,7 @@ function TablaMundiales({ xs }: { xs: MundialReg[] }) {
 }
 
 function ListaEncuestas({ xs, campo }: { xs: EncuestaReg[]; campo: 'estrellas' | 'estrellas2' }) {
-  const con = useMemo(() => xs.filter((e) => (e[campo] ?? 0) > 0), [xs, campo])
+  const con = useMemo(() => xs.filter((e) => (e[campo] ?? 0) > 0).sort((a, b) => b.creada - a.creada), [xs, campo])
   const { visibles, barra } = usePaginado(con)
   if (!con.length) return <p className="muted">Todavía no hay respuestas.</p>
   const dist = [5, 4, 3, 2, 1].map((n) => [`${n} ★`, con.filter((e) => e[campo] === n).length] as [string, number])
@@ -260,7 +260,7 @@ function FuncionesAdmin({ email }: { email: string }) {
 
 function Encuestas({ es, alBorrar }: { es: EncuestaReg[]; alBorrar: (id: string) => void }) {
   const [tipo, setTipo] = useState<'todas' | 'general' | 'mundial'>('todas')
-  const lista = useMemo(() => es.filter((e) => tipo === 'todas' || e.tipo === tipo), [es, tipo])
+  const lista = useMemo(() => es.filter((e) => tipo === 'todas' || e.tipo === tipo).sort((a, b) => b.creada - a.creada), [es, tipo])
   const { visibles, barra } = usePaginado(lista)
   return (
     <>
@@ -281,7 +281,7 @@ function Encuestas({ es, alBorrar }: { es: EncuestaReg[]; alBorrar: (id: string)
 }
 
 function Mundiales({ ms }: { ms: MundialReg[] }) {
-  const { visibles, barra } = usePaginado(ms)
+  const { visibles, barra } = usePaginado(useMemo(() => [...ms].sort((a, b) => b.creada - a.creada), [ms]))
   return (
     <>
     <table className="gt"><thead><tr><th className="l">Cuándo</th><th className="l">Sede</th><th>Mes</th><th>Clima</th><th>Primes</th><th className="l">Campeón</th></tr></thead>
