@@ -611,3 +611,9 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .btn.pri.d-jugar-gran{display:flex;width:100%;margin-top:14px;padding:18px 20px;min-height:60px;font-size:24px;letter-spacing:3px;border-radius:0;background:var(--cy);color:#02131a;box-shadow:none;clip-path:polygon(18px 0,100% 0,calc(100% - 18px) 100%,0 100%)}
 .btn.pri.d-jugar-gran::after{display:none}
 .btn.pri.d-jugar-gran:hover{background:#5df0ff;box-shadow:none;transform:translateY(-1px)}.btn.pri.d-jugar-gran:active{transform:none}
+
+/* Tu equipo: el panel derecho ocupa el alto de la cancha y reparte el espacio */
+.d-cols-eq{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"c p" "b .";align-items:stretch;row-gap:0}
+.d-c-cancha{grid-area:c}.d-c-banca{grid-area:b}.d-c-panel{grid-area:p;display:flex;flex-direction:column;justify-content:space-between;gap:22px}
+.d-c-panel .d-resumen-eq{margin-bottom:0;flex:1;align-content:center;gap:16px}.d-rival .sub{margin-top:0}.d-accion .d-jugar-gran{margin-top:0}.d-accion p{margin:12px 0 0}
+@media(max-width:860px){.d-cols-eq{grid-template-columns:1fr;grid-template-areas:"c" "b" "p";row-gap:18px}}

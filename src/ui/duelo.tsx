@@ -214,13 +214,15 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
       {compartir && <CompartirEquipo equipo={equipo} red={typeof compartir === 'string' ? compartir : undefined} onClose={() => setCompartir(false)} />}
       <header className="d-hero"><p className="kicker">{tr('Mi Once Ideal: Duelo')}</p><h1>{tr('Tu equipo')}</h1>
         <p className="muted">{equipo.formacion} · {tr('Valoración media')} {valorEquipo(equipo)}{pais.length > 0 && <> · {tr('Sinergias')}: {pais.map((s) => `${TEAM_BY_ID[s.teamId].name} +${s.bonus}`).join(', ')}</>}</p></header>
-      <div className="d-cols">
-        <div>
+      <div className="d-cols d-cols-eq">
+        <div className="d-c-cancha">
           <Cancha formacion={equipo.formacion} ids={equipo.once} onNodo={(i) => setSel(equipo.once[i])} etiqueta={tr('Tu equipo')} />
+        </div>
+        <div className="d-c-banca">
           <h4 className="sub">{tr('Suplentes')}</h4>
           <Banca slots={equipo.suplentes} activo={sel} onJugador={(id) => setSel(id)} />
         </div>
-        <div>
+        <div className="d-c-panel">
           {p ? <Detalle p={p} bonus={bonus[p.id] ?? 0}><button className="btn ghost" onClick={() => setSel(null)}>{tr('Cerrar')}</button></Detalle> : (
             <div className="d-resumen-eq">
               <div className="d-kpis">
@@ -235,12 +237,12 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
               </div>
             </div>
           )}
-          <h3 className="sub">{tr('Elige a tu rival')}</h3>
+          <div className="d-rival"><h3 className="sub">{tr('Elige a tu rival')}</h3>
           <div className="d-niveles" role="radiogroup" aria-label={tr('Nivel del rival')}>
             {NIVELES.map((n) => <button key={n.id} type="button" role="radio" aria-checked={nivel === n.id} className={`d-nivel n-${n.id}${nivel === n.id ? ' on' : ''}`} onClick={() => setNivel(n.id)}><i aria-hidden className="d-estr">{'★'.repeat(NIVELES.findIndex((x) => x.id === n.id) + 1)}</i><span>{tr(n.nombre)}</span></button>)}
-          </div>
-          <button type="button" className="btn pri d-jugar-gran" onClick={jugar}>{tr('Jugar duelo')} →</button>
-          <p className="small muted">{tr('Partidos: {j} · Ganados: {g} · Perdidos: {p} · Racha: {r} (mejor {m})', { j: stats.jugados, g: stats.ganados, p: stats.perdidos, r: stats.racha, m: stats.mejorRacha })}</p>
+          </div></div>
+          <div className="d-accion"><button type="button" className="btn pri d-jugar-gran" onClick={jugar}>{tr('Jugar duelo')} →</button>
+          <p className="small muted">{tr('Partidos: {j} · Ganados: {g} · Perdidos: {p} · Racha: {r} (mejor {m})', { j: stats.jugados, g: stats.ganados, p: stats.perdidos, r: stats.racha, m: stats.mejorRacha })}</p></div>
         </div>
       </div>
     </div>
