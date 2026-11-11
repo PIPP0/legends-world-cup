@@ -920,4 +920,12 @@ export const KEYS: string[] = [
   "No guardamos tu dirección IP, no vendemos datos ni usamos publicidad de terceros.",
   "Si entras con Google, guardamos además tu nombre, correo y foto, solo para identificar tu voto o tu equipo.",
   "Tus equipos y preferencias se guardan en tu navegador (almacenamiento local). Puedes borrarlos limpiando los datos del sitio.",
+  "Ronda {r} de {t}",
+  "Elige quién ataca y quién defiende",
+  "Tu defensa",
+  "Intenta marcar un gol",
+  "Frena el ataque rival",
+  "Toca a un jugador de tu cancha",
+  "Quitar",
+  "Poder {n}",
 ]

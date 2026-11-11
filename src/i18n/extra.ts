@@ -182,4 +182,12 @@ export const EXTRA: Array<[string, string]> = [
   ['No guardamos tu dirección IP, no vendemos datos ni usamos publicidad de terceros.', "We don't store your IP address, sell data or use third-party advertising."],
   ['Si entras con Google, guardamos además tu nombre, correo y foto, solo para identificar tu voto o tu equipo.', 'If you sign in with Google, we also keep your name, email and photo, only to identify your vote or your team.'],
   ['Tus equipos y preferencias se guardan en tu navegador (almacenamiento local). Puedes borrarlos limpiando los datos del sitio.', "Your teams and preferences are saved in your browser (local storage). You can erase them by clearing the site's data."],
+  ['Ronda {r} de {t}', 'Round {r} of {t}'],
+  ['Elige quién ataca y quién defiende', 'Choose who attacks and who defends'],
+  ['Tu defensa', 'Your defence'],
+  ['Intenta marcar un gol', 'Tries to score a goal'],
+  ['Frena el ataque rival', 'Stops the rival attack'],
+  ['Toca a un jugador de tu cancha', 'Tap a player on your pitch'],
+  ['Quitar', 'Remove'],
+  ['Poder {n}', 'Power {n}'],
 ]

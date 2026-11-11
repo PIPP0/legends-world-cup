@@ -920,5 +920,13 @@ const D: string[] = [
   "We don't store your IP address, sell data or use third-party advertising.",
   "If you sign in with Google, we also keep your name, email and photo, only to identify your vote or your team.",
   "Your teams and preferences are saved in your browser (local storage). You can erase them by clearing the site's data.",
+  "Round {r} of {t}",
+  "Choose who attacks and who defends",
+  "Your defence",
+  "Tries to score a goal",
+  "Stops the rival attack",
+  "Tap a player on your pitch",
+  "Remove",
+  "Power {n}",
 ]
 export default D

@@ -920,5 +920,13 @@ const D: string[] = [
   "Kami tidak menyimpan alamat IP-mu, tidak menjual data, dan tidak memakai iklan pihak ketiga.",
   "Jika masuk dengan Google, kami juga menyimpan nama, email, dan fotomu, hanya untuk mengenali suara atau timmu.",
   "Tim dan preferensimu disimpan di browsermu (penyimpanan lokal). Kamu bisa menghapusnya dengan membersihkan data situs.",
+  "Ronde {r} dari {t}",
+  "Pilih siapa yang menyerang dan siapa yang bertahan",
+  "Pertahananmu",
+  "Berusaha mencetak gol",
+  "Menahan serangan lawan",
+  "Ketuk pemain di lapanganmu",
+  "Hapus",
+  "Kekuatan {n}",
 ]
 export default D

@@ -617,3 +617,16 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-c-cancha{grid-area:c}.d-c-banca{grid-area:b}.d-c-panel{grid-area:p;display:flex;flex-direction:column;justify-content:space-between;gap:22px}
 .d-c-panel .d-resumen-eq{margin-bottom:0;flex:1;align-content:center;gap:16px}.d-rival .sub{margin-top:0}.d-accion .d-jugar-gran{margin-top:0}.d-accion p{margin:12px 0 0}
 @media(max-width:860px){.d-cols-eq{grid-template-columns:1fr;grid-template-areas:"c" "b" "p";row-gap:18px}}
+
+/* ronda: dos ranuras claras (ataque / defensa) */
+.d-rhead{display:grid;gap:2px}.d-rhead b{font:800 20px 'Barlow Condensed';letter-spacing:1px;text-transform:uppercase}
+.d-slots{display:grid;gap:10px}.d-slot{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:12px;border-radius:12px;border:1px dashed rgba(255,255,255,.2);background:rgba(255,255,255,.02);transition:.2s}
+.d-slot-ic{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.06);font-size:18px}.d-slot.atk .d-slot-ic{background:rgba(255,46,136,.15)}.d-slot.def .d-slot-ic{background:rgba(0,229,255,.14)}
+.d-slot-tx{display:grid}.d-slot-tx b{font:800 16px 'Barlow Condensed';letter-spacing:1px;text-transform:uppercase}
+.d-slot-vacio,.d-slot-j{grid-column:1/-1}.d-slot-vacio{font-size:13px;color:#9fb0d8;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.04)}
+.d-slot.activa{border:1px solid var(--cy);background:rgba(0,229,255,.07);box-shadow:0 0 0 3px rgba(0,229,255,.12)}.d-slot.activa .d-slot-vacio{color:var(--cy)}
+.d-slot.lleno{border-style:solid;border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04)}
+.d-slot-j{display:flex;align-items:center;gap:10px}.d-slot-j>span{display:grid;flex:1;min-width:0}.d-slot-j b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.d-slot-j i{font-style:normal;font-size:12px;color:var(--cy)}
+.d-slot-x{border:0;background:rgba(255,255,255,.08);color:#c9d3f2;width:30px;height:30px;border-radius:50%;cursor:pointer}.d-slot-x:hover{background:rgba(255,255,255,.18)}
+@media(prefers-reduced-motion:no-preference){.d-slot.activa{animation:dslot 1.6s ease-in-out infinite}@keyframes dslot{50%{box-shadow:0 0 0 6px rgba(0,229,255,.06)}}}
+.d-slot-av{flex:none;width:44px;height:44px}.d-slot-av>*{width:44px;height:44px;flex:none}

@@ -350,6 +350,24 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
 
 // ---------- el duelo de 5 rondas ----------
 interface Ronda { n: number; res: ResultadoRonda; mio: Cambio; su: Cambio }
+// Una de las dos ranuras de la ronda: qué hace ese puesto, quién lo ocupa y cuánto aporta.
+function RanuraRonda({ tipo, id, activa, onQuitar }: { tipo: 'atk' | 'def'; id: string | null; activa: boolean; onQuitar: () => void }) {
+  const p = id ? PLAYER_BY_ID[id] : null
+  const atk = tipo === 'atk'
+  return (
+    <div className={`d-slot ${tipo}${p ? ' lleno' : ''}${activa ? ' activa' : ''}`}>
+      <span className="d-slot-ic" aria-hidden>{atk ? '⚔' : '🛡'}</span>
+      <div className="d-slot-tx">
+        <b>{atk ? tr('Tu ataque') : tr('Tu defensa')}</b>
+        <span className="muted small">{atk ? tr('Intenta marcar un gol') : tr('Frena el ataque rival')}</span>
+      </div>
+      {p ? (
+        <div className="d-slot-j"><div className="d-slot-av"><Avatar p={p} size={44} /></div><span><b>{p.name}</b><i>{tr('Poder {n}', { n: Math.round(atk ? poderAtaque(p) : poderDefensa(p)) })}</i></span><button type="button" className="d-slot-x" onClick={onQuitar} aria-label={tr('Quitar')} title={tr('Quitar')}>✕</button></div>
+      ) : <span className="d-slot-vacio">{activa ? '👆 ' : ''}{tr('Toca a un jugador de tu cancha')}</span>}
+    </div>
+  )
+}
+
 function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel: Nivel; alTerminar: (gane: boolean) => void; alSalir: () => void }) {
   const [seed] = useState(() => nuevaSemilla('duelo'))
   const rival = useMemo(() => equipoMaquina(nivel, seed), [nivel, seed])
@@ -440,10 +458,12 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
               <div className="d-controles">
                 {fase === 'elegir' ? (
                   <>
-                    <div className="d-instr"><b>{tr('Ronda {r}: elige tu ataque y tu defensa', { r: ronda })}</b>
-                      <div className="d-chips"><span className={`d-chip${atk ? ' ok' : ''}`}>⚔ {atk ? nombre(atk) : tr('Atacante')}</span><span className={`d-chip${def ? ' ok' : ''}`}>🛡 {def ? nombre(def) : tr('Defensor')}</span></div>
-                      <button className={`btn pri d-jugar${atk && def ? ' d-gran' : ''}`} disabled={!atk || !def} onClick={jugar}>{atk && def ? `▶ ${tr('Jugar ronda')}` : atk ? tr('Elige un defensor') : def ? tr('Elige un atacante') : tr('Elige atacante y defensor')}</button>
-                      <p className="d-guia">{atk && def ? tr('¡Listo! Pulsa «Jugar ronda».') : atk ? tr('Ahora elige a tu defensor.') : def ? tr('Ahora elige a tu atacante.') : tr('Toca a un jugador de tu cancha para elegir tu atacante y tu defensor.')}</p></div>
+                    <div className="d-instr"><div className="d-rhead"><b>{tr('Ronda {r} de {t}', { r: ronda, t: RONDAS })}</b><span className="muted small">{tr('Elige quién ataca y quién defiende')}</span></div>
+                      <div className="d-slots">
+                        <RanuraRonda tipo="atk" id={atk} activa={!atk} onQuitar={() => setAtk(null)} />
+                        <RanuraRonda tipo="def" id={def} activa={!!atk && !def} onQuitar={() => setDef(null)} />
+                      </div>
+                      <button className={`btn pri d-jugar${atk && def ? ' d-gran' : ''}`} disabled={!atk || !def} onClick={jugar}>{atk && def ? `▶ ${tr('Jugar ronda')}` : atk ? tr('Elige un defensor') : def ? tr('Elige un atacante') : tr('Elige atacante y defensor')}</button></div>
                     {p ? (
                       <Detalle p={p} bonus={bonus[p.id] ?? 0}>
                         <div className="cta">

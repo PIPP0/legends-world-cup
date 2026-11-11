@@ -920,5 +920,13 @@ const D: string[] = [
   "Nous ne stockons pas ton adresse IP, ne vendons pas de données et n’utilisons pas de publicité tierce.",
   "Si tu te connectes avec Google, nous gardons aussi ton nom, ton e-mail et ta photo, uniquement pour identifier ton vote ou ton équipe.",
   "Tes équipes et préférences sont enregistrées dans ton navigateur (stockage local). Tu peux les effacer en supprimant les données du site.",
+  "Manche {r} sur {t}",
+  "Choisis qui attaque et qui défend",
+  "Ta défense",
+  "Tente de marquer un but",
+  "Arrête l’attaque adverse",
+  "Touche un joueur de ton terrain",
+  "Retirer",
+  "Puissance {n}",
 ]
 export default D

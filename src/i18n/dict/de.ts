@@ -920,5 +920,13 @@ const D: string[] = [
   "Wir speichern deine IP-Adresse nicht, verkaufen keine Daten und nutzen keine Werbung von Dritten.",
   "Wenn du dich mit Google anmeldest, speichern wir zusätzlich Name, E-Mail und Foto, nur um deine Stimme oder dein Team zuzuordnen.",
   "Deine Teams und Einstellungen werden in deinem Browser gespeichert (lokaler Speicher). Du kannst sie löschen, indem du die Websitedaten entfernst.",
+  "Runde {r} von {t}",
+  "Wähle, wer angreift und wer verteidigt",
+  "Deine Abwehr",
+  "Versucht, ein Tor zu schießen",
+  "Stoppt den gegnerischen Angriff",
+  "Tippe auf einen Spieler auf deinem Feld",
+  "Entfernen",
+  "Stärke {n}",
 ]
 export default D
