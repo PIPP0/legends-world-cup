@@ -83,6 +83,32 @@ function Cancha({ formacion, ids, marcas, onNodo, onVacio, actual, etiqueta }: {
   )
 }
 
+// ---------- banca: los tres suplentes, uno al lado del otro ----------
+function Banca({ slots, onJugador, onVacio, estado, activo, actual }: { slots: (string | undefined)[]; onJugador?: (id: string) => void; onVacio?: (i: number) => void; estado?: (id: string) => 'cansado' | 'espera' | undefined; activo?: string | null; actual?: number | null }) {
+  return (
+    <div className="d-banca2" role="group" aria-label={tr('Suplentes')}>
+      {slots.map((id, n) => {
+        const p = id ? PLAYER_BY_ID[id] : undefined
+        if (!p) {
+          return (
+            <button key={n} type="button" className={`d-sup vacio${onVacio ? ' tocable' : ''}${actual === 11 + n ? ' on' : ''}`} disabled={!onVacio} onClick={() => onVacio?.(n)} aria-label={`${tr('Suplente')} ${n + 1}`}>
+              <span className="d-sup-c">+</span><small>{tr('Suplente')} {n + 1}</small>
+            </button>
+          )
+        }
+        const est = estado?.(p.id)
+        return (
+          <button key={n} type="button" className={`d-sup${activo === p.id ? ' on' : ''}${est ? ' off' : ''}`} onClick={() => onJugador?.(p.id)} aria-label={`${p.name}, ${p.ovr}`}>
+            <span className="d-sup-c"><Avatar p={p} size={64} /><i className="d-sup-ovr">{p.ovr}</i>{est === 'cansado' && <em aria-hidden>💤</em>}</span>
+            <small>{apellido(p.name)}</small>
+            {est === 'espera' && <small className="d-sup-nota">{tr('Entra en la ronda 3')}</small>}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 // ---------- detalle de un jugador (al tocarlo) ----------
 function Detalle({ p, bonus = 0, children }: { p: Player; bonus?: number; children?: React.ReactNode }) {
   const t = TEAM_BY_ID[p.teamId]
@@ -171,7 +197,7 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar }: { equipo: Equi
         <div>
           <Cancha formacion={equipo.formacion} ids={equipo.once} onNodo={(i) => setSel(equipo.once[i])} etiqueta={tr('Tu equipo')} />
           <h4 className="sub">{tr('Suplentes')}</h4>
-          <div className="d-lista">{equipo.suplentes.map((id) => <FilaJugador key={id} p={PLAYER_BY_ID[id]} estado="suplente" activo={sel === id} onClick={() => setSel(id)} />)}</div>
+          <Banca slots={equipo.suplentes} activo={sel} onJugador={(id) => setSel(id)} />
         </div>
         <div>
           {p ? <Detalle p={p} bonus={bonus[p.id] ?? 0}><button className="btn ghost" onClick={() => setSel(null)}>{tr('Cerrar')}</button></Detalle> : (
@@ -234,7 +260,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
       <div className="duelo">
         <header className="d-hero"><p className="kicker">{tr('Último paso')}</p><h1>{tr('Tu equipo está listo')}</h1><p className="muted">{formacion} · {tr('Valoración media')} {valorEquipo(e)}</p></header>
         <div className="d-cols">
-          <div><Cancha formacion={formacion} ids={once} onNodo={(i) => setVista(once[i])} etiqueta={tr('Tu equipo')} /><h4 className="sub">{tr('Suplentes')}</h4><div className="d-lista">{sup.map((id) => <FilaJugador key={id} p={PLAYER_BY_ID[id]} estado="suplente" onClick={() => setVista(id)} />)}</div></div>
+          <div><Cancha formacion={formacion} ids={once} onNodo={(i) => setVista(once[i])} etiqueta={tr('Tu equipo')} /><h4 className="sub">{tr('Suplentes')}</h4><Banca slots={sup} activo={vista} onJugador={(id) => setVista(id)} /></div>
           <div>
             {vista && <Detalle p={PLAYER_BY_ID[vista]} />}
             <p className="note warn">{tr('Este equipo no se podrá cambiar una vez que lo confirmes.')}</p>
@@ -256,9 +282,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
         <div>
           <Cancha formacion={formacion} ids={picks.slice(0, 11)} actual={slot !== null && slot < 11 ? slot : undefined} onNodo={(i) => setVista(picks[i] ?? null)} onVacio={(i) => { setSlot(i); setVista(null) }} etiqueta={tr('Tu equipo')} />
           <h4 className="sub">{tr('Suplentes')}</h4>
-          <div className="d-banca">{[11, 12, 13].map((i, n) => picks[i]
-            ? <FilaJugador key={i} p={PLAYER_BY_ID[picks[i]!]} estado="suplente" onClick={() => setVista(picks[i]!)} />
-            : <button key={i} type="button" className={`d-banca-v${slot === i ? ' on' : ''}`} onClick={() => { setSlot(i); setVista(null) }}>＋ {tr('Suplente')} {n + 1}</button>)}</div>
+          <Banca slots={[picks[11], picks[12], picks[13]]} activo={vista} actual={slot} onJugador={(id) => setVista(id)} onVacio={(n) => { setSlot(11 + n); setVista(null) }} />
         </div>
         <div>
           {slot === null ? (
@@ -358,7 +382,7 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
           <div>
             <Cancha formacion={equipo.formacion} ids={equipo.once} marcas={marcas} onNodo={(i) => setSel(equipo.once[i])} etiqueta={tr('Tu equipo')} />
             <h4 className="sub">{tr('Suplentes')} {ronda < 3 && <small className="muted">({tr('entran desde la ronda 3')})</small>}</h4>
-            <div className="d-lista">{equipo.suplentes.map((id) => <FilaJugador key={id} p={PLAYER_BY_ID[id]} estado={cMio.includes(id) ? 'cansado' : ronda < 3 ? 'espera' : 'suplente'} activo={sel === id} onClick={() => setSel(id)} />)}</div>
+            <Banca slots={equipo.suplentes} activo={sel} estado={(id) => (cMio.includes(id) ? 'cansado' : ronda < 3 ? 'espera' : undefined)} onJugador={(id) => setSel(id)} />
           </div>
           <div>
             {fase === 'elegir' ? (

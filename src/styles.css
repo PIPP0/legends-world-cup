@@ -525,3 +525,13 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-o{display:flex;align-items:center;gap:10px;width:100%;color:#8a96b8;font-size:12px;letter-spacing:1px;text-transform:uppercase}.d-o::before,.d-o::after{content:'';flex:1;height:1px;background:var(--line)}
 @media(prefers-reduced-motion:reduce){.d-dado{animation:none}}
 .d-chips-top li.d-pronto{border-color:rgba(255,213,74,.55);background:rgba(255,213,74,.1);color:#ffe9a0}
+
+/* banca: suplentes en fila */
+.d-banca2{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 22px;padding:16px 12px;margin:8px 0;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015))}
+.d-sup{display:grid;justify-items:center;gap:6px;min-width:84px;padding:0;border:0;background:none;color:var(--text);cursor:pointer;font:inherit}.d-sup:disabled{cursor:default}
+.d-sup-c{position:relative;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;border:2px solid var(--cy);background:rgba(0,229,255,.06);font:800 30px 'Barlow Condensed';color:var(--cy)}
+.d-sup-c .avatar{border:0}.d-sup-ovr{position:absolute;right:-6px;bottom:-4px;padding:1px 7px;border-radius:8px;background:#050a1c;border:1px solid var(--cy);font:800 14px 'Barlow Condensed';font-style:normal;color:var(--cy)}
+.d-sup-c em{position:absolute;left:-6px;top:-6px;font-style:normal;font-size:18px}
+.d-sup small{font:700 12px Inter;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.9}.d-sup-nota{font-size:10px!important;opacity:.6!important;white-space:normal!important;text-align:center}
+.d-sup.vacio .d-sup-c{border-style:dashed;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.04);color:rgba(255,255,255,.55)}.d-sup.vacio.tocable .d-sup-c{border-color:rgba(0,229,255,.7);color:var(--cy);animation:dPulso 1.6s ease-in-out infinite}
+.d-sup.tocable:hover .d-sup-c,.d-sup.on .d-sup-c{background:rgba(0,229,255,.22);box-shadow:0 0 18px rgba(0,229,255,.4)}.d-sup.off{opacity:.45}
