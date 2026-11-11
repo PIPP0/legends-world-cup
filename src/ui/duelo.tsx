@@ -561,6 +561,32 @@ function Partida({ equipo, nivel, inicial, alTerminar, alSalir }: { equipo: Equi
 const resTxt = (r: 'gol' | 'atajada' | 'corte') => (r === 'gol' ? tr('¡GOL!') : r === 'atajada' ? tr('¡Atajada!') : tr('¡Cortado!'))
 
 // Una jugada animada: atacante contra defensor y, si lo supera, contra el arquero.
+// Barra de probabilidad con un «dado» (0-100) que rueda hasta su número: se ve por qué salió así y cuánto faltó.
+function BarraProb({ clase, titulo, p, tirada, ok, nota }: { clase: string; titulo: string; p: number; tirada: number; ok: boolean; nota?: string }) {
+  const pct = Math.round(p * 100), n = Math.round(tirada * 100)
+  return (
+    <div className={`d-prob ${clase} ${ok ? 'ok' : 'no'}`}>
+      <div className="d-prob-h"><b>{titulo}</b><span>{pct} %</span></div>
+      <div className="d-prob-bar" style={{ ['--x' as string]: `${Math.min(97, Math.max(3, tirada * 100))}%` }}><i style={{ width: `${pct}%` }} /><span className="d-dado" aria-hidden>🎲</span></div>
+      <p>{tr('El dado de la jugada salió {n}: se necesita {p} o menos.', { n, p: pct })} <b>{ok ? tr('¡Alcanzó!') : tr('No alcanzó.')}</b></p>
+      {nota && <p className="d-prob-nota">{nota}</p>}
+    </div>
+  )
+}
+
+// Consejo corto según lo que pasó, para entender cómo se analizó la jugada y cómo mejorar.
+function consejo(j: ResultadoRonda['mia'], mio: boolean): string {
+  const A = Math.round(j.pA ?? 0), D = Math.round(j.pD ?? 0), R = Math.round(j.rem ?? 0), Q = Math.round(j.arq ?? 0)
+  if (mio) {
+    if (j.resultado === 'corte') return j.pPase < 0.5 ? tr('Su defensa ({d}) era mayor que tu ataque ({a}). Elige un atacante con más poder de ataque para subir tus opciones.', { a: A, d: D }) : tr('Tenías ventaja ({p} %) y esta vez la suerte no acompañó. Repetir buenas decisiones gana a la larga.', { p: Math.round(j.pPase * 100) })
+    if (j.resultado === 'atajada') return R < Q ? tr('El arquero rival ({q}) supera el remate de tu atacante ({r}). Los atacantes con más Disparo marcan más.', { q: Q, r: R }) : tr('El remate era favorable ({p} %) pero el arquero tuvo suerte. Sigue eligiendo bien.', { p: Math.round((j.pTiro ?? 0) * 100) })
+    return tr('¡Buena jugada! Tenías {p} % de probabilidad total y se dio.', { p: Math.round(j.pGol * 100) })
+  }
+  if (j.resultado === 'corte') return tr('Tu defensor ({d}) frenó a su atacante ({a}). Elegir defensores por poder de defensa funciona.', { a: A, d: D })
+  if (j.resultado === 'atajada') return tr('Tu arquero ({q}) detuvo el remate rival. ¡Un buen arquero salva partidos!', { q: Q })
+  return j.pPase >= 0.5 ? tr('Su atacante ({a}) superó a tu defensor ({d}). Elige para defender a quien tenga más Defensa, no más valoración.', { a: A, d: D }) : tr('Tu defensor ({d}) era igual o mejor que su atacante ({a}), pero la suerte favoreció al rival esta vez.', { a: A, d: D })
+}
+
 // La jugada se revela por tiempos: 1) atacante contra defensor, 2) quién supera a quién (y el arquero), 3) el resultado.
 function EscenaJugada({ j, mio, titulo, beat }: { j: ResultadoRonda['mia']; mio: boolean; titulo: string; beat: number }) {
   const at = PLAYER_BY_ID[j.atacante], df = PLAYER_BY_ID[j.defensor], gk = PLAYER_BY_ID[j.arquero]
@@ -577,16 +603,15 @@ function EscenaJugada({ j, mio, titulo, beat }: { j: ResultadoRonda['mia']; mio:
         {pasa && <><span className={`d-esc-x l2 ${v(2)}`} aria-hidden>→</span>
           <div className={`d-esc-j g ${beat >= 3 ? (j.resultado === 'gol' ? 'vencido' : 'gana') : ''} ${v(2)}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤 {Math.round(poderArquero(gk))}</small><em className={v(3)}>{j.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
       </div>
-      {j.pA !== undefined && j.pD !== undefined && (
-        <div className="d-esc-why">
-          <p className={v(2)}>{tr('Ataque {a} contra defensa {d}: {p} % de superarlo.', { a: Math.round(j.pA), d: Math.round(j.pD), p: Math.round(j.pPase * 100) })} <b>{pasa ? tr('Lo superó.') : tr('Esta vez no lo logró: el defensor corta la jugada.')}</b></p>
-          {pasa && j.rem !== undefined && j.arq !== undefined && j.pTiro !== undefined && (
-            <p className={v(3)}>{tr('Remate {r} contra arquero {q}: {p} % de gol.', { r: Math.round(j.rem), q: Math.round(j.arq), p: Math.round(j.pTiro * 100) })} <b>{j.resultado === 'gol' ? tr('Es gol.') : tr('El arquero ataja: el remate no fue suficiente.')}</b>{j.clima !== undefined && j.clima < 0.97 && <> {tr('El clima reduce la probabilidad de gol.')}</>}{j.clima !== undefined && j.clima > 1.03 && <> {tr('El clima aumenta la probabilidad de gol.')}</>}</p>
-          )}
-        </div>
+      {j.pA !== undefined && j.pD !== undefined && j.t1 !== undefined && (
+        <BarraProb clase={v(2)} titulo={tr('Duelo: ataque {a} contra defensa {d}', { a: Math.round(j.pA), d: Math.round(j.pD) })} p={j.pPase} tirada={j.t1} ok={pasa} />
+      )}
+      {pasa && j.rem !== undefined && j.arq !== undefined && j.pTiro !== undefined && j.t2 !== undefined && (
+        <BarraProb clase={v(3)} titulo={tr('Remate {r} contra arquero {q}', { r: Math.round(j.rem), q: Math.round(j.arq) })} p={j.pTiro} tirada={j.t2} ok={j.resultado === 'gol'} nota={j.clima !== undefined && j.clima < 0.97 ? tr('El clima reduce la probabilidad de gol.') : j.clima !== undefined && j.clima > 1.03 ? tr('El clima aumenta la probabilidad de gol.') : undefined} />
       )}
       <div className={`d-esc-res ${v(3)}`}>{resTxt(j.resultado)}</div>
-      <small className={`d-esc-p ${v(3)}`}>{tr('Probabilidad de gol: {p} %', { p: Math.round(j.pGol * 100) })}</small>
+      {pasa && j.pTiro !== undefined && <small className={`d-esc-p ${v(3)}`}>{tr('Probabilidad total de gol: {a} % × {b} % = {c} %', { a: Math.round(j.pPase * 100), b: Math.round(j.pTiro * 100), c: Math.round(j.pGol * 100) })}</small>}
+      {j.pA !== undefined && <p className={`d-esc-tip ${v(3)}`}><b>{tr('Cómo mejorar')}</b> {consejo(j, mio)}</p>}
     </div>
   )
 }

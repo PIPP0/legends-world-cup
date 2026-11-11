@@ -132,7 +132,7 @@ export function equipoMaquina(nivel: Nivel, seed: string): Equipo {
 // ---------- una ronda ----------
 export interface Cambio { atacante: string; defensor: string } // ids elegidos por un equipo
 // Los campos opcionales (por qué salió así) se guardan para explicarlo en pantalla; las partidas guardadas antes de existir no los tienen.
-export interface Jugada { atacante: string; defensor: string; arquero: string; resultado: 'gol' | 'atajada' | 'corte'; pPase: number; pGol: number; pA?: number; pD?: number; rem?: number; arq?: number; pTiro?: number; clima?: number }
+export interface Jugada { atacante: string; defensor: string; arquero: string; resultado: 'gol' | 'atajada' | 'corte'; pPase: number; pGol: number; pA?: number; pD?: number; rem?: number; arq?: number; pTiro?: number; clima?: number; t1?: number; t2?: number }
 export interface ResultadoRonda { mia: Jugada; rival: Jugada; golesMios: number; golesRival: number }
 
 const sig = (x: number) => 1 / (1 + Math.exp(-x))
@@ -142,9 +142,10 @@ function jugada(att: Player, def: Player, gk: Player, bonusAtt: number, bonusDef
   const pGolSiPasa = Math.min(0.9, sig((poderRemate(att) + bonusAtt - poderArquero(gk)) / 10) * 0.95 * weatherFactor(ctx).goals)
   const pGol = pPase * pGolSiPasa
   const detalle = { pA: A, pD: D, rem: poderRemate(att) + bonusAtt, arq: poderArquero(gk), pTiro: pGolSiPasa, clima: weatherFactor(ctx).goals }
-  const pasa = rng() < pPase
-  if (!pasa) return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: 'corte', pPase, pGol, ...detalle }
-  return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: rng() < pGolSiPasa ? 'gol' : 'atajada', pPase, pGol, ...detalle }
+  const t1 = rng() // el «dado» del duelo con el defensor: se supera si sale menos que pPase
+  if (t1 >= pPase) return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: 'corte', pPase, pGol, ...detalle, t1 }
+  const t2 = rng() // el «dado» del remate: gol si sale menos que pGolSiPasa
+  return { atacante: att.id, defensor: def.id, arquero: gk.id, resultado: t2 < pGolSiPasa ? 'gol' : 'atajada', pPase, pGol, ...detalle, t1, t2 }
 }
 
 export function jugarRonda(seed: string, ronda: number, yo: Equipo, rival: Equipo, miEleccion: Cambio, suEleccion: Cambio, ctx: MatchCtx | undefined): ResultadoRonda {
