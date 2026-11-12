@@ -1147,5 +1147,9 @@ const D: string[] = [
   "Annulla",
   "Avevi il {p} % di probabilità di gol: stavolta la fortuna non ha aiutato.",
   "Il tuo rivale aveva il {p} % di probabilità di gol: stavolta sei stato fortunato!",
+  "Sostieni il progetto",
+  "Ci aiuti a crescere e a migliorare. È volontario e non sblocca nulla.",
+  "Dona con PayPal",
+  "Pagamento sicuro su PayPal: scegli tu l’importo. Qui non conserviamo i tuoi dati di pagamento.",
 ]
 export default D

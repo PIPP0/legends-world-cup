@@ -1,5 +1,6 @@
 import { tr } from '../i18n'
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useFunciones } from '../cloud/funciones'
 import { DONATE_URL, PAYMENTS_LIVE, PAYMENT_API, PAYPAL_CLIENT_ID, PRODUCTS, pay, saveReceipt, type ProductId } from '../engine/payment'
 
@@ -74,18 +75,51 @@ export function PayBox({ what, product, onPaid, disabled }: { what: string; prod
   )
 }
 
+// ---------- ventana de apoyo: una sola, simple y rápida (un botón y listo) ----------
+const EVENTO_DONAR = 'lwc-donar'
+export const abrirDonacion = () => window.dispatchEvent(new Event(EVENTO_DONAR))
+const hayEnlace = () => !!DONATE_URL && /^https:\/\//.test(DONATE_URL)
+
+// Se monta una sola vez (en App): escucha el evento y muestra la ventana encima de todo.
+export function DonateModalHost() {
+  const [abierto, setAbierto] = useState(false)
+  const boton = useRef<HTMLAnchorElement>(null)
+  useEffect(() => { const f = () => setAbierto(true); window.addEventListener(EVENTO_DONAR, f); return () => window.removeEventListener(EVENTO_DONAR, f) }, [])
+  useEffect(() => {
+    if (!abierto) return
+    const prev = document.activeElement as HTMLElement | null
+    boton.current?.focus()
+    const f = (e: KeyboardEvent) => { if (e.key === 'Escape') setAbierto(false) }
+    window.addEventListener('keydown', f)
+    return () => { window.removeEventListener('keydown', f); prev?.focus?.() }
+  }, [abierto])
+  if (!abierto || !hayEnlace()) return null
+  return createPortal(
+    <div className="modal-bg" role="dialog" aria-modal="true" aria-label={tr('Apoya el proyecto')} onClick={() => setAbierto(false)}>
+      <div className="modal donar-modal" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="donar-modal-x" aria-label={tr('Cerrar')} onClick={() => setAbierto(false)}>✕</button>
+        <span className="donar-ic" aria-hidden>☕</span>
+        <h3>{tr('Apoya el proyecto')}</h3>
+        <p>{tr('Nos ayudas a crecer y seguir mejorando. Es voluntario y no desbloquea nada.')}</p>
+        <a ref={boton} className="btn pri donar-ir" href={DONATE_URL} target="_blank" rel="noopener noreferrer" onClick={() => { ocultar(); setAbierto(false) }}>{tr('Donar con PayPal')} →</a>
+        <button type="button" className="donar-no" onClick={() => setAbierto(false)}>{tr('Ahora no')}</button>
+        <small className="muted">{tr('Pago seguro en PayPal: tú eliges el monto. Aquí no guardamos tus datos de pago.')}</small>
+      </div>
+    </div>, document.body)
+}
+
 // Enlace discreto de apoyo (pie de página, etc.): una sola línea de texto, sin ventanas ni avisos. Solo aparece si hay enlace configurado y la función está activa.
 export function DonateLink() {
   const f = useFunciones()
   if (!f.donaciones || !DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
-  return <a className="donate-link" href={DONATE_URL} target="_blank" rel="noopener noreferrer">{tr('☕ Apoyar (opcional)')}</a>
+  return <button type="button" className="donate-link" onClick={abrirDonacion}>{tr('☕ Apoyar (opcional)')}</button>
 }
 
 // Ícono de taza en el encabezado (escritorio): mismo tamaño que los otros íconos; el texto sale al pasar el mouse.
 export function DonateIcon() {
   const f = useFunciones()
   if (!f.donaciones || !DONATE_URL || !/^https:\/\//.test(DONATE_URL)) return null
-  return <a className="icon-btn donate-ic" href={DONATE_URL} target="_blank" rel="noopener noreferrer" title={tr('☕ Apoyar (opcional)')} aria-label={tr('☕ Apoyar (opcional)')}><span aria-hidden>☕</span></a>
+  return <button type="button" className="icon-btn donate-ic" onClick={abrirDonacion} title={tr('☕ Apoyar (opcional)')} aria-label={tr('☕ Apoyar (opcional)')}><span aria-hidden>☕</span></button>
 }
 
 // Apoyo voluntario: no desbloquea nada, solo agradece. Solo se muestra si hay un enlace configurado.
@@ -115,7 +149,7 @@ export function DonateBox({ momento = 'general' }: { momento?: MomentoDonar }) {
   return (
     <div className="note donar-box">
       <span>{texto}</span>{' '}
-      <a className="btn" href={DONATE_URL} target="_blank" rel="noopener noreferrer" onClick={ocultar}>{tr('☕ Apoyar (opcional)')}</a>
+      <button type="button" className="btn" onClick={abrirDonacion}>{tr('☕ Apoyar (opcional)')}</button>
       <button type="button" className="donar-x" aria-label={tr('Cerrar')} title={tr('Cerrar')} onClick={() => { ocultar(); setVisible(false) }}>✕</button>
     </div>
   )

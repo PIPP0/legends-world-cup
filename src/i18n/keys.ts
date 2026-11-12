@@ -1147,4 +1147,8 @@ export const KEYS: string[] = [
   "Cancelar",
   "Tenías {p} % de probabilidad de gol: esta vez la suerte no acompañó.",
   "Tu rival tenía {p} % de probabilidad de gol: ¡esta vez tuviste suerte!",
+  "Apoya el proyecto",
+  "Nos ayudas a crecer y seguir mejorando. Es voluntario y no desbloquea nada.",
+  "Donar con PayPal",
+  "Pago seguro en PayPal: tú eliges el monto. Aquí no guardamos tus datos de pago.",
 ]

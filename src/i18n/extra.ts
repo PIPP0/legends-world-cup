@@ -409,4 +409,8 @@ export const EXTRA: Array<[string, string]> = [
   ['Cancelar', 'Cancel'],
   ['Tenías {p} % de probabilidad de gol: esta vez la suerte no acompañó.', "You had a {p}% chance of a goal: luck wasn't on your side this time."],
   ['Tu rival tenía {p} % de probabilidad de gol: ¡esta vez tuviste suerte!', 'Your rival had a {p}% chance of a goal: you got lucky this time!'],
+  ['Apoya el proyecto', 'Support the project'],
+  ['Nos ayudas a crecer y seguir mejorando. Es voluntario y no desbloquea nada.', "You help us grow and keep improving. It's voluntary and unlocks nothing."],
+  ['Donar con PayPal', 'Donate with PayPal'],
+  ['Pago seguro en PayPal: tú eliges el monto. Aquí no guardamos tus datos de pago.', "Secure payment on PayPal: you choose the amount. We don't store your payment details here."],
 ]

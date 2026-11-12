@@ -1147,5 +1147,9 @@ const D: string[] = [
   "Batal",
   "Peluang golmu {p} %: kali ini keberuntungan tidak memihak.",
   "Lawanmu punya peluang gol {p} %: kali ini kamu beruntung!",
+  "Dukung proyek ini",
+  "Kamu membantu kami berkembang dan terus membaik. Ini sukarela dan tidak membuka apa pun.",
+  "Donasi dengan PayPal",
+  "Pembayaran aman di PayPal: kamu yang menentukan jumlahnya. Kami tidak menyimpan data pembayaranmu.",
 ]
 export default D

@@ -1,6 +1,6 @@
 import { Duelo } from './duelo'
 import { MvpPage } from './mvp'
-import { DonateIcon, DonateLink } from './paybox'
+import { DonateIcon, DonateLink, DonateModalHost } from './paybox'
 import { useEffect, useState } from 'react'
 import { DEFAULT_PARAMS } from '../engine/model'
 import { Note, AppCtx, useLocalState } from './common'
@@ -93,6 +93,7 @@ export default function App() {
     <AppCtx.Provider value={{ params, setParams, alt, setAlt }}>
       {fun.mantenimiento && <div className="aviso-web" role="status">{fun.mantenimiento}</div>}
       <Ticker />
+      <DonateModalHost />
       <header className="top">
         <div className="top-in">
           <Logo />
