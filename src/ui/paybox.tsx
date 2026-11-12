@@ -97,6 +97,7 @@ type AccionesPaypal = { order: { create: (o: unknown) => Promise<string>; captur
 function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
   const [monto, setMonto] = useState(5)
   const [libre, setLibre] = useState('')
+  const [otro, setOtro] = useState(false)
   const [gracias, setGracias] = useState(false)
   const [err, setErr] = useState('')
   const ref = useRef<HTMLDivElement>(null)
@@ -121,11 +122,12 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
   return (
     <>
       <div className="donar-montos" role="group" aria-label={tr('Elige cuánto quieres aportar')}>
-        {[2, 5, 10, 20].map((m) => <button key={m} type="button" className={m === monto && !libre ? 'on' : ''} onClick={() => { setLibre(''); setMonto(m) }}>US$ {m}</button>)}
+        {[2, 5, 10].map((m) => <button key={m} type="button" className={m === monto && !libre ? 'on' : ''} onClick={() => { setLibre(''); setOtro(false); setMonto(m) }}>US$ {m}</button>)}
+        <button type="button" className={otro || libre ? 'on' : ''} onClick={() => setOtro(true)}>{tr('Otro monto')}</button>
       </div>
-      <label className="donar-libre">{tr('Otro monto')} (US$)
-        <input type="number" inputMode="decimal" min={1} max={500} step="0.5" placeholder="0" value={libre} onChange={(e) => { setLibre(e.target.value); const n = Math.round(parseFloat(e.target.value) * 100) / 100; if (n >= 1 && n <= 500) setMonto(n) }} />
-      </label>
+      {(otro || libre) && <label className="donar-libre">US$
+        <input type="number" inputMode="decimal" min={1} max={500} step="0.5" placeholder="0" autoFocus value={libre} onChange={(e) => { setLibre(e.target.value); const n = Math.round(parseFloat(e.target.value) * 100) / 100; if (n >= 1 && n <= 500) setMonto(n) }} />
+      </label>}
       <div ref={ref} className="donar-paypal" />
       {err && <p className="note warn">{err}</p>}
     </>
