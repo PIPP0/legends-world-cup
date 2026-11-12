@@ -1099,5 +1099,9 @@ const D: string[] = [
   "Três estilos diferentes",
   "{n} do mesmo país",
   "Teto +{n}",
+  "Bola",
+  "Estratégia",
+  "Passo {n} de 3",
+  "Poder opcional (um único uso por partida)",
 ]
 export default D

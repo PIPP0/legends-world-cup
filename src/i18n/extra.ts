@@ -361,4 +361,8 @@ export const EXTRA: Array<[string, string]> = [
   ['Tres estilos distintos', 'Three different styles'],
   ['{n} del mismo país', '{n} from the same country'],
   ['Tope +{n}', 'Cap +{n}'],
+  ['Balón', 'Ball'],
+  ['Estrategia', 'Strategy'],
+  ['Paso {n} de 3', 'Step {n} of 3'],
+  ['Poder opcional (un solo uso por partida)', 'Optional power (one use per match)'],
 ]

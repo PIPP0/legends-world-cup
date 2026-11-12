@@ -1099,4 +1099,8 @@ export const KEYS: string[] = [
   "Tres estilos distintos",
   "{n} del mismo país",
   "Tope +{n}",
+  "Balón",
+  "Estrategia",
+  "Paso {n} de 3",
+  "Poder opcional (un solo uso por partida)",
 ]
