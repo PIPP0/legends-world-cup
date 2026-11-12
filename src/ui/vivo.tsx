@@ -124,9 +124,13 @@ export function Vivo() {
   }, [t])
   const resThird = useMemo(() => (t ? toRes(t.bracket.third) : null), [t])
   const resFinal = useMemo(() => (t ? toRes(t.bracket.final) : null), [t])
-  const [i, setI] = useState(0)
+  // el paso en que vas se guarda por torneo: al recargar la página sigues donde estabas (no vuelves al inicio)
+  const clavePaso = t ? `lwc:vivo:paso:${t.seed}` : ''
+  const claveFin = t ? `lwc:vivo:fin:${t.seed}` : ''
+  const [i, setI] = useState(() => { try { const n = Number(sessionStorage.getItem(clavePaso)); return Number.isInteger(n) && n > 0 ? Math.min(n, Math.max(0, steps.length - 1)) : 0 } catch { return 0 } })
   const [ready, setReady] = useState(false)
   const saved = useRef(false)
+  useEffect(() => { if (clavePaso) try { sessionStorage.setItem(clavePaso, String(i)) } catch { /* sin almacenamiento */ } }, [i, clavePaso])
   const step = steps[i]
   // Puerta de cuenta: la fase de grupos es libre; desde octavos de final hay que entrar con Gmail (Google). Sin nube conectada no se exige nada.
   const f = useFunciones()
@@ -142,8 +146,14 @@ export function Vivo() {
   const done = useRef(() => setReady(true)).current
   const prOf = (a: string, b: string, ctx?: MatchCtx): [number, number, number] => { const p = probabilities(a, b, params, ctx && t ? { ctx, world: t.world } : undefined); return [p.win, p.draw, p.loss] }
   useEffect(() => {
-    if (step?.kind === 'end' && t && !saved.current) { saved.current = true; recordHistory(t); void registrarMundial(t); setAlt({ ...t, recorded: true }) }
-  }, [step, t, setAlt])
+    if (step?.kind === 'end' && t && !saved.current) {
+      saved.current = true
+      let yaGrabado = false
+      try { yaGrabado = sessionStorage.getItem(claveFin) === '1' } catch { /* nada */ }
+      if (!yaGrabado) { recordHistory(t); void registrarMundial(t); try { sessionStorage.setItem(claveFin, '1') } catch { /* nada */ } }
+      setAlt({ ...t, recorded: true })
+    }
+  }, [step, t, setAlt, claveFin])
 
   if (!t) return <Section title={tr('Sin torneo en curso')}><p className="note">{tr('No hay un mundial por vivir.')} <a href="#/mundial">{tr('Arma uno')}</a>{tr(' o ')}<a href="#/simulador">{tr('ve el simulador')}</a>.</p></Section>
   const exige = NUBE_ACTIVA && f.cuentas && step.kind === 'pair' && step.r === 'r16' && !(cuenta && !cuenta.anonimo)
