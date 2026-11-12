@@ -977,3 +977,23 @@ html,body{overflow-x:clip}
 /* encaje con palabras y color, sin tocar los números originales */
 .d-trio-s em.enc{font:700 11px 'Barlow Condensed';letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.07)}
 .d-trio-s em.enc.alto{color:#5df0a6;background:rgba(93,240,166,.14)}.d-trio-s em.enc.medio{color:#ffd54a;background:rgba(255,213,74,.14)}.d-trio-s em.enc.bajo{color:#ff8da1;background:rgba(255,141,161,.14)}
+
+/* barra de navegación inferior: pegada al borde de abajo (sin flotar), respetando la zona segura del iPhone */
+.bnav{left:0;right:0;bottom:0;border-radius:14px 14px 0 0;border-left:0;border-right:0;border-bottom:0;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.45)}
+.sheet{bottom:calc(76px + env(safe-area-inset-bottom))}
+@media(max-width:1279px){main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}footer{padding-bottom:calc(104px + env(safe-area-inset-bottom))}}
+
+/* header en móvil: todo cabe en el ancho (logo compacto, botones chicos) y respeta la zona segura del iPhone */
+@media(max-width:560px){
+.top-in{padding:0 max(10px,env(safe-area-inset-left)) 0 max(10px,env(safe-area-inset-right));gap:6px}
+.logo{font-size:16px;letter-spacing:1px;gap:6px;min-width:0}.logo svg{width:24px;height:24px;flex:none}
+.top .icon-btn{width:34px;height:34px}
+.top .cta-entrar{padding:6px 10px;font-size:12px;white-space:nowrap}
+.top .cuenta,.top-in>*{min-width:0}.top-in>.logo{flex:1 1 auto;overflow:hidden}
+}
+@media(max-width:360px){.logo{font-size:14px}}
+
+/* zona segura de arriba (barra de estado / notch del iPhone): el ticker baja y una franja fija tapa el área al hacer scroll */
+.ticker{box-sizing:content-box;padding-top:env(safe-area-inset-top)}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:#0a1130;z-index:40;pointer-events:none}
+.top{top:env(safe-area-inset-top)}
