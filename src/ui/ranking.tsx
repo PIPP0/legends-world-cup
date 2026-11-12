@@ -208,7 +208,7 @@ export function RankingPagina() {
         )}
       </section>
 
-      <p className="small muted rk-centro">{tr('Mientras la comunidad crece, algunos jugadores del ranking son de demostración y sus resultados son ficticios. Los demás son resultados reales de personas que juegan.')}{!hayReales && NUBE_ACTIVA && !cargando ? ` ${tr('Aún no hay otras personas reales en el ranking: ¡puedes ser la primera!')}` : ''}</p>
+      <p className="rk-nota">{tr('Incluye jugadores de demostración (resultados ficticios).')}</p>
     </div>
   )
 }

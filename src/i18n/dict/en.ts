@@ -1157,5 +1157,6 @@ const D: string[] = [
   "The colour of each player on the pitch shows how well he fits {e}: green high, yellow medium, red low.",
   "Playing now",
   "While the community grows, some players in the ranking are demo players and their results are fictional. The rest are real results from people who play.",
+  "Includes demo players (fictional results).",
 ]
 export default D
