@@ -752,7 +752,6 @@ function EscenaTurno({ det, pw, onFin, ritmo, turno, esUltimo, onSiguiente, vel,
             <span className="vs" aria-hidden>VS</span>
             <div><small>{mio ? tr('Su defensa') : tr('Tu defensa')}</small><FichaEstrategia e={det.est.defensa} ataca={false} mini /><div className="d-minis">{det.trioD.map((id) => <Avatar key={id} p={PLAYER_BY_ID[id]} size={30} />)}</div></div>
           </div>
-          <div className={`d-efecto ${claseEfecto(nivelH)}`}><b>{mensajeEfecto(nivelH)}</b></div>
           {pw && <div className="d-rev-pws">{lado('mio', pw.mio)}{lado('su', pw.su)}{pw.cambioSu && <small className="muted">{tr('{d} tuvo que dejar su lugar a {a}.', { d: nom(pw.cambioSu.de), a: nom(pw.cambioSu.a) })}</small>}{pw.cambioMio && <small className="muted">{tr('{d} tuvo que dejar su lugar a {a}.', { d: nom(pw.cambioMio.de), a: nom(pw.cambioMio.a) })}</small>}</div>}
         </div>
       ) : (
@@ -767,7 +766,7 @@ function EscenaTurno({ det, pw, onFin, ritmo, turno, esUltimo, onSiguiente, vel,
               <div className={`d-esc-j g ${beat >= 3 ? (det.resultado === 'gol' ? 'vencido' : 'gana') : ''} ${v(2)}`}><Avatar p={gk} size={92} /><b>{gk.name}</b><small>🧤</small><em className={v(3)}>{det.resultado === 'gol' ? tr('Vencido') : tr('Ataja')}</em></div></>}
             {fin && det.resultado === 'gol' && <div className="d-confeti" aria-hidden>{Array.from({ length: 16 }, (_, n) => <i key={n} style={{ ['--a' as string]: `${n * 22.5}deg`, ['--d' as string]: `${46 + (n % 4) * 14}px`, ['--c' as string]: ['#ffd54a', '#00e5ff', '#ff2e88', '#fff'][n % 4] }} />)}</div>}
           </div>
-          <div className={`d-factores ${v(2)}`}>
+          <div className={`d-factores ${v(3)}`}>
             <span className={`f ${claseEfecto(nivelH)}`}>{mensajeEfecto(nivelH)}</span>
             <span className="f">{tr('Encaje {a} contra {d}', { a: Math.round(det.calidadA), d: Math.round(det.calidadD) })}</span>
             <span className="f">🧪 {tr('Química {a} contra {d}', { a: Math.round(det.quimA * 10) / 10, d: Math.round(det.quimD * 10) / 10 })}</span>
