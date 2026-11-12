@@ -19,7 +19,7 @@ export const MATRIZ: Record<Ataque, Record<Defensa, number>> = {
   largo: { presion: 1, bloque: 2, marca: -2, cierre: -1 },
 }
 // Equilibrada: cada fila y cada columna suman 0, así ninguna estrategia es mejor en promedio y gana quien adivina.
-export const PUNTOS_POR_NIVEL = 8 // cuánto pesa un nivel de efectividad en la calidad de la jugada
+export const PUNTOS_POR_NIVEL = 6 // cuánto pesa un nivel de efectividad en la calidad de la jugada
 
 // Atributos que pide cada estrategia (suman 1).
 export const PESOS_ATAQUE: Record<Ataque, [string, number][]> = {
@@ -109,11 +109,12 @@ export function segundosBarra(encaje: number): number {
 // Posición 0..1 del balón: va y viene; 0,5 es el centro ideal.
 export const precision = (x: number): number => {
   const d = Math.abs(x - 0.5)
-  return d <= 0.04 ? 1 : Math.max(0, 1 - (d - 0.04) / 0.4)
+  return d <= 0.06 ? 1 : Math.max(0, 1 - (d - 0.06) / 0.44)
 }
 
 // ---------- resolver una jugada ----------
-export const TURNOS = 10 // 5 ataques por lado, alternados
+export const TURNOS = 5 // al mejor de 5 turnos, alternados (los impares ataca la persona)
+export const SESGO_ATAQUE = 8 // empuje a favor de quien ataca: meter goles no debe ser tan difícil
 export interface DetalleJugada {
   ataca: 'mio' | 'su'
   est: { ataque: Ataque; defensa: Defensa }
@@ -133,8 +134,8 @@ export interface DetalleJugada {
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x))
 const sig = (x: number) => 1 / (1 + Math.exp(-x))
 export const ESCALA_CALIDAD = 5.5
-export const PESO_BARRA_ATAQUE = 0.65 // cuánto de la efectividad del remate depende de tu toque
-export const PESO_BARRA_DEFENSA = 0.25 // cuánto puede frenar tu defensa un buen toque
+export const PESO_BARRA_ATAQUE = 0.5 // cuánto de la efectividad del remate depende de tu toque
+export const PESO_BARRA_DEFENSA = 0.2 // cuánto puede frenar tu defensa un buen toque
 
 export function resolverJugada(a: {
   seed: string; turno: number; ataca: 'mio' | 'su'
@@ -150,12 +151,12 @@ export function resolverJugada(a: {
   const quimA = a.quimA ?? 0, quimD = a.quimD ?? 0, nivelA = a.nivelA ?? 0, nivelD = a.nivelD ?? 0
   const calidadA = a.trioA.reduce((s, id) => s + encajeAtaque(id, a.ataque, a.ajA), 0) / a.trioA.length + quimA + nivelA
   const calidadD = a.trioD.reduce((s, id) => s + encajeDefensa(id, a.defensa, a.ajD), 0) / a.trioD.length + quimD + nivelD
-  const base = sig((calidadA - calidadD + PUNTOS_POR_NIVEL * nivel) / ESCALA_CALIDAD)
+  const base = sig((calidadA - calidadD + PUNTOS_POR_NIVEL * nivel + SESGO_ATAQUE) / ESCALA_CALIDAD)
   const pPaso = clamp(base * (1 - PESO_BARRA_DEFENSA * a.precD), 0.03, 0.97)
   const rem = attr(PLAYER_BY_ID[a.ejecutor], 'Disparo') + (a.ajA[a.ejecutor] ?? 0)
   const arq = poderArquero(PLAYER_BY_ID[a.arquero])
   const kF = clamp(0.9 + (rem - arq) / 150, 0.75, 1.15)
-  const pRemate = clamp((1 - PESO_BARRA_ATAQUE + PESO_BARRA_ATAQUE * a.precA) * kF * a.clima * 1.15, 0.03, 0.97)
+  const pRemate = clamp((1 - PESO_BARRA_ATAQUE + PESO_BARRA_ATAQUE * a.precA) * kF * a.clima * 1.2, 0.03, 0.97)
   const t1 = rng()
   const base2 = { ataca: a.ataca, est: { ataque: a.ataque, defensa: a.defensa }, nivel, trioA: a.trioA, trioD: a.trioD, ejecutor: a.ejecutor, interceptor: a.interceptor, calidadA, calidadD, precA: a.precA, precD: a.precD, pPaso, pRemate, pGol: pPaso * pRemate, rem, arq, clima: a.clima, quimA, quimD, nivelA, nivelD, t1, arquero: a.arquero }
   if (t1 >= pPaso) return { ...base2, resultado: 'corte' }
@@ -164,9 +165,9 @@ export function resolverJugada(a: {
 }
 
 // ---------- disponibilidad ----------
-// Se puede elegir a cualquiera del once menos el arquero, sin los que jugaron el turno anterior; los suplentes entran desde el turno 4.
+// Se puede elegir a cualquiera del once menos el arquero, sin los que jugaron el turno anterior; los suplentes entran desde el turno 3.
 export function disponibles(equipo: Equipo, turno: number, cansados: string[], excluir: string[] = []): string[] {
-  return [...equipo.once, ...(turno >= 4 ? equipo.suplentes : [])].filter((id) => !cansados.includes(id) && !excluir.includes(id) && PLAYER_BY_ID[id].line !== 'GK')
+  return [...equipo.once, ...(turno >= 3 ? equipo.suplentes : [])].filter((id) => !cansados.includes(id) && !excluir.includes(id) && PLAYER_BY_ID[id].line !== 'GK')
 }
 
 // ---------- la máquina ----------
@@ -254,7 +255,7 @@ export function eligePoderTrio(seed: string, turno: number, nivel: Nivel, disp: 
   if (!libres.length) return undefined
   const restantes = TURNOS - turno + 1
   const base = { bronce: 0.3, plata: 0.4, oro: 0.5, leyenda: 0.55 }[nivel]
-  const prob = libres.length >= restantes ? 1 : turno >= 8 ? Math.max(base, 0.8) : base
+  const prob = libres.length >= restantes ? 1 : turno >= TURNOS - 1 ? Math.max(base, 0.8) : base
   if (rng() > prob) return undefined
   const mejor = (ids: string[], f: (id: string) => number) => [...ids].sort((a, b) => f(b) - f(a))[0]
   const tipo = libres[Math.floor(rng() * libres.length)]

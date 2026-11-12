@@ -581,7 +581,7 @@ function Partida({ equipo, nivel, ganados, alTerminar, alSalir }: { equipo: Equi
   if (su && fase !== 'eleccion' && fase !== 'resultado') (finSu.length ? finSu : su.trio).forEach((id) => { marcasSu[id] = ataca ? 'defensor' : 'atacante' })
   if (fase === 'resultado' && det) { det.trioA.forEach((id) => { (det.ataca === 'mio' ? marcas : marcasSu)[id] = 'atacante' }); det.trioD.forEach((id) => { (det.ataca === 'mio' ? marcasSu : marcas)[id] = 'defensor' }) }
   const valor = (id: string) => { if (!est || fase !== 'eleccion' || !puede(id)) return undefined; const n = fit(id, est); return { n, t: tono(n) } }
-  const estadoSu = (id: string) => (cSu.includes(id) && fase === 'eleccion' ? 'cansado' as const : turno < 4 ? 'espera' as const : undefined)
+  const estadoSu = (id: string) => (cSu.includes(id) && fase === 'eleccion' ? 'cansado' as const : turno < 3 ? 'espera' as const : undefined)
   const rivalNombre = tr('Rival {n}', { n: tr(NIVELES.find((n) => n.id === nivel)!.nombre) })
   const nivelHumano = (n: number) => (ataca ? n : -n)
   const nivelMat = su && est ? MATRIZ[ataqueDe()][defensaDe()] : 0
@@ -613,7 +613,7 @@ function Partida({ equipo, nivel, ganados, alTerminar, alSalir }: { equipo: Equi
           <section className="d-lado mio">
             <h4>{tr('Tu equipo')}</h4>
             <Cancha formacion={equipo.formacion} ids={equipo.once} marcas={marcas} sel={fase === 'eleccion' ? trio : null} valor={valor} onNodo={fase === 'eleccion' && est ? (i) => toggleJugador(equipo.once[i]) : undefined} etiqueta={tr('Tu equipo')} />
-            <Banca slots={equipo.suplentes} activo={null} estado={(id) => (cMio.includes(id) && fase === 'eleccion' ? 'cansado' : turno < 4 ? 'espera' : undefined)} onJugador={fase === 'eleccion' && est ? (id) => toggleJugador(id) : undefined} />
+            <Banca slots={equipo.suplentes} activo={null} estado={(id) => (cMio.includes(id) && fase === 'eleccion' ? 'cansado' : turno < 3 ? 'espera' : undefined)} onJugador={fase === 'eleccion' && est ? (id) => toggleJugador(id) : undefined} />
           </section>
           <div className="d-medio">
             <div className="d-vs" aria-hidden><span>VS</span></div>
