@@ -1174,7 +1174,10 @@ const D: string[] = [
   "🌟 You’re awesome, thank you so much!",
   "🚀 Incredible! You help us keep growing.",
   "🏆 You’re a legend! Thank you for believing in this project and making it possible.",
-  "A site made by fans, for fans, as a tribute to football and its idols. Playing is free and support is voluntary. Names and images belong to their owners and are used respectfully. No affiliation with FIFA, clubs, federations or players. Results and ratings are fictional.",
-  "A site made by fans, for fans, non-profit, as a tribute to football and its idols. Names and images belong to their owners and are used respectfully and non-commercially. No affiliation with FIFA, clubs, federations or players. Results and ratings are fictional.",
+  "A site made by fans, for fans, as a tribute to football and its idols. Playing is free and support is voluntary. Names and images belong to their owners and are used respectfully. No affiliation with FIFA, clubs, federations or players. Results and ratings are fictional. If anyone involved (a player, club, federation or other party) requests removal, it will be removed from the platform immediately.",
+  "A site made by fans, for fans, non-profit, as a tribute to football and its idols. Names and images belong to their owners and are used respectfully and non-commercially. No affiliation with FIFA, clubs, federations or players. Results and ratings are fictional. If anyone involved (a player, club, federation or other party) requests removal, it will be removed from the platform immediately.",
+  "A site made by fans, for fans",
+  "See more",
+  "See less",
 ]
 export default D

@@ -1073,7 +1073,14 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 
 /* franja fina «sitio creado por fans» */
 .huincha{background:linear-gradient(90deg,rgba(255,45,135,.16),rgba(0,229,255,.12));border-bottom:1px solid var(--line);color:#c9d3f2;font:600 12.5px/1.35 Inter,sans-serif;text-align:center;padding:6px max(14px,env(safe-area-inset-left)) 6px max(14px,env(safe-area-inset-right));letter-spacing:.1px}
-/* en pantallas chicas la franja corre en una sola línea (como la cinta de resultados) para no ocupar tanto arriba */
-@media(max-width:700px){.huincha{overflow:hidden;white-space:nowrap;padding:5px 0;font-size:11.5px}.huincha span{display:inline-block;padding-left:100%;animation:huinchaMov 60s linear infinite}}
-@keyframes huinchaMov{to{transform:translateX(-100%)}}
-@media(max-width:700px) and (prefers-reduced-motion:reduce){.huincha{white-space:normal;padding:5px 14px}.huincha span{padding-left:0;animation:none;display:inline}}
+/* franja «sitio de fans»: en computador va completa; en celular es un desplegable de una línea */
+.hu-fila{display:none}
+@media(max-width:700px){
+.huincha{padding:0}
+.hu-fila{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 14px}
+.hu-corto{font-weight:700;font-size:12px}
+.hu-btn{background:none;border:0;color:var(--cy);font:700 12px Inter,sans-serif;cursor:pointer;padding:2px 0;white-space:nowrap}.hu-btn i{display:inline-block;width:7px;height:7px;margin:0 2px 3px 4px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .2s}
+.huincha.abierta .hu-btn i{transform:rotate(-135deg);margin-bottom:-1px}
+.hu-largo{display:none;padding:0 14px 8px;text-align:left;font-size:11.5px}
+.huincha.abierta .hu-largo{display:block}
+}

@@ -1174,6 +1174,9 @@ export const KEYS: string[] = [
   "🌟 ¡Eres genial, muchas gracias!",
   "🚀 ¡Increíble! Nos impulsas a seguir creciendo.",
   "🏆 ¡Eres un grande! Gracias por creer en este proyecto y hacerlo posible.",
-  "Sitio creado por fans y para fans, como homenaje al fútbol y a sus ídolos. Jugar es gratis y el apoyo es voluntario. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios.",
-  "Sitio creado por fans y para fans, sin fines de lucro, como homenaje al fútbol y a sus ídolos. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto y sin ánimo comercial. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios.",
+  "Sitio creado por fans y para fans, como homenaje al fútbol y a sus ídolos. Jugar es gratis y el apoyo es voluntario. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios. Si algún involucrado (jugador, club, federación u otro) solicita su baja, se eliminará de inmediato de la plataforma.",
+  "Sitio creado por fans y para fans, sin fines de lucro, como homenaje al fútbol y a sus ídolos. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto y sin ánimo comercial. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios. Si algún involucrado (jugador, club, federación u otro) solicita su baja, se eliminará de inmediato de la plataforma.",
+  "Sitio creado por fans y para fans",
+  "Ver más",
+  "Ver menos",
 ]

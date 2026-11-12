@@ -81,8 +81,18 @@ const Logo = () => (
 // Franja fina: deja claro que es un sitio de fans. Si el apoyo voluntario está encendido, el texto lo reconoce (así nunca dice algo que no es cierto).
 function Huincha() {
   const f = useFunciones()
+  const [abierta, setAbierta] = useState(false)
   if (!f.huincha) return null
-  return <div className="huincha" role="note"><span>{f.donaciones ? tr('Sitio creado por fans y para fans, como homenaje al fútbol y a sus ídolos. Jugar es gratis y el apoyo es voluntario. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios.') : tr('Sitio creado por fans y para fans, sin fines de lucro, como homenaje al fútbol y a sus ídolos. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto y sin ánimo comercial. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios.')}</span></div>
+  const largo = f.donaciones ? tr('Sitio creado por fans y para fans, como homenaje al fútbol y a sus ídolos. Jugar es gratis y el apoyo es voluntario. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios. Si algún involucrado (jugador, club, federación u otro) solicita su baja, se eliminará de inmediato de la plataforma.') : tr('Sitio creado por fans y para fans, sin fines de lucro, como homenaje al fútbol y a sus ídolos. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto y sin ánimo comercial. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios. Si algún involucrado (jugador, club, federación u otro) solicita su baja, se eliminará de inmediato de la plataforma.')
+  return (
+    <div className={`huincha${abierta ? ' abierta' : ''}`} role="note">
+      <div className="hu-fila">
+        <span className="hu-corto">{tr('Sitio creado por fans y para fans')}</span>
+        <button type="button" className="hu-btn" aria-expanded={abierta} onClick={() => setAbierta(!abierta)}>{abierta ? tr('Ver menos') : tr('Ver más')} <i aria-hidden /></button>
+      </div>
+      <div className="hu-largo">{largo}</div>
+    </div>
+  )
 }
 
 export default function App() {

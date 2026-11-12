@@ -1174,7 +1174,10 @@ const D: string[] = [
   "🌟 Kamu luar biasa, terima kasih banyak!",
   "🚀 Luar biasa! Kamu mendorong kami terus berkembang.",
   "🏆 Kamu hebat! Terima kasih telah percaya pada proyek ini dan mewujudkannya.",
-  "Situs buatan penggemar untuk penggemar, sebagai penghormatan bagi sepak bola dan para idolanya. Bermain gratis dan dukungan bersifat sukarela. Nama dan gambar milik pemiliknya dan digunakan dengan hormat. Tidak berafiliasi dengan FIFA, klub, federasi, maupun pemain. Hasil dan penilaian bersifat fiktif.",
-  "Situs buatan penggemar untuk penggemar, nirlaba, sebagai penghormatan bagi sepak bola dan para idolanya. Nama dan gambar milik pemiliknya dan digunakan dengan hormat dan tanpa tujuan komersial. Tidak berafiliasi dengan FIFA, klub, federasi, maupun pemain. Hasil dan penilaian bersifat fiktif.",
+  "Situs buatan penggemar untuk penggemar, sebagai penghormatan bagi sepak bola dan para idolanya. Bermain gratis dan dukungan bersifat sukarela. Nama dan gambar milik pemiliknya dan digunakan dengan hormat. Tidak berafiliasi dengan FIFA, klub, federasi, maupun pemain. Hasil dan penilaian bersifat fiktif. Jika pihak terkait (pemain, klub, federasi, atau lainnya) meminta penghapusan, akan segera dihapus dari platform.",
+  "Situs buatan penggemar untuk penggemar, nirlaba, sebagai penghormatan bagi sepak bola dan para idolanya. Nama dan gambar milik pemiliknya dan digunakan dengan hormat dan tanpa tujuan komersial. Tidak berafiliasi dengan FIFA, klub, federasi, maupun pemain. Hasil dan penilaian bersifat fiktif. Jika pihak terkait (pemain, klub, federasi, atau lainnya) meminta penghapusan, akan segera dihapus dari platform.",
+  "Situs buatan penggemar untuk penggemar",
+  "Lihat selengkapnya",
+  "Lihat lebih sedikit",
 ]
 export default D

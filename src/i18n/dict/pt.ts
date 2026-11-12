@@ -1174,7 +1174,10 @@ const D: string[] = [
   "🌟 Você é demais, muito obrigado!",
   "🚀 Incrível! Você nos impulsiona a continuar crescendo.",
   "🏆 Você é um gigante! Obrigado por acreditar neste projeto e torná-lo possível.",
-  "Um site criado por fãs e para fãs, em homenagem ao futebol e aos seus ídolos. Jogar é grátis e o apoio é voluntário. Nomes e imagens pertencem aos seus titulares e são usados com respeito. Sem relação com a FIFA, clubes, federações ou jogadores. Resultados e avaliações são fictícios.",
-  "Um site criado por fãs e para fãs, sem fins lucrativos, em homenagem ao futebol e aos seus ídolos. Nomes e imagens pertencem aos seus titulares e são usados com respeito e sem fins comerciais. Sem relação com a FIFA, clubes, federações ou jogadores. Resultados e avaliações são fictícios.",
+  "Um site criado por fãs e para fãs, em homenagem ao futebol e aos seus ídolos. Jogar é grátis e o apoio é voluntário. Nomes e imagens pertencem aos seus titulares e são usados com respeito. Sem relação com a FIFA, clubes, federações ou jogadores. Resultados e avaliações são fictícios. Se algum envolvido (jogador, clube, federação ou outro) solicitar a remoção, ela será feita imediatamente na plataforma.",
+  "Um site criado por fãs e para fãs, sem fins lucrativos, em homenagem ao futebol e aos seus ídolos. Nomes e imagens pertencem aos seus titulares e são usados com respeito e sem fins comerciais. Sem relação com a FIFA, clubes, federações ou jogadores. Resultados e avaliações são fictícios. Se algum envolvido (jogador, clube, federação ou outro) solicitar a remoção, ela será feita imediatamente na plataforma.",
+  "Um site criado por fãs e para fãs",
+  "Ver mais",
+  "Ver menos",
 ]
 export default D
