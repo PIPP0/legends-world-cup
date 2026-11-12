@@ -103,6 +103,13 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
   const [err, setErr] = useState('')
   const ref = useRef<HTMLDivElement>(null)
   // los botones de PayPal se dibujan UNA sola vez; el monto se lee en el instante de pagar (así no parpadean al sumar o restar)
+  // el formulario de tarjeta lo dibuja PayPal con texto oscuro y fondo transparente: al desplegarse se le da un fondo claro para que se lea
+  const [formAbierto, setFormAbierto] = useState(false)
+  useEffect(() => {
+    const el = ref.current; if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => setFormAbierto(el.getBoundingClientRect().height > 200))
+    ro.observe(el); return () => ro.disconnect()
+  }, [])
   const montoActual = useRef<number | null>(monto)
   montoActual.current = monto
   useEffect(() => {
@@ -139,7 +146,7 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
         </div>
       </div>
       {monto === null && <p className="small muted">{tr('Escribe un monto entre 1 y 500.')}</p>}
-      <div ref={ref} className="donar-paypal" style={monto === null ? { display: 'none' } : undefined} />
+      <div ref={ref} className={`donar-paypal${formAbierto ? ' abierto' : ''}`} style={monto === null ? { display: 'none' } : undefined} />
       {err && <p className="note warn">{err}</p>}
     </>
   )
