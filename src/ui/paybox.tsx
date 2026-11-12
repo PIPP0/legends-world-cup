@@ -96,7 +96,7 @@ function abrirVentanaPago(e: React.MouseEvent<HTMLAnchorElement>) {
 // Donar sin salir de la página: montos + botones oficiales de PayPal dentro del modal (solo necesita el Client ID público; el cobro lo hace PayPal).
 type AccionesPaypal = { order: { create: (o: unknown) => Promise<string>; capture: () => Promise<unknown> } }
 // Agradecimiento que crece con el monto escrito (de 5 en adelante es uno solo).
-function gracias(m: number | null): string | null {
+function agradecimiento(m: number | null): string | null {
   if (m === null) return null
   const n = Math.floor(m)
   if (n <= 1) return tr('🙏 ¡Muchas gracias!')
@@ -176,7 +176,7 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
       {monto === null && <p className="small muted">{tr('Escribe un monto entre 1 y 500.')}</p>}
       <div ref={ref} className={`donar-paypal${formAbierto ? ' abierto' : ''}${monto === null ? ' apagado' : ''}`} aria-disabled={monto === null} />
       {err && <p className="note warn">{err}</p>}
-      <p className="donar-pie donar-tier" key={gracias(monto) ?? 'x'} aria-live="polite">{gracias(monto) ?? tr('💙 ¡Gracias por ser parte de esto! Cada aporte nos ayuda a seguir mejorando.')}</p>
+      <p className="donar-pie donar-tier" key={agradecimiento(monto) ?? 'x'} aria-live="polite">{agradecimiento(monto) ?? tr('💙 ¡Gracias por ser parte de esto! Cada aporte nos ayuda a seguir mejorando.')}</p>
     </>
   )
 }
