@@ -1168,5 +1168,6 @@ const D: string[] = [
   "Dar minha opinião",
   "Se você gostou da experiência, pode apoiar o projeto. É voluntário.",
   "Para mudar o valor, feche o formulário do cartão (✕).",
+  "💙 Obrigado por fazer parte disso! Cada contribuição nos ajuda a continuar melhorando.",
 ]
 export default D

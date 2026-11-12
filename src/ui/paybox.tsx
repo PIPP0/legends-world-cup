@@ -96,8 +96,8 @@ function abrirVentanaPago(e: React.MouseEvent<HTMLAnchorElement>) {
 // Donar sin salir de la página: montos + botones oficiales de PayPal dentro del modal (solo necesita el Client ID público; el cobro lo hace PayPal).
 type AccionesPaypal = { order: { create: (o: unknown) => Promise<string>; capture: () => Promise<unknown> } }
 function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
-  const [monto, setMonto] = useState<number | null>(1)
-  const [texto, setTexto] = useState('1')
+  const [monto, setMonto] = useState<number | null>(null)
+  const [texto, setTexto] = useState('')
   const poner = (v: string) => { setTexto(v); const n = Math.round(parseFloat(v) * 100) / 100; setMonto(n >= 1 && n <= 500 ? n : null) }
   const cambiar = (n: number) => { const c = Math.min(500, Math.max(1, Math.round(n))); setTexto(String(c)); setMonto(c) }
   const [gracias, setGracias] = useState(false)
@@ -155,18 +155,15 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
         <div className="donar-monto" role="group" aria-labelledby="donar-lbl">
           <button type="button" className="donar-paso" aria-label="−" disabled={formAbierto || (monto !== null && monto <= 1)} onClick={() => cambiar((monto ?? 2) - 1)}>−</button>
           <label className="donar-campo"><b aria-hidden>US$</b>
-            <input type="number" inputMode="decimal" min={1} max={500} step="1" disabled={formAbierto} value={texto} onChange={(e) => poner(e.target.value)} aria-label={tr('Elige cuánto quieres aportar') + ' (USD)'} />
+            <input type="number" inputMode="decimal" min={1} max={500} step="1" placeholder="0" disabled={formAbierto} value={texto} onChange={(e) => poner(e.target.value)} aria-label={tr('Elige cuánto quieres aportar') + ' (USD)'} />
             <i aria-hidden>USD</i>
           </label>
           <button type="button" className="donar-paso" aria-label="+" disabled={formAbierto || (monto !== null && monto >= 500)} onClick={() => cambiar((monto ?? 0) + 1)}>+</button>
         </div>
-        <div className="donar-atajos" role="group" aria-label={tr('Elige cuánto quieres aportar')}>
-          {[1, 3, 5].map((m) => <button key={m} type="button" className={monto === m ? 'on' : ''} disabled={formAbierto} onClick={() => cambiar(m)}>US$ {m}</button>)}
-        </div>
       </div>
       {formAbierto && <p className="small muted">{tr('Para cambiar el monto, cierra el formulario de tarjeta (✕).')}</p>}
       {monto === null && <p className="small muted">{tr('Escribe un monto entre 1 y 500.')}</p>}
-      <div ref={ref} className={`donar-paypal${formAbierto ? ' abierto' : ''}`} style={monto === null ? { display: 'none' } : undefined} />
+      <div ref={ref} className={`donar-paypal${formAbierto ? ' abierto' : ''}${monto === null ? ' apagado' : ''}`} aria-disabled={monto === null} />
       {err && <p className="note warn">{err}</p>}
     </>
   )
@@ -197,6 +194,7 @@ export function DonateModalHost() {
         )}
         <button type="button" className="donar-no" onClick={() => setAbierto(false)}>{tr('Ahora no')}</button>
         <small className="muted">{tr('Pago seguro en PayPal: tú eliges el monto. Aquí no guardamos tus datos de pago.')}</small>
+        <p className="donar-pie">{tr('💙 ¡Gracias por ser parte de esto! Cada aporte nos ayuda a seguir mejorando.')}</p>
       </div>
     </div>, document.body)
 }

@@ -1168,4 +1168,5 @@ export const KEYS: string[] = [
   "Dar mi opinión",
   "Si disfrutaste la experiencia, puedes apoyar el proyecto. Es voluntario.",
   "Para cambiar el monto, cierra el formulario de tarjeta (✕).",
+  "💙 ¡Gracias por ser parte de esto! Cada aporte nos ayuda a seguir mejorando.",
 ]

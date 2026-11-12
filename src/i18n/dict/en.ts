@@ -1168,5 +1168,6 @@ const D: string[] = [
   "Give my feedback",
   "If you enjoyed the experience, you can support the project. It is voluntary.",
   "To change the amount, close the card form (✕).",
+  "💙 Thank you for being part of this! Every contribution helps us keep improving.",
 ]
 export default D
