@@ -1179,4 +1179,6 @@ export const KEYS: string[] = [
   "Sitio creado por fans y para fans",
   "Ver más",
   "Ver menos",
+  "Cupos llenos por ahora. Puedes seguir jugando sin cuenta; tu avance no se guardará en la nube.",
+  "Seguir sin cuenta",
 ]

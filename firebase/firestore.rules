@@ -22,6 +22,29 @@ service cloud.firestore {
       allow read: if false;
       allow write: if esAdmin();
     }
+    // Cupo de cuentas con Google. config/cupo es un contador público de solo lectura; Admin lo crea y lo ajusta. Una persona con Google puede sumarle EXACTAMENTE 1, y solo si
+    // en esa misma operación crea su marcador cupos/{uid} (que solo se puede crear una vez): así nadie se cuenta dos veces ni puede inflar o bajar el contador.
+    // Es un tope blando: protege el consumo de Firestore; no puede impedir que alguien cree una sesión en Firebase Auth.
+    match /config/cupo {
+      allow get: if true;
+      allow list: if false;
+      allow create, update, delete: if esAdmin();
+      allow update: if signedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous'
+        && request.resource.data.keys().hasOnly(['registradas', 'actualizado'])
+        && request.resource.data.registradas == resource.data.registradas + 1
+        && existsAfter(/databases/$(database)/documents/cupos/$(request.auth.uid))
+        && !exists(/databases/$(database)/documents/cupos/$(request.auth.uid))
+        && exists(/databases/$(database)/documents/config/funciones)
+        && (get(/databases/$(database)/documents/config/funciones).data.valores.get('cupoCuentas', 0) == 0
+            || request.resource.data.registradas <= get(/databases/$(database)/documents/config/funciones).data.valores.get('cupoCuentas', 0));
+    }
+    match /cupos/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list: if false;
+      allow create: if signedIn() && request.auth.uid == uid && request.auth.token.firebase.sign_in_provider != 'anonymous'
+        && request.resource.data.keys().hasOnly(['uid', 'creado']) && request.resource.data.uid == uid;
+      allow update, delete: if false;
+    }
     // Interruptores de funciones: la web los lee sin iniciar sesión; solo Admin los cambia.
     match /config/funciones {
       allow get: if true;

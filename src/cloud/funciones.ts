@@ -11,10 +11,11 @@ export interface Funciones {
   cuentas: boolean // botón «Entrar con Google»
   huincha: boolean // franja «sitio creado por fans» arriba de la web
   duelo: boolean // juego «Mi Once Ideal: Duelo» (tarjeta de la portada y página #/duelo)
+  cupoCuentas: number // tope de cuentas con Google (0 = sin límite)
   nivelHistoria: number // hasta qué fase de la historia oficial está liberada para todos (0 octavos … 4 todo)
   mantenimiento: string // aviso arriba de la web (vacío = sin aviso)
 }
-export const FUNCIONES_BASE: Funciones = { simulaMundial: true, encuestas: true, donaciones: true, cobro: false, animacionCuadro: true, cuentas: true, huincha: true, duelo: true, nivelHistoria: 4, mantenimiento: '' }
+export const FUNCIONES_BASE: Funciones = { simulaMundial: true, encuestas: true, donaciones: true, cobro: false, animacionCuadro: true, cuentas: true, huincha: true, duelo: true, cupoCuentas: 500, nivelHistoria: 4, mantenimiento: '' }
 export const FUNCIONES_INFO: { clave: keyof Funciones; titulo: string; detalle: string }[] = [
   { clave: 'simulaMundial', titulo: 'Simula tu mundial', detalle: 'El asistente de sede, fecha, clima y leyendas en su prime, con sorteo y partidos en vivo.' },
   { clave: 'encuestas', titulo: 'Encuestas', detalle: 'El icono de opinión del header y la encuesta que se abre al terminar un mundial.' },

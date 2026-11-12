@@ -1179,5 +1179,7 @@ const D: string[] = [
   "Un site créé par des fans, pour des fans",
   "Voir plus",
   "Voir moins",
+  "Les inscriptions sont complètes pour le moment. Tu peux continuer à jouer sans compte ; ta progression ne sera pas sauvegardée dans le cloud.",
+  "Continuer sans compte",
 ]
 export default D

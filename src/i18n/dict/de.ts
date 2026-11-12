@@ -1179,5 +1179,7 @@ const D: string[] = [
   "Eine Seite von Fans für Fans",
   "Mehr anzeigen",
   "Weniger anzeigen",
+  "Die Anmeldungen sind vorerst voll. Du kannst ohne Konto weiterspielen; dein Fortschritt wird nicht in der Cloud gespeichert.",
+  "Ohne Konto fortfahren",
 ]
 export default D

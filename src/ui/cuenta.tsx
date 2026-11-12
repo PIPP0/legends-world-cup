@@ -1,6 +1,6 @@
 import { tr } from '../i18n'
 import { useEffect, useRef, useState } from 'react'
-import { NUBE_ACTIVA, anotarUsuario, asegurarVisitante, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
+import { CUPO_LLENO, NUBE_ACTIVA, anotarUsuario, asegurarVisitante, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { sincronizarNivel } from '../engine/storyLevel'
 import { useFunciones } from '../cloud/funciones'
 import { guardarFavoritaNube, leerFavoritaNube } from '../cloud/datos'
@@ -49,7 +49,7 @@ export function CuentaHeader() {
   }, [])
   if (!NUBE_ACTIVA || !f.cuentas) return null
   const conCuenta = c && !c.anonimo
-  const entrar = async () => { setError(''); try { await entrarConGoogle(); setAbierto(false) } catch (e) { const code = (e as { code?: string }).code ?? ''; console.warn('login Google:', code, e); if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setError(`${tr('No se pudo entrar. Inténtalo de nuevo.')} (${code.replace('auth/', '') || 'error'})`) } }
+  const entrar = async () => { setError(''); try { await entrarConGoogle(); setAbierto(false) } catch (e) { const code = (e as { code?: string }).code ?? ''; console.warn('login Google:', code, e); if (code === CUPO_LLENO) { setError(tr('Cupos llenos por ahora. Puedes seguir jugando sin cuenta; tu avance no se guardará en la nube.')); return } if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setError(`${tr('No se pudo entrar. Inténtalo de nuevo.')} (${code.replace('auth/', '') || 'error'})`) } }
   return (
     <div className="cuenta" ref={raiz}>
       {conCuenta ? (

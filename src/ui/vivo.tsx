@@ -14,7 +14,7 @@ import { Reveal } from './mundial'
 import { Board, type Item } from './board'
 import { takePending } from './pending'
 import { registrarMundial } from '../cloud/datos'
-import { NUBE_ACTIVA, cuentaActual, entrarConGoogle, esperarCambiosDeSesion, type Cuenta } from '../cloud/firebase'
+import { CUPO_LLENO, NUBE_ACTIVA, cuentaActual, cupoLleno, entrarConGoogle, leerCupo, esperarCambiosDeSesion, type Cuenta } from '../cloud/firebase'
 import { useFunciones } from '../cloud/funciones'
 import type { AltTournament, Bracket, Goal, KoMatch, MatchCtx } from '../types'
 
@@ -148,6 +148,9 @@ export function Vivo() {
   const f = useFunciones()
   const [cuenta, setCuenta] = useState<Cuenta | null | undefined>(NUBE_ACTIVA ? undefined : null)
   const [errLogin, setErrLogin] = useState('')
+  const [sinCuenta, setSinCuenta] = useState(false) // con el cupo lleno se puede seguir jugando sin cuenta
+  const [lleno, setLleno] = useState(false)
+  useEffect(() => { if (NUBE_ACTIVA) void leerCupo().then((c) => setLleno(cupoLleno(c))) }, [])
   useEffect(() => {
     if (!NUBE_ACTIVA) return
     let off: (() => void) | undefined
@@ -168,13 +171,14 @@ export function Vivo() {
   }, [step, t, setAlt, claveFin])
 
   if (!t) return <Section title={tr('Sin torneo en curso')}><p className="note">{tr('No hay un mundial por vivir.')} <a href="#/mundial">{tr('Arma uno')}</a>{tr(' o ')}<a href="#/simulador">{tr('ve el simulador')}</a>.</p></Section>
-  const exige = NUBE_ACTIVA && f.cuentas && step.kind === 'pair' && step.r === 'r16' && !(cuenta && !cuenta.anonimo)
+  const exige = NUBE_ACTIVA && f.cuentas && !sinCuenta && step.kind === 'pair' && step.r === 'r16' && !(cuenta && !cuenta.anonimo)
   if (exige) {
-    const entrar = async () => { setErrLogin(''); try { await entrarConGoogle(); } catch (e) { const code = (e as { code?: string }).code ?? ''; console.warn('login Google:', code, e); if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setErrLogin(`${tr('No se pudo entrar. Inténtalo de nuevo.')} (${code.replace('auth/', '') || 'error'})`) } }
+    const entrar = async () => { setErrLogin(''); try { await entrarConGoogle(); } catch (e) { const code = (e as { code?: string }).code ?? ''; console.warn('login Google:', code, e); if (code === CUPO_LLENO) { setLleno(true); return } if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setErrLogin(`${tr('No se pudo entrar. Inténtalo de nuevo.')} (${code.replace('auth/', '') || 'error'})`) } }
     return (
       <Section title={tr('Inicia sesión y descubre quién es el campeón de tu propio Mundial de Leyendas')} sub={tr('Octavos de final')}>
         <p>{tr('La fase de grupos es libre. Desde los octavos de final necesitas entrar con tu cuenta de Gmail para ver cómo termina tu mundial y guardar tu resultado.')}</p>
-        {cuenta === undefined ? <p className="muted">…</p> : <div className="cta"><button className="btn pri" onClick={() => void entrar()}>{tr('Entrar con Gmail')}</button><a className="btn ghost" href="#/mundial">{tr('Volver a armar mi mundial')}</a></div>}
+        {cuenta === undefined ? <p className="muted">…</p> : <div className="cta"><button className="btn pri" onClick={() => void entrar()}>{tr('Entrar con Gmail')}</button>{lleno && <button className="btn" onClick={() => setSinCuenta(true)}>{tr('Seguir sin cuenta')}</button>}<a className="btn ghost" href="#/mundial">{tr('Volver a armar mi mundial')}</a></div>}
+        {lleno && <p className="note warn">{tr('Cupos llenos por ahora. Puedes seguir jugando sin cuenta; tu avance no se guardará en la nube.')}</p>}
         {errLogin && <p className="note warn">{errLogin}</p>}
       </Section>
     )

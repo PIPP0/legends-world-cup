@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { NUBE_ACTIVA, asegurarVisitante, cuentaActual, entrarConClave, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
+import { NUBE_ACTIVA, asegurarContadorCupo, asegurarVisitante, cuentaActual, entrarConClave, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { FUNCIONES_BASE, FUNCIONES_INFO, guardarFunciones, useFunciones, type Funciones } from '../cloud/funciones'
 import { borrarEncuesta, leerEncuestas, leerMundiales, leerProgresos, leerUsuarios, type EncuestaReg, type MundialReg, type ProgresoReg, type UsuarioReg } from '../cloud/datos'
 import { HOST_BY_ID, MONTHS } from '../data/world'
@@ -250,6 +250,17 @@ function FuncionesAdmin({ email }: { email: string }) {
   const [msg, setMsg] = useState('')
   const [guardando, setGuardando] = useState(false)
   const guardar = async () => { setGuardando(true); setMsg(''); try { await guardarFunciones({ ...v, mantenimiento: v.mantenimiento.slice(0, 160) }, email); setMsg('Guardado. La web lo aplica a todas las personas (en minutos).') } catch { setMsg('No se pudo guardar.') } finally { setGuardando(false) } }
+  // cupo de cuentas con Google: el contador se crea si no existe y se muestra cuántas lleva
+  const [usadas, setUsadas] = useState<number | null>(null)
+  const [cupoTxt, setCupoTxt] = useState(String(actual.cupoCuentas))
+  useEffect(() => { void asegurarContadorCupo().then(setUsadas) }, [])
+  useEffect(() => { setCupoTxt(String(actual.cupoCuentas)) }, [actual.cupoCuentas])
+  const guardarCupo = async () => {
+    const n = Math.max(0, Math.min(1_000_000, Math.round(Number(cupoTxt) || 0)))
+    setCupoTxt(String(n)); if (n === actual.cupoCuentas) return
+    setMsg('')
+    try { await guardarFunciones({ ...actual, cupoCuentas: n }, email); setV((x) => ({ ...x, cupoCuentas: n })); setMsg(n === 0 ? 'Cupo de cuentas: sin límite. Ya se ve en la web.' : `Cupo de cuentas: ${n}. Ya se ve en la web.`) } catch { setMsg('No se pudo guardar el cupo.') }
+  }
   // cada interruptor se guarda al tocarlo y la web lo aplica al instante; el texto del aviso se guarda con su botón
   const alternar = async (clave: keyof Funciones, titulo: string, valor: boolean) => {
     const antes = v
@@ -273,6 +284,10 @@ function FuncionesAdmin({ email }: { email: string }) {
             </label>
           </li>
         ))}
+        <li className="fn-row">
+          <div className="fn-txt"><b>Cupo de cuentas con Google</b><p className="muted small">Tope de personas que pueden registrarse (0 = sin límite). Al llenarse, las demás siguen jugando sin cuenta. Quien ya está registrada puede volver a entrar siempre.{usadas === null ? '' : ` Hoy hay ${usadas} registradas desde que se activó el contador.`}</p></div>
+          <input className="search fn-num" type="number" min={0} max={1000000} step={50} value={cupoTxt} aria-label="Cupo de cuentas con Google" onChange={(e) => setCupoTxt(e.target.value)} onBlur={() => void guardarCupo()} onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
+        </li>
         <li><b>Aviso en la web</b><p className="muted small">Texto que aparece arriba de todo (vacío = sin aviso). Se publica con «Guardar cambios».</p><input className="search" maxLength={160} value={v.mantenimiento} onChange={(e) => setV({ ...v, mantenimiento: e.target.value })} placeholder="Ej.: Mañana abrimos los cuartos de final" /></li>
       </ul>
       <div className="cta"><button className="btn pri" disabled={guardando} onClick={() => void guardar()}>{guardando ? 'Guardando…' : 'Guardar cambios'}</button><button className="btn ghost" onClick={() => setV(FUNCIONES_BASE)}>Valores de partida</button></div>

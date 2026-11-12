@@ -1179,5 +1179,7 @@ const D: string[] = [
   "Situs buatan penggemar untuk penggemar",
   "Lihat selengkapnya",
   "Lihat lebih sedikit",
+  "Pendaftaran penuh untuk saat ini. Kamu tetap bisa bermain tanpa akun; progresmu tidak akan disimpan di cloud.",
+  "Lanjutkan tanpa akun",
 ]
 export default D

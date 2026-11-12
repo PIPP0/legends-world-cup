@@ -48,6 +48,57 @@ export async function cuentaActual(): Promise<Cuenta | null> {
 }
 
 // "Entrar con Google": si había un visitante anónimo, se vincula (conserva su progreso); si ya existe esa cuenta de Google, se entra a ella.
+// Cupo de cuentas con Google: un contador público (config/cupo) y un marcador por persona (cupos/{uid}) que se crean juntos, así nadie se cuenta dos veces.
+// Si falla algo técnico (sin red, reglas sin publicar, contador sin crear) NO se bloquea a nadie: el tope solo corta cuando el contador dice, con certeza, que está lleno.
+export const CUPO_LLENO = 'cupo-lleno'
+export async function leerCupo(): Promise<{ usadas: number; tope: number } | null> {
+  if (!NUBE_ACTIVA) return null
+  try {
+    const n = await nube()
+    const [f, c] = await Promise.all([n.fs.getDoc(n.fs.doc(n.db, 'config', 'funciones')), n.fs.getDoc(n.fs.doc(n.db, 'config', 'cupo'))])
+    const tope = Number((f.exists() ? f.data().valores?.cupoCuentas : 0) ?? 0)
+    if (!c.exists()) return { usadas: 0, tope: 0 }
+    return { usadas: Number(c.data().registradas ?? 0), tope: tope > 0 ? tope : 0 }
+  } catch { return null }
+}
+export const cupoLleno = (c: { usadas: number; tope: number } | null): boolean => !!c && c.tope > 0 && c.usadas >= c.tope
+async function reservarCupo(uid: string): Promise<'ok' | 'lleno'> {
+  try {
+    const n = await nube()
+    const cupo = await leerCupo()
+    if (!cupo || cupo.tope === 0) return 'ok' // sin límite o sin contador
+    const marcador = n.fs.doc(n.db, 'cupos', uid)
+    if ((await n.fs.getDoc(marcador)).exists()) return 'ok' // ya es una cuenta contada: siempre puede volver a entrar
+    const contador = n.fs.doc(n.db, 'config', 'cupo')
+    await n.fs.runTransaction(n.db, async (tx) => {
+      const c = await tx.get(contador)
+      if (!c.exists()) return
+      const usadas = Number(c.data().registradas ?? 0)
+      if (usadas >= cupo.tope) throw new Error(CUPO_LLENO)
+      tx.update(contador, { registradas: usadas + 1, actualizado: Date.now() })
+      tx.set(marcador, { uid, creado: Date.now() })
+    })
+    return 'ok'
+  } catch (e) { return (e as Error).message === CUPO_LLENO ? 'lleno' : 'ok' }
+}
+// Admin: crea el contador si todavía no existe (las reglas solo se lo permiten a Admin) y devuelve cuántas cuentas lleva.
+export async function asegurarContadorCupo(): Promise<number | null> {
+  try {
+    const n = await nube(); const ref = n.fs.doc(n.db, 'config', 'cupo'); const d = await n.fs.getDoc(ref)
+    if (d.exists()) return Number(d.data().registradas ?? 0)
+    await n.fs.setDoc(ref, { registradas: 0, actualizado: Date.now() }); return 0
+  } catch { return null }
+}
+
+// Tras entrar con Google se reserva un cupo (Admin, que entra con vincular:false, nunca se bloquea). Si está lleno, se cierra esa sesión y se avisa.
+async function conCupo(u: Parameters<typeof deUsuario>[0], aplicaCupo: boolean): Promise<Cuenta> {
+  if (aplicaCupo && (await reservarCupo(u.uid)) === 'lleno') {
+    await salir().catch(() => undefined); await asegurarVisitante().catch(() => undefined)
+    throw Object.assign(new Error(CUPO_LLENO), { code: CUPO_LLENO })
+  }
+  return deUsuario(u)
+}
+
 export async function entrarConGoogle(opciones: { vincular?: boolean } = {}): Promise<Cuenta> {
   const n = await nube()
   const proveedor = new n.fa.GoogleAuthProvider()
@@ -56,13 +107,13 @@ export async function entrarConGoogle(opciones: { vincular?: boolean } = {}): Pr
   try {
     // Para Admin se entra siempre con Google "limpio" (sin vincular) para que el token traiga el proveedor google.com que exigen las reglas.
     const r = actual && actual.isAnonymous && opciones.vincular !== false ? await n.fa.linkWithPopup(actual, proveedor) : await n.fa.signInWithPopup(n.auth, proveedor)
-    return deUsuario(r.user)
+    return await conCupo(r.user, opciones.vincular !== false)
   } catch (e) {
     const code = (e as { code?: string }).code
     // Esa cuenta de Google ya existía: se entra con la credencial que devolvió Google (sin abrir otra ventana, que el navegador bloquearía).
     if (code === 'auth/credential-already-in-use' || code === 'auth/email-already-in-use') {
       const cred = n.fa.GoogleAuthProvider.credentialFromError(e as never)
-      if (cred) return deUsuario((await n.fa.signInWithCredential(n.auth, cred)).user)
+      if (cred) return await conCupo((await n.fa.signInWithCredential(n.auth, cred)).user, opciones.vincular !== false)
     }
     throw e
   }

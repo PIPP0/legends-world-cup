@@ -441,4 +441,6 @@ export const EXTRA: Array<[string, string]> = [
   ['Sitio creado por fans y para fans', 'A site made by fans, for fans'],
   ['Ver más', 'See more'],
   ['Ver menos', 'See less'],
+  ['Cupos llenos por ahora. Puedes seguir jugando sin cuenta; tu avance no se guardará en la nube.', 'Sign-ups are full for now. You can keep playing without an account; your progress will not be saved in the cloud.'],
+  ['Seguir sin cuenta', 'Continue without an account'],
 ]
