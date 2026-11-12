@@ -618,7 +618,7 @@ const razonQuimica = (r: RazonQuimica) => `${r.tipo === 'pais' ? tr('{n} del mis
 function Pasos({ paso, ataca }: { paso: 1 | 2 | 3; ataca: boolean }) {
   const nombres = [tr('Estrategia'), tr('Jugadores'), tr('Balón')]
   return (
-    <div className="d-pasos2">
+    <div className="d-stepper">
       <span className={`d-rol ${ataca ? 'atk' : 'def'}`}>{ataca ? `⚽ ${tr('Tú atacas')}` : `🛡 ${tr('Tú defiendes')}`}</span>
       <ol>{nombres.map((n, i) => <li key={n} className={i + 1 === paso ? 'on' : i + 1 < paso ? 'hecho' : ''}><i>{i + 1}</i><span>{n}</span></li>)}</ol>
     </div>
