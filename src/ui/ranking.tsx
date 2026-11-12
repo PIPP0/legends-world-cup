@@ -208,7 +208,7 @@ export function RankingPagina() {
         )}
       </section>
 
-      <p className="rk-nota">{tr('Incluye jugadores de demostración (resultados ficticios).')}</p>
+      <p className="rk-nota">{tr('El ranking se va actualizando con el tiempo e incluye jugadores de demostración.')}</p>
     </div>
   )
 }
