@@ -1157,6 +1157,6 @@ const D: string[] = [
   "Warna setiap pemain di lapangan menunjukkan seberapa cocok dengan {e}: hijau tinggi, kuning sedang, merah rendah.",
   "Sedang bermain",
   "Selagi komunitas berkembang, beberapa pemain di peringkat adalah pemain demonstrasi dan hasilnya fiktif. Sisanya adalah hasil nyata dari orang yang bermain.",
-  "Peringkat terus diperbarui dari waktu ke waktu dan termasuk pemain demonstrasi.",
+  "Peringkat terus diperbarui dari waktu ke waktu, dan beberapa pemain tidak sepenuhnya asli.",
 ]
 export default D

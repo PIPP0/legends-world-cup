@@ -419,5 +419,5 @@ export const EXTRA: Array<[string, string]> = [
   ['El color de cada jugador en la cancha muestra cuánto encaja con {e}: verde alto, amarillo medio, rojo bajo.', 'The colour of each player on the pitch shows how well he fits {e}: green high, yellow medium, red low.'],
   ['Jugando ahora', 'Playing now'],
   ['Mientras la comunidad crece, algunos jugadores del ranking son de demostración y sus resultados son ficticios. Los demás son resultados reales de personas que juegan.', 'While the community grows, some players in the ranking are demo players and their results are fictional. The rest are real results from people who play.'],
-  ['El ranking se va actualizando con el tiempo e incluye jugadores de demostración.', 'The ranking keeps updating over time and includes demo players.'],
+  ['El ranking se va actualizando con el tiempo y algunos jugadores no son completamente veraces.', 'The ranking keeps updating over time, and some players are not entirely truthful.'],
 ]

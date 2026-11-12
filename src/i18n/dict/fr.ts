@@ -1157,6 +1157,6 @@ const D: string[] = [
   "La couleur de chaque joueur sur le terrain montre son adéquation avec {e} : vert élevée, jaune moyenne, rouge faible.",
   "En train de jouer",
   "Pendant que la communauté grandit, certains joueurs du classement sont des joueurs de démonstration et leurs résultats sont fictifs. Les autres sont des résultats réels de personnes qui jouent.",
-  "Le classement se met à jour au fil du temps et inclut des joueurs de démonstration.",
+  "Le classement se met à jour au fil du temps, et certains joueurs ne sont pas tout à fait authentiques.",
 ]
 export default D

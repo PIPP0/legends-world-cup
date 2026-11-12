@@ -1012,4 +1012,4 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 /* el punto verde va en la esquina inferior derecha de la bandera */
 .rk-bandera{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .rk-bandera .rk-vivo{position:absolute;right:-5px;bottom:-5px;margin:0;width:11px;height:11px;border:2px solid #050a1c;box-sizing:border-box}
-.rk-nota{text-align:center;font-size:11px;color:#6f7fa8;opacity:.75;margin:6px 0 0}
+.rk-nota{text-align:center;font-size:11px;color:#6f7fa8;opacity:.6;margin:6px 0 0;font-style:italic}
