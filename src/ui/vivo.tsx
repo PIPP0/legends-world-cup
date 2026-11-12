@@ -86,7 +86,7 @@ function PairDraw({ pairs, onDone }: { pairs: Pair[]; onDone: () => void }) {
 const NIVEL_CUADRO: Record<Round | 'final', number> = { r16: 0, qf: 1, sf: 2, final: 3 }
 function PairCuadro({ full, round, onDone }: { full: Bracket; round: Round | 'final'; onDone: () => void }) {
   useEffect(() => { onDone() }, [onDone])
-  return <BracketEstatico full={full} level={NIVEL_CUADRO[round]} />
+  return <div className="vcuadro"><BracketEstatico full={full} level={NIVEL_CUADRO[round]} /></div>
 }
 
 function Tables({ t, upTo }: { t: AltTournament; upTo: number }) {
@@ -188,6 +188,7 @@ export function Vivo() {
   return (
     <Section title={tr('Paso {i} de {n}', { i: i + 1, n: steps.length - 1 })} sub={tr('{s} · semilla «{x}»', { s: stageTitle(), x: t.seed })}>
       <div className="vprog"><i style={{ width: `${(i / (steps.length - 1)) * 100}%` }} /></div>
+      {step.kind === 'pair' && ready && <div className="cta wiz arriba"><span /><button className="btn pri" onClick={next}>{tr('Continuar')}</button></div>}
       {body()}
       <div className="cta wiz"><span />{ready && <button className="btn pri" onClick={next}>{last ? tr('Conocer al campeón') : tr('Continuar')}</button>}</div>
     </Section>

@@ -1022,3 +1022,10 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .donar-libre input{width:84px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0a1130;color:#fff;font:600 16px Inter;text-align:center}
 .donar-libre input:focus{outline:2px solid var(--cy)}
 .donar-libre{flex-direction:column;gap:6px}.donar-libre input{width:150px;font-size:22px;padding:10px 12px}
+
+/* cuadro del simulador en vivo: más compacto (sin tarjetas altas medio vacías) y con el botón de avanzar también arriba */
+.vcuadro .bgrid{grid-template-rows:auto repeat(8,minmax(58px,auto));gap:8px 22px;min-width:880px}
+.vcuadro .bgrid .kcard,.vcuadro .bcell.c1 .kcard{min-height:0;padding:7px 10px}
+.vcuadro .bgrid .kside{min-height:32px}
+.vcuadro .bgrid-wrap{margin:4px 0}
+.cta.wiz.arriba{margin:0 0 8px}
