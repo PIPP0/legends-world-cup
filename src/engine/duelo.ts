@@ -11,9 +11,9 @@ export interface Hueco { pos: Pos; line: Line; x: number; y: number } // x,y en 
 const H = (pos: Pos, line: Line, x: number, y: number): Hueco => ({ pos, line, x, y })
 
 export const FORMACIONES: Record<string, Hueco[]> = {
-  '4-3-3': [H('PO', 'GK', 50, 90), H('LI', 'DEF', 14, 70), H('DFC', 'DEF', 38, 74), H('DFC', 'DEF', 62, 74), H('LD', 'DEF', 86, 70), H('MC', 'MID', 28, 41), H('MCD', 'MID', 50, 47), H('MC', 'MID', 72, 41), H('EXT', 'ATT', 18, 17), H('DC', 'ATT', 50, 11), H('EXT', 'ATT', 82, 17)],
-  '4-4-2': [H('PO', 'GK', 50, 90), H('LI', 'DEF', 14, 70), H('DFC', 'DEF', 38, 74), H('DFC', 'DEF', 62, 74), H('LD', 'DEF', 86, 70), H('MI', 'MID', 14, 38), H('MC', 'MID', 38, 43), H('MC', 'MID', 62, 43), H('MD', 'MID', 86, 38), H('DC', 'ATT', 36, 14), H('DC', 'ATT', 64, 14)],
-  '4-2-3-1': [H('PO', 'GK', 50, 90), H('LI', 'DEF', 14, 70), H('DFC', 'DEF', 38, 74), H('DFC', 'DEF', 62, 74), H('LD', 'DEF', 86, 70), H('MCD', 'MID', 36, 50), H('MCD', 'MID', 64, 50), H('EXT', 'ATT', 18, 29), H('MCO', 'MID', 50, 29), H('EXT', 'ATT', 82, 29), H('DC', 'ATT', 50, 11)],
+  '4-3-3': [H('PO', 'GK', 50, 91), H('LI', 'DEF', 10, 69), H('DFC', 'DEF', 36, 71), H('DFC', 'DEF', 64, 71), H('LD', 'DEF', 90, 69), H('MC', 'MID', 28, 41), H('MCD', 'MID', 50, 47), H('MC', 'MID', 72, 41), H('EXT', 'ATT', 18, 17), H('DC', 'ATT', 50, 11), H('EXT', 'ATT', 82, 17)],
+  '4-4-2': [H('PO', 'GK', 50, 91), H('LI', 'DEF', 10, 69), H('DFC', 'DEF', 36, 71), H('DFC', 'DEF', 64, 71), H('LD', 'DEF', 90, 69), H('MI', 'MID', 14, 38), H('MC', 'MID', 38, 43), H('MC', 'MID', 62, 43), H('MD', 'MID', 86, 38), H('DC', 'ATT', 36, 14), H('DC', 'ATT', 64, 14)],
+  '4-2-3-1': [H('PO', 'GK', 50, 91), H('LI', 'DEF', 10, 69), H('DFC', 'DEF', 36, 71), H('DFC', 'DEF', 64, 71), H('LD', 'DEF', 90, 69), H('MCD', 'MID', 36, 50), H('MCD', 'MID', 64, 50), H('EXT', 'ATT', 18, 29), H('MCO', 'MID', 50, 29), H('EXT', 'ATT', 82, 29), H('DC', 'ATT', 50, 11)],
 }
 export const NOMBRES_FORMACION = Object.keys(FORMACIONES)
 
