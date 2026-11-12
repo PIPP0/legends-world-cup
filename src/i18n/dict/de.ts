@@ -1164,5 +1164,8 @@ const D: string[] = [
   "Gib einen Betrag zwischen 1 und 500 ein.",
   "Das Turnierbaum: {r}",
   "Der Turnierbaum: Spiel um Platz drei und großes Finale",
+  "Dein Feedback dauert weniger als eine Minute und hilft uns, besser zu werden.",
+  "Meine Meinung abgeben",
+  "Wenn dir die Erfahrung gefallen hat, kannst du das Projekt unterstützen. Es ist freiwillig.",
 ]
 export default D

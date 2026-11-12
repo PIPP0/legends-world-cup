@@ -1164,5 +1164,8 @@ const D: string[] = [
   "Inserisci un importo tra 1 e 500.",
   "Il tabellone: {r}",
   "Il tabellone: terzo posto e grande finale",
+  "Il tuo parere richiede meno di un minuto e ci aiuta a migliorare.",
+  "Dai il mio parere",
+  "Se ti è piaciuta l’esperienza, puoi sostenere il progetto. È volontario.",
 ]
 export default D

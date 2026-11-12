@@ -1164,4 +1164,7 @@ export const KEYS: string[] = [
   "Escribe un monto entre 1 y 500.",
   "Así queda el cuadro: {r}",
   "Así queda el cuadro: tercer puesto y gran final",
+  "Tu opinión toma menos de un minuto y nos ayuda a mejorar.",
+  "Dar mi opinión",
+  "Si disfrutaste la experiencia, puedes apoyar el proyecto. Es voluntario.",
 ]

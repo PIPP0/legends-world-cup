@@ -1164,5 +1164,8 @@ const D: string[] = [
   "Enter an amount between 1 and 500.",
   "The bracket: {r}",
   "The bracket: third place and grand final",
+  "Your feedback takes less than a minute and helps us improve.",
+  "Give my feedback",
+  "If you enjoyed the experience, you can support the project. It is voluntary.",
 ]
 export default D

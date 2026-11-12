@@ -88,13 +88,14 @@ function PairCuadro({ full, round, onDone }: { full: Bracket; round: Round | 'fi
   const nivel = NIVEL_CUADRO[round]
   const [salto, setSalto] = useState(0)
   const [fin, setFin] = useState(false)
+  const [saltado, setSaltado] = useState(false)
   // octavos: solo el cuadro con los cruces. Cuartos en adelante: se anima cómo avanzan los ganadores (borde dorado, línea y llegada de equipos).
   useEffect(() => { if (nivel === 0) onDone() }, [nivel, onDone])
   const alTerminar = useMemo(() => () => { setFin(true); onDone() }, [onDone])
   if (nivel === 0) return <div className="vcuadro"><BracketEstatico full={full} level={0} /></div>
   return (
     <div className="vcuadro">
-      {!fin && <div className="cta"><button className="btn ghost" onClick={() => setSalto((k) => k + 1)}>{tr('Saltar animación')}</button></div>}
+      {!fin && !saltado && <div className="cta"><button className="btn ghost" onClick={() => { setSaltado(true); setSalto((k) => k + 1) }}>{tr('Saltar animación')}</button></div>}
       <BracketAnimado full={full} from={nivel - 1} to={nivel} speed={600} onEnd={alTerminar} skipKey={salto} />
     </div>
   )

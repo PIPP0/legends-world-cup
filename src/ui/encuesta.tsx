@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ENCUESTAS_API, enviarEncuesta, vaciarCola, type Respuesta } from '../lib/encuesta'
 import { useFunciones } from '../cloud/funciones'
+import { DONATE_URL } from '../engine/payment'
+import { abrirDonacion } from './paybox'
 
 const TEXTOS = ['', tr('Muy mal'), tr('Mal'), tr('Normal'), tr('Bien'), tr('Excelente')]
 
@@ -27,6 +29,7 @@ function Estrellas({ label, value, onChange }: { label: string; value: number; o
 
 interface ModalProps { tipo: Respuesta['tipo']; titulo: string; pregunta: string; pregunta2?: string; datos?: string; pantalla?: string; onClose: () => void }
 export function EncuestaModal({ tipo, titulo, pregunta, pregunta2, datos, pantalla, onClose }: ModalProps) {
+  const donaciones = useFunciones().donaciones
   const [e1, setE1] = useState(0)
   const [e2, setE2] = useState(0)
   const [com, setCom] = useState('')
@@ -46,7 +49,11 @@ export function EncuestaModal({ tipo, titulo, pregunta, pregunta2, datos, pantal
           <>
             <h3>{tr('¡Gracias!')}</h3>
             <p className="muted">{estado === 'ok' ? tr('Recibimos tu opinión. Nos ayuda a mejorar.') : tr('Guardamos tu opinión y la enviaremos en cuanto haya conexión.')}</p>
-            <div className="cta"><button className="btn pri" onClick={onClose}>{tr('Cerrar')}</button></div>
+            {tipo === 'mundial' && donaciones && /^https:\/\//.test(DONATE_URL) && <p className="enc-donar small muted">{tr('Si disfrutaste la experiencia, puedes apoyar el proyecto. Es voluntario.')}</p>}
+            <div className="cta">
+              <button className="btn pri" onClick={onClose}>{tr('Cerrar')}</button>
+              {tipo === 'mundial' && donaciones && /^https:\/\//.test(DONATE_URL) && <button className="btn ghost" onClick={() => { onClose(); abrirDonacion() }}>{tr('☕ Apoyar (opcional)')}</button>}
+            </div>
           </>
         ) : (
           <>
@@ -85,24 +92,22 @@ export function EncuestaHeader({ pantalla }: { pantalla: string }) {
   )
 }
 
-// Cada vez que termina un «Simula tu mundial» se pregunta de nuevo, 5 segundos después de ver al campeón (aunque sea el mismo torneo o la misma persona).
-// El reloj vive fuera del componente para que no se reinicie si la pantalla se vuelve a dibujar (en la web con cuenta ocurre al sincronizar).
-const ESPERA_MS = 5000
-let corrida: { clave: string; inicio: number; cerrada: boolean } | null = null
-
-// Al terminar «Simula tu mundial»: se abre sola 5 segundos después de ver al campeón, cada vez.
+// Al terminar «Simula tu mundial» no se interrumpe con ventanas: queda una tarjeta tranquila al final, y la persona responde cuando quiere.
 export function EncuestaMundial({ seed, datos }: { seed: string; datos: string }) {
   const f = useFunciones()
   const [abierta, setAbierta] = useState(false)
-  useEffect(() => {
-    // misma pantalla redibujada (menos de 60 s) = misma corrida; si no, es un mundial nuevo
-    if (!corrida || corrida.clave !== seed || Date.now() - corrida.inicio > 60_000) corrida = { clave: seed, inicio: Date.now(), cerrada: false }
-    const c = corrida
-    if (c.cerrada) return
-    const t = setTimeout(() => { if (!c.cerrada) setAbierta(true) }, Math.max(0, ESPERA_MS - (Date.now() - c.inicio)))
-    return () => clearTimeout(t)
-  }, [seed])
-  const cerrar = () => { setAbierta(false); if (corrida) corrida.cerrada = true }
-  if (!abierta || !f.encuestas) return null
-  return <EncuestaModal tipo="mundial" titulo={tr('¿Cómo estuvo tu mundial?')} pregunta={tr('¿Qué tan entretenida fue la experiencia?')} pregunta2={tr('¿Qué tan realistas te parecieron los resultados?')} datos={datos} pantalla="fin-mundial" onClose={cerrar} />
+  const [hecha, setHecha] = useState(false)
+  useEffect(() => { setHecha(false); setAbierta(false) }, [seed])
+  if (!f.encuestas) return null
+  return (
+    <>
+      {!hecha && (
+        <div className="note enc-card">
+          <span><b>{tr('¿Cómo estuvo tu mundial?')}</b> {tr('Tu opinión toma menos de un minuto y nos ayuda a mejorar.')}</span>{' '}
+          <button type="button" className="btn" onClick={() => setAbierta(true)}>{tr('Dar mi opinión')}</button>
+        </div>
+      )}
+      {abierta && <EncuestaModal tipo="mundial" titulo={tr('¿Cómo estuvo tu mundial?')} pregunta={tr('¿Qué tan entretenida fue la experiencia?')} pregunta2={tr('¿Qué tan realistas te parecieron los resultados?')} datos={datos} pantalla="fin-mundial" onClose={() => { setAbierta(false); setHecha(true) }} />}
+    </>
+  )
 }

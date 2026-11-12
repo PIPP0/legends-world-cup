@@ -1164,5 +1164,8 @@ const D: string[] = [
   "Masukkan jumlah antara 1 dan 500.",
   "Bagan: {r}",
   "Bagan: perebutan tempat ketiga dan final besar",
+  "Masukanmu kurang dari semenit dan membantu kami berkembang.",
+  "Beri pendapatku",
+  "Jika kamu menikmati pengalamannya, kamu bisa mendukung proyek ini. Bersifat sukarela.",
 ]
 export default D
