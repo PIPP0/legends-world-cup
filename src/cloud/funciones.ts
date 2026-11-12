@@ -30,19 +30,28 @@ let actual: Funciones = leerLocal()
 const oyentes = new Set<() => void>()
 const fijar = (f: Funciones) => { actual = f; try { localStorage.setItem(CLAVE, JSON.stringify(f)) } catch { /* sin almacenamiento */ } oyentes.forEach((o) => o()) }
 
-// Lee los interruptores de la nube una vez por carga (y cada 5 minutos). Si no hay nube, valen los de partida.
+// Escucha los interruptores de la nube EN VIVO: cuando Admin enciende o apaga algo, todas las pantallas abiertas lo aplican al instante (sin recargar).
+// Si no hay nube, valen los de partida. Si la conexión falla, se mantienen los últimos conocidos y se reintenta cada 5 minutos.
 let iniciado = false
 export function iniciarFunciones() {
   if (iniciado || !NUBE_ACTIVA) return
   iniciado = true
-  const leer = async () => {
+  const leerUnaVez = async () => {
     try {
       const n = await nube()
       const d = await n.fs.getDoc(n.fs.doc(n.db, 'config', 'funciones'))
       if (d.exists()) fijar({ ...FUNCIONES_BASE, ...(d.data().valores as Partial<Funciones>) })
     } catch { /* se mantienen los últimos conocidos */ }
   }
-  void leer(); setInterval(() => void leer(), 5 * 60_000)
+  void (async () => {
+    try {
+      const n = await nube()
+      n.fs.onSnapshot(n.fs.doc(n.db, 'config', 'funciones'), (d) => {
+        if (d.exists()) fijar({ ...FUNCIONES_BASE, ...(d.data().valores as Partial<Funciones>) })
+      }, () => { /* sin permiso o sin red: el reintento de abajo lo cubre */ })
+    } catch { void leerUnaVez() }
+  })()
+  setInterval(() => void leerUnaVez(), 5 * 60_000)
 }
 export const suscribirFunciones = (cb: () => void) => { oyentes.add(cb); return () => { oyentes.delete(cb) } }
 export function useFunciones(): Funciones {

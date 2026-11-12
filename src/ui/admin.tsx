@@ -250,21 +250,30 @@ function FuncionesAdmin({ email }: { email: string }) {
   const [msg, setMsg] = useState('')
   const [guardando, setGuardando] = useState(false)
   const guardar = async () => { setGuardando(true); setMsg(''); try { await guardarFunciones({ ...v, mantenimiento: v.mantenimiento.slice(0, 160) }, email); setMsg('Guardado. La web lo aplica a todas las personas (en minutos).') } catch { setMsg('No se pudo guardar.') } finally { setGuardando(false) } }
+  // cada interruptor se guarda al tocarlo y la web lo aplica al instante; el texto del aviso se guarda con su botón
+  const alternar = async (clave: keyof Funciones, titulo: string, valor: boolean) => {
+    const antes = v
+    setV({ ...v, [clave]: valor }); setMsg('')
+    try {
+      await guardarFunciones({ ...actual, [clave]: valor }, email)
+      setMsg(`«${titulo}» ${valor ? 'encendida' : 'apagada'}: ya se ve en la web.`)
+    } catch { setV(antes); setMsg('No se pudo guardar. Revisa tu conexión.') }
+  }
   return (
     <>
-      <p className="muted small">Los cambios se aplican sin republicar la web. Cada visitante los lee al entrar (y cada 5 minutos).</p>
+      <p className="muted small">Cada interruptor se guarda al tocarlo y la web lo aplica al instante, en todas las pantallas abiertas.</p>
       <ul className="admin-enc admin-fun">
         {FUNCIONES_INFO.map((f) => (
           <li key={f.clave} className="fn-row">
             <div className="fn-txt"><b>{f.titulo}</b><p className="muted small">{f.detalle}</p></div>
             <label className="fn-sw" title={(v[f.clave] as boolean) ? 'Encendida' : 'Apagada'}>
-              <input type="checkbox" role="switch" aria-label={f.titulo} checked={v[f.clave] as boolean} onChange={(e) => setV({ ...v, [f.clave]: e.target.checked })} />
+              <input type="checkbox" role="switch" aria-label={f.titulo} checked={v[f.clave] as boolean} onChange={(e) => void alternar(f.clave, f.titulo, e.target.checked)} />
               <span className="fn-track" aria-hidden="true"><i /></span>
               <span className="fn-est" aria-hidden="true">{(v[f.clave] as boolean) ? 'Sí' : 'No'}</span>
             </label>
           </li>
         ))}
-        <li><b>Aviso en la web</b><p className="muted small">Texto que aparece arriba de todo (vacío = sin aviso).</p><input className="search" maxLength={160} value={v.mantenimiento} onChange={(e) => setV({ ...v, mantenimiento: e.target.value })} placeholder="Ej.: Mañana abrimos los cuartos de final" /></li>
+        <li><b>Aviso en la web</b><p className="muted small">Texto que aparece arriba de todo (vacío = sin aviso). Se publica con «Guardar cambios».</p><input className="search" maxLength={160} value={v.mantenimiento} onChange={(e) => setV({ ...v, mantenimiento: e.target.value })} placeholder="Ej.: Mañana abrimos los cuartos de final" /></li>
       </ul>
       <div className="cta"><button className="btn pri" disabled={guardando} onClick={() => void guardar()}>{guardando ? 'Guardando…' : 'Guardar cambios'}</button><button className="btn ghost" onClick={() => setV(FUNCIONES_BASE)}>Valores de partida</button></div>
       {msg && <Note>{msg}</Note>}
