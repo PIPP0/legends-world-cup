@@ -9,15 +9,17 @@ export interface Funciones {
   cobro: boolean // cobro por paquetes (además de la configuración de pago)
   animacionCuadro: boolean // animación del cuadro de eliminatorias
   cuentas: boolean // botón «Entrar con Google»
+  huincha: boolean // franja «sitio creado por fans» arriba de la web
   duelo: boolean // juego «Mi Once Ideal: Duelo» (tarjeta de la portada y página #/duelo)
   nivelHistoria: number // hasta qué fase de la historia oficial está liberada para todos (0 octavos … 4 todo)
   mantenimiento: string // aviso arriba de la web (vacío = sin aviso)
 }
-export const FUNCIONES_BASE: Funciones = { simulaMundial: true, encuestas: true, donaciones: true, cobro: false, animacionCuadro: true, cuentas: true, duelo: true, nivelHistoria: 4, mantenimiento: '' }
+export const FUNCIONES_BASE: Funciones = { simulaMundial: true, encuestas: true, donaciones: true, cobro: false, animacionCuadro: true, cuentas: true, huincha: true, duelo: true, nivelHistoria: 4, mantenimiento: '' }
 export const FUNCIONES_INFO: { clave: keyof Funciones; titulo: string; detalle: string }[] = [
   { clave: 'simulaMundial', titulo: 'Simula tu mundial', detalle: 'El asistente de sede, fecha, clima y leyendas en su prime, con sorteo y partidos en vivo.' },
   { clave: 'encuestas', titulo: 'Encuestas', detalle: 'El icono de opinión del header y la encuesta que se abre al terminar un mundial.' },
   { clave: 'donaciones', titulo: 'Apoyo voluntario', detalle: 'Todo lo de donar: el ícono ☕ del header, el enlace «Apoyar (opcional)», la caja al final de cada mundial y la invitación tras la encuesta (necesita un enlace configurado).' },
+  { clave: 'huincha', titulo: 'Franja «sitio de fans»', detalle: 'La franja fina de arriba que dice que es un sitio creado por fans. Su texto cambia solo según tengas el apoyo voluntario encendido o apagado.' },
   { clave: 'cobro', titulo: 'Cobro por paquetes', detalle: 'Activa el pago. Solo funciona si además está conectado PayPal; no lo enciendas sin resolver lo tributario.' },
   { clave: 'animacionCuadro', titulo: 'Animación del cuadro', detalle: 'El cuadro de eliminatorias que avanza solo hasta el campeón.' },
   { clave: 'duelo', titulo: 'Mi Once Ideal: Duelo', detalle: 'El juego de armar tu equipo y jugar duelos de 3 turnos y el ranking (tarjeta de la portada y página Duelo). Apágalo si algo falla.' },

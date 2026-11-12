@@ -17,7 +17,7 @@ import { Vivo } from './vivo'
 import { EncuestaHeader } from './encuesta'
 import { Admin } from './admin'
 import { RankingPagina } from './ranking'
-import { t } from '../i18n'
+import { t, tr } from '../i18n'
 import { SelectorIdioma } from './idioma'
 import { CuentaHeader } from './cuenta'
 import { iniciarFunciones, useFunciones } from '../cloud/funciones'
@@ -78,6 +78,13 @@ const Logo = () => (
   </a>
 )
 
+// Franja fina: deja claro que es un sitio de fans. Si el apoyo voluntario está encendido, el texto lo reconoce (así nunca dice algo que no es cierto).
+function Huincha() {
+  const f = useFunciones()
+  if (!f.huincha) return null
+  return <div className="huincha" role="note"><span>{f.donaciones ? tr('Sitio creado por fans y para fans, como homenaje al fútbol y a sus ídolos. Jugar es gratis y el apoyo es voluntario. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios.') : tr('Sitio creado por fans y para fans, sin fines de lucro, como homenaje al fútbol y a sus ídolos. Los nombres e imágenes pertenecen a sus titulares y se usan con respeto y sin ánimo comercial. Sin relación con la FIFA, clubes, federaciones ni jugadores. Resultados y valoraciones ficticios.')}</span></div>
+}
+
 export default function App() {
   const route = useRoute()
   const [params, setParams] = useLocalState<ModelParams>('lwc:params:v1', DEFAULT_PARAMS)
@@ -93,6 +100,7 @@ export default function App() {
     <AppCtx.Provider value={{ params, setParams, alt, setAlt }}>
       {fun.mantenimiento && <div className="aviso-web" role="status">{fun.mantenimiento}</div>}
       <Ticker />
+      <Huincha />
       <DonateModalHost />
       <header className="top">
         <div className="top-in">

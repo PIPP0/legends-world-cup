@@ -1174,5 +1174,7 @@ const D: string[] = [
   "🌟 Tu es génial, merci beaucoup !",
   "🚀 Incroyable ! Tu nous aides à continuer de grandir.",
   "🏆 Tu es un grand ! Merci de croire en ce projet et de le rendre possible.",
+  "Un site créé par des fans, pour des fans, en hommage au football et à ses idoles. Jouer est gratuit et le soutien est volontaire. Les noms et images appartiennent à leurs titulaires et sont utilisés avec respect. Aucun lien avec la FIFA, les clubs, les fédérations ou les joueurs. Résultats et notes fictifs.",
+  "Un site créé par des fans, pour des fans, sans but lucratif, en hommage au football et à ses idoles. Les noms et images appartiennent à leurs titulaires et sont utilisés avec respect et sans but commercial. Aucun lien avec la FIFA, les clubs, les fédérations ou les joueurs. Résultats et notes fictifs.",
 ]
 export default D

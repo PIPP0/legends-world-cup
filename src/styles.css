@@ -1070,3 +1070,10 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .fn-est{width:20px;font:700 13px 'Barlow Condensed';letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
 .fn-sw input:checked~.fn-est{color:#2ee66b}
 @media(prefers-reduced-motion:reduce){.fn-track,.fn-track i{transition:none}}
+
+/* franja fina «sitio creado por fans» */
+.huincha{background:linear-gradient(90deg,rgba(255,45,135,.16),rgba(0,229,255,.12));border-bottom:1px solid var(--line);color:#c9d3f2;font:600 12.5px/1.35 Inter,sans-serif;text-align:center;padding:6px max(14px,env(safe-area-inset-left)) 6px max(14px,env(safe-area-inset-right));letter-spacing:.1px}
+/* en pantallas chicas la franja corre en una sola línea (como la cinta de resultados) para no ocupar tanto arriba */
+@media(max-width:700px){.huincha{overflow:hidden;white-space:nowrap;padding:5px 0;font-size:11.5px}.huincha span{display:inline-block;padding-left:100%;animation:huinchaMov 60s linear infinite}}
+@keyframes huinchaMov{to{transform:translateX(-100%)}}
+@media(max-width:700px) and (prefers-reduced-motion:reduce){.huincha{white-space:normal;padding:5px 14px}.huincha span{padding-left:0;animation:none;display:inline}}
