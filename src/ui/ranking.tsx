@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { tr } from '../i18n'
 import { NUBE_ACTIVA } from '../cloud/firebase'
 import { cambiarAliasNube, leerRankingNube, miIdRanking, publicarPartida } from '../cloud/ranking'
+import { cuentaActual } from '../cloud/firebase'
 import { paisAproximado } from '../lib/pais'
 import { MI_RANKING0, PUNTOS_VICTORIA, aliasLimpio, aliasPorDefecto, armarRanking, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
 import type { Nivel } from '../engine/duelo'
@@ -51,7 +52,12 @@ function useRanking() {
   return { lista, yo, posicion, cargando, alias, setAlias, hayReales: reales.some((r) => r.id !== miId) }
 }
 
-const Pais = ({ iso }: { iso: string }) => (iso ? <img className="rk-flag" src={`https://flagcdn.com/w40/${iso}.png`} alt={iso.toUpperCase()} loading="lazy" width={22} height={15} /> : <span className="rk-flag ph" aria-hidden />)
+const Pais = ({ iso }: { iso: string }) => {
+  const [mal, setMal] = useState(false)
+  const c = iso.toLowerCase()
+  // el servicio de banderas solo entiende códigos de 2 letras en minúscula; si no carga, se muestra el código en una pastilla
+  return c.length === 2 && !mal ? <img className="rk-flag" src={`https://flagcdn.com/w40/${c}.png`} alt={c.toUpperCase()} loading="lazy" width={22} height={15} onError={() => setMal(true)} /> : <span className="rk-flag ph" aria-hidden>{c.length === 2 ? c.toUpperCase() : ''}</span>
+}
 
 function Fila({ e, pos }: { e: EntradaRanking; pos: number }) {
   return (
@@ -119,7 +125,18 @@ export function RankingPagina() {
   const { lista, yo, posicion, cargando, alias, setAlias, hayReales } = useRanking()
   const [editando, setEditando] = useState(alias)
   const [abierto, setAbierto] = useState(false)
+  const [sugerido, setSugerido] = useState('')
   useEffect(() => { setEditando(alias) }, [alias])
+  // si entró con Google y aún tiene el nombre por defecto, se le ofrece (sin imponerlo) usar su nombre e inicial
+  useEffect(() => {
+    if (!/^Jugador [A-Z0-9]{4}$/.test(alias)) { setSugerido(''); return }
+    void cuentaActual().then((c) => {
+      if (!c || c.anonimo || !c.nombre) return
+      const [nombre, ...resto] = c.nombre.trim().split(/\s+/)
+      const inicial = resto.length ? ` ${resto[resto.length - 1][0].toUpperCase()}` : ''
+      setSugerido(aliasLimpio(`${nombre}${inicial}`))
+    })
+  }, [alias])
   const top3 = lista.slice(0, 3)
   const resto = lista.slice(3, 50)
   const siguiente = posicion > 1 ? lista[posicion - 2] : null
@@ -138,6 +155,13 @@ export function RankingPagina() {
         {top3[2] && <Podio e={top3[2]} pos={3} />}
       </section>
 
+      {sugerido && (
+        <section className="rk-sugerencia">
+          <p>{tr('Tu nombre en el ranking es «{a}». ¿Quieres usar «{b}»?', { a: alias, b: sugerido })}</p>
+          <div><button className="btn pri" onClick={() => setAlias(sugerido)}>{tr('Usar mi nombre')}</button><button className="btn ghost" onClick={() => setAbierto(true)}>{tr('Elegir otro')}</button></div>
+          <small className="muted">{tr('Se mostrará públicamente solo ese nombre. Puedes cambiarlo cuando quieras.')}</small>
+        </section>
+      )}
       <section className={`rk-miposicion${yo.jugadas > 0 ? '' : ' nuevo'}`}>
         {yo.jugadas > 0 ? (
           <>

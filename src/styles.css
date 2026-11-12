@@ -896,3 +896,6 @@ div.rk-tu label{font:700 13px 'Barlow Condensed';letter-spacing:1.2px;text-trans
 .d-btn-rank.mini.con-puesto{border-color:var(--cy);background:linear-gradient(135deg,rgba(0,229,255,.14),rgba(255,213,74,.08))}
 @media(max-width:700px){.d-btn-rank.mini{position:static;width:100%;margin:0 0 12px}}
 .d-btn-rank.mini b{grid-column:2;grid-row:1}.d-btn-rank.mini .rk-btn-yo,.d-btn-rank.mini .rk-btn-sub{grid-row:2}
+
+.rk-flag.ph{display:inline-grid;place-items:center;width:28px;height:19px;border-radius:3px;background:rgba(255,255,255,.1);font:800 10px 'Barlow Condensed';color:#c9d3f2;letter-spacing:.5px}
+.rk-sugerencia{display:grid;gap:8px;justify-items:center;text-align:center;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,213,74,.5);background:rgba(255,213,74,.07)}.rk-sugerencia p{margin:0;font-size:15px}.rk-sugerencia>div{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}

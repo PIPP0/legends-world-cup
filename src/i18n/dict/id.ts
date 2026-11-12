@@ -1135,5 +1135,9 @@ const D: string[] = [
   "Posisimu",
   "per kemenangan",
   "Kamu nomor 1! Pertahankan posisimu.",
+  "Namamu di peringkat adalah «{a}». Mau pakai «{b}»?",
+  "Pakai namaku",
+  "Pilih yang lain",
+  "Hanya nama itu yang akan ditampilkan secara publik. Kamu bisa mengubahnya kapan saja.",
 ]
 export default D

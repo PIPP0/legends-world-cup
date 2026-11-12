@@ -397,4 +397,8 @@ export const EXTRA: Array<[string, string]> = [
   ['Tu posición', 'Your position'],
   ['por victoria', 'per win'],
   ['¡Eres el número 1! Defiende tu lugar.', "You're number 1! Defend your spot."],
+  ['Tu nombre en el ranking es «{a}». ¿Quieres usar «{b}»?', 'Your name in the ranking is “{a}”. Do you want to use “{b}”?'],
+  ['Usar mi nombre', 'Use my name'],
+  ['Elegir otro', 'Choose another'],
+  ['Se mostrará públicamente solo ese nombre. Puedes cambiarlo cuando quieras.', 'Only that name will be shown publicly. You can change it whenever you like.'],
 ]

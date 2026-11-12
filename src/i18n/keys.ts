@@ -1135,4 +1135,8 @@ export const KEYS: string[] = [
   "Tu posición",
   "por victoria",
   "¡Eres el número 1! Defiende tu lugar.",
+  "Tu nombre en el ranking es «{a}». ¿Quieres usar «{b}»?",
+  "Usar mi nombre",
+  "Elegir otro",
+  "Se mostrará públicamente solo ese nombre. Puedes cambiarlo cuando quieras.",
 ]

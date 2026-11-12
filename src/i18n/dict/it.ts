@@ -1135,5 +1135,9 @@ const D: string[] = [
   "La tua posizione",
   "per vittoria",
   "Sei il numero 1! Difendi il tuo posto.",
+  "Il tuo nome in classifica è «{a}». Vuoi usare «{b}»?",
+  "Usa il mio nome",
+  "Sceglierne un altro",
+  "Solo quel nome sarà mostrato pubblicamente. Puoi cambiarlo quando vuoi.",
 ]
 export default D
