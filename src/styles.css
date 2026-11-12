@@ -1021,7 +1021,6 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .donar-libre{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 10px;font:700 14px 'Barlow Condensed';letter-spacing:.8px;text-transform:uppercase;color:var(--mut)}
 .donar-libre input{width:84px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0a1130;color:#fff;font:600 16px Inter;text-align:center}
 .donar-libre input:focus{outline:2px solid var(--cy)}
-.donar-libre{flex-direction:column;gap:6px}.donar-libre input{width:150px;font-size:22px;padding:10px 12px}
 
 /* cuadro del simulador en vivo: más compacto (sin tarjetas altas medio vacías) y con el botón de avanzar también arriba */
 .vcuadro .bgrid{grid-template-rows:auto repeat(8,minmax(58px,auto));gap:8px 22px;min-width:880px}
@@ -1030,3 +1029,17 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .vcuadro .bgrid-wrap{margin:4px 0}
 .cta.wiz.arriba{margin:0 0 8px}
 .enc-card{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.enc-donar{margin:6px 0 0}
+
+/* monto de la donación: − / + redondos, US$ dentro del campo y USD al final, sin las flechas del navegador */
+.donar-libre{display:grid;gap:8px;justify-items:center;margin:2px 0 12px}
+.donar-lbl{font:700 14px 'Barlow Condensed';letter-spacing:1.2px;text-transform:uppercase;color:var(--mut)}
+.donar-monto{display:flex;align-items:center;gap:10px}
+.donar-paso{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font:700 24px/1 'Barlow Condensed';display:grid;place-items:center;padding:0 0 3px;cursor:pointer;transition:background .15s,border-color .15s,transform .1s}
+.donar-paso:hover:not(:disabled){background:rgba(0,229,255,.14);border-color:var(--cy)}.donar-paso:active:not(:disabled){transform:scale(.94)}
+.donar-paso:disabled{opacity:.35;cursor:default}
+.donar-campo{display:flex;align-items:baseline;justify-content:center;gap:8px;width:170px;height:56px;padding:0 14px;border-radius:14px;border:1px solid var(--line);background:#0a1130;cursor:text;align-items:center}
+.donar-campo:focus-within{border-color:var(--cy);box-shadow:0 0 0 3px rgba(0,229,255,.18)}
+.donar-campo b{font:700 16px 'Barlow Condensed';letter-spacing:1px;color:var(--mut)}
+.donar-campo i{font:700 13px 'Barlow Condensed';letter-spacing:1.2px;font-style:normal;color:var(--mut)}
+.donar-campo input{width:60px;min-width:0;padding:0;border:0;background:transparent;color:#fff;font:800 28px 'Barlow Condensed';text-align:center;outline:none;-moz-appearance:textfield;appearance:textfield}
+.donar-campo input::-webkit-outer-spin-button,.donar-campo input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}

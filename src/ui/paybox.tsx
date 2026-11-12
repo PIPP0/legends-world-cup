@@ -97,6 +97,8 @@ type AccionesPaypal = { order: { create: (o: unknown) => Promise<string>; captur
 function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
   const [monto, setMonto] = useState<number | null>(1)
   const [texto, setTexto] = useState('1')
+  const poner = (v: string) => { setTexto(v); const n = Math.round(parseFloat(v) * 100) / 100; setMonto(n >= 1 && n <= 500 ? n : null) }
+  const cambiar = (n: number) => { const c = Math.min(500, Math.max(1, Math.round(n))); setTexto(String(c)); setMonto(c) }
   const [gracias, setGracias] = useState(false)
   const [err, setErr] = useState('')
   const ref = useRef<HTMLDivElement>(null)
@@ -121,9 +123,17 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
   if (gracias) return <><p className="donar-gracias">{tr('¡Gracias por tu apoyo! Recibimos tu aporte.')}</p><button type="button" className="btn pri" onClick={alTerminar}>{tr('Cerrar')}</button></>
   return (
     <>
-      <label className="donar-libre">{tr('Elige cuánto quieres aportar')} (US$)
-        <input type="number" inputMode="decimal" min={1} max={500} step="0.5" value={texto} onChange={(e) => { setTexto(e.target.value); const n = Math.round(parseFloat(e.target.value) * 100) / 100; setMonto(n >= 1 && n <= 500 ? n : null) }} />
-      </label>
+      <div className="donar-libre">
+        <span className="donar-lbl" id="donar-lbl">{tr('Elige cuánto quieres aportar')}</span>
+        <div className="donar-monto" role="group" aria-labelledby="donar-lbl">
+          <button type="button" className="donar-paso" aria-label="−" disabled={monto !== null && monto <= 1} onClick={() => cambiar((monto ?? 2) - 1)}>−</button>
+          <label className="donar-campo"><b aria-hidden>US$</b>
+            <input type="number" inputMode="decimal" min={1} max={500} step="1" value={texto} onChange={(e) => poner(e.target.value)} aria-label={tr('Elige cuánto quieres aportar') + ' (USD)'} />
+            <i aria-hidden>USD</i>
+          </label>
+          <button type="button" className="donar-paso" aria-label="+" disabled={monto !== null && monto >= 500} onClick={() => cambiar((monto ?? 0) + 1)}>+</button>
+        </div>
+      </div>
       {monto === null && <p className="small muted">{tr('Escribe un monto entre 1 y 500.')}</p>}
       <div ref={ref} className="donar-paypal" style={monto === null ? { display: 'none' } : undefined} />
       {err && <p className="note warn">{err}</p>}
