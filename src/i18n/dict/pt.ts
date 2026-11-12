@@ -1156,5 +1156,6 @@ const D: string[] = [
   "Encaixe baixo",
   "A cor de cada jogador no campo mostra o quanto ele se encaixa em {e}: verde alto, amarelo médio, vermelho baixo.",
   "Jogando agora",
+  "Enquanto a comunidade cresce, alguns jogadores do ranking são de demonstração e seus resultados são fictícios. Os demais são resultados reais de pessoas que jogam.",
 ]
 export default D

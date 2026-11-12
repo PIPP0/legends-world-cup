@@ -1156,5 +1156,6 @@ const D: string[] = [
   "Kecocokan rendah",
   "Warna setiap pemain di lapangan menunjukkan seberapa cocok dengan {e}: hijau tinggi, kuning sedang, merah rendah.",
   "Sedang bermain",
+  "Selagi komunitas berkembang, beberapa pemain di peringkat adalah pemain demonstrasi dan hasilnya fiktif. Sisanya adalah hasil nyata dari orang yang bermain.",
 ]
 export default D

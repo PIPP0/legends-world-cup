@@ -1156,4 +1156,5 @@ export const KEYS: string[] = [
   "Encaje bajo",
   "El color de cada jugador en la cancha muestra cuánto encaja con {e}: verde alto, amarillo medio, rojo bajo.",
   "Jugando ahora",
+  "Mientras la comunidad crece, algunos jugadores del ranking son de demostración y sus resultados son ficticios. Los demás son resultados reales de personas que juegan.",
 ]
