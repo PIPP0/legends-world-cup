@@ -13,11 +13,12 @@ export const ATAQUES: Ataque[] = ['contra', 'bandas', 'centro', 'largo']
 export const DEFENSAS: Defensa[] = ['presion', 'bloque', 'marca', 'cierre']
 // +2 súper efectivo para el ataque … −2 la defensa lo frena casi por completo.
 export const MATRIZ: Record<Ataque, Record<Defensa, number>> = {
-  contra: { presion: 2, bloque: -2, marca: 0, cierre: 0 },
-  bandas: { presion: -1, bloque: 1, marca: 1, cierre: -2 },
-  centro: { presion: -2, bloque: -1, marca: 0, cierre: 2 },
-  largo: { presion: 2, bloque: 1, marca: -2, cierre: 0 },
+  contra: { presion: 2, bloque: -2, marca: -1, cierre: 1 },
+  bandas: { presion: -1, bloque: 1, marca: 2, cierre: -2 },
+  centro: { presion: -2, bloque: -1, marca: 1, cierre: 2 },
+  largo: { presion: 1, bloque: 2, marca: -2, cierre: -1 },
 }
+// Equilibrada: cada fila y cada columna suman 0, así ninguna estrategia es mejor en promedio y gana quien adivina.
 export const PUNTOS_POR_NIVEL = 8 // cuánto pesa un nivel de efectividad en la calidad de la jugada
 
 // Atributos que pide cada estrategia (suman 1).
@@ -137,37 +138,39 @@ const ruido = (nivel: Nivel) => NIVELES.find((n) => n.id === nivel)!.ruido
 const mejoresTres = (ids: string[], f: (id: string) => number, rng: Rng, nivel: Nivel): string[] =>
   ids.map((id) => ({ id, v: f(id) + (rng() - 0.5) * 2 * ruido(nivel) })).sort((x, y) => y.v - x.v).slice(0, 3).map((x) => x.id)
 
+// ataca = 'mio' si esa jugada la atacó quien decide (la máquina) y 'su' si atacó la persona.
 export interface HistorialJugada { ataca: 'mio' | 'su'; ataque: Ataque; defensa: Defensa }
 const masFrecuente = <T extends string>(xs: T[]): T | undefined => { const m: Record<string, number> = {}; xs.forEach((x) => { m[x] = (m[x] ?? 0) + 1 }); return (Object.entries(m).sort((a, b) => b[1] - a[1])[0]?.[0]) as T | undefined }
+
+// Elige la estrategia con variedad: pesa algo la calidad del equipo (z-score), mucho el azar, castiga repetir la última y, en niveles altos,
+// «lee» lo que la persona suele hacer. Así no usa siempre la misma estrategia ni anula siempre la tuya.
+const AZAR_NIVEL: Record<Nivel, number> = { bronce: 2.4, plata: 1.7, oro: 1.3, leyenda: 1.0 }
+function elige<T extends string>(opciones: T[], q: (e: T) => number, lee: (e: T) => number, ultima: T | undefined, nivel: Nivel, rng: Rng): T {
+  const vals = opciones.map(q); const media = vals.reduce((x, y) => x + y, 0) / vals.length
+  const sd = Math.sqrt(vals.reduce((x, y) => x + (y - media) ** 2, 0) / vals.length) || 1
+  const lectura = nivel === 'leyenda' ? 0.6 : nivel === 'oro' ? 0.4 : 0
+  return opciones.map((e, i) => ({ e, v: 0.3 * ((vals[i] - media) / sd) + (rng() - 0.5) * 2 * AZAR_NIVEL[nivel] + lectura * lee(e) + (ultima === e ? -0.9 : 0) })).sort((x, y) => y.v - x.v)[0].e
+}
 
 export function eligeAtaqueMaquina(seed: string, turno: number, equipo: Equipo, cansados: string[], nivel: Nivel, hist: HistorialJugada[], aj: Aj = {}): { ataque: Ataque; trio: string[] } {
   const rng = makeRng(`${seed}:ia-ataque:${turno}`)
   const libres = disponibles(equipo, turno, cansados)
-  const suyoPrevio = hist.filter((h) => h.ataca === 'su').map((h) => h.ataque)
-  // contra qué defensa suele jugar la persona (para que los niveles altos la «lean»)
-  const defensaRival = nivel === 'leyenda' || nivel === 'oro' ? masFrecuente(hist.filter((h) => h.ataca === 'su').map((h) => h.defensa)) : undefined
-  const evalua = (e: Ataque) => {
-    const trio = mejoresTres(libres, (id) => encajeAtaque(id, e, aj), rng, nivel)
-    const q = trio.reduce((s, id) => s + encajeAtaque(id, e, aj), 0) / 3
-    const m = defensaRival ? MATRIZ[e][defensaRival] : 0
-    const repetida = suyoPrevio[suyoPrevio.length - 1] === e ? -6 : 0
-    return { e, trio, v: q + (nivel === 'bronce' ? (rng() - 0.5) * 40 : PUNTOS_POR_NIVEL * m * 0.6 + repetida + (rng() - 0.5) * ruido(nivel) * 2) }
-  }
-  const mejor = ATAQUES.map(evalua).sort((x, y) => y.v - x.v)[0]
-  return { ataque: mejor.e, trio: mejor.trio }
+  const propios = hist.filter((h) => h.ataca === 'mio'), ultima = propios[propios.length - 1]?.ataque
+  const defensaRival = masFrecuente(propios.map((h) => h.defensa)) // con qué defiende la persona cuando la máquina ataca
+  const trios = Object.fromEntries(ATAQUES.map((e) => [e, mejoresTres(libres, (id) => encajeAtaque(id, e, aj), rng, nivel)])) as Record<Ataque, string[]>
+  const q = (e: Ataque) => trios[e].reduce((x, id) => x + encajeAtaque(id, e, aj), 0) / 3
+  const ataque = elige(ATAQUES, q, (e) => (defensaRival ? MATRIZ[e][defensaRival] : 0), ultima, nivel, rng)
+  return { ataque, trio: trios[ataque] }
 }
 export function eligeDefensaMaquina(seed: string, turno: number, equipo: Equipo, cansados: string[], nivel: Nivel, hist: HistorialJugada[], aj: Aj = {}): { defensa: Defensa; trio: string[] } {
   const rng = makeRng(`${seed}:ia-defensa:${turno}`)
   const libres = disponibles(equipo, turno, cansados)
-  const ataqueRival = nivel === 'leyenda' || nivel === 'oro' ? masFrecuente(hist.filter((h) => h.ataca === 'mio').map((h) => h.ataque)) : undefined
-  const evalua = (d: Defensa) => {
-    const trio = mejoresTres(libres, (id) => encajeDefensa(id, d, aj), rng, nivel)
-    const q = trio.reduce((s, id) => s + encajeDefensa(id, d, aj), 0) / 3
-    const m = ataqueRival ? -MATRIZ[ataqueRival][d] : 0
-    return { d, trio, v: q + (nivel === 'bronce' ? (rng() - 0.5) * 40 : PUNTOS_POR_NIVEL * m * 0.6 + (rng() - 0.5) * ruido(nivel) * 2) }
-  }
-  const mejor = DEFENSAS.map(evalua).sort((x, y) => y.v - x.v)[0]
-  return { defensa: mejor.d, trio: mejor.trio }
+  const rivales = hist.filter((h) => h.ataca === 'su'), ultima = rivales[rivales.length - 1]?.defensa
+  const ataqueRival = masFrecuente(rivales.map((h) => h.ataque)) // con qué suele atacar la persona
+  const trios = Object.fromEntries(DEFENSAS.map((d) => [d, mejoresTres(libres, (id) => encajeDefensa(id, d, aj), rng, nivel)])) as Record<Defensa, string[]>
+  const q = (d: Defensa) => trios[d].reduce((x, id) => x + encajeDefensa(id, d, aj), 0) / 3
+  const defensa = elige(DEFENSAS, q, (d) => (ataqueRival ? -MATRIZ[ataqueRival][d] : 0), ultima, nivel, rng)
+  return { defensa, trio: trios[defensa] }
 }
 // El toque de la máquina en la barra: más nivel = más cerca del centro; con el balón rápido falla más.
 export function toqueMaquina(seed: string, turno: number, nivel: Nivel, segundos: number, rol: 'ataca' | 'defiende'): number {

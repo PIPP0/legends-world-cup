@@ -272,6 +272,8 @@ describe('duelo «Mi Once Ideal»', () => {
   })
 
   it('jugada: cada defensa frena a un ataque y sufre con otro, la barra va más lenta con mejor encaje y el centro rinde más', () => {
+    for (const a of ATAQUES) expect(DEFENSAS.reduce((x, d) => x + MATRIZ[a][d], 0)).toBe(0)
+    for (const d of DEFENSAS) expect(ATAQUES.reduce((x, a) => x + MATRIZ[a][d], 0)).toBe(0)
     for (const d of DEFENSAS) { const col = ATAQUES.map((a) => MATRIZ[a][d]); expect(Math.min(...col)).toBeLessThan(0); expect(Math.max(...col)).toBeGreaterThanOrEqual(0) }
     for (const a of ATAQUES) { const fila = DEFENSAS.map((d) => MATRIZ[a][d]); expect(Math.max(...fila)).toBeGreaterThan(0); expect(Math.min(...fila)).toBeLessThan(0) }
     expect(segundosBarra(95)).toBeGreaterThan(segundosBarra(80)); expect(segundosBarra(80)).toBeGreaterThan(segundosBarra(60))
