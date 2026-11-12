@@ -1151,4 +1151,8 @@ export const KEYS: string[] = [
   "Nos ayudas a crecer y seguir mejorando. Es voluntario y no desbloquea nada.",
   "Donar con PayPal",
   "Pago seguro en PayPal: tú eliges el monto. Aquí no guardamos tus datos de pago.",
+  "Encaje alto",
+  "Encaje medio",
+  "Encaje bajo",
+  "El color de cada jugador en la cancha muestra cuánto encaja con {e}: verde alto, amarillo medio, rojo bajo.",
 ]

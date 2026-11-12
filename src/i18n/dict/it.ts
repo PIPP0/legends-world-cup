@@ -1151,5 +1151,9 @@ const D: string[] = [
   "Ci aiuti a crescere e a migliorare. È volontario e non sblocca nulla.",
   "Dona con PayPal",
   "Pagamento sicuro su PayPal: scegli tu l’importo. Qui non conserviamo i tuoi dati di pagamento.",
+  "Adattamento alto",
+  "Adattamento medio",
+  "Adattamento basso",
+  "Il colore di ogni giocatore in campo mostra quanto si adatta a {e}: verde alto, giallo medio, rosso basso.",
 ]
 export default D

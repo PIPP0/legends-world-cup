@@ -413,4 +413,8 @@ export const EXTRA: Array<[string, string]> = [
   ['Nos ayudas a crecer y seguir mejorando. Es voluntario y no desbloquea nada.', "You help us grow and keep improving. It's voluntary and unlocks nothing."],
   ['Donar con PayPal', 'Donate with PayPal'],
   ['Pago seguro en PayPal: tú eliges el monto. Aquí no guardamos tus datos de pago.', "Secure payment on PayPal: you choose the amount. We don't store your payment details here."],
+  ['Encaje alto', 'High fit'],
+  ['Encaje medio', 'Medium fit'],
+  ['Encaje bajo', 'Low fit'],
+  ['El color de cada jugador en la cancha muestra cuánto encaja con {e}: verde alto, amarillo medio, rojo bajo.', 'The colour of each player on the pitch shows how well he fits {e}: green high, yellow medium, red low.'],
 ]

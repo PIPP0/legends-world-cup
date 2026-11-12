@@ -1151,5 +1151,9 @@ const D: string[] = [
   "You help us grow and keep improving. It's voluntary and unlocks nothing.",
   "Donate with PayPal",
   "Secure payment on PayPal: you choose the amount. We don't store your payment details here.",
+  "High fit",
+  "Medium fit",
+  "Low fit",
+  "The colour of each player on the pitch shows how well he fits {e}: green high, yellow medium, red low.",
 ]
 export default D

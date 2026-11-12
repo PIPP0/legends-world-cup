@@ -1151,5 +1151,9 @@ const D: string[] = [
   "Kamu membantu kami berkembang dan terus membaik. Ini sukarela dan tidak membuka apa pun.",
   "Donasi dengan PayPal",
   "Pembayaran aman di PayPal: kamu yang menentukan jumlahnya. Kami tidak menyimpan data pembayaranmu.",
+  "Kecocokan tinggi",
+  "Kecocokan sedang",
+  "Kecocokan rendah",
+  "Warna setiap pemain di lapangan menunjukkan seberapa cocok dengan {e}: hijau tinggi, kuning sedang, merah rendah.",
 ]
 export default D

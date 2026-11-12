@@ -68,7 +68,7 @@ function Nodo({ p, x, y, marca, onClick, etiqueta, activo, valor }: { p?: Player
       <circle cx={x} cy={Y} r="6.4" className="ring" />
       {photo ? <image href={photo.url} x={x - 5.6} y={Y - 5.6} width="11.2" height="11.2" preserveAspectRatio="xMidYMin slice" clipPath={`url(#${cid})`} /> : <><circle cx={x} cy={Y} r="5.6" className="fill" /><text x={x} y={Y + 1.5} textAnchor="middle" className="pni">{initials(p.name)}</text></>}
       <rect x={x + 2.6} y={Y + 2.6} width="6" height="3.8" rx="1.2" className="badge" />
-      <text x={x + 5.6} y={Y + 5.4} textAnchor="middle" className="pnn">{valor ? valor.n : p.ovr}</text>
+      <text x={x + 5.6} y={Y + 5.4} textAnchor="middle" className="pnn">{p.ovr}</text>
       <rect x={x - w / 2} y={Y + 6.8} width={w} height="3.8" rx="1.9" className="tag" />
       <text x={x} y={Y + 9.5} textAnchor="middle" className="pnl">{nm}</text>
       {marca === 'atacante' && <text x={x - 5.8} y={Y - 3.6} className="mk" textAnchor="middle">⚽</text>}
@@ -492,6 +492,12 @@ function Partida({ equipo, nivel, ganados, alTerminar, alSalir }: { equipo: Equi
   useEffect(() => { if (fase === 'fin' && !guardado) { setGuardado(true); borrarPartida(); alTerminar(gane) } }, [fase, guardado, gane, alTerminar])
   useEffect(() => { if (fase !== 'fin') { try { localStorage.setItem(CLAVE_ABIERTA, JSON.stringify({ creado: equipo.creado, nivel })) } catch { /* sin almacenamiento */ } } }, [fase, equipo.creado, nivel])
 
+  // en celular, al cambiar de paso se lleva a la vista el panel de pasos (o la cancha al elegir los 3 jugadores)
+  useEffect(() => {
+    if (window.innerWidth > 1100) return
+    const el = document.querySelector(fase === 'trio' ? '.d-versus .d-lado.mio' : '.d-versus .d-medio')
+    el?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+  }, [fase, turno])
   const libres = disponibles(equipo, turno, cMio)
   const puede = (id: string) => libres.includes(id)
   const sinM = ajSin(sin.mio), sinS = ajSin(sin.su)
@@ -569,7 +575,7 @@ function Partida({ equipo, nivel, ganados, alTerminar, alSalir }: { equipo: Equi
   const ritmoEscena = vel === 'rapida' ? { tiempo: 700, final: 1300 } : { tiempo: 1500, final: 2800 }
 
   return (
-    <div className="duelo d-versus">
+    <div className="duelo d-versus" data-fase={fase}>
       {compartir && <CompartirEquipo equipo={equipo} onClose={() => setCompartir(false)} />}
       {tabla && <TablaEfectividad ataca={ataca} actual={det ? { a: det.est.ataque, d: det.est.defensa } : undefined} onClose={() => setTabla(false)} />}
       <header className="d-marcador">
@@ -615,6 +621,8 @@ function Partida({ equipo, nivel, ganados, alTerminar, alSalir }: { equipo: Equi
 }
 
 const resTxt = (r: 'gol' | 'atajada' | 'corte') => (r === 'gol' ? tr('¡GOL!') : r === 'atajada' ? tr('¡Atajada!') : tr('¡Cortado!'))
+// El encaje se dice con palabras y color (nunca reemplaza la valoración original de un jugador).
+const nivelEncaje = (n: number): { t: 'alto' | 'medio' | 'bajo'; txt: string } => (n >= 85 ? { t: 'alto', txt: tr('Encaje alto') } : n >= 70 ? { t: 'medio', txt: tr('Encaje medio') } : { t: 'bajo', txt: tr('Encaje bajo') })
 const razonQuimica = (r: RazonQuimica) => `${r.tipo === 'pais' ? tr('{n} del mismo país', { n: r.n ?? 2 }) : r.tipo === 'combo' ? tr('Estilos que se complementan') : r.tipo === 'variedad' ? tr('Tres estilos distintos') : tr('Tres del mismo estilo')} ${r.pts > 0 ? '+' : ''}${r.pts}`
 
 // Indicador de los 3 pasos.
@@ -646,12 +654,12 @@ function PanelTrio({ ataca, est, trio, quitar, fit, quim, onVolver, onConfirmar 
   return (
     <div className="d-eleccion">
       <Pasos paso={2} ataca={ataca} />
-      <div className="d-rhead"><b>{tr('Paso {n} de 3', { n: 2 })} · {tr('Elige 3 jugadores: {n} de 3', { n: trio.length })}</b><span className="muted small">{tr('El número de la cancha es su encaje con {e}.', { e: nombreEst(est, ataca) })}</span></div>
+      <div className="d-rhead"><b>{tr('Paso {n} de 3', { n: 2 })} · {tr('Elige 3 jugadores: {n} de 3', { n: trio.length })}</b><span className="muted small">{tr('El color de cada jugador en la cancha muestra cuánto encaja con {e}: verde alto, amarillo medio, rojo bajo.', { e: nombreEst(est, ataca) })}</span></div>
       <div className="d-est-elegida"><span aria-hidden>{iconoEst(est, ataca)}</span><b>{nombreEst(est, ataca)}</b><button type="button" className="d-link" onClick={onVolver}>↩ {tr('Cambiar')}</button></div>
       <div className="d-trio-slots">
         {[0, 1, 2].map((i) => { const id = trio[i]; const p = id ? PLAYER_BY_ID[id] : null; return (
           <div key={i} className={`d-trio-s${p ? ' lleno' : ''}`}>
-            {p ? <><div className="d-slot-av"><Avatar p={p} size={44} /></div><b>{apellido(p.name)}</b><small>{ICONO_ESTILO[estiloJugador(p)]} {nombreEstilo(estiloJugador(p))}</small><em>{fit(id)}</em><button type="button" className="d-slot-x" onClick={() => quitar(id)} aria-label={tr('Quitar')}>✕</button></> : <span className="vacio">+</span>}
+            {p ? <><div className="d-slot-av"><Avatar p={p} size={44} /></div><b>{apellido(p.name)}</b><small>{ICONO_ESTILO[estiloJugador(p)]} {nombreEstilo(estiloJugador(p))}</small><em className={`enc ${nivelEncaje(fit(id)).t}`}>{nivelEncaje(fit(id)).txt}</em><button type="button" className="d-slot-x" onClick={() => quitar(id)} aria-label={tr('Quitar')}>✕</button></> : <span className="vacio">+</span>}
           </div>) })}
       </div>
       {trio.length >= 2 && <div className={`d-quim ${quim.total > 0 ? 'pos' : quim.total < 0 ? 'neg' : ''}`}><b>🧪 {tr('Química del trío')} {quim.total > 0 ? '+' : ''}{Math.round(quim.total * 10) / 10}</b>{quim.razones.map((r, i) => <span key={i}>{razonQuimica(r)}</span>)}{!quim.razones.length && <span>{tr('Sin combinaciones especiales')}</span>}{quim.razones.reduce((x, r) => x + r.pts, 0) > 6 && <span className="tope">{tr('Tope +{n}', { n: 6 })}</span>}</div>}
@@ -692,7 +700,7 @@ function PanelPasoBarra({ ataca, est, trio, ejec, setEjec, fit, segundos, disp, 
         {trio.map((id) => { const p = PLAYER_BY_ID[id]; const s = segundos(id); return (
           <button key={id} type="button" disabled={parada !== null} className={`d-ejec-c${id === ejec ? ' on' : ''}`} onClick={() => setEjec(id)} aria-pressed={id === ejec}>
             <Avatar p={p} size={40} /><b>{apellido(p.name)}</b>
-            <span className={`d-vel ${s >= 1.4 ? 'lenta' : s >= 0.95 ? 'media' : 'rapida'}`}>{s >= 1.4 ? '🐢' : s >= 0.95 ? '🏃' : '🐇'} {fit(id)}</span>
+            <span className={`d-vel ${s >= 1.4 ? 'lenta' : s >= 0.95 ? 'media' : 'rapida'}`}>{s >= 1.4 ? '🐢' : s >= 0.95 ? '🏃' : '🐇'} {nivelEncaje(fit(id)).txt}</span>
           </button>) })}
       </div>
       <small className="muted">{ataca ? tr('¿Quién la define?') : tr('¿Quién la intercepta?')} · {tr('Cuanto mejor encaja con {e}, más lento va el balón y más fácil es detenerlo en el centro.', { e: nombreEst(est, ataca) })}</small>
