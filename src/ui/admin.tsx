@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { NUBE_ACTIVA, asegurarVisitante, cuentaActual, entrarConClave, entrarConGoogle, salir, type Cuenta } from '../cloud/firebase'
+import { NUBE_ACTIVA, asegurarVisitante, cuentaActual, entrarConClave, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { FUNCIONES_BASE, FUNCIONES_INFO, guardarFunciones, useFunciones, type Funciones } from '../cloud/funciones'
 import { borrarEncuesta, leerEncuestas, leerMundiales, leerProgresos, leerUsuarios, type EncuestaReg, type MundialReg, type ProgresoReg, type UsuarioReg } from '../cloud/datos'
 import { HOST_BY_ID, MONTHS } from '../data/world'
@@ -40,6 +40,13 @@ export function Admin() {
     } finally { setCargando(false) }
   }, [])
   useEffect(() => { if (!NUBE_ACTIVA) return; void cuentaActual().then(async (c) => { setCuenta(c ?? (await asegurarVisitante())) }) }, [])
+  // Si la persona entra (o sale) desde el botón del encabezado, esta pantalla se entera sin recargar.
+  useEffect(() => {
+    if (!NUBE_ACTIVA) return
+    let baja: (() => void) | undefined; let activo = true
+    void esperarCambiosDeSesion((c) => { if (c) setCuenta(c) }).then((f) => { if (activo) baja = f; else f() })
+    return () => { activo = false; baja?.() }
+  }, [])
   useEffect(() => { if (cuenta && !cuenta.anonimo) void cargar() }, [cuenta, cargar])
 
   if (!NUBE_ACTIVA) return (
