@@ -383,4 +383,6 @@ export const EXTRA: Array<[string, string]> = [
   ['Ver ranking completo', 'See full ranking'],
   ['tu once ideal, duelos de 3 turnos y ranking', 'your ideal eleven, 3-turn duels and a ranking'],
   ['Si juegas duelos, tu nombre público elegido, tu país aproximado y tus resultados aparecen en el ranking, que es público. Puedes cambiar el nombre cuando quieras.', 'If you play duels, your chosen public name, your approximate country and your results appear in the ranking, which is public. You can change the name whenever you like.'],
+  ['JUEGA VS', 'PLAY VS'],
+  ['tu once: {v} de valoración · nivel de equipo {n}', 'your eleven: {v} rating · team level {n}'],
 ]

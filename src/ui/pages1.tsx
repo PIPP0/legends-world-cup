@@ -1,5 +1,7 @@
 import { useFunciones } from '../cloud/funciones'
 import { rich } from '../i18n/rich'
+import { valorEquipo, type Equipo } from '../engine/duelo'
+import { nivelEquipo } from '../engine/jugada'
 import { useMemo } from 'react'
 import { GROUPS, PLAYERS, STORY_MATCHES, TEAMS, teamsOfGroup } from '../data'
 import { DECLARED_R16 } from '../data/raw'
@@ -23,6 +25,15 @@ const groupGoals = STORY_MATCHES.reduce((a, m) => a + m.hg + m.ag, 0)
 export function Home() {
   const level = useStoryLevel()
   const fun = useFunciones()
+  // si la persona ya armó su equipo del duelo, la tarjeta pasa de «Crea tu equipo» a «Juega vs»
+  const miDuelo = useMemo(() => {
+    try {
+      const e = JSON.parse(localStorage.getItem('lwc:duelo:equipo') ?? 'null') as Equipo | null
+      if (!e || !Array.isArray(e.once) || e.once.length !== 11) return null
+      const g = (JSON.parse(localStorage.getItem('lwc:duelo:stats') ?? 'null') as { ganados?: number } | null)?.ganados ?? 0
+      return { v: valorEquipo(e), n: nivelEquipo(g) }
+    } catch { return null }
+  }, [])
   const ko = revealed(level)
   const totalGoals = groupGoals + ko.reduce((a, m) => a + (m.ga ?? 0) + (m.gb ?? 0), 0)
   const top = useMemo(() => storyPlayerStats(level).filter((s) => s.goals >= 3).sort((a, b) => b.goals - a.goals), [level])
@@ -41,7 +52,7 @@ export function Home() {
         <div><b><Count to={32} /></b><span>{tr('selecciones')}</span></div>
         <div><b><Count to={STORY_MATCHES.length + ko.length} /></b><span>{tr('partidos jugados')}</span></div>
         <div><b><Count to={totalGoals} /></b><span>{tr('goles')}</span></div>
-        {fun.duelo ? <a className="live mvp-cta" href="#/duelo"><b><i />{tr('CREA TU EQUIPO')}</b><span>{tr('tu once ideal, duelos de 3 turnos y ranking')}</span></a> : <a className="live mvp-cta" href="#/mvp"><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></a>}
+        {fun.duelo ? <a className="live mvp-cta" href="#/duelo"><b><i />{miDuelo ? tr('JUEGA VS') : tr('CREA TU EQUIPO')}</b><span>{miDuelo ? tr('tu once: {v} de valoración · nivel de equipo {n}', { v: miDuelo.v, n: miDuelo.n }) : tr('tu once ideal, duelos de 3 turnos y ranking')}</span></a> : <a className="live mvp-cta" href="#/mvp"><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></a>}
       </div>
 
       <ChampionPicker />

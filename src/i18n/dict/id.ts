@@ -1121,5 +1121,7 @@ const D: string[] = [
   "Lihat peringkat lengkap",
   "sebelas idealmu, duel 3 giliran, dan peringkat",
   "Jika kamu bermain duel, nama publik pilihanmu, perkiraan negaramu, dan hasilmu muncul di peringkat yang bersifat publik. Kamu bisa mengganti nama kapan saja.",
+  "MAIN VS",
+  "sebelasmu: rating {v} · level tim {n}",
 ]
 export default D

@@ -1121,5 +1121,7 @@ const D: string[] = [
   "Vedi la classifica completa",
   "la tua formazione ideale, duelli di 3 turni e classifica",
   "Se giochi duelli, il tuo nome pubblico scelto, il tuo paese approssimativo e i tuoi risultati compaiono in classifica, che è pubblica. Puoi cambiare il nome quando vuoi.",
+  "GIOCA VS",
+  "la tua formazione: {v} di valutazione · livello squadra {n}",
 ]
 export default D

@@ -1121,5 +1121,7 @@ const D: string[] = [
   "Gesamtes Ranking ansehen",
   "deine Traum-Elf, Duelle über 3 Züge und ein Ranking",
   "Wenn du Duelle spielst, erscheinen dein gewählter öffentlicher Name, dein ungefähres Land und deine Ergebnisse im Ranking, das öffentlich ist. Du kannst den Namen jederzeit ändern.",
+  "SPIEL VS",
+  "deine Elf: {v} Wertung · Teamstufe {n}",
 ]
 export default D
