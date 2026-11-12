@@ -917,3 +917,5 @@ div.rk-tu label{font:700 13px 'Barlow Condensed';letter-spacing:1.2px;text-trans
 .d-cols-eq .d-c-banca .d-sup-c .avatar{width:100%!important;height:100%!important}
 .d-cols-eq .d-c-banca .d-sup-ovr{font-size:13px;padding:0 6px;right:-8px;bottom:-5px}
 .d-cols-eq .d-c-banca .d-sup small{font-size:13px}
+
+.d-suerte{margin:0;max-width:340px;text-align:center;font-size:12.5px;line-height:1.4;color:#9fb0d8;animation:dAparece .5s .4s ease both}

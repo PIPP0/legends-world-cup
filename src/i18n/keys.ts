@@ -1145,4 +1145,6 @@ export const KEYS: string[] = [
   "¿Seguro? Después no podrás cambiarlo de nuevo.",
   "Confirmar cambio",
   "Cancelar",
+  "Tenías {p} % de probabilidad de gol: esta vez la suerte no acompañó.",
+  "Tu rival tenía {p} % de probabilidad de gol: ¡esta vez tuviste suerte!",
 ]

@@ -1145,5 +1145,7 @@ const D: string[] = [
   "Yakin? Setelah itu kamu tidak bisa mengubahnya lagi.",
   "Konfirmasi perubahan",
   "Batal",
+  "Peluang golmu {p} %: kali ini keberuntungan tidak memihak.",
+  "Lawanmu punya peluang gol {p} %: kali ini kamu beruntung!",
 ]
 export default D

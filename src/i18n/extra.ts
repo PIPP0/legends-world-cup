@@ -407,4 +407,6 @@ export const EXTRA: Array<[string, string]> = [
   ['¿Seguro? Después no podrás cambiarlo de nuevo.', "Are you sure? You won't be able to change it again."],
   ['Confirmar cambio', 'Confirm change'],
   ['Cancelar', 'Cancel'],
+  ['Tenías {p} % de probabilidad de gol: esta vez la suerte no acompañó.', "You had a {p}% chance of a goal: luck wasn't on your side this time."],
+  ['Tu rival tenía {p} % de probabilidad de gol: ¡esta vez tuviste suerte!', 'Your rival had a {p}% chance of a goal: you got lucky this time!'],
 ]

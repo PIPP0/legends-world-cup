@@ -1145,5 +1145,7 @@ const D: string[] = [
   "Sicher? Danach kannst du ihn nicht mehr ändern.",
   "Änderung bestätigen",
   "Abbrechen",
+  "Du hattest {p} % Torchance: diesmal hatte das Glück etwas dagegen.",
+  "Dein Gegner hatte {p} % Torchance: diesmal hattest du Glück!",
 ]
 export default D

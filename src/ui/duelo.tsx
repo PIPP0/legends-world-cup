@@ -777,6 +777,7 @@ function EscenaTurno({ det, pw, onFin, ritmo, turno, esUltimo, onSiguiente, vel,
           <div className={`d-meter ${v(3)}`}><div className="d-meter-h"><b>{tr('Probabilidad de gol: {p} %', { p: Math.round(det.pGol * 100) })}</b></div><div className="d-meter-bar"><i style={{ width: `${Math.round(det.pGol * 100)}%` }} /></div></div>
           <div className={`d-esc-res ${v(3)}`}>{resTxt(det.resultado)}</div>
           <p className={`d-narra ${v(3)}`}>{narradorTurno(det)}</p>
+          {fin && det.resultado !== 'gol' && det.pGol >= 0.5 && <p className="d-suerte">🎲 {mio ? tr('Tenías {p} % de probabilidad de gol: esta vez la suerte no acompañó.', { p: Math.round(det.pGol * 100) }) : tr('Tu rival tenía {p} % de probabilidad de gol: ¡esta vez tuviste suerte!', { p: Math.round(det.pGol * 100) })}</p>}
         </div>
       )}
       <div className="cta" onClick={(e) => e.stopPropagation()}>{!fin ? <><button className="btn ghost" onClick={() => setBeat(3)}>{tr('Saltar animación')}</button><button className="btn ghost" onClick={() => setVel(vel === 'normal' ? 'rapida' : 'normal')}>{vel === 'normal' ? tr('Velocidad: normal') : tr('Velocidad: rápida')}</button></> : <button className="btn pri d-gran" onClick={onSiguiente}>{esUltimo ? tr('Ver resultado final') : tr('Siguiente turno')}</button>}</div>

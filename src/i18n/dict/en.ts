@@ -1145,5 +1145,7 @@ const D: string[] = [
   "Are you sure? You won't be able to change it again.",
   "Confirm change",
   "Cancel",
+  "You had a {p}% chance of a goal: luck wasn't on your side this time.",
+  "Your rival had a {p}% chance of a goal: you got lucky this time!",
 ]
 export default D
