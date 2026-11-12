@@ -1049,3 +1049,4 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .modal-bg>.modal{margin:auto}
 /* formulario de tarjeta de PayPal desplegado: fondo claro para que su texto oscuro se lea bien */
 .donar-paypal.abierto{background:#f4f6fb;border-radius:14px;padding:10px 10px 6px;max-width:100%;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.donar-campo:has(input:disabled){opacity:.55}

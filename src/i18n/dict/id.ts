@@ -1167,5 +1167,6 @@ const D: string[] = [
   "Masukanmu kurang dari semenit dan membantu kami berkembang.",
   "Beri pendapatku",
   "Jika kamu menikmati pengalamannya, kamu bisa mendukung proyek ini. Bersifat sukarela.",
+  "Untuk mengubah jumlah, tutup formulir kartu (✕).",
 ]
 export default D

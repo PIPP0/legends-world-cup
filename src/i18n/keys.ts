@@ -1167,4 +1167,5 @@ export const KEYS: string[] = [
   "Tu opinión toma menos de un minuto y nos ayuda a mejorar.",
   "Dar mi opinión",
   "Si disfrutaste la experiencia, puedes apoyar el proyecto. Es voluntario.",
+  "Para cambiar el monto, cierra el formulario de tarjeta (✕).",
 ]

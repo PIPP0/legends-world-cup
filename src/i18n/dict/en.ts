@@ -1167,5 +1167,6 @@ const D: string[] = [
   "Your feedback takes less than a minute and helps us improve.",
   "Give my feedback",
   "If you enjoyed the experience, you can support the project. It is voluntary.",
+  "To change the amount, close the card form (✕).",
 ]
 export default D

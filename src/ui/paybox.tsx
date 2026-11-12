@@ -137,14 +137,15 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
       <div className="donar-libre">
         <span className="donar-lbl" id="donar-lbl">{tr('Elige cuánto quieres aportar')}</span>
         <div className="donar-monto" role="group" aria-labelledby="donar-lbl">
-          <button type="button" className="donar-paso" aria-label="−" disabled={monto !== null && monto <= 1} onClick={() => cambiar((monto ?? 2) - 1)}>−</button>
+          <button type="button" className="donar-paso" aria-label="−" disabled={formAbierto || (monto !== null && monto <= 1)} onClick={() => cambiar((monto ?? 2) - 1)}>−</button>
           <label className="donar-campo"><b aria-hidden>US$</b>
-            <input type="number" inputMode="decimal" min={1} max={500} step="1" value={texto} onChange={(e) => poner(e.target.value)} aria-label={tr('Elige cuánto quieres aportar') + ' (USD)'} />
+            <input type="number" inputMode="decimal" min={1} max={500} step="1" disabled={formAbierto} value={texto} onChange={(e) => poner(e.target.value)} aria-label={tr('Elige cuánto quieres aportar') + ' (USD)'} />
             <i aria-hidden>USD</i>
           </label>
-          <button type="button" className="donar-paso" aria-label="+" disabled={monto !== null && monto >= 500} onClick={() => cambiar((monto ?? 0) + 1)}>+</button>
+          <button type="button" className="donar-paso" aria-label="+" disabled={formAbierto || (monto !== null && monto >= 500)} onClick={() => cambiar((monto ?? 0) + 1)}>+</button>
         </div>
       </div>
+      {formAbierto && <p className="small muted">{tr('Para cambiar el monto, cierra el formulario de tarjeta (✕).')}</p>}
       {monto === null && <p className="small muted">{tr('Escribe un monto entre 1 y 500.')}</p>}
       <div ref={ref} className={`donar-paypal${formAbierto ? ' abierto' : ''}`} style={monto === null ? { display: 'none' } : undefined} />
       {err && <p className="note warn">{err}</p>}
