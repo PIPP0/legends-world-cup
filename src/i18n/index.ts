@@ -1,7 +1,8 @@
 // Idioma de la web. Se decide UNA vez al cargar: cambiar de idioma recarga la página, así datos y textos quedan coherentes.
-// Prioridad: ?lang=xx en el enlace → lo que la persona eligió (se recuerda) → dominio (mundialimposible.* en español) → inglés.
-// No se detecta por IP ni por el navegador: el inglés es el idioma por defecto y la persona elige otro con el selector.
+// Prioridad: ?lang=xx en el enlace → lo que la persona eligió (se recuerda) → dominio (mundialimposible.* en español) → español si el navegador
+// está en español o la zona horaria es de un país hispanohablante → inglés. No se usa la IP ni ningún servicio externo; la persona puede elegir otro idioma con el selector.
 import { KEYS } from './keys'
+import { paisAproximado } from '../lib/pais'
 
 export type Lang = 'en' | 'es' | 'pt' | 'fr' | 'it' | 'de' | 'id'
 // Idiomas terminados (nombre en su propio idioma). Se agregan aquí cuando su diccionario está listo y revisado.
@@ -17,6 +18,13 @@ export const IDIOMAS: Array<{ code: Lang; nombre: string; locale: string }> = [
 const KEY = 'lwc:lang'
 const valido = (x: unknown): x is Lang => IDIOMAS.some((i) => i.code === x)
 
+// Países donde el español es idioma principal (código ISO).
+const PAISES_ES = new Set(['ES', 'MX', 'AR', 'CL', 'CO', 'PE', 'UY', 'PY', 'BO', 'EC', 'VE', 'CR', 'PA', 'GT', 'HN', 'SV', 'NI', 'DO', 'CU', 'PR', 'GQ'])
+export function esHispano(idiomas: readonly string[], pais: string): boolean {
+  if (idiomas[0] && /^es(\b|-)/i.test(idiomas[0])) return true // el idioma principal del navegador es español
+  return PAISES_ES.has(pais.toUpperCase()) // zona horaria de un país hispanohablante
+}
+
 function detectar(): Lang {
   try {
     const q = new URLSearchParams(location.search).get('lang')
@@ -24,6 +32,7 @@ function detectar(): Lang {
     const guardado = localStorage.getItem(KEY)
     if (valido(guardado)) return guardado
     if (/mundialimposible\./i.test(location.hostname)) return 'es'
+    if (esHispano(navigator.languages?.length ? navigator.languages : [navigator.language], paisAproximado())) return 'es'
   } catch { /* sin almacenamiento */ }
   return 'en'
 }
