@@ -102,24 +102,28 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
   const [gracias, setGracias] = useState(false)
   const [err, setErr] = useState('')
   const ref = useRef<HTMLDivElement>(null)
+  // los botones de PayPal se dibujan UNA sola vez; el monto se lee en el instante de pagar (así no parpadean al sumar o restar)
+  const montoActual = useRef<number | null>(monto)
+  montoActual.current = monto
   useEffect(() => {
     let btn: { close: () => void } | null = null; let dead = false
-    setErr('')
-    if (monto === null) return
-    // pequeña espera para no recrear los botones en cada tecla cuando se escribe un monto libre
-    const espera = setTimeout(() => { loadSdk().then(() => {
+    loadSdk().then(() => {
       if (dead || !ref.current || !window.paypal) return
       const b = window.paypal.Buttons({
         style: { layout: 'vertical', shape: 'rect', label: 'donate', height: 42 },
-        createOrder: (_d: unknown, a: AccionesPaypal) => a.order.create({ purchase_units: [{ description: 'Apoyo voluntario', amount: { currency_code: 'USD', value: (monto ?? 0).toFixed(2) } }] }),
+        createOrder: (_d: unknown, a: AccionesPaypal) => {
+          const m = montoActual.current
+          if (m === null) return Promise.reject(new Error('monto'))
+          return a.order.create({ purchase_units: [{ description: 'Apoyo voluntario', amount: { currency_code: 'USD', value: m.toFixed(2) } }] })
+        },
         onApprove: (_d: unknown, a: AccionesPaypal) => a.order.capture().then(() => setGracias(true)),
         onCancel: () => setErr(tr('Cancelaste el pago. No se cobró nada.')),
         onError: () => setErr(tr('No se pudo iniciar el pago. Intenta de nuevo.')),
       })
       btn = b; void b.render(ref.current)
-    }).catch(() => setErr(tr('No se pudo cargar PayPal. Revisa tu conexión e intenta de nuevo.'))) }, 350)
-    return () => { dead = true; clearTimeout(espera); btn?.close() }
-  }, [monto])
+    }).catch(() => setErr(tr('No se pudo cargar PayPal. Revisa tu conexión e intenta de nuevo.')))
+    return () => { dead = true; btn?.close() }
+  }, [])
   if (gracias) return <><p className="donar-gracias">{tr('¡Gracias por tu apoyo! Recibimos tu aporte.')}</p><button type="button" className="btn pri" onClick={alTerminar}>{tr('Cerrar')}</button></>
   return (
     <>
