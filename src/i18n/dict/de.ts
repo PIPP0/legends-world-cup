@@ -1123,5 +1123,10 @@ const D: string[] = [
   "Wenn du Duelle spielst, erscheinen dein gewählter öffentlicher Name, dein ungefähres Land und deine Ergebnisse im Ranking, das öffentlich ist. Du kannst den Namen jederzeit ändern.",
   "SPIEL VS",
   "deine Elf: {v} Wertung · Teamstufe {n}",
+  "Siege/Spiele",
+  "Punkte",
+  "Ranking ansehen",
+  "Dein Platz: {p} von {t}",
+  "Zurück zum Duell",
 ]
 export default D

@@ -835,3 +835,20 @@ div.rk-tu{background:none;color:inherit;display:grid;gap:6px;padding:14px;border
 div.rk-tu label{font:700 13px 'Barlow Condensed';letter-spacing:1.2px;text-transform:uppercase;color:#9fb0d8}
 .rk-alias{display:flex;gap:8px}.rk-alias input{flex:1;min-width:0;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#0a1130;color:#fff;font:600 15px Inter}.rk-alias input:focus{outline:2px solid var(--cy)}
 @media(max-width:420px){.rk-fila{grid-template-columns:28px 22px minmax(0,1fr) 44px}.rk-rec{display:none}}
+
+/* ranking: bloque propio bajo el equipo, filas más claras */
+.d-c-rank{max-width:860px;margin:26px auto 0}
+.rk-card{gap:10px;padding:16px 18px}.rk-h b{font-size:22px}
+.rk-cols{display:grid;grid-template-columns:36px 30px minmax(0,1fr) 92px 56px;gap:10px;padding:0 12px;font:700 11px 'Barlow Condensed';letter-spacing:1.3px;text-transform:uppercase;color:#7f8db3}.rk-cols span:nth-child(n+4){text-align:right}
+.rk-fila{grid-template-columns:36px 30px minmax(0,1fr) 92px 56px;gap:10px;padding:10px 12px;font-size:15px}
+.rk-fila .rk-rec{text-align:right}
+.rk-pos{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.07);font:800 15px 'Barlow Condensed';color:#c9d3f2}
+.rk-pos.p1{background:#ffd54a;color:#3a2a00;box-shadow:0 0 12px rgba(255,213,74,.5)}.rk-pos.p2{background:#d5dde2;color:#1d2a30}.rk-pos.p3{background:#d99a62;color:#2c1604}
+.rk-flag{width:28px;height:19px;border-radius:3px}
+.rk-vacio{margin:4px 0 0;padding:10px 12px;border-radius:10px;border:1px dashed rgba(255,213,74,.4);background:rgba(255,213,74,.06);color:#ffe08a;font-size:14px;text-align:center}
+@media(max-width:560px){.rk-cols{grid-template-columns:32px 26px minmax(0,1fr) 52px}.rk-cols span:nth-child(4){display:none}.rk-fila{grid-template-columns:32px 26px minmax(0,1fr) 52px}.rk-fila .rk-rec{display:none}.rk-card{padding:12px}}
+
+/* botón al ranking */
+.d-btn-rank{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:12px;align-items:center;margin-top:10px;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,213,74,.4);background:linear-gradient(180deg,rgba(255,213,74,.1),rgba(255,213,74,.03));color:#fff;text-decoration:none;transition:.18s}
+.d-btn-rank:hover{transform:translateY(-2px);border-color:#ffd54a;box-shadow:0 10px 24px -12px rgba(255,213,74,.6)}
+.d-btn-rank>span{grid-row:1/3;font-size:26px}.d-btn-rank b{font:800 18px 'Barlow Condensed';letter-spacing:1.2px;text-transform:uppercase;color:#ffe08a}.d-btn-rank small{grid-column:2;font-size:12px;color:#b9c4e6}.d-btn-rank i{grid-row:1/3;grid-column:3;font-style:normal;font-size:20px;color:#ffe08a}

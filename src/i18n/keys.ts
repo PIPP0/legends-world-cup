@@ -1123,4 +1123,9 @@ export const KEYS: string[] = [
   "Si juegas duelos, tu nombre público elegido, tu país aproximado y tus resultados aparecen en el ranking, que es público. Puedes cambiar el nombre cuando quieras.",
   "JUEGA VS",
   "tu once: {v} de valoración · nivel de equipo {n}",
+  "Victorias/partidos",
+  "Puntos",
+  "Ver ranking",
+  "Tu puesto: {p} de {t}",
+  "Volver al duelo",
 ]

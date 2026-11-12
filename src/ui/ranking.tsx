@@ -57,12 +57,24 @@ const Pais = ({ iso }: { iso: string }) => (iso ? <img className="rk-flag" src={
 function Fila({ e, pos }: { e: EntradaRanking; pos: number }) {
   return (
     <li className={`rk-fila${e.yo ? ' yo' : ''}`}>
-      <span className={`rk-pos p${pos <= 3 ? pos : 0}`}>{pos <= 3 ? ['🥇', '🥈', '🥉'][pos - 1] : pos}</span>
+      <span className={`rk-pos p${pos <= 3 ? pos : 0}`}>{pos}</span>
       <Pais iso={e.pais} />
       <span className="rk-nombre"><b>{e.alias}</b>{e.yo && <em className="rk-tu">{tr('Tú')}</em>}{e.demo && <em className="rk-demo" title={tr('Jugador de demostración (ficticio)')}>{tr('Demo')}</em>}</span>
       <span className="rk-rec">{e.ganadas}/{e.jugadas}</span>
       <b className="rk-pts">{e.puntos}</b>
     </li>
+  )
+}
+
+// Botón de la pantalla «Tu equipo»: lleva al ranking y, si ya jugaste, muestra tu puesto.
+export function BotonRanking() {
+  const { yo, posicion, lista } = useRanking()
+  return (
+    <a className="d-btn-rank" href="#/ranking">
+      <span aria-hidden>🏆</span><b>{tr('Ver ranking')}</b>
+      <small>{yo.jugadas > 0 ? tr('Tu puesto: {p} de {t}', { p: posicion, t: lista.length }) : tr('Juega tu primer duelo para aparecer en el ranking.')}</small>
+      <i aria-hidden>→</i>
+    </a>
   )
 }
 
@@ -73,9 +85,10 @@ export function RankingResumen() {
   return (
     <div className="rk-card">
       <div className="rk-h"><b>🏆 {tr('Ranking')}</b><a href="#/ranking">{tr('Ver ranking completo')} →</a></div>
+      <div className="rk-cols" aria-hidden><span>#</span><span /><span>{tr('Jugador')}</span><span>{tr('Victorias/partidos')}</span><span>{tr('Puntos')}</span></div>
       <ol className="rk-lista">{top.map((e, i) => <Fila key={e.id} e={e} pos={i + 1} />)}</ol>
       {yo.jugadas > 0 && posicion > 5 && <ol className="rk-lista rk-mio"><Fila e={yo} pos={posicion} /></ol>}
-      {yo.jugadas === 0 && <p className="small muted">{tr('Juega tu primer duelo para aparecer en el ranking.')}</p>}
+      {yo.jugadas === 0 && <p className="rk-vacio">{tr('Juega tu primer duelo para aparecer en el ranking.')}</p>}
     </div>
   )
 }
@@ -88,6 +101,7 @@ export function RankingPagina() {
   return (
     <Section title={tr('Ranking')} sub={tr('Los puntos dependen del rival: Bronce {a}, Plata {b}, Oro {c} y Leyenda {d} por victoria.', { a: PUNTOS_VICTORIA.bronce, b: PUNTOS_VICTORIA.plata, c: PUNTOS_VICTORIA.oro, d: PUNTOS_VICTORIA.leyenda })}>
       <div className="rk-wrap">
+        <a className="d-link" href="#/duelo">← {tr('Volver al duelo')}</a>
         <div className="rk-tu">
           <label htmlFor="rk-alias">{tr('Tu nombre público en el ranking')}</label>
           <div className="rk-alias"><input id="rk-alias" value={editando} maxLength={20} onChange={(e) => setEditando(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') setAlias(editando) }} /><button className="btn pri" disabled={aliasLimpio(editando) === alias} onClick={() => setAlias(editando)}>{tr('Guardar')}</button></div>

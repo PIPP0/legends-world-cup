@@ -1123,5 +1123,10 @@ const D: string[] = [
   "Se você joga duelos, seu nome público escolhido, seu país aproximado e seus resultados aparecem no ranking, que é público. Você pode mudar o nome quando quiser.",
   "JOGUE VS",
   "seu time: {v} de avaliação · nível da equipe {n}",
+  "Vitórias/jogos",
+  "Pontos",
+  "Ver ranking",
+  "Sua posição: {p} de {t}",
+  "Voltar ao duelo",
 ]
 export default D
