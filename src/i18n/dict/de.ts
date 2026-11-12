@@ -1162,5 +1162,7 @@ const D: string[] = [
   "Wähle, wie viel du beitragen möchtest",
   "Anderer Betrag",
   "Gib einen Betrag zwischen 1 und 500 ein.",
+  "Das Turnierbaum: {r}",
+  "Der Turnierbaum: Spiel um Platz drei und großes Finale",
 ]
 export default D

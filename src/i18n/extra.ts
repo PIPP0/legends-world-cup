@@ -424,4 +424,6 @@ export const EXTRA: Array<[string, string]> = [
   ['Elige cuánto quieres aportar', 'Choose how much you want to contribute'],
   ['Otro monto', 'Other amount'],
   ['Escribe un monto entre 1 y 500.', 'Enter an amount between 1 and 500.'],
+  ['Así queda el cuadro: {r}', 'The bracket: {r}'],
+  ['Así queda el cuadro: tercer puesto y gran final', 'The bracket: third place and grand final'],
 ]

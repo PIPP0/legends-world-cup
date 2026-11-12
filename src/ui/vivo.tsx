@@ -9,13 +9,14 @@ import { recordHistory } from '../engine/world'
 import { Flag, Section, useApp } from './common'
 import { CtxLine } from './world'
 import { LiveReplay } from './pages4'
+import { BracketEstatico } from './bracketAnim'
 import { Reveal } from './mundial'
 import { Board, type Item } from './board'
 import { takePending } from './pending'
 import { registrarMundial } from '../cloud/datos'
 import { NUBE_ACTIVA, cuentaActual, entrarConGoogle, esperarCambiosDeSesion, type Cuenta } from '../cloud/firebase'
 import { useFunciones } from '../cloud/funciones'
-import type { AltTournament, Goal, KoMatch, MatchCtx } from '../types'
+import type { AltTournament, Bracket, Goal, KoMatch, MatchCtx } from '../types'
 
 const ALL = Object.keys(TEAM_BY_ID)
 
@@ -79,6 +80,13 @@ function PairDraw({ pairs, onDone }: { pairs: Pair[]; onDone: () => void }) {
       {k <= pairs.length && <button className="btn ghost" onClick={skip}>{tr('Saltar sorteo')}</button>}
     </>
   )
+}
+
+// Etapa eliminatoria: primero el cuadro con los cruces de la ronda (sin resultados) y desde ahí se pasa a los partidos.
+const NIVEL_CUADRO: Record<Round | 'final', number> = { r16: 0, qf: 1, sf: 2, final: 3 }
+function PairCuadro({ full, round, onDone }: { full: Bracket; round: Round | 'final'; onDone: () => void }) {
+  useEffect(() => { onDone() }, [onDone])
+  return <BracketEstatico full={full} level={NIVEL_CUADRO[round]} />
 }
 
 function Tables({ t, upTo }: { t: AltTournament; upTo: number }) {
@@ -156,7 +164,7 @@ export function Vivo() {
     switch (step.kind) {
       case 'draw': return tr('Sorteo de grupos')
       case 'md': return tr('Resultados por grupos · fecha {n}', { n: step.n })
-      case 'pair': return step.r === 'final' ? tr('Emparejamientos: tercer puesto y gran final') : tr('Sorteo de {r}', { r: RN[step.r] })
+      case 'pair': return step.r === 'final' ? tr('Así queda el cuadro: tercer puesto y gran final') : tr('Así queda el cuadro: {r}', { r: RN[step.r] })
       case 'play': return PLAYING[step.r]
       case 'third': return tr('Partido por el tercer puesto')
       default: return tr('La gran final')
@@ -170,10 +178,7 @@ export function Vivo() {
         const items: Item[] = ms.map((m) => ({ id: m.id, a: m.home, b: m.away, goals: m.goals ?? [], ga: m.hg, gb: m.ag, ctx: m.ctx, tag: `${tr('Grupo')} ${m.group}`, pr: prOf(m.home, m.away, m.ctx) }))
         return <><Board key={`md${step.n}`} items={items} tick={55} onDone={done} />{ready && <><h4 className="sub">{tr('Así quedan los grupos')}</h4><Tables t={t} upTo={step.n} /></>}</>
       }
-      case 'pair': {
-        const ms = step.r === 'final' ? [br.third, br.final] : br[step.r]
-        return <PairDraw key={`p${step.r}`} pairs={ms.map((m) => ({ a: m.a!, b: m.b!, ctx: m.ctx, label: m.id === 'F' ? tr('Gran final') : m.id === 'T' ? tr('Tercer puesto') : undefined }))} onDone={done} />
-      }
+      case 'pair': return <PairCuadro key={`p${step.r}`} full={br} round={step.r} onDone={done} />
       case 'play': return <Board key={`b${step.r}`} items={br[step.r].map((m) => ({ ...toItem(m), pr: prOf(m.a!, m.b!, m.ctx) }))} tick={60} onDone={done} />
       case 'third': return <><LiveReplay key="t" a={br.third.a!} b={br.third.b!} res={resThird!} onSkip={done} onDone={done} winLabel={tr('se queda con el tercer lugar')} /><CtxLine ctx={br.third.ctx} /></>
       default: return <div className="finalbox"><p className="gf">{tr('GRAN FINAL')}</p><LiveReplay key="f" a={br.final.a!} b={br.final.b!} res={resFinal!} onSkip={done} onDone={done} winLabel={tr('es el campeón del mundial')} /><CtxLine ctx={br.final.ctx} /></div>

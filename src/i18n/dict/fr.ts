@@ -1162,5 +1162,7 @@ const D: string[] = [
   "Choisis le montant de ta contribution",
   "Autre montant",
   "Saisis un montant entre 1 et 500.",
+  "Le tableau : {r}",
+  "Le tableau : troisième place et grande finale",
 ]
 export default D

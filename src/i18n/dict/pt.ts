@@ -1162,5 +1162,7 @@ const D: string[] = [
   "Escolha quanto quer contribuir",
   "Outro valor",
   "Digite um valor entre 1 e 500.",
+  "O chaveamento: {r}",
+  "O chaveamento: terceiro lugar e grande final",
 ]
 export default D
