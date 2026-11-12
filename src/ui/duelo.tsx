@@ -728,7 +728,6 @@ function narradorTurno(d: DetalleJugada): string {
 // Después del balón solo hay animación: se revelan las estrategias (y los poderes) y luego la jugada, por tiempos y con pelota viajera.
 function EscenaTurno({ det, pw, onFin, ritmo, turno, esUltimo, onSiguiente, vel, setVel }: { det: DetalleJugada; pw?: TurnoHist['pw']; onFin: () => void; ritmo: { tiempo: number; final: number }; turno: number; esUltimo: boolean; onSiguiente: () => void; vel: 'normal' | 'rapida'; setVel: (v: 'normal' | 'rapida') => void }) {
   const [beat, setBeat] = useState(0)
-  const [abierto, setAbierto] = useState(false)
   useEffect(() => { setBeat(0) }, [turno])
   useEffect(() => { if (beat >= 3) onFin() }, [beat, onFin])
   useEffect(() => { if (beat >= 3) return; const t = setTimeout(() => setBeat((b) => b + 1), beat === 0 ? ritmo.final : ritmo.tiempo); return () => clearTimeout(t) }, [beat, ritmo.tiempo, ritmo.final])
@@ -739,7 +738,6 @@ function EscenaTurno({ det, pw, onFin, ritmo, turno, esUltimo, onSiguiente, vel,
   const bola = beat <= 1 ? X.a : beat === 2 ? (pasa ? X.k : X.d) : det.resultado === 'gol' ? 104 : det.resultado === 'atajada' ? X.d + 8 : X.a + 6
   const fin = beat >= 3
   const mio = det.ataca === 'mio'
-  const pctPaso = Math.round(det.pPaso * 100), pctRem = Math.round(det.pRemate * 100)
   const nivelH = mio ? det.nivel : -det.nivel
   const nom = (id: string) => apellido(PLAYER_BY_ID[id].name)
   const lado = (de: 'mio' | 'su', p: Poder | undefined) => (
@@ -779,18 +777,6 @@ function EscenaTurno({ det, pw, onFin, ritmo, turno, esUltimo, onSiguiente, vel,
           <div className={`d-meter ${v(3)}`}><div className="d-meter-h"><b>{tr('Probabilidad de gol: {p} %', { p: Math.round(det.pGol * 100) })}</b></div><div className="d-meter-bar"><i style={{ width: `${Math.round(det.pGol * 100)}%` }} /></div></div>
           <div className={`d-esc-res ${v(3)}`}>{resTxt(det.resultado)}</div>
           <p className={`d-narra ${v(3)}`}>{narradorTurno(det)}</p>
-          {fin && (
-            <details className="d-por-que" open={abierto} onToggle={(e) => setAbierto((e.target as HTMLDetailsElement).open)}>
-              <summary>{tr('¿Por qué?')}</summary>
-              <ul className="d-porque">
-                <li>{tr('Estrategia: {a} contra {d}: {m}', { a: nombreAtaque(det.est.ataque), d: nombreDefensa(det.est.defensa), m: mensajeEfecto(det.nivel) })}</li>
-                <li>{tr('Jugadores: encaje del ataque {a} contra la defensa {d}', { a: Math.round(det.calidadA), d: Math.round(det.calidadD) })}</li>
-                <li>🧪 {tr('Química {a} contra {d}', { a: Math.round(det.quimA * 10) / 10, d: Math.round(det.quimD * 10) / 10 })} · ⭐ {tr('Nivel de equipo +{a} contra +{d}', { a: det.nivelA, d: det.nivelD })}</li>
-                <li>{tr('Superar la defensa: {p} %', { p: pctPaso })} · <b>{det.resultado === 'corte' ? tr('No lo logró') : tr('Lo superó')}</b></li>
-                {pasa && <li>{tr('Remate: {p} % (tu toque {t} %, remate {r} contra arquero {q})', { p: pctRem, t: Math.round(det.precA * 100), r: Math.round(det.rem), q: Math.round(det.arq) })} · <b>{det.resultado === 'gol' ? tr('Es gol') : tr('Lo atajó')}</b></li>}
-              </ul>
-            </details>
-          )}
         </div>
       )}
       <div className="cta" onClick={(e) => e.stopPropagation()}>{!fin ? <><button className="btn ghost" onClick={() => setBeat(3)}>{tr('Saltar animación')}</button><button className="btn ghost" onClick={() => setVel(vel === 'normal' ? 'rapida' : 'normal')}>{vel === 'normal' ? tr('Velocidad: normal') : tr('Velocidad: rápida')}</button></> : <button className="btn pri d-gran" onClick={onSiguiente}>{esUltimo ? tr('Ver resultado final') : tr('Siguiente turno')}</button>}</div>
