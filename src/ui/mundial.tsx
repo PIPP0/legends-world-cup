@@ -210,6 +210,20 @@ export function Mundial() {
   )
 }
 
+// Comparte el resultado con el menú del teléfono (WhatsApp, Instagram, etc.) o, si el navegador no lo tiene, copia el texto.
+function BotonCompartirCampeon({ champ, final }: { champ: string; final: string }) {
+  const [aviso, setAviso] = useState('')
+  const compartir = async () => {
+    const texto = tr('Mi Mundial Imposible: campeón {c}. Final: {f}. ¿Quién gana en el tuyo?', { c: champ, f: final })
+    const url = 'https://impossiblecup.com/'
+    try {
+      if (navigator.share) { await navigator.share({ title: 'Legends World Cup', text: texto, url }); return }
+      await navigator.clipboard.writeText(`${texto} ${url}`); setAviso(tr('Texto copiado. ¡Pégalo donde quieras!')); setTimeout(() => setAviso(''), 3500)
+    } catch { /* la persona cerró el menú de compartir */ }
+  }
+  return <><button type="button" className="btn" onClick={() => void compartir()}>{tr('Compartir mi campeón')}</button>{aviso && <span className="small muted" role="status">{aviso}</span>}</>
+}
+
 export function Reveal({ t, onAgain }: { t: AltTournament; onAgain: () => void }) {
   const { params } = useApp()
   const COBRO_ACTIVO = cobroActivo(useFunciones().cobro)
@@ -225,7 +239,7 @@ export function Reveal({ t, onAgain }: { t: AltTournament; onAgain: () => void }
         <div className="why-box"><h4>{tr('¿Qué influyó en la final?')}</h4><p>{why.verdictText}</p><ul className="why">{why.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul></div>
         {!COBRO_ACTIVO && <DonateBox momento="mundial" />}
         <EncuestaMundial seed={t.seed} datos={`${t.world ? HOST_BY_ID[t.world.hostId].name : tr('neutral')} · ${t.world?.month ? MONTHS[t.world.month - 1] : ''} · ${tr('campeón {n}', { n: TEAM_BY_ID[champ].name })}`.slice(0, 120)} />
-        <div className="cta"><button className="btn pri" onClick={onAgain}>{tr('Simular otro mundial')}</button><a className="btn" href="#/cuadro">{tr('Ver en Eliminatorias')}</a></div>
+        <div className="cta"><button className="btn pri" onClick={onAgain}>{tr('Simular otro mundial')}</button><BotonCompartirCampeon champ={TEAM_BY_ID[champ].name} final={`${TEAM_BY_ID[f.a!].name} ${f.ga}–${f.gb} ${TEAM_BY_ID[f.b!].name}`} /><a className="btn" href="#/cuadro">{tr('Ver en Eliminatorias')}</a></div>
       </Section>
       <Section title={tr('Cuadro')}><BracketView view="alt" /></Section>
       <GroupResults alt={t} />

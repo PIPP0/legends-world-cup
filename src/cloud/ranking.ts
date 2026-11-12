@@ -7,7 +7,7 @@ import type { Nivel } from '../engine/duelo'
 const uid = async (): Promise<string | null> => { const n = await nube(); await n.auth.authStateReady(); return n.auth.currentUser?.uid ?? null }
 export const miIdRanking = async (): Promise<string | null> => { if (!NUBE_ACTIVA) return null; try { return await uid() } catch { return null } }
 
-export async function leerRankingNube(): Promise<EntradaRanking[]> {
+async function leerRankingDeLaNube(): Promise<EntradaRanking[]> {
   if (!NUBE_ACTIVA) return []
   try {
     const n = await nube()
@@ -15,6 +15,18 @@ export async function leerRankingNube(): Promise<EntradaRanking[]> {
     const snap = await n.fs.getDocs(q)
     return snap.docs.map((d) => { const x = d.data() as Record<string, unknown>; return { id: d.id, alias: String(x.alias ?? 'Jugador'), pais: String(x.pais ?? ''), puntos: Number(x.puntos ?? 0), ganadas: Number(x.ganadas ?? 0), jugadas: Number(x.jugadas ?? 0), mejorRacha: Number(x.mejorRacha ?? 0) } })
   } catch { return [] }
+}
+
+// Cada lectura cuesta hasta 50 lecturas de Firestore. Se guarda el resultado 2 minutos y las pantallas que lo piden a la vez comparten UNA sola consulta
+// (el botón de Ranking, el resumen y la página lo usan juntos). Se vacía al publicar una partida propia.
+const VIGENCIA_RANKING_MS = 120_000
+let cacheRanking: { en: number; datos: EntradaRanking[] } | null = null
+let enVuelo: Promise<EntradaRanking[]> | null = null
+export function vaciarCacheRanking(): void { cacheRanking = null }
+export async function leerRankingNube(): Promise<EntradaRanking[]> {
+  if (cacheRanking && Date.now() - cacheRanking.en < VIGENCIA_RANKING_MS) return cacheRanking.datos
+  if (!enVuelo) enVuelo = leerRankingDeLaNube().then((d) => { cacheRanking = { en: Date.now(), datos: d }; return d }).finally(() => { enVuelo = null })
+  return enVuelo
 }
 
 // Suma una partida terminada a mi documento (lo crea si no existe). Devuelve true si se publicó.
@@ -33,6 +45,7 @@ export async function publicarPartida(alias: string, pais: string, nivel: Nivel,
       puntos: (p.puntos ?? 0) + (gane ? PUNTOS_VICTORIA[nivel] : 0), ganadas: (p.ganadas ?? 0) + (gane ? 1 : 0), jugadas: (p.jugadas ?? 0) + 1,
       racha, mejorRacha: Math.max(p.mejorRacha ?? 0, racha), ultimo: Date.now(),
     })
+    vaciarCacheRanking()
     return true
   } catch { return false }
 }
@@ -47,6 +60,7 @@ export async function cambiarAliasNube(alias: string): Promise<boolean> {
     const p = previo.data() as Record<string, unknown>
     if (p.aliasCambiado === true) return false // ya usó su único cambio
     await n.fs.setDoc(ref, { ...p, alias: aliasLimpio(alias) || 'Jugador', aliasCambiado: true })
+    vaciarCacheRanking()
     return true
   } catch { return false }
 }

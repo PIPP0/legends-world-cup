@@ -443,4 +443,7 @@ export const EXTRA: Array<[string, string]> = [
   ['Ver menos', 'See less'],
   ['Cupos llenos por ahora. Puedes seguir jugando sin cuenta; tu avance no se guardará en la nube.', 'Sign-ups are full for now. You can keep playing without an account; your progress will not be saved in the cloud.'],
   ['Seguir sin cuenta', 'Continue without an account'],
+  ['Compartir mi campeón', 'Share my champion'],
+  ['Mi Mundial Imposible: campeón {c}. Final: {f}. ¿Quién gana en el tuyo?', 'My Impossible World Cup: champion {c}. Final: {f}. Who wins in yours?'],
+  ['Texto copiado. ¡Pégalo donde quieras!', 'Text copied. Paste it anywhere!'],
 ]

@@ -1181,5 +1181,8 @@ const D: string[] = [
   "Vedi meno",
   "Posti esauriti per ora. Puoi continuare a giocare senza account; i tuoi progressi non verranno salvati nel cloud.",
   "Continua senza account",
+  "Condividi il mio campione",
+  "Il mio Mondiale Impossibile: campione {c}. Finale: {f}. Chi vince nel tuo?",
+  "Testo copiato. Incollalo dove vuoi!",
 ]
 export default D

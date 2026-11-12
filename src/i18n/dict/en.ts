@@ -1181,5 +1181,8 @@ const D: string[] = [
   "See less",
   "Sign-ups are full for now. You can keep playing without an account; your progress will not be saved in the cloud.",
   "Continue without an account",
+  "Share my champion",
+  "My Impossible World Cup: champion {c}. Final: {f}. Who wins in yours?",
+  "Text copied. Paste it anywhere!",
 ]
 export default D

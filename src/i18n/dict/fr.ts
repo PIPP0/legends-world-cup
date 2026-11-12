@@ -1181,5 +1181,8 @@ const D: string[] = [
   "Voir moins",
   "Les inscriptions sont complètes pour le moment. Tu peux continuer à jouer sans compte ; ta progression ne sera pas sauvegardée dans le cloud.",
   "Continuer sans compte",
+  "Partager mon champion",
+  "Ma Coupe du monde impossible : champion {c}. Finale : {f}. Qui gagne dans la tienne ?",
+  "Texte copié. Colle-le où tu veux !",
 ]
 export default D

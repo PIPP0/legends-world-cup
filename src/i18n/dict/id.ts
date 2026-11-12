@@ -1181,5 +1181,8 @@ const D: string[] = [
   "Lihat lebih sedikit",
   "Pendaftaran penuh untuk saat ini. Kamu tetap bisa bermain tanpa akun; progresmu tidak akan disimpan di cloud.",
   "Lanjutkan tanpa akun",
+  "Bagikan juaraku",
+  "Piala Dunia Mustahilku: juara {c}. Final: {f}. Siapa yang menang di milikmu?",
+  "Teks disalin. Tempel di mana saja!",
 ]
 export default D

@@ -1181,4 +1181,7 @@ export const KEYS: string[] = [
   "Ver menos",
   "Cupos llenos por ahora. Puedes seguir jugando sin cuenta; tu avance no se guardará en la nube.",
   "Seguir sin cuenta",
+  "Compartir mi campeón",
+  "Mi Mundial Imposible: campeón {c}. Final: {f}. ¿Quién gana en el tuyo?",
+  "Texto copiado. ¡Pégalo donde quieras!",
 ]
