@@ -904,3 +904,8 @@ div.rk-tu label{font:700 13px 'Barlow Condensed';letter-spacing:1.2px;text-trans
 .fav-row .rk-menu-edit{display:grid;gap:6px;margin-top:8px}.rk-menu-edit input{width:100%;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:#0a1130;color:#fff;font:600 14px Inter}.rk-menu-edit input:focus{outline:2px solid var(--cy)}
 .rk-menu-edit p{margin:0}.rk-menu-btns{display:flex;gap:8px;flex-wrap:wrap}.rk-menu-btns .btn{min-height:38px;padding:8px 16px;font-size:14px}
 .fav-row>small{display:block;margin-top:6px}
+
+/* Tu equipo: los suplentes van justo debajo de la cancha y el panel derecho ocupa las dos filas */
+.d-cols-eq{grid-template-areas:"c p" "b p";grid-template-rows:auto 1fr}
+.d-c-banca{align-self:start}
+@media(max-width:860px){.d-cols-eq{grid-template-rows:none}}
