@@ -2,6 +2,7 @@ import { tr } from '../i18n'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useFunciones } from '../cloud/funciones'
+import { NUBE_ACTIVA, cuentaActual, esperarCambiosDeSesion, type Cuenta } from '../cloud/firebase'
 import { DONATE_URL, PAYMENTS_LIVE, PAYMENT_API, PAYPAL_CLIENT_ID, PRODUCTS, pay, saveReceipt, type ProductId } from '../engine/payment'
 
 declare global { interface Window { paypal?: { Buttons: (o: unknown) => { render: (el: HTMLElement) => Promise<void>; close: () => void } } } }
@@ -110,6 +111,13 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
     const ro = new ResizeObserver(() => setFormAbierto(el.getBoundingClientRect().height > 200))
     ro.observe(el); return () => ro.disconnect()
   }, [])
+  const cuentaPago = useRef<Cuenta | null>(null)
+  useEffect(() => {
+    if (!NUBE_ACTIVA) return
+    let off: (() => void) | undefined; let vivo = true
+    void (async () => { cuentaPago.current = await cuentaActual(); const f = await esperarCambiosDeSesion((c) => { cuentaPago.current = c }); if (vivo) off = f; else f() })()
+    return () => { vivo = false; off?.() }
+  }, [])
   const montoActual = useRef<number | null>(monto)
   montoActual.current = monto
   useEffect(() => {
@@ -121,7 +129,15 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
         createOrder: (_d: unknown, a: AccionesPaypal) => {
           const m = montoActual.current
           if (m === null) return Promise.reject(new Error('monto'))
-          return a.order.create({ intent: 'CAPTURE', purchase_units: [{ description: 'Apoyo voluntario', amount: { currency_code: 'USD', value: m.toFixed(2) } }], application_context: { shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW', brand_name: 'Legends World Cup' } })
+          const base = { intent: 'CAPTURE', purchase_units: [{ description: 'Apoyo voluntario', amount: { currency_code: 'USD', value: m.toFixed(2) } }], application_context: { shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW', brand_name: 'Legends World Cup' } }
+          // si la persona entró con Google, PayPal recibe su correo y nombre ya escritos (menos campos que llenar); si PayPal los rechazara, se crea igual sin ellos
+          const c = cuentaPago.current
+          if (c && !c.anonimo && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email)) {
+            const [nombre, ...resto] = (c.nombre || '').trim().split(/\s+/).filter(Boolean)
+            const payer = { email_address: c.email, ...(nombre ? { name: { given_name: nombre, ...(resto.length ? { surname: resto.join(' ') } : {}) } } : {}) }
+            return a.order.create({ ...base, payer }).catch(() => a.order.create(base))
+          }
+          return a.order.create(base)
         },
         onApprove: (_d: unknown, a: AccionesPaypal) => a.order.capture().then(() => setGracias(true)),
         onCancel: () => setErr(tr('Cancelaste el pago. No se cobró nada.')),
@@ -143,6 +159,9 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
             <i aria-hidden>USD</i>
           </label>
           <button type="button" className="donar-paso" aria-label="+" disabled={formAbierto || (monto !== null && monto >= 500)} onClick={() => cambiar((monto ?? 0) + 1)}>+</button>
+        </div>
+        <div className="donar-atajos" role="group" aria-label={tr('Elige cuánto quieres aportar')}>
+          {[1, 3, 5].map((m) => <button key={m} type="button" className={monto === m ? 'on' : ''} disabled={formAbierto} onClick={() => cambiar(m)}>US$ {m}</button>)}
         </div>
       </div>
       {formAbierto && <p className="small muted">{tr('Para cambiar el monto, cierra el formulario de tarjeta (✕).')}</p>}

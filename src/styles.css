@@ -1050,3 +1050,8 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 /* formulario de tarjeta de PayPal desplegado: fondo claro para que su texto oscuro se lea bien */
 .donar-paypal.abierto{background:rgba(236,241,252,.86);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:16px;padding:10px 10px 6px;max-width:100%;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.28)}
 .donar-campo:has(input:disabled){opacity:.55}
+.donar-atajos{display:flex;gap:8px;justify-content:center}
+.donar-atajos button{padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--mut);font:700 13px 'Barlow Condensed';letter-spacing:.8px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.donar-atajos button:hover:not(:disabled){border-color:var(--cy);color:var(--text)}
+.donar-atajos button.on{background:rgba(0,229,255,.16);border-color:var(--cy);color:var(--text)}
+.donar-atajos button:disabled{opacity:.4;cursor:default}
