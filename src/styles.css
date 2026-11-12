@@ -1021,3 +1021,4 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .donar-libre{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 10px;font:700 14px 'Barlow Condensed';letter-spacing:.8px;text-transform:uppercase;color:var(--mut)}
 .donar-libre input{width:84px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0a1130;color:#fff;font:600 16px Inter;text-align:center}
 .donar-libre input:focus{outline:2px solid var(--cy)}
+.donar-libre{flex-direction:column;gap:6px}.donar-libre input{width:150px;font-size:22px;padding:10px 12px}

@@ -1161,5 +1161,6 @@ const D: string[] = [
   "Terima kasih atas dukunganmu! Kontribusimu sudah kami terima.",
   "Pilih berapa yang ingin kamu sumbangkan",
   "Jumlah lain",
+  "Masukkan jumlah antara 1 dan 500.",
 ]
 export default D

@@ -1161,5 +1161,6 @@ const D: string[] = [
   "Thank you for your support! We received your contribution.",
   "Choose how much you want to contribute",
   "Other amount",
+  "Enter an amount between 1 and 500.",
 ]
 export default D
