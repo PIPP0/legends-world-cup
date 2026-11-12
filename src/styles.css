@@ -1073,15 +1073,15 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 
 /* franja fina «sitio creado por fans» */
 .huincha{background:linear-gradient(90deg,rgba(255,45,135,.06),rgba(0,229,255,.05));border-bottom:1px solid rgba(255,255,255,.06);color:#a9b5d6;font:600 12.5px/1.35 Inter,sans-serif;text-align:center;padding:6px max(14px,env(safe-area-inset-left)) 6px max(14px,env(safe-area-inset-right));letter-spacing:.1px}
-/* franja «sitio de fans»: una sola línea en todas las pantallas; se despliega el texto completo si la persona lo pide */
+/* franja «sitio de fans»: una línea con todo el ancho (lo que no cabe se corta con «…»); «Ver más» la despliega completa */
 .huincha{padding:0}
-.hu-fila{display:flex;align-items:center;justify-content:center;gap:12px;padding:5px 14px;min-height:28px}
-.hu-corto{font-weight:700;font-size:12px}
-.hu-btn{background:none;border:0;color:var(--cy);font:700 12px Inter,sans-serif;cursor:pointer;padding:2px 0;white-space:nowrap}
+.hu-fila{display:flex;align-items:center;gap:12px;padding:5px max(14px,env(safe-area-inset-left)) 5px max(14px,env(safe-area-inset-right));min-height:28px;max-width:1280px;margin:0 auto}
+.hu-texto{flex:1;min-width:0;font-size:12px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.huincha.abierta .hu-texto{white-space:normal;overflow:visible;text-overflow:clip;padding:2px 0}
+.huincha.abierta .hu-fila{align-items:flex-start}
+.hu-btn{flex:none;background:none;border:0;color:var(--cy);font:700 12px Inter,sans-serif;cursor:pointer;padding:2px 0;white-space:nowrap}
 .hu-btn i{display:inline-block;width:7px;height:7px;margin:0 2px 3px 4px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .2s}
 .huincha.abierta .hu-btn i{transform:rotate(-135deg);margin-bottom:-1px}
-.hu-largo{display:none;max-width:980px;margin:0 auto;padding:2px 14px 9px;text-align:center;font-size:12px;line-height:1.5}
-.huincha.abierta .hu-largo{display:block}
-@media(max-width:700px){.hu-fila{justify-content:space-between}.hu-largo{text-align:left;font-size:11.5px}}
+@media(max-width:700px){.hu-texto{font-size:11.5px}}
 
-.huincha .hu-btn{opacity:.85}.hu-corto{color:#b7c2e0}
+.huincha .hu-btn{opacity:.85}

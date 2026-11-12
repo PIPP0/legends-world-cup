@@ -87,10 +87,9 @@ function Huincha() {
   return (
     <div className={`huincha${abierta ? ' abierta' : ''}`} role="note">
       <div className="hu-fila">
-        <span className="hu-corto">{tr('Sitio creado por fans y para fans')}</span>
+        <span className="hu-texto" title={largo}>{largo}</span>
         <button type="button" className="hu-btn" aria-expanded={abierta} onClick={() => setAbierta(!abierta)}>{abierta ? tr('Ver menos') : tr('Ver más')} <i aria-hidden /></button>
       </div>
-      <div className="hu-largo">{largo}</div>
     </div>
   )
 }
