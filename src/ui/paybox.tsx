@@ -95,8 +95,8 @@ function abrirVentanaPago(e: React.MouseEvent<HTMLAnchorElement>) {
 // Donar sin salir de la página: montos + botones oficiales de PayPal dentro del modal (solo necesita el Client ID público; el cobro lo hace PayPal).
 type AccionesPaypal = { order: { create: (o: unknown) => Promise<string>; capture: () => Promise<unknown> } }
 function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
-  const [monto, setMonto] = useState<number | null>(5)
-  const [texto, setTexto] = useState('5')
+  const [monto, setMonto] = useState<number | null>(1)
+  const [texto, setTexto] = useState('1')
   const [gracias, setGracias] = useState(false)
   const [err, setErr] = useState('')
   const ref = useRef<HTMLDivElement>(null)
