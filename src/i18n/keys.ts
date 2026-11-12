@@ -1155,4 +1155,5 @@ export const KEYS: string[] = [
   "Encaje medio",
   "Encaje bajo",
   "El color de cada jugador en la cancha muestra cuánto encaja con {e}: verde alto, amarillo medio, rojo bajo.",
+  "Jugando ahora",
 ]

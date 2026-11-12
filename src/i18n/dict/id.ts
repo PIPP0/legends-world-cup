@@ -1155,5 +1155,6 @@ const D: string[] = [
   "Kecocokan sedang",
   "Kecocokan rendah",
   "Warna setiap pemain di lapangan menunjukkan seberapa cocok dengan {e}: hijau tinggi, kuning sedang, merah rendah.",
+  "Sedang bermain",
 ]
 export default D

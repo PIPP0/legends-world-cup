@@ -1155,5 +1155,6 @@ const D: string[] = [
   "Medium fit",
   "Low fit",
   "The colour of each player on the pitch shows how well he fits {e}: green high, yellow medium, red low.",
+  "Playing now",
 ]
 export default D

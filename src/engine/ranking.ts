@@ -16,6 +16,7 @@ export interface EntradaRanking {
   mejorRacha: number
   demo?: boolean // jugador de demostración (ficticio)
   yo?: boolean
+  activo?: boolean // punto verde «jugando ahora»
 }
 
 // Jugadores de DEMOSTRACIÓN: nombres inventados y resultados ficticios, siempre marcados como tales en pantalla.
@@ -56,3 +57,13 @@ export function armarRanking(reales: EntradaRanking[], yo: EntradaRanking | null
   return todas.sort((a, b) => b.puntos - a.puntos || b.ganadas - a.ganadas || a.jugadas - b.jugadas)
 }
 export const posicionDe = (lista: EntradaRanking[], id: string): number => lista.findIndex((e) => e.id === id) + 1
+
+// Quiénes de los jugadores de demostración aparecen «jugando ahora»: entre 5 y 10, y va rotando cada 25 segundos (determinista por franja de tiempo).
+// Es solo mientras la comunidad es chica: cada persona real que aparece en el ranking resta un demo activo, y con 10 o más reales ya no hay ninguno.
+export function demosActivos(ahoraMs: number, reales = 0): Set<string> {
+  const franja = Math.floor(ahoraMs / 25000)
+  const azar = (n: number) => { let x = (franja * 2654435761 + n * 40503) >>> 0; x ^= x >>> 15; x = Math.imul(x, 2246822519) >>> 0; x ^= x >>> 13; return x >>> 0 }
+  const cuantos = Math.max(0, 5 + (azar(999) % 6) - reales)
+  const ids = RANKING_DEMO.map((d) => d.id).sort((a, b) => azar(Number(a.slice(5))) - azar(Number(b.slice(5))))
+  return new Set(ids.slice(0, cuantos))
+}

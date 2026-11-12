@@ -1155,5 +1155,6 @@ const D: string[] = [
   "Encaixe médio",
   "Encaixe baixo",
   "A cor de cada jogador no campo mostra o quanto ele se encaixa em {e}: verde alto, amarelo médio, vermelho baixo.",
+  "Jogando agora",
 ]
 export default D

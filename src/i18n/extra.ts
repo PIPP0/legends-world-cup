@@ -417,4 +417,5 @@ export const EXTRA: Array<[string, string]> = [
   ['Encaje medio', 'Medium fit'],
   ['Encaje bajo', 'Low fit'],
   ['El color de cada jugador en la cancha muestra cuánto encaja con {e}: verde alto, amarillo medio, rojo bajo.', 'The colour of each player on the pitch shows how well he fits {e}: green high, yellow medium, red low.'],
+  ['Jugando ahora', 'Playing now'],
 ]

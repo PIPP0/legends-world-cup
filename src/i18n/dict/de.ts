@@ -1155,5 +1155,6 @@ const D: string[] = [
   "Mittlere Passung",
   "Geringe Passung",
   "Die Farbe jedes Spielers auf dem Feld zeigt, wie gut er zu {e} passt: grün hoch, gelb mittel, rot gering.",
+  "Spielt gerade",
 ]
 export default D

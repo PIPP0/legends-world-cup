@@ -4,7 +4,7 @@ import { NUBE_ACTIVA } from '../cloud/firebase'
 import { cambiarAliasNube, leerRankingNube, miIdRanking, publicarPartida } from '../cloud/ranking'
 import { cuentaActual } from '../cloud/firebase'
 import { paisAproximado } from '../lib/pais'
-import { MI_RANKING0, aliasLimpio, aliasPorDefecto, armarRanking, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
+import { MI_RANKING0, aliasLimpio, aliasPorDefecto, armarRanking, demosActivos, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
 import type { Nivel } from '../engine/duelo'
 
 const CLAVE_RANK = 'lwc:duelo:ranking'
@@ -56,7 +56,10 @@ function useRanking() {
     // si ya estoy en la nube, valen sus números; si no (sin conexión o reglas sin publicar), valen los míos
     return { id: miId, alias, pais: paisAproximado(), puntos: enNube?.puntos ?? local.puntos, ganadas: enNube?.ganadas ?? local.ganadas, jugadas: enNube?.jugadas ?? local.jugadas, mejorRacha: enNube?.mejorRacha ?? local.mejorRacha, yo: true }
   }, [reales, miId, alias, local.puntos, local.ganadas, local.jugadas, local.mejorRacha])
-  const lista = useMemo(() => armarRanking(reales, yo), [reales, yo])
+  const [ahora, setAhora] = useState(() => Date.now())
+  useEffect(() => { const t = setInterval(() => setAhora(Date.now()), 25000); return () => clearInterval(t) }, [])
+  // «activo» = punto verde: yo (estoy aquí) y los de demostración que van rotando
+  const lista = useMemo(() => { const act = demosActivos(ahora, reales.filter((r) => r.id !== miId).length); return armarRanking(reales, yo).map((e) => (e.yo || (e.demo && act.has(e.id)) ? { ...e, activo: true } : e)) }, [reales, yo, ahora, miId])
   const posicion = lista.findIndex((e) => e.id === miId) + 1
   const setAlias = (a: string) => { if (cambiarAliasUnaVez(a)) setVersion((v) => v + 1) }
   return { lista, yo, posicion, cargando, alias, setAlias, hayReales: reales.some((r) => r.id !== miId) }
@@ -74,7 +77,7 @@ function Fila({ e, pos }: { e: EntradaRanking; pos: number }) {
     <li className={`rk-fila${e.yo ? ' yo' : ''}`}>
       <span className={`rk-pos p${pos <= 3 ? pos : 0}`}>{pos}</span>
       <Pais iso={e.pais} />
-      <span className="rk-nombre"><b>{e.alias}</b>{e.yo && <em className="rk-tu">{tr('Tú')}</em>}{e.demo && <em className="rk-demo" title={tr('Jugador de demostración (ficticio)')}>{tr('Demo')}</em>}</span>
+      <span className="rk-nombre">{e.activo && <i className="rk-vivo" title={tr('Jugando ahora')} />}<b>{e.alias}</b>{e.yo && <em className="rk-tu">{tr('Tú')}</em>}{e.demo && <em className="rk-demo" title={tr('Jugador de demostración (ficticio)')}>{tr('Demo')}</em>}</span>
       <span className="rk-rec">{e.ganadas}/{e.jugadas}</span>
       <b className="rk-pts">{e.puntos}</b>
     </li>
@@ -118,7 +121,7 @@ function Podio({ e, pos }: { e: EntradaRanking; pos: 1 | 2 | 3 }) {
       {pos === 1 && <span className="rk-corona" aria-hidden>👑</span>}
       <span className={`rk-medalla p${pos}`}>{pos}</span>
       <Pais iso={e.pais} />
-      <b className="rk-pod-n">{e.alias}</b>
+      <b className="rk-pod-n">{e.activo && <i className="rk-vivo" />}{e.alias}</b>
       <span className="rk-pod-tags">{e.yo && <em className="rk-tu">{tr('Tú')}</em>}{e.demo && <em className="rk-demo">{tr('Demo')}</em>}</span>
       <strong className="rk-pod-pts">{e.puntos}<small>pts</small></strong>
       <small className="rk-pod-rec">{e.ganadas}/{e.jugadas}</small>

@@ -1155,5 +1155,6 @@ const D: string[] = [
   "Adéquation moyenne",
   "Adéquation faible",
   "La couleur de chaque joueur sur le terrain montre son adéquation avec {e} : vert élevée, jaune moyenne, rouge faible.",
+  "En train de jouer",
 ]
 export default D

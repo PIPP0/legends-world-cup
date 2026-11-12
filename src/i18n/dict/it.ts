@@ -1155,5 +1155,6 @@ const D: string[] = [
   "Adattamento medio",
   "Adattamento basso",
   "Il colore di ogni giocatore in campo mostra quanto si adatta a {e}: verde alto, giallo medio, rosso basso.",
+  "Sta giocando",
 ]
 export default D
