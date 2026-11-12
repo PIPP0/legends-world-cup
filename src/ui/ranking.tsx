@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { tr } from '../i18n'
-import { Section } from './common'
 import { NUBE_ACTIVA } from '../cloud/firebase'
 import { cambiarAliasNube, leerRankingNube, miIdRanking, publicarPartida } from '../cloud/ranking'
 import { paisAproximado } from '../lib/pais'
@@ -67,13 +66,12 @@ function Fila({ e, pos }: { e: EntradaRanking; pos: number }) {
 }
 
 // Botón de la pantalla «Tu equipo»: lleva al ranking y, si ya jugaste, muestra tu puesto.
-export function BotonRanking() {
+export function BotonRanking({ compacto }: { compacto?: boolean }) {
   const { yo, posicion, lista } = useRanking()
   return (
-    <a className="d-btn-rank" href="#/ranking">
-      <span aria-hidden>🏆</span><b>{tr('Ver ranking')}</b>
-      <small>{yo.jugadas > 0 ? tr('Tu puesto: {p} de {t}', { p: posicion, t: lista.length }) : tr('Juega tu primer duelo para aparecer en el ranking.')}</small>
-      <i aria-hidden>→</i>
+    <a className={`d-btn-rank${compacto ? ' mini' : ''}`} href="#/ranking" title={tr('Ver ranking')}>
+      <span aria-hidden>🏆</span><b>{tr('Ranking')}</b>
+      <small>{yo.jugadas > 0 ? tr('Tu puesto: {p} de {t}', { p: posicion, t: lista.length }) : tr('Ver ranking')}</small>
     </a>
   )
 }
@@ -93,25 +91,86 @@ export function RankingResumen() {
   )
 }
 
-// Página completa del ranking.
+const NIVELES_PTS: { n: Nivel; nombre: string; clase: string }[] = [
+  { n: 'bronce', nombre: 'Bronce', clase: 'br' }, { n: 'plata', nombre: 'Plata', clase: 'pl' }, { n: 'oro', nombre: 'Oro', clase: 'or' }, { n: 'leyenda', nombre: 'Leyenda', clase: 'le' },
+]
+
+// Una tarjeta del podio (puestos 1 a 3).
+function Podio({ e, pos }: { e: EntradaRanking; pos: 1 | 2 | 3 }) {
+  return (
+    <div className={`rk-pod p${pos}${e.yo ? ' yo' : ''}`}>
+      {pos === 1 && <span className="rk-corona" aria-hidden>👑</span>}
+      <span className={`rk-medalla p${pos}`}>{pos}</span>
+      <Pais iso={e.pais} />
+      <b className="rk-pod-n">{e.alias}</b>
+      <span className="rk-pod-tags">{e.yo && <em className="rk-tu">{tr('Tú')}</em>}{e.demo && <em className="rk-demo">{tr('Demo')}</em>}</span>
+      <strong className="rk-pod-pts">{e.puntos}<small>pts</small></strong>
+      <small className="rk-pod-rec">{e.ganadas}/{e.jugadas}</small>
+    </div>
+  )
+}
+
+// Página completa del ranking: centrada, con podio, tu posición y por qué participar.
 export function RankingPagina() {
   const { lista, yo, posicion, cargando, alias, setAlias, hayReales } = useRanking()
   const [editando, setEditando] = useState(alias)
+  const [abierto, setAbierto] = useState(false)
   useEffect(() => { setEditando(alias) }, [alias])
+  const top3 = lista.slice(0, 3)
+  const resto = lista.slice(3, 50)
+  const siguiente = posicion > 1 ? lista[posicion - 2] : null
+  const faltan = siguiente ? Math.max(1, siguiente.puntos - yo.puntos + 1) : 0
   return (
-    <Section title={tr('Ranking')} sub={tr('Los puntos dependen del rival: Bronce {a}, Plata {b}, Oro {c} y Leyenda {d} por victoria.', { a: PUNTOS_VICTORIA.bronce, b: PUNTOS_VICTORIA.plata, c: PUNTOS_VICTORIA.oro, d: PUNTOS_VICTORIA.leyenda })}>
-      <div className="rk-wrap">
-        <a className="d-link" href="#/duelo">← {tr('Volver al duelo')}</a>
-        <div className="rk-tu">
-          <label htmlFor="rk-alias">{tr('Tu nombre público en el ranking')}</label>
-          <div className="rk-alias"><input id="rk-alias" value={editando} maxLength={20} onChange={(e) => setEditando(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') setAlias(editando) }} /><button className="btn pri" disabled={aliasLimpio(editando) === alias} onClick={() => setAlias(editando)}>{tr('Guardar')}</button></div>
-          <p className="small muted">{yo.jugadas > 0 ? tr('Vas en el puesto {p} con {n} puntos.', { p: posicion, n: yo.puntos }) : tr('Juega tu primer duelo para aparecer en el ranking.')} {tr('Se muestra solo este nombre y tu país aproximado.')}</p>
-        </div>
-        {cargando && <p className="muted small">{tr('Cargando ranking…')}</p>}
-        <ol className="rk-lista rk-total">{lista.slice(0, 50).map((e, i) => <Fila key={e.id} e={e} pos={i + 1} />)}</ol>
-        {yo.jugadas > 0 && posicion > 50 && <ol className="rk-lista rk-mio"><Fila e={yo} pos={posicion} /></ol>}
-        <p className="small muted">{tr('Los jugadores marcados «Demo» son de demostración y sus resultados son ficticios. Los demás son resultados reales de personas que juegan.')}{!hayReales && NUBE_ACTIVA && !cargando ? ` ${tr('Aún no hay otras personas reales en el ranking: ¡puedes ser la primera!')}` : ''}</p>
-      </div>
-    </Section>
+    <div className="rk-pagina">
+      <header className="rk-hero">
+        <span className="rk-trofeo" aria-hidden>🏆</span>
+        <h1>{tr('Ranking')}</h1>
+        <p>{tr('Gana duelos, suma puntos y llega a la cima.')}</p>
+      </header>
+
+      <section className="rk-podio" aria-label={tr('Ranking')}>
+        {top3[1] && <Podio e={top3[1]} pos={2} />}
+        {top3[0] && <Podio e={top3[0]} pos={1} />}
+        {top3[2] && <Podio e={top3[2]} pos={3} />}
+      </section>
+
+      <section className={`rk-miposicion${yo.jugadas > 0 ? '' : ' nuevo'}`}>
+        {yo.jugadas > 0 ? (
+          <>
+            <div className="rk-mp-num"><small>{tr('Tu posición')}</small><b>#{posicion}</b></div>
+            <div className="rk-mp-txt">
+              <b>{yo.alias}</b>
+              <span>{yo.puntos} pts · {yo.ganadas}/{yo.jugadas}</span>
+              <p>{posicion === 1 ? tr('¡Eres el número 1! Defiende tu lugar.') : tr('Te faltan {n} puntos para pasar a {a}.', { n: faltan, a: (siguiente?.alias ?? '').replace(/\.$/, '') })}</p>
+            </div>
+          </>
+        ) : (
+          <div className="rk-mp-txt"><b>{tr('Juega tu primer duelo para aparecer en el ranking.')}</b></div>
+        )}
+        <a className="btn pri" href="#/duelo">{tr('Jugar duelo')} →</a>
+      </section>
+
+      <section className="rk-puntos">
+        <h2>{tr('Cómo sumar puntos')}</h2>
+        <div className="rk-chips">{NIVELES_PTS.map((x) => <span key={x.n} className={`rk-chip ${x.clase}`}><b>+{PUNTOS_VICTORIA[x.n]}</b><small>{tr(x.nombre)} · {tr('por victoria')}</small></span>)}</div>
+      </section>
+
+      {cargando && <p className="muted small rk-centro">{tr('Cargando ranking…')}</p>}
+      {resto.length > 0 && <ol className="rk-lista rk-total">{resto.map((e, i) => <Fila key={e.id} e={e} pos={i + 4} />)}</ol>}
+      {yo.jugadas > 0 && posicion > 50 && <ol className="rk-lista rk-mio"><Fila e={yo} pos={posicion} /></ol>}
+
+      <section className="rk-nombre-sec">
+        <button type="button" className="d-link" onClick={() => setAbierto((v) => !v)} aria-expanded={abierto}>✎ {tr('Cambiar mi nombre')}</button>
+        {abierto && (
+          <div className="rk-tu">
+            <label htmlFor="rk-alias">{tr('Tu nombre público en el ranking')}</label>
+            <div className="rk-alias"><input id="rk-alias" value={editando} maxLength={20} onChange={(e) => setEditando(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') setAlias(editando) }} /><button className="btn pri" disabled={aliasLimpio(editando) === alias} onClick={() => setAlias(editando)}>{tr('Guardar')}</button></div>
+            <p className="small muted">{tr('Se muestra solo este nombre y tu país aproximado.')}</p>
+          </div>
+        )}
+      </section>
+
+      <p className="small muted rk-centro">{tr('Los jugadores marcados «Demo» son de demostración y sus resultados son ficticios. Los demás son resultados reales de personas que juegan.')}{!hayReales && NUBE_ACTIVA && !cargando ? ` ${tr('Aún no hay otras personas reales en el ranking: ¡puedes ser la primera!')}` : ''}</p>
+    </div>
   )
 }

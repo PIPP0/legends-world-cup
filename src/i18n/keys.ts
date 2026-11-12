@@ -1128,4 +1128,11 @@ export const KEYS: string[] = [
   "Ver ranking",
   "Tu puesto: {p} de {t}",
   "Volver al duelo",
+  "Cambiar mi nombre",
+  "Cómo sumar puntos",
+  "Gana duelos, suma puntos y llega a la cima.",
+  "Te faltan {n} puntos para pasar a {a}.",
+  "Tu posición",
+  "por victoria",
+  "¡Eres el número 1! Defiende tu lugar.",
 ]

@@ -1128,5 +1128,12 @@ const D: string[] = [
   "Lihat peringkat",
   "Posisimu: {p} dari {t}",
   "Kembali ke duel",
+  "Ganti namaku",
+  "Cara mendapat poin",
+  "Menangkan duel, kumpulkan poin dan capai puncak.",
+  "Kurang {n} poin untuk melewati {a}.",
+  "Posisimu",
+  "per kemenangan",
+  "Kamu nomor 1! Pertahankan posisimu.",
 ]
 export default D

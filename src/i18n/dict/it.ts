@@ -1128,5 +1128,12 @@ const D: string[] = [
   "Vedi la classifica",
   "Il tuo posto: {p} su {t}",
   "Torna al duello",
+  "Cambia il mio nome",
+  "Come ottenere punti",
+  "Vinci duelli, accumula punti e raggiungi la vetta.",
+  "Ti mancano {n} punti per superare {a}.",
+  "La tua posizione",
+  "per vittoria",
+  "Sei il numero 1! Difendi il tuo posto.",
 ]
 export default D

@@ -390,4 +390,11 @@ export const EXTRA: Array<[string, string]> = [
   ['Ver ranking', 'See ranking'],
   ['Tu puesto: {p} de {t}', 'Your place: {p} of {t}'],
   ['Volver al duelo', 'Back to the duel'],
+  ['Cambiar mi nombre', 'Change my name'],
+  ['Cómo sumar puntos', 'How to earn points'],
+  ['Gana duelos, suma puntos y llega a la cima.', 'Win duels, earn points and reach the top.'],
+  ['Te faltan {n} puntos para pasar a {a}.', 'You need {n} more points to pass {a}.'],
+  ['Tu posición', 'Your position'],
+  ['por victoria', 'per win'],
+  ['¡Eres el número 1! Defiende tu lugar.', "You're number 1! Defend your spot."],
 ]

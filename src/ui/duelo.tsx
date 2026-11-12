@@ -265,7 +265,7 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar, aviso }: { equip
   return (
     <div className="duelo">
       {compartir && <CompartirEquipo equipo={equipo} red={typeof compartir === 'string' ? compartir : undefined} onClose={() => setCompartir(false)} />}
-      <header className="d-hero"><p className="kicker">{tr('Mi Once Ideal: Duelo')}</p><h1>{tr('Tu equipo')}</h1>
+      <header className="d-hero"><BotonRanking compacto /><p className="kicker">{tr('Mi Once Ideal: Duelo')}</p><h1>{tr('Tu equipo')}</h1>
         <p className="muted">{equipo.formacion} · {tr('Valoración media')} {valorEquipo(equipo)}{pais.length > 0 && <> · {tr('Sinergias')}: {pais.map((s) => `${TEAM_BY_ID[s.teamId].name} +${s.bonus}`).join(', ')}</>}</p></header>
       {aviso && <p className="d-aviso" role="status">⚠ {tr('Abandonaste el partido anterior al salir o actualizar la página: cuenta como derrota.')}</p>}
       <div className="d-cols d-cols-eq">
@@ -297,7 +297,6 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar, aviso }: { equip
             {NIVELES.map((n) => <button key={n.id} type="button" role="radio" aria-checked={nivel === n.id} className={`d-nivel n-${n.id}${nivel === n.id ? ' on' : ''}`} onClick={() => setNivel(n.id)}><i aria-hidden className="d-estr">{'★'.repeat(NIVELES.findIndex((x) => x.id === n.id) + 1)}</i><span>{tr(n.nombre)}</span></button>)}
           </div></div>
           <div className="d-accion"><button type="button" className="btn pri d-jugar-gran" onClick={jugar}>{tr('Jugar duelo')} →</button>
-          <BotonRanking />
           <p className="small muted">{tr('Partidos: {j} · Ganados: {g} · Perdidos: {p} · Racha: {r} (mejor {m})', { j: stats.jugados, g: stats.ganados, p: stats.perdidos, r: stats.racha, m: stats.mejorRacha })}</p></div>
         </div>
       </div>
