@@ -4,7 +4,7 @@ import { NUBE_ACTIVA } from '../cloud/firebase'
 import { cambiarAliasNube, leerRankingNube, miIdRanking, publicarPartida } from '../cloud/ranking'
 import { cuentaActual } from '../cloud/firebase'
 import { paisAproximado } from '../lib/pais'
-import { MI_RANKING0, PUNTOS_VICTORIA, aliasLimpio, aliasPorDefecto, armarRanking, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
+import { MI_RANKING0, aliasLimpio, aliasPorDefecto, armarRanking, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
 import type { Nivel } from '../engine/duelo'
 
 const CLAVE_RANK = 'lwc:duelo:ranking'
@@ -111,10 +111,6 @@ export function RankingResumen() {
   )
 }
 
-const NIVELES_PTS: { n: Nivel; nombre: string; clase: string }[] = [
-  { n: 'bronce', nombre: 'Bronce', clase: 'br' }, { n: 'plata', nombre: 'Plata', clase: 'pl' }, { n: 'oro', nombre: 'Oro', clase: 'or' }, { n: 'leyenda', nombre: 'Leyenda', clase: 'le' },
-]
-
 // Una tarjeta del podio (puestos 1 a 3).
 function Podio({ e, pos }: { e: EntradaRanking; pos: 1 | 2 | 3 }) {
   return (
@@ -188,11 +184,6 @@ export function RankingPagina() {
           <div className="rk-mp-txt"><b>{tr('Juega tu primer duelo para aparecer en el ranking.')}</b></div>
         )}
         <a className="btn pri" href="#/duelo">{tr('Jugar duelo')} →</a>
-      </section>
-
-      <section className="rk-puntos">
-        <h2>{tr('Cómo sumar puntos')}</h2>
-        <div className="rk-chips">{NIVELES_PTS.map((x) => <span key={x.n} className={`rk-chip ${x.clase}`}><b>+{PUNTOS_VICTORIA[x.n]}</b><small>{tr(x.nombre)} · {tr('por victoria')}</small></span>)}</div>
       </section>
 
       {cargando && <p className="muted small rk-centro">{tr('Cargando ranking…')}</p>}

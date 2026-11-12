@@ -2,9 +2,9 @@
 // mezclados con los resultados reales de quienes juegan.
 import type { Nivel } from './duelo'
 
-// Ganar a un rival más difícil vale más (las victorias contra Leyenda son las menos comunes).
-export const PUNTOS_VICTORIA: Record<Nivel, number> = { bronce: 1, plata: 2, oro: 4, leyenda: 7 }
-export const PUNTOS_MAX = 7
+// Ganar a un rival más difícil vale más. Estos puntos se suman en silencio: la pantalla no los declara.
+export const PUNTOS_VICTORIA: Record<Nivel, number> = { bronce: 2, plata: 3, oro: 4, leyenda: 6 }
+export const PUNTOS_MAX = 6 // las reglas de Firestore aceptan hasta 7 por partida
 
 export interface EntradaRanking {
   id: string
