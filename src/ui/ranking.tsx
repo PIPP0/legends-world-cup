@@ -76,8 +76,8 @@ function Fila({ e, pos }: { e: EntradaRanking; pos: number }) {
   return (
     <li className={`rk-fila${e.yo ? ' yo' : ''}`}>
       <span className={`rk-pos p${pos <= 3 ? pos : 0}`}>{pos}</span>
-      <Pais iso={e.pais} />
-      <span className="rk-nombre">{e.activo && <i className="rk-vivo" title={tr('Jugando ahora')} />}<b>{e.alias}</b>{e.yo && <em className="rk-tu">{tr('Tú')}</em>}</span>
+      <span className="rk-bandera"><Pais iso={e.pais} />{e.activo && <i className="rk-vivo" title={tr('Jugando ahora')} />}</span>
+      <span className="rk-nombre"><b>{e.alias}</b>{e.yo && <em className="rk-tu">{tr('Tú')}</em>}</span>
       <span className="rk-rec">{e.ganadas}/{e.jugadas}</span>
       <b className="rk-pts">{e.puntos}</b>
     </li>
@@ -120,8 +120,8 @@ function Podio({ e, pos }: { e: EntradaRanking; pos: 1 | 2 | 3 }) {
     <div className={`rk-pod p${pos}${e.yo ? ' yo' : ''}`}>
       {pos === 1 && <span className="rk-corona" aria-hidden>👑</span>}
       <span className={`rk-medalla p${pos}`}>{pos}</span>
-      <Pais iso={e.pais} />
-      <b className="rk-pod-n">{e.activo && <i className="rk-vivo" />}{e.alias}</b>
+      <span className="rk-bandera"><Pais iso={e.pais} />{e.activo && <i className="rk-vivo" title={tr('Jugando ahora')} />}</span>
+      <b className="rk-pod-n">{e.alias}</b>
       <span className="rk-pod-tags">{e.yo && <em className="rk-tu">{tr('Tú')}</em>}</span>
       <strong className="rk-pod-pts">{e.puntos}<small>pts</small></strong>
       <small className="rk-pod-rec">{e.ganadas}/{e.jugadas}</small>

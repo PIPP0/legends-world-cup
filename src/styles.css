@@ -1009,3 +1009,6 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .rk-nombre .rk-demo,.rk-pod-tags .rk-demo{font-size:8px;padding:1px 5px;opacity:.55;background:none;border:1px solid rgba(255,255,255,.18)}
 .rk-pod-n{display:inline-flex;align-items:center;justify-content:center}
 @media(prefers-reduced-motion:reduce){.rk-vivo{animation:none}}
+/* el punto verde va en la esquina inferior derecha de la bandera */
+.rk-bandera{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.rk-bandera .rk-vivo{position:absolute;right:-5px;bottom:-5px;margin:0;width:11px;height:11px;border:2px solid #050a1c;box-sizing:border-box}
