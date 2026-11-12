@@ -91,6 +91,42 @@ function abrirVentanaPago(e: React.MouseEvent<HTMLAnchorElement>) {
   } catch { /* se usa el enlace normal */ }
 }
 
+
+// Donar sin salir de la página: montos + botones oficiales de PayPal dentro del modal (solo necesita el Client ID público; el cobro lo hace PayPal).
+type AccionesPaypal = { order: { create: (o: unknown) => Promise<string>; capture: () => Promise<unknown> } }
+function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
+  const [monto, setMonto] = useState(5)
+  const [gracias, setGracias] = useState(false)
+  const [err, setErr] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    let btn: { close: () => void } | null = null; let dead = false
+    setErr('')
+    loadSdk().then(() => {
+      if (dead || !ref.current || !window.paypal) return
+      const b = window.paypal.Buttons({
+        style: { layout: 'vertical', shape: 'rect', label: 'donate', height: 42 },
+        createOrder: (_d: unknown, a: AccionesPaypal) => a.order.create({ purchase_units: [{ description: 'Apoyo voluntario', amount: { currency_code: 'USD', value: monto.toFixed(2) } }] }),
+        onApprove: (_d: unknown, a: AccionesPaypal) => a.order.capture().then(() => setGracias(true)),
+        onCancel: () => setErr(tr('Cancelaste el pago. No se cobró nada.')),
+        onError: () => setErr(tr('No se pudo iniciar el pago. Intenta de nuevo.')),
+      })
+      btn = b; void b.render(ref.current)
+    }).catch(() => setErr(tr('No se pudo cargar PayPal. Revisa tu conexión e intenta de nuevo.')))
+    return () => { dead = true; btn?.close() }
+  }, [monto])
+  if (gracias) return <><p className="donar-gracias">{tr('¡Gracias por tu apoyo! Recibimos tu aporte.')}</p><button type="button" className="btn pri" onClick={alTerminar}>{tr('Cerrar')}</button></>
+  return (
+    <>
+      <div className="donar-montos" role="group" aria-label={tr('Elige cuánto quieres aportar')}>
+        {[2, 5, 10, 20].map((m) => <button key={m} type="button" className={m === monto ? 'on' : ''} onClick={() => setMonto(m)}>US$ {m}</button>)}
+      </div>
+      <div ref={ref} className="donar-paypal" />
+      {err && <p className="note warn">{err}</p>}
+    </>
+  )
+}
+
 export function DonateModalHost() {
   const [abierto, setAbierto] = useState(false)
   const boton = useRef<HTMLAnchorElement>(null)
@@ -111,7 +147,9 @@ export function DonateModalHost() {
         <span className="donar-ic" aria-hidden>☕</span>
         <h3>{tr('Apoya el proyecto')}</h3>
         <p>{tr('Nos ayudas a crecer y seguir mejorando. Es voluntario y no desbloquea nada.')}</p>
-        <a ref={boton} className="btn pri donar-ir" href={DONATE_URL} target="_blank" rel="noopener noreferrer" onClick={(e) => { ocultar(); setAbierto(false); abrirVentanaPago(e) }}>{tr('Donar con PayPal')} →</a>
+        {PAYPAL_CLIENT_ID ? <DonarEnModal alTerminar={() => setAbierto(false)} /> : (
+          <a ref={boton} className="btn pri donar-ir" href={DONATE_URL} target="_blank" rel="noopener noreferrer" onClick={(e) => { ocultar(); setAbierto(false); abrirVentanaPago(e) }}>{tr('Donar con PayPal')} →</a>
+        )}
         <button type="button" className="donar-no" onClick={() => setAbierto(false)}>{tr('Ahora no')}</button>
         <small className="muted">{tr('Pago seguro en PayPal: tú eliges el monto. Aquí no guardamos tus datos de pago.')}</small>
       </div>

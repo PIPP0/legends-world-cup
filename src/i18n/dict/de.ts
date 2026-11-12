@@ -1158,5 +1158,7 @@ const D: string[] = [
   "Spielt gerade",
   "Solange die Community wächst, sind einige Spieler im Ranking Demospieler und ihre Ergebnisse sind fiktiv. Alle anderen sind echte Ergebnisse von Spielern.",
   "Das Ranking wird laufend aktualisiert, und einige Spieler sind nicht ganz echt.",
+  "Danke für deine Unterstützung! Dein Beitrag ist angekommen.",
+  "Wähle, wie viel du beitragen möchtest",
 ]
 export default D

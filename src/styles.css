@@ -1013,3 +1013,8 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .rk-bandera{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .rk-bandera .rk-vivo{position:absolute;right:-5px;bottom:-5px;margin:0;width:11px;height:11px;border:2px solid #050a1c;box-sizing:border-box}
 .rk-nota{text-align:center;font-size:11px;color:#6f7fa8;opacity:.6;margin:6px 0 0;font-style:italic}
+.donar-montos{display:flex;gap:8px;justify-content:center;margin:6px 0 10px;flex-wrap:wrap}
+.donar-montos button{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);font:700 15px 'Barlow Condensed';letter-spacing:.8px;cursor:pointer}
+.donar-montos button.on{background:var(--cy);color:#02131a;border-color:var(--cy)}
+.donar-paypal{min-height:46px;width:100%;max-width:320px;margin:0 auto 6px}
+.donar-gracias{font:700 18px 'Barlow Condensed';letter-spacing:.8px;text-align:center;color:#2ee66b}

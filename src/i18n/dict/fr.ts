@@ -1158,5 +1158,7 @@ const D: string[] = [
   "En train de jouer",
   "Pendant que la communauté grandit, certains joueurs du classement sont des joueurs de démonstration et leurs résultats sont fictifs. Les autres sont des résultats réels de personnes qui jouent.",
   "Le classement se met à jour au fil du temps, et certains joueurs ne sont pas tout à fait authentiques.",
+  "Merci pour ton soutien ! Nous avons bien reçu ta contribution.",
+  "Choisis le montant de ta contribution",
 ]
 export default D

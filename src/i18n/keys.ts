@@ -1158,4 +1158,6 @@ export const KEYS: string[] = [
   "Jugando ahora",
   "Mientras la comunidad crece, algunos jugadores del ranking son de demostración y sus resultados son ficticios. Los demás son resultados reales de personas que juegan.",
   "El ranking se va actualizando con el tiempo y algunos jugadores no son completamente veraces.",
+  "¡Gracias por tu apoyo! Recibimos tu aporte.",
+  "Elige cuánto quieres aportar",
 ]

@@ -1158,5 +1158,7 @@ const D: string[] = [
   "Sedang bermain",
   "Selagi komunitas berkembang, beberapa pemain di peringkat adalah pemain demonstrasi dan hasilnya fiktif. Sisanya adalah hasil nyata dari orang yang bermain.",
   "Peringkat terus diperbarui dari waktu ke waktu, dan beberapa pemain tidak sepenuhnya asli.",
+  "Terima kasih atas dukunganmu! Kontribusimu sudah kami terima.",
+  "Pilih berapa yang ingin kamu sumbangkan",
 ]
 export default D

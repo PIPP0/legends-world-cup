@@ -420,4 +420,6 @@ export const EXTRA: Array<[string, string]> = [
   ['Jugando ahora', 'Playing now'],
   ['Mientras la comunidad crece, algunos jugadores del ranking son de demostración y sus resultados son ficticios. Los demás son resultados reales de personas que juegan.', 'While the community grows, some players in the ranking are demo players and their results are fictional. The rest are real results from people who play.'],
   ['El ranking se va actualizando con el tiempo y algunos jugadores no son completamente veraces.', 'The ranking keeps updating over time, and some players are not entirely truthful.'],
+  ['¡Gracias por tu apoyo! Recibimos tu aporte.', 'Thank you for your support! We received your contribution.'],
+  ['Elige cuánto quieres aportar', 'Choose how much you want to contribute'],
 ]
