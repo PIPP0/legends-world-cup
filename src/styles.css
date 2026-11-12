@@ -885,3 +885,14 @@ div.rk-tu label{font:700 13px 'Barlow Condensed';letter-spacing:1.2px;text-trans
 .rk-nombre-sec .rk-tu{width:100%;max-width:420px}
 @media(max-width:640px){.rk-podio{grid-template-columns:1fr 1.1fr 1fr;gap:6px}.rk-pod{padding:12px 4px}.rk-pod-pts{font-size:26px}.rk-pod.p1 .rk-pod-pts{font-size:34px}.rk-miposicion,.rk-miposicion.nuevo{grid-template-columns:1fr;text-align:center;justify-items:center}.rk-chips{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.rk-trofeo,.rk-pod{animation:none}}
+
+/* botón del ranking del encabezado: el doble de ancho y muestra solo al jugador y su puesto */
+.d-btn-rank.mini{width:clamp(300px,34vw,420px);grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:14px;padding:12px 18px;border-radius:14px}
+.d-btn-rank.mini .rk-btn-ic{grid-row:1/3;font-size:34px;line-height:1}
+.d-btn-rank.mini b{font-size:20px;letter-spacing:1.6px;line-height:1.1}
+.d-btn-rank.mini .rk-btn-sub{grid-column:2;font-size:13px;color:#b9c4e6}
+.rk-btn-yo{grid-column:2;display:flex;align-items:baseline;gap:10px;min-width:0}
+.rk-btn-yo em{font:800 30px/1 'Barlow Condensed';font-style:normal;color:var(--cy)}.rk-btn-yo strong{font:700 15px Inter;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.rk-btn-yo small{margin-left:auto;font-size:13px;color:#ffe08a;white-space:nowrap}
+.d-btn-rank.mini.con-puesto{border-color:var(--cy);background:linear-gradient(135deg,rgba(0,229,255,.14),rgba(255,213,74,.08))}
+@media(max-width:700px){.d-btn-rank.mini{position:static;width:100%;margin:0 0 12px}}
+.d-btn-rank.mini b{grid-column:2;grid-row:1}.d-btn-rank.mini .rk-btn-yo,.d-btn-rank.mini .rk-btn-sub{grid-row:2}

@@ -67,11 +67,15 @@ function Fila({ e, pos }: { e: EntradaRanking; pos: number }) {
 
 // Botón de la pantalla «Tu equipo»: lleva al ranking y, si ya jugaste, muestra tu puesto.
 export function BotonRanking({ compacto }: { compacto?: boolean }) {
-  const { yo, posicion, lista } = useRanking()
+  const { yo, posicion } = useRanking()
+  const juega = yo.jugadas > 0
   return (
-    <a className={`d-btn-rank${compacto ? ' mini' : ''}`} href="#/ranking" title={tr('Ver ranking')}>
-      <span aria-hidden>🏆</span><b>{tr('Ranking')}</b>
-      <small>{yo.jugadas > 0 ? tr('Tu puesto: {p} de {t}', { p: posicion, t: lista.length }) : tr('Ver ranking')}</small>
+    <a className={`d-btn-rank${compacto ? ' mini' : ''}${juega ? ' con-puesto' : ''}`} href="#/ranking" title={tr('Ver ranking')}>
+      <span className="rk-btn-ic" aria-hidden>🏆</span>
+      <b>{tr('Ranking')}</b>
+      {juega ? (
+        <span className="rk-btn-yo"><em>#{posicion}</em><strong>{yo.alias}</strong><small>{yo.puntos} pts</small></span>
+      ) : <small className="rk-btn-sub">{tr('Ver ranking')} →</small>}
     </a>
   )
 }
