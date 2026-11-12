@@ -1053,3 +1053,6 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 
 .donar-paypal.apagado{opacity:.4;pointer-events:none;filter:grayscale(.4);transition:opacity .2s}
 .donar-modal .donar-pie{margin:6px 0 0;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:#9fb0d8;line-height:1.45}
+.donar-tier{animation:donarFade .35s ease both}
+@keyframes donarFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.donar-tier{animation:none}}

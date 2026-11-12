@@ -1169,5 +1169,10 @@ const D: string[] = [
   "Wenn dir die Erfahrung gefallen hat, kannst du das Projekt unterstützen. Es ist freiwillig.",
   "Um den Betrag zu ändern, schließe das Kartenformular (✕).",
   "💙 Danke, dass du dabei bist! Jeder Beitrag hilft uns, besser zu werden.",
+  "🙏 Vielen Dank!",
+  "☕ Danke! Du lädst uns auf einen Kaffee ein.",
+  "🌟 Du bist großartig, vielen Dank!",
+  "🚀 Unglaublich! Du hilfst uns, weiter zu wachsen.",
+  "🏆 Du bist ein Großer! Danke, dass du an dieses Projekt glaubst und es möglich machst.",
 ]
 export default D

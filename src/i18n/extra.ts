@@ -431,4 +431,9 @@ export const EXTRA: Array<[string, string]> = [
   ['Si disfrutaste la experiencia, puedes apoyar el proyecto. Es voluntario.', 'If you enjoyed the experience, you can support the project. It is voluntary.'],
   ['Para cambiar el monto, cierra el formulario de tarjeta (✕).', 'To change the amount, close the card form (✕).'],
   ['💙 ¡Gracias por ser parte de esto! Cada aporte nos ayuda a seguir mejorando.', '💙 Thank you for being part of this! Every contribution helps us keep improving.'],
+  ['🙏 ¡Muchas gracias!', '🙏 Thank you so much!'],
+  ['☕ ¡Gracias! Con esto nos invitas un cafecito.', '☕ Thanks! You’re buying us a little coffee.'],
+  ['🌟 ¡Eres genial, muchas gracias!', '🌟 You’re awesome, thank you so much!'],
+  ['🚀 ¡Increíble! Nos impulsas a seguir creciendo.', '🚀 Incredible! You help us keep growing.'],
+  ['🏆 ¡Eres un grande! Gracias por creer en este proyecto y hacerlo posible.', '🏆 You’re a legend! Thank you for believing in this project and making it possible.'],
 ]
