@@ -96,13 +96,15 @@ function abrirVentanaPago(e: React.MouseEvent<HTMLAnchorElement>) {
 type AccionesPaypal = { order: { create: (o: unknown) => Promise<string>; capture: () => Promise<unknown> } }
 function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
   const [monto, setMonto] = useState(5)
+  const [libre, setLibre] = useState('')
   const [gracias, setGracias] = useState(false)
   const [err, setErr] = useState('')
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     let btn: { close: () => void } | null = null; let dead = false
     setErr('')
-    loadSdk().then(() => {
+    // pequeña espera para no recrear los botones en cada tecla cuando se escribe un monto libre
+    const espera = setTimeout(() => { loadSdk().then(() => {
       if (dead || !ref.current || !window.paypal) return
       const b = window.paypal.Buttons({
         style: { layout: 'vertical', shape: 'rect', label: 'donate', height: 42 },
@@ -112,15 +114,18 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
         onError: () => setErr(tr('No se pudo iniciar el pago. Intenta de nuevo.')),
       })
       btn = b; void b.render(ref.current)
-    }).catch(() => setErr(tr('No se pudo cargar PayPal. Revisa tu conexión e intenta de nuevo.')))
-    return () => { dead = true; btn?.close() }
+    }).catch(() => setErr(tr('No se pudo cargar PayPal. Revisa tu conexión e intenta de nuevo.'))) }, 350)
+    return () => { dead = true; clearTimeout(espera); btn?.close() }
   }, [monto])
   if (gracias) return <><p className="donar-gracias">{tr('¡Gracias por tu apoyo! Recibimos tu aporte.')}</p><button type="button" className="btn pri" onClick={alTerminar}>{tr('Cerrar')}</button></>
   return (
     <>
       <div className="donar-montos" role="group" aria-label={tr('Elige cuánto quieres aportar')}>
-        {[2, 5, 10, 20].map((m) => <button key={m} type="button" className={m === monto ? 'on' : ''} onClick={() => setMonto(m)}>US$ {m}</button>)}
+        {[2, 5, 10, 20].map((m) => <button key={m} type="button" className={m === monto && !libre ? 'on' : ''} onClick={() => { setLibre(''); setMonto(m) }}>US$ {m}</button>)}
       </div>
+      <label className="donar-libre">{tr('Otro monto')} (US$)
+        <input type="number" inputMode="decimal" min={1} max={500} step="0.5" placeholder="0" value={libre} onChange={(e) => { setLibre(e.target.value); const n = Math.round(parseFloat(e.target.value) * 100) / 100; if (n >= 1 && n <= 500) setMonto(n) }} />
+      </label>
       <div ref={ref} className="donar-paypal" />
       {err && <p className="note warn">{err}</p>}
     </>

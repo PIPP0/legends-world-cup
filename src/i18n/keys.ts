@@ -1160,4 +1160,5 @@ export const KEYS: string[] = [
   "El ranking se va actualizando con el tiempo y algunos jugadores no son completamente veraces.",
   "¡Gracias por tu apoyo! Recibimos tu aporte.",
   "Elige cuánto quieres aportar",
+  "Otro monto",
 ]

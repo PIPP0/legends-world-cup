@@ -1160,5 +1160,6 @@ const D: string[] = [
   "The ranking keeps updating over time, and some players are not entirely truthful.",
   "Thank you for your support! We received your contribution.",
   "Choose how much you want to contribute",
+  "Other amount",
 ]
 export default D

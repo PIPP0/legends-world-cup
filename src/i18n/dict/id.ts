@@ -1160,5 +1160,6 @@ const D: string[] = [
   "Peringkat terus diperbarui dari waktu ke waktu, dan beberapa pemain tidak sepenuhnya asli.",
   "Terima kasih atas dukunganmu! Kontribusimu sudah kami terima.",
   "Pilih berapa yang ingin kamu sumbangkan",
+  "Jumlah lain",
 ]
 export default D
