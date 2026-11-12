@@ -909,3 +909,11 @@ div.rk-tu label{font:700 13px 'Barlow Condensed';letter-spacing:1.2px;text-trans
 .d-cols-eq{grid-template-areas:"c p" "b p";grid-template-rows:auto 1fr}
 .d-c-banca{align-self:start}
 @media(max-width:860px){.d-cols-eq{grid-template-rows:none}}
+
+/* Tu equipo: el cuadro de suplentes mide lo mismo que la cancha y sus fotos son del tamaño de las de los titulares (12,8 % del ancho de la cancha) */
+.d-cols-eq .d-c-banca{width:min(100%,420px);margin:0 auto;container-type:inline-size}
+.d-cols-eq .d-c-banca .d-banca2{gap:8px 4cqw;padding:12px 6px}
+.d-cols-eq .d-c-banca .d-sup-c{box-sizing:border-box;width:12.8cqw;height:12.8cqw}
+.d-cols-eq .d-c-banca .d-sup-c .avatar{width:100%!important;height:100%!important}
+.d-cols-eq .d-c-banca .d-sup-ovr{font-size:13px;padding:0 6px;right:-8px;bottom:-5px}
+.d-cols-eq .d-c-banca .d-sup small{font-size:13px}
