@@ -1087,5 +1087,17 @@ const D: string[] = [
   "Sangat efektif!",
   "Siapa yang menyelesaikannya?",
   "Siapa yang mencegatnya?",
+  "Gaya yang saling melengkapi",
+  "{n} kemenangan lagi menuju level {m}",
+  "Level tim +{a} melawan +{d}",
+  "Level tim {n}",
+  "Kimia trio",
+  "Kimia {a} melawan {d}",
+  "Tanpa kombinasi khusus",
+  "Menambah +{b} ke semua permainanmu. Naik setiap menang, sedikit demi sedikit.",
+  "Tiga dengan gaya yang sama",
+  "Tiga gaya berbeda",
+  "{n} dari negara yang sama",
+  "Batas +{n}",
 ]
 export default D

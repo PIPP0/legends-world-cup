@@ -1087,5 +1087,17 @@ const D: string[] = [
   "Superefetivo!",
   "Quem finaliza?",
   "Quem intercepta?",
+  "Estilos que se complementam",
+  "Faltam {n} vitórias para o nível {m}",
+  "Nível de equipe +{a} contra +{d}",
+  "Nível da equipe {n}",
+  "Química do trio",
+  "Química {a} contra {d}",
+  "Sem combinações especiais",
+  "Soma +{b} a todas as suas jogadas. Sobe a cada vitória, aos poucos.",
+  "Três do mesmo estilo",
+  "Três estilos diferentes",
+  "{n} do mesmo país",
+  "Teto +{n}",
 ]
 export default D

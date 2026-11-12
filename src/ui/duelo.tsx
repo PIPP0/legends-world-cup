@@ -10,7 +10,7 @@ import {
   sedeDuelo, sinergias, valorEquipo, onceDeEjemplo, type Equipo, type Nivel,
 } from '../engine/duelo'
 import {
-  ATAQUES, DEFENSAS, MATRIZ, PESOS_ATAQUE, PESOS_DEFENSA, TURNOS, IMPULSO_ENC, DEBILITAR_ENC, disponibles, encajeAtaque, encajeDefensa, estiloJugador,
+  ATAQUES, DEFENSAS, MATRIZ, PESOS_ATAQUE, PESOS_DEFENSA, TURNOS, IMPULSO_ENC, DEBILITAR_ENC, disponibles, quimicaTrio, nivelEquipo, bonoNivelEquipo, bonoNivelMaquina, victoriasParaSubir, type RazonQuimica, encajeAtaque, encajeDefensa, estiloJugador,
   segundosBarra, precision, resolverJugada, eligeAtaqueMaquina, eligeDefensaMaquina, toqueMaquina, mejorDelTrio, bloqueados, aplicarPoderesTrio, reemplazoTrio, eligePoderTrio,
   type Ataque, type Defensa, type Estilo, type DetalleJugada, type HistorialJugada, type Aj,
 } from '../engine/jugada'
@@ -212,7 +212,7 @@ function DueloPantallas() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   if (vista === 'draft') return <Draft alTerminar={(e) => { setEquipo(e); setVista('inicio') }} alCancelar={() => setVista('inicio')} />
-  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} alTerminar={(g) => { const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
+  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} ganados={stats.ganados} alTerminar={(g) => { const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
   return <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} aviso={abandonada} armar={() => setVista('draft')} jugar={() => setVista('duelo')} />
 }
 
@@ -281,6 +281,7 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar, aviso }: { equip
                 <div><b>{mejor.ovr}</b><span>{apellido(mejor.name)}</span></div>
                 <div><b>{pais.length}</b><span>{tr('Sinergias')}</span></div>
               </div>
+              <div className="d-nivel-eq"><div><b>⭐ {tr('Nivel de equipo {n}', { n: nivelEquipo(stats.ganados) })}</b><span>{tr('Suma +{b} a todas tus jugadas. Sube con cada victoria, de a poco.', { b: bonoNivelEquipo(stats.ganados) })}</span></div><div className="d-nivel-bar"><i style={{ width: `${Math.round(((stats.ganados - (nivelEquipo(stats.ganados) - 1) ** 2) / (nivelEquipo(stats.ganados) ** 2 - (nivelEquipo(stats.ganados) - 1) ** 2)) * 100)}%` }} /></div><small>{tr('Faltan {n} victorias para el nivel {m}', { n: victoriasParaSubir(stats.ganados), m: nivelEquipo(stats.ganados) + 1 })}</small></div>
               <p className="muted small">{tr('Toca a un jugador de la cancha para ver su detalle.')}</p>
               <div className="d-redes" role="group" aria-label={tr('Compartir mi equipo')}>
                 <span>{tr('Compartir')}</span>
@@ -451,7 +452,7 @@ interface Eleccion { est: Ataque | Defensa; trio: string[] }
 interface TurnoHist { n: number; ataca: 'mio' | 'su'; det: DetalleJugada; pw?: { mio?: Poder; su?: Poder; efectos: Efecto[] } }
 const CLAVE_ABIERTA = CLAVE_PARTIDA // marcador de partido en curso (para detectar que se abandonó)
 
-function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel: Nivel; alTerminar: (gane: boolean) => void; alSalir: () => void }) {
+function Partida({ equipo, nivel, ganados, alTerminar, alSalir }: { equipo: Equipo; nivel: Nivel; ganados: number; alTerminar: (gane: boolean) => void; alSalir: () => void }) {
   const [seed] = useState(() => nuevaSemilla('duelo'))
   const rival = useMemo(() => equipoMaquina(nivel, seed), [nivel, seed])
   const ctx: MatchCtx = useMemo(() => sedeDuelo(seed), [seed])
@@ -558,7 +559,9 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
     const xMaq = toqueMaquina(seed, turno, nivel, ataca ? segundosBarra(encajeDefensa(interceptor, D, ajSu)) : segundosBarra(encajeAtaque(ejecutor, A, ajSu)), ataca ? 'defiende' : 'ataca')
     const precA = precision(ataca ? x : xMaq), precD = precision(ataca ? xMaq : x)
     const arquero = ataca ? rival.once[0] : equipo.once[0]
-    const d = resolverJugada({ seed, turno, ataca: ataca ? 'mio' : 'su', ataque: A, defensa: D, trioA, trioD, ajA, ajD, ejecutor, interceptor, precA, precD, arquero, clima: weatherFactor(ctx).goals })
+    const quimMio = quimicaTrio(finMio, ataca).total, quimSu = quimicaTrio(finSu, !ataca).total
+    const nivMio = bonoNivelEquipo(ganados), nivSu = bonoNivelMaquina(nivel)
+    const d = resolverJugada({ seed, turno, ataca: ataca ? 'mio' : 'su', ataque: A, defensa: D, trioA, trioD, ajA, ajD, ejecutor, interceptor, precA, precD, arquero, clima: weatherFactor(ctx).goals, quimA: ataca ? quimMio : quimSu, quimD: ataca ? quimSu : quimMio, nivelA: ataca ? nivMio : nivSu, nivelD: ataca ? nivSu : nivMio })
     setHist((h) => [...h, { n: turno, ataca: ataca ? 'mio' : 'su', det: d, pw: pw && (pw.mio || pw.su) ? { ...pw, efectos: ajs.efectos } : undefined }])
     setCMio(finMio); setCSu(finSu)
     setFase('resultado')
@@ -616,7 +619,7 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
             <div className="d-vs" aria-hidden><span>VS</span></div>
             <div className="d-controles">
               {fase === 'eleccion' && (
-                <PanelEleccion turno={turno} ataca={ataca} est={est} setEst={(e) => { setEst(e); setTrio([]) }} trio={trio} quitar={(id) => setTrio((t) => t.filter((x) => x !== id))} fit={(id) => (est ? fit(id, est) : 0)} onConfirmar={confirmar} onTabla={() => setTabla(true)} disp={pwMios} />
+                <PanelEleccion turno={turno} ataca={ataca} est={est} setEst={(e) => { setEst(e); setTrio([]) }} trio={trio} quitar={(id) => setTrio((t) => t.filter((x) => x !== id))} fit={(id) => (est ? fit(id, est) : 0)} quim={quimicaTrio(trio, ataca)} onConfirmar={confirmar} onTabla={() => setTabla(true)} disp={pwMios} />
               )}
               {fase === 'poder' && su && est && (
                 <PanelRevela ataca={ataca} est={est} su={su} trio={trio} nivelH={nivelHumano(nivelMat)} disp={pwMios} tipo={pwTipo} obj={pwObj} setTipo={setPwTipo} setObj={setPwObj} onSeguir={seguirPoderes} onTabla={() => setTabla(true)} />
@@ -652,8 +655,10 @@ function Partida({ equipo, nivel, alTerminar, alSalir }: { equipo: Equipo; nivel
 
 const resTxt = (r: 'gol' | 'atajada' | 'corte') => (r === 'gol' ? tr('¡GOL!') : r === 'atajada' ? tr('¡Atajada!') : tr('¡Cortado!'))
 
+const razonQuimica = (r: RazonQuimica) => `${r.tipo === 'pais' ? tr('{n} del mismo país', { n: r.n ?? 2 }) : r.tipo === 'combo' ? tr('Estilos que se complementan') : r.tipo === 'variedad' ? tr('Tres estilos distintos') : tr('Tres del mismo estilo')} ${r.pts > 0 ? '+' : ''}${r.pts}`
+
 // Elegir estrategia y trío.
-function PanelEleccion({ turno, ataca, est, setEst, trio, quitar, fit, onConfirmar, onTabla, disp }: { turno: number; ataca: boolean; est: Ataque | Defensa | null; setEst: (e: Ataque | Defensa) => void; trio: string[]; quitar: (id: string) => void; fit: (id: string) => number; onConfirmar: () => void; onTabla: () => void; disp: Disponibles }) {
+function PanelEleccion({ turno, ataca, est, setEst, trio, quitar, fit, quim, onConfirmar, onTabla, disp }: { turno: number; ataca: boolean; est: Ataque | Defensa | null; setEst: (e: Ataque | Defensa) => void; trio: string[]; quitar: (id: string) => void; fit: (id: string) => number; quim: { total: number; razones: RazonQuimica[] }; onConfirmar: () => void; onTabla: () => void; disp: Disponibles }) {
   const opciones = (ataca ? ATAQUES : DEFENSAS) as (Ataque | Defensa)[]
   return (
     <div className="d-eleccion">
@@ -673,6 +678,7 @@ function PanelEleccion({ turno, ataca, est, setEst, trio, quitar, fit, onConfirm
                 {p ? <><div className="d-slot-av"><Avatar p={p} size={44} /></div><b>{apellido(p.name)}</b><small>{ICONO_ESTILO[estiloJugador(p)]} {nombreEstilo(estiloJugador(p))}</small><em>{fit(id)}</em><button type="button" className="d-slot-x" onClick={() => quitar(id)} aria-label={tr('Quitar')}>✕</button></> : <span className="vacio">+</span>}
               </div>) })}
           </div>
+          {trio.length >= 2 && <div className={`d-quim ${quim.total > 0 ? 'pos' : quim.total < 0 ? 'neg' : ''}`}><b>🧪 {tr('Química del trío')} {quim.total > 0 ? '+' : ''}{Math.round(quim.total * 10) / 10}</b>{quim.razones.map((r, i) => <span key={i}>{razonQuimica(r)}</span>)}{!quim.razones.length && <span>{tr('Sin combinaciones especiales')}</span>}{quim.razones.reduce((x, r) => x + r.pts, 0) > 6 && <span className="tope">{tr('Tope +{n}', { n: 6 })}</span>}</div>}
         </div>
       )}
       <FilaPoderes disp={disp} />
@@ -829,6 +835,8 @@ function EscenaTurno({ det, ritmo, turno, esUltimo, onSiguiente, vel, setVel }: 
         <div className={`d-factores ${v(2)}`}>
           <span className={`f ${claseEfecto(nivelH)}`}>{mensajeEfecto(nivelH)}</span>
           <span className="f">{tr('Encaje {a} contra {d}', { a: Math.round(det.calidadA), d: Math.round(det.calidadD) })}</span>
+          <span className="f">🧪 {tr('Química {a} contra {d}', { a: Math.round(det.quimA * 10) / 10, d: Math.round(det.quimD * 10) / 10 })}</span>
+          <span className="f">⭐ {tr('Nivel de equipo +{a} contra +{d}', { a: det.nivelA, d: det.nivelD })}</span>
           <span className="f">{tr('Tu toque {p} %', { p: Math.round((mio ? det.precA : det.precD) * 100) })}</span>
         </div>
         <div className={`d-meter ${v(3)}`}><div className="d-meter-h"><b>{tr('Probabilidad de gol: {p} %', { p: Math.round(det.pGol * 100) })}</b></div><div className="d-meter-bar"><i style={{ width: `${Math.round(det.pGol * 100)}%` }} /></div></div>
@@ -840,6 +848,7 @@ function EscenaTurno({ det, ritmo, turno, esUltimo, onSiguiente, vel, setVel }: 
             <ul className="d-porque">
               <li>{tr('Estrategia: {a} contra {d}: {m}', { a: nombreAtaque(det.est.ataque), d: nombreDefensa(det.est.defensa), m: mensajeEfecto(det.nivel) })}</li>
               <li>{tr('Jugadores: encaje del ataque {a} contra la defensa {d}', { a: Math.round(det.calidadA), d: Math.round(det.calidadD) })}</li>
+              <li>🧪 {tr('Química {a} contra {d}', { a: Math.round(det.quimA * 10) / 10, d: Math.round(det.quimD * 10) / 10 })} · ⭐ {tr('Nivel de equipo +{a} contra +{d}', { a: det.nivelA, d: det.nivelD })}</li>
               <li>{tr('Superar la defensa: {p} %', { p: pctPaso })} · <b>{det.resultado === 'corte' ? tr('No lo logró') : tr('Lo superó')}</b></li>
               {pasa && <li>{tr('Remate: {p} % (tu toque {t} %, remate {r} contra arquero {q})', { p: pctRem, t: Math.round(det.precA * 100), r: Math.round(det.rem), q: Math.round(det.arq) })} · <b>{det.resultado === 'gol' ? tr('Es gol') : tr('Lo atajó')}</b></li>}
             </ul>

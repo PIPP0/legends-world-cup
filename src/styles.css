@@ -793,3 +793,12 @@ main,.note,h2,.sec-title{overflow-wrap:break-word}
 .d-tabla td.c2{background:rgba(93,240,166,.16)}.d-tabla td.c1{background:rgba(155,232,107,.1)}.d-tabla td.c-1{background:rgba(255,184,107,.1)}.d-tabla td.c-2{background:rgba(255,93,122,.16)}
 .d-tabla tr.hl th,.d-tabla th.hl{color:var(--cy)}.d-tabla td.hl{outline:2px solid var(--cy);outline-offset:-2px}
 @media(max-width:520px){.d-ests{grid-template-columns:1fr 1fr}.d-ejec{gap:6px}.d-vsest{grid-template-columns:1fr}.d-vsest .vs{text-align:center}}
+
+/* química del trío y nivel de equipo */
+.d-quim{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);font-size:12px;color:#c9d3f2}
+.d-quim b{font:800 14px 'Barlow Condensed';letter-spacing:.8px;text-transform:uppercase;color:#fff;margin-right:4px}.d-quim span{padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.07)}
+.d-quim.pos b{color:#5df0a6}.d-quim.neg b{color:#ff8da1}
+.d-nivel-eq{display:grid;gap:5px;padding:10px 12px;border-radius:12px;background:rgba(255,213,74,.07);border:1px solid rgba(255,213,74,.3)}
+.d-nivel-eq b{font:800 17px 'Barlow Condensed';letter-spacing:.8px;text-transform:uppercase;color:#ffe08a}.d-nivel-eq span{display:block;font-size:12px;color:#c9d3f2}.d-nivel-eq small{font-size:11px;color:#9fb0d8}
+.d-nivel-bar{height:8px;border-radius:4px;background:#0a1130;overflow:hidden}.d-nivel-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#ffd54a,#5df0a6)}
+.d-quim .tope{background:rgba(255,213,74,.15);color:#ffe08a}

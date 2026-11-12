@@ -1087,5 +1087,17 @@ const D: string[] = [
   "It's super effective!",
   "Who finishes it?",
   "Who intercepts it?",
+  "Styles that complement each other",
+  "{n} wins to go to level {m}",
+  "Team level +{a} against +{d}",
+  "Team level {n}",
+  "Trio chemistry",
+  "Chemistry {a} against {d}",
+  "No special combinations",
+  "Adds +{b} to all your plays. It grows with every win, little by little.",
+  "Three of the same style",
+  "Three different styles",
+  "{n} from the same country",
+  "Cap +{n}",
 ]
 export default D

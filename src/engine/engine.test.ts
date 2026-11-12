@@ -193,6 +193,7 @@ describe('probabilidades de la portada', () => {
 })
 
 import { PLAYER_BY_ID } from '../data'
+import { quimicaTrio, nivelEquipo, bonoNivelEquipo, victoriasParaSubir } from './jugada'
 import { MATRIZ, ATAQUES, DEFENSAS, segundosBarra, precision, resolverJugada, eligeAtaqueMaquina, eligeDefensaMaquina, toqueMaquina, encajeAtaque, estiloJugador, disponibles as disponiblesTurno } from './jugada'
 import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, onceDeEjemplo, TOPE_SUPLENTE, bloqueados, aplicarPoderes, eligePoderMaquina, reemplazoMaquina, candidatos, todosLosPoderes, TIPOS_PODER, type Poder, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
 describe('duelo «Mi Once Ideal»', () => {
@@ -295,5 +296,19 @@ describe('duelo «Mi Once Ideal»', () => {
     }
     expect(encajeAtaque(onceDeEjemplo('4-3-3')[8], 'contra')).toBeGreaterThan(0)
     expect(['veloz', 'regateador', 'fuerte', 'pasador', 'goleador', 'muro']).toContain(estiloJugador(PLAYER_BY_ID[onceDeEjemplo('4-3-3')[8]]))
+  })
+
+  it('química del trío y nivel de equipo: mismo país suma, tres iguales restan, el nivel crece de a poco y tiene tope', () => {
+    const ids = (pref: string) => Object.keys(PLAYER_BY_ID).filter((k) => k.startsWith(pref))
+    const bra = ids('bra-').slice(0, 3)
+    expect(quimicaTrio(bra, true).razones.some((r) => r.tipo === 'pais')).toBe(true)
+    expect(quimicaTrio(bra, true).total).toBeLessThanOrEqual(6)
+    const mezcla = [ids('bra-')[0], ids('arg-')[0], ids('ger-')[0]]
+    expect(quimicaTrio(mezcla, true).razones.every((r) => r.tipo !== 'pais')).toBe(true)
+    expect(nivelEquipo(0)).toBe(1); expect(nivelEquipo(4)).toBe(3); expect(nivelEquipo(9)).toBe(4)
+    expect(bonoNivelEquipo(0)).toBe(0); expect(bonoNivelEquipo(1)).toBeGreaterThan(0)
+    expect(bonoNivelEquipo(4) - bonoNivelEquipo(1)).toBeLessThan(bonoNivelEquipo(1) * 2) // crece de a poco
+    expect(bonoNivelEquipo(400)).toBe(3)
+    expect(victoriasParaSubir(0)).toBe(1); expect(victoriasParaSubir(3)).toBe(1)
   })
 })

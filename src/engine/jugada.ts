@@ -66,6 +66,40 @@ export const tieneEstilo = (id: string, e: Ataque | Defensa, ataca: boolean): bo
   return ataca ? AFINIDAD_ATAQUE[e as Ataque].includes(s) : AFINIDAD_DEFENSA[e as Defensa].includes(s)
 }
 
+// ---------- química del trío y nivel de equipo ----------
+// Química: jugadores del mismo país y estilos que se complementan rinden más juntos; tres iguales rinden menos.
+export const BONO_PAIS_PAR = 2.5
+export const BONO_COMBO = 2
+const COMPLEMENTOS: Record<'ataque' | 'defensa', [Estilo, Estilo][]> = {
+  ataque: [['pasador', 'goleador'], ['veloz', 'pasador'], ['regateador', 'goleador'], ['veloz', 'goleador']],
+  defensa: [['muro', 'veloz'], ['muro', 'fuerte'], ['fuerte', 'veloz']],
+}
+export interface RazonQuimica { tipo: 'pais' | 'combo' | 'variedad' | 'igual'; pts: number; n?: number }
+export function quimicaTrio(trio: string[], ataca: boolean): { total: number; razones: RazonQuimica[] } {
+  const razones: RazonQuimica[] = []
+  const paises: Record<string, number> = {}
+  trio.forEach((id) => { const t = PLAYER_BY_ID[id].teamId; paises[t] = (paises[t] ?? 0) + 1 })
+  for (const n of Object.values(paises)) if (n >= 2) razones.push({ tipo: 'pais', pts: BONO_PAIS_PAR * (n * (n - 1)) / 2, n })
+  const estilos = trio.map((id) => estiloJugador(PLAYER_BY_ID[id]))
+  const comp = COMPLEMENTOS[ataca ? 'ataque' : 'defensa']
+  const hechos = new Set<string>()
+  for (let i = 0; i < estilos.length; i++) for (let j = i + 1; j < estilos.length; j++) {
+    const par = comp.find(([a, b]) => (estilos[i] === a && estilos[j] === b) || (estilos[i] === b && estilos[j] === a))
+    if (par && !hechos.has(par.join())) { hechos.add(par.join()); razones.push({ tipo: 'combo', pts: BONO_COMBO }) }
+  }
+  const distintos = new Set(estilos).size
+  if (distintos === 3) razones.push({ tipo: 'variedad', pts: 1.5 })
+  else if (distintos === 1) razones.push({ tipo: 'igual', pts: -2 })
+  const total = Math.max(-2, Math.min(6, razones.reduce((x, y) => x + y.pts, 0)))
+  return { total, razones }
+}
+// Nivel de equipo: crece con las victorias, de a poco (rendimientos decrecientes) y con tope.
+export const nivelEquipo = (ganados: number): number => 1 + Math.floor(Math.sqrt(Math.max(0, ganados)))
+export const bonoNivelEquipo = (ganados: number): number => Math.min(3, Math.round(0.9 * Math.sqrt(Math.max(0, ganados)) * 10) / 10)
+export const victoriasParaSubir = (ganados: number): number => nivelEquipo(ganados) ** 2 - ganados
+// La máquina tiene su propio «nivel» según la dificultad.
+export const bonoNivelMaquina = (nivel: Nivel): number => ({ bronce: 0, plata: 0.8, oro: 1.6, leyenda: 2.4 }[nivel])
+
 // ---------- la barra ----------
 // El balón cruza la barra más lento cuanto mejor encaja el jugador con la jugada (más fácil detenerlo en el centro).
 export function segundosBarra(encaje: number): number {
@@ -91,6 +125,7 @@ export interface DetalleJugada {
   pPaso: number; pRemate: number; pGol: number
   rem: number; arq: number
   clima: number
+  quimA: number; quimD: number; nivelA: number; nivelD: number
   t1: number; t2?: number
   resultado: 'gol' | 'atajada' | 'corte'
   arquero: string
@@ -108,11 +143,13 @@ export function resolverJugada(a: {
   ejecutor: string; interceptor?: string
   precA: number; precD: number
   arquero: string; clima: number
+  quimA?: number; quimD?: number; nivelA?: number; nivelD?: number
 }): DetalleJugada {
   const rng = makeRng(`${a.seed}:jugada:${a.turno}`)
   const nivel = MATRIZ[a.ataque][a.defensa]
-  const calidadA = a.trioA.reduce((s, id) => s + encajeAtaque(id, a.ataque, a.ajA), 0) / a.trioA.length
-  const calidadD = a.trioD.reduce((s, id) => s + encajeDefensa(id, a.defensa, a.ajD), 0) / a.trioD.length
+  const quimA = a.quimA ?? 0, quimD = a.quimD ?? 0, nivelA = a.nivelA ?? 0, nivelD = a.nivelD ?? 0
+  const calidadA = a.trioA.reduce((s, id) => s + encajeAtaque(id, a.ataque, a.ajA), 0) / a.trioA.length + quimA + nivelA
+  const calidadD = a.trioD.reduce((s, id) => s + encajeDefensa(id, a.defensa, a.ajD), 0) / a.trioD.length + quimD + nivelD
   const base = sig((calidadA - calidadD + PUNTOS_POR_NIVEL * nivel) / ESCALA_CALIDAD)
   const pPaso = clamp(base * (1 - PESO_BARRA_DEFENSA * a.precD), 0.03, 0.97)
   const rem = attr(PLAYER_BY_ID[a.ejecutor], 'Disparo') + (a.ajA[a.ejecutor] ?? 0)
@@ -120,7 +157,7 @@ export function resolverJugada(a: {
   const kF = clamp(0.9 + (rem - arq) / 150, 0.75, 1.15)
   const pRemate = clamp((1 - PESO_BARRA_ATAQUE + PESO_BARRA_ATAQUE * a.precA) * kF * a.clima * 1.15, 0.03, 0.97)
   const t1 = rng()
-  const base2 = { ataca: a.ataca, est: { ataque: a.ataque, defensa: a.defensa }, nivel, trioA: a.trioA, trioD: a.trioD, ejecutor: a.ejecutor, interceptor: a.interceptor, calidadA, calidadD, precA: a.precA, precD: a.precD, pPaso, pRemate, pGol: pPaso * pRemate, rem, arq, clima: a.clima, t1, arquero: a.arquero }
+  const base2 = { ataca: a.ataca, est: { ataque: a.ataque, defensa: a.defensa }, nivel, trioA: a.trioA, trioD: a.trioD, ejecutor: a.ejecutor, interceptor: a.interceptor, calidadA, calidadD, precA: a.precA, precD: a.precD, pPaso, pRemate, pGol: pPaso * pRemate, rem, arq, clima: a.clima, quimA, quimD, nivelA, nivelD, t1, arquero: a.arquero }
   if (t1 >= pPaso) return { ...base2, resultado: 'corte' }
   const t2 = rng()
   return { ...base2, t2, resultado: t2 < pRemate ? 'gol' : 'atajada' }

@@ -1087,5 +1087,17 @@ const D: string[] = [
   "È superefficace!",
   "Chi la conclude?",
   "Chi la intercetta?",
+  "Stili che si completano",
+  "Mancano {n} vittorie al livello {m}",
+  "Livello squadra +{a} contro +{d}",
+  "Livello squadra {n}",
+  "Intesa del trio",
+  "Intesa {a} contro {d}",
+  "Nessuna combinazione speciale",
+  "Aggiunge +{b} a tutte le tue azioni. Cresce a ogni vittoria, a poco a poco.",
+  "Tre dello stesso stile",
+  "Tre stili diversi",
+  "{n} dello stesso paese",
+  "Massimo +{n}",
 ]
 export default D
