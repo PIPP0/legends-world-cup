@@ -33,17 +33,23 @@ service cloud.firestore {
     // Ranking del duelo: lectura pública; cada persona escribe solo su documento y únicamente puede sumar una partida por escritura.
     match /ranking/{uid} {
       function rankOk(d) {
-        return d.keys().hasOnly(['alias', 'pais', 'puntos', 'ganadas', 'jugadas', 'racha', 'mejorRacha', 'ultimo'])
+        return d.keys().hasOnly(['alias', 'pais', 'puntos', 'ganadas', 'jugadas', 'racha', 'mejorRacha', 'ultimo', 'aliasCambiado'])
+          && d.get('aliasCambiado', false) is bool
           && d.alias is string && d.alias.size() >= 1 && d.alias.size() <= 20
           && d.pais is string && d.pais.size() <= 2
           && d.puntos is int && d.ganadas is int && d.jugadas is int && d.racha is int && d.mejorRacha is int
           && d.puntos >= 0 && d.ganadas >= 0 && d.jugadas >= 0 && d.racha >= 0 && d.mejorRacha >= d.racha
           && d.puntos <= 100000 && d.jugadas <= 100000 && d.ganadas <= d.jugadas;
       }
+      // El nombre público solo se puede cambiar una vez: al cambiarlo, aliasCambiado pasa a true y ya no vuelve a cambiar.
+      function nombreOk(d, prev) {
+        return (d.alias == prev.alias && d.get('aliasCambiado', false) == prev.get('aliasCambiado', false))
+          || (prev.get('aliasCambiado', false) == false && d.get('aliasCambiado', false) == true);
+      }
       allow read: if true;
       allow create: if signedIn() && request.auth.uid == uid && rankOk(request.resource.data)
         && request.resource.data.jugadas == 1 && request.resource.data.ganadas <= 1 && request.resource.data.puntos <= 7;
-      allow update: if signedIn() && request.auth.uid == uid && rankOk(request.resource.data)
+      allow update: if signedIn() && request.auth.uid == uid && rankOk(request.resource.data) && nombreOk(request.resource.data, resource.data)
         && ((request.resource.data.jugadas == resource.data.jugadas + 1
               && request.resource.data.ganadas >= resource.data.ganadas && request.resource.data.ganadas <= resource.data.ganadas + 1
               && request.resource.data.puntos >= resource.data.puntos && request.resource.data.puntos <= resource.data.puntos + 7)

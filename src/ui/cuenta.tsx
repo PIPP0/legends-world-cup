@@ -8,6 +8,7 @@ import { favoritaActual, ponerFavorita, useFavorita } from '../engine/favorita'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Flag } from './common'
 import { ElegirFavorita } from './favorita'
+import { NombreRanking } from './ranking'
 
 // Registro opcional con Google: junto al icono de opinión. Sin cuenta se juega igual (visitante anónimo).
 export function CuentaHeader() {
@@ -69,6 +70,7 @@ export function CuentaHeader() {
               <button type="button" className="fav-edit" onClick={() => { setAbierto(false); setEligiendo(true) }}>{tr('Editar')}</button>
             </div>
           </div>
+          <NombreRanking />
           <button className="btn ghost" onClick={() => { setAbierto(false); void salir().then(() => asegurarVisitante()) }}>{tr('Cerrar sesión')}</button>
         </div>
       )}

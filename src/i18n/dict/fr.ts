@@ -1139,5 +1139,11 @@ const D: string[] = [
   "Utiliser mon nom",
   "En choisir un autre",
   "Seul ce nom sera affiché publiquement. Tu peux le changer quand tu veux.",
+  "Tu as déjà utilisé ton unique changement de nom.",
+  "Tu ne peux le changer qu’une seule fois.",
+  "Ton nom dans le classement",
+  "Tu es sûr ? Tu ne pourras plus le changer ensuite.",
+  "Confirmer le changement",
+  "Annuler",
 ]
 export default D

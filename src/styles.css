@@ -899,3 +899,8 @@ div.rk-tu label{font:700 13px 'Barlow Condensed';letter-spacing:1.2px;text-trans
 
 .rk-flag.ph{display:inline-grid;place-items:center;width:28px;height:19px;border-radius:3px;background:rgba(255,255,255,.1);font:800 10px 'Barlow Condensed';color:#c9d3f2;letter-spacing:.5px}
 .rk-sugerencia{display:grid;gap:8px;justify-items:center;text-align:center;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,213,74,.5);background:rgba(255,213,74,.07)}.rk-sugerencia p{margin:0;font-size:15px}.rk-sugerencia>div{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
+/* nombre del ranking en el menú de cuenta */
+.fav-row .rk-menu-edit{display:grid;gap:6px;margin-top:8px}.rk-menu-edit input{width:100%;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:#0a1130;color:#fff;font:600 14px Inter}.rk-menu-edit input:focus{outline:2px solid var(--cy)}
+.rk-menu-edit p{margin:0}.rk-menu-btns{display:flex;gap:8px;flex-wrap:wrap}.rk-menu-btns .btn{min-height:38px;padding:8px 16px;font-size:14px}
+.fav-row>small{display:block;margin-top:6px}

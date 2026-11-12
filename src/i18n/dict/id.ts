@@ -1139,5 +1139,11 @@ const D: string[] = [
   "Pakai namaku",
   "Pilih yang lain",
   "Hanya nama itu yang akan ditampilkan secara publik. Kamu bisa mengubahnya kapan saja.",
+  "Kamu sudah memakai satu-satunya pergantian nama.",
+  "Kamu hanya bisa mengubahnya sekali.",
+  "Namamu di peringkat",
+  "Yakin? Setelah itu kamu tidak bisa mengubahnya lagi.",
+  "Konfirmasi perubahan",
+  "Batal",
 ]
 export default D

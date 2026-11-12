@@ -9,6 +9,7 @@ import type { Nivel } from '../engine/duelo'
 
 const CLAVE_RANK = 'lwc:duelo:ranking'
 const CLAVE_ALIAS = 'lwc:duelo:alias'
+const CLAVE_ALIAS_CAMBIADO = 'lwc:duelo:aliasCambiado'
 const leerLocal = (): MiRanking => { try { const s = localStorage.getItem(CLAVE_RANK); return s ? { ...MI_RANKING0, ...(JSON.parse(s) as MiRanking) } : MI_RANKING0 } catch { return MI_RANKING0 } }
 const guardarLocal = (r: MiRanking) => { try { localStorage.setItem(CLAVE_RANK, JSON.stringify(r)) } catch { /* sin almacenamiento */ } }
 export function leerAlias(): string {
@@ -18,10 +19,22 @@ export function leerAlias(): string {
   } catch { return aliasPorDefecto('0000') }
 }
 
+// El nombre público solo se puede cambiar una vez (el automático «Jugador XXXX» no cuenta).
+export const aliasYaCambiado = (): boolean => { try { return localStorage.getItem(CLAVE_ALIAS_CAMBIADO) === '1' } catch { return false } }
+export function cambiarAliasUnaVez(nuevo: string): string | null {
+  if (aliasYaCambiado()) return null
+  const limpio = aliasLimpio(nuevo)
+  if (limpio.length < 2) return null
+  try { localStorage.setItem(CLAVE_ALIAS, limpio); localStorage.setItem(CLAVE_ALIAS_CAMBIADO, '1') } catch { return null }
+  void cambiarAliasNube(limpio)
+  window.dispatchEvent(new Event('lwc-alias'))
+  return limpio
+}
+
 // Se llama al terminar (o abandonar) un partido: suma el resultado a mi ranking y, si hay nube, lo publica.
 export function anotarEnRanking(nivel: Nivel, gane: boolean): void {
   guardarLocal(sumarPartida(leerLocal(), nivel, gane))
-  void publicarPartida(leerAlias(), paisAproximado(), nivel, gane)
+  void publicarPartida(leerAlias(), paisAproximado(), nivel, gane, aliasYaCambiado())
 }
 
 // Ranking completo: reales (nube) + yo + demostración.
@@ -31,6 +44,7 @@ function useRanking() {
   const [cargando, setCargando] = useState(NUBE_ACTIVA)
   const [alias, setAliasEstado] = useState(leerAlias)
   const [version, setVersion] = useState(0)
+  useEffect(() => { const f = () => setAliasEstado(leerAlias()); window.addEventListener('lwc-alias', f); return () => window.removeEventListener('lwc-alias', f) }, [])
   useEffect(() => {
     let vivo = true
     void (async () => { const [lista, id] = await Promise.all([leerRankingNube(), miIdRanking()]); if (!vivo) return; setReales(lista); if (id) setMiId(id); setCargando(false) })()
@@ -44,11 +58,7 @@ function useRanking() {
   }, [reales, miId, alias, local.puntos, local.ganadas, local.jugadas, local.mejorRacha])
   const lista = useMemo(() => armarRanking(reales, yo), [reales, yo])
   const posicion = lista.findIndex((e) => e.id === miId) + 1
-  const setAlias = (a: string) => {
-    const limpio = aliasLimpio(a) || aliasPorDefecto('0000')
-    try { localStorage.setItem(CLAVE_ALIAS, limpio) } catch { /* sin almacenamiento */ }
-    setAliasEstado(limpio); void cambiarAliasNube(limpio).then(() => setVersion((v) => v + 1))
-  }
+  const setAlias = (a: string) => { if (cambiarAliasUnaVez(a)) setVersion((v) => v + 1) }
   return { lista, yo, posicion, cargando, alias, setAlias, hayReales: reales.some((r) => r.id !== miId) }
 }
 
@@ -126,17 +136,19 @@ export function RankingPagina() {
   const [editando, setEditando] = useState(alias)
   const [abierto, setAbierto] = useState(false)
   const [sugerido, setSugerido] = useState('')
+  const [cambiado, setCambiado] = useState(aliasYaCambiado)
+  useEffect(() => { const f = () => setCambiado(aliasYaCambiado()); window.addEventListener('lwc-alias', f); return () => window.removeEventListener('lwc-alias', f) }, [])
   useEffect(() => { setEditando(alias) }, [alias])
   // si entró con Google y aún tiene el nombre por defecto, se le ofrece (sin imponerlo) usar su nombre e inicial
   useEffect(() => {
-    if (!/^Jugador [A-Z0-9]{4}$/.test(alias)) { setSugerido(''); return }
+    if (cambiado || !/^Jugador [A-Z0-9]{4}$/.test(alias)) { setSugerido(''); return }
     void cuentaActual().then((c) => {
       if (!c || c.anonimo || !c.nombre) return
       const [nombre, ...resto] = c.nombre.trim().split(/\s+/)
       const inicial = resto.length ? ` ${resto[resto.length - 1][0].toUpperCase()}` : ''
       setSugerido(aliasLimpio(`${nombre}${inicial}`))
     })
-  }, [alias])
+  }, [alias, cambiado])
   const top3 = lista.slice(0, 3)
   const resto = lista.slice(3, 50)
   const siguiente = posicion > 1 ? lista[posicion - 2] : null
@@ -188,17 +200,53 @@ export function RankingPagina() {
       {yo.jugadas > 0 && posicion > 50 && <ol className="rk-lista rk-mio"><Fila e={yo} pos={posicion} /></ol>}
 
       <section className="rk-nombre-sec">
-        <button type="button" className="d-link" onClick={() => setAbierto((v) => !v)} aria-expanded={abierto}>✎ {tr('Cambiar mi nombre')}</button>
-        {abierto && (
-          <div className="rk-tu">
-            <label htmlFor="rk-alias">{tr('Tu nombre público en el ranking')}</label>
-            <div className="rk-alias"><input id="rk-alias" value={editando} maxLength={20} onChange={(e) => setEditando(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') setAlias(editando) }} /><button className="btn pri" disabled={aliasLimpio(editando) === alias} onClick={() => setAlias(editando)}>{tr('Guardar')}</button></div>
-            <p className="small muted">{tr('Se muestra solo este nombre y tu país aproximado.')}</p>
-          </div>
+        {cambiado ? <p className="small muted">{tr('Ya usaste tu único cambio de nombre.')}</p> : (
+          <>
+            <button type="button" className="d-link" onClick={() => setAbierto((v) => !v)} aria-expanded={abierto}>✎ {tr('Cambiar mi nombre')}</button>
+            {abierto && (
+              <div className="rk-tu">
+                <label htmlFor="rk-alias">{tr('Tu nombre público en el ranking')}</label>
+                <div className="rk-alias"><input id="rk-alias" value={editando} maxLength={20} onChange={(e) => setEditando(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') setAlias(editando) }} /><button className="btn pri" disabled={aliasLimpio(editando) === alias || aliasLimpio(editando).length < 2} onClick={() => setAlias(editando)}>{tr('Guardar')}</button></div>
+                <p className="small muted">{tr('Solo puedes cambiarlo una vez.')} {tr('Se muestra solo este nombre y tu país aproximado.')}</p>
+              </div>
+            )}
+          </>
         )}
       </section>
 
       <p className="small muted rk-centro">{tr('Los jugadores marcados «Demo» son de demostración y sus resultados son ficticios. Los demás son resultados reales de personas que juegan.')}{!hayReales && NUBE_ACTIVA && !cargando ? ` ${tr('Aún no hay otras personas reales en el ranking: ¡puedes ser la primera!')}` : ''}</p>
+    </div>
+  )
+}
+
+// Bloque del menú «Mi cuenta»: muestra tu nombre del ranking y deja cambiarlo una sola vez.
+export function NombreRanking() {
+  const [alias, setAlias] = useState(leerAlias)
+  const [cambiado, setCambiado] = useState(aliasYaCambiado)
+  const [editando, setEditando] = useState(false)
+  const [confirmando, setConfirmando] = useState(false)
+  const [txt, setTxt] = useState(alias)
+  useEffect(() => { const f = () => { setAlias(leerAlias()); setCambiado(aliasYaCambiado()) }; window.addEventListener('lwc-alias', f); return () => window.removeEventListener('lwc-alias', f) }, [])
+  const limpio = aliasLimpio(txt)
+  const guardar = () => { if (cambiarAliasUnaVez(txt)) { setEditando(false); setConfirmando(false) } }
+  return (
+    <div className="fav-row">
+      <span className="fav-lbl">{tr('Tu nombre en el ranking')}</span>
+      <div>
+        <span className="fav-eq"><b>🏆 {alias}</b></span>
+        {!cambiado && !editando && <button type="button" className="fav-edit" onClick={() => { setTxt(alias); setEditando(true) }}>{tr('Editar')}</button>}
+      </div>
+      {editando && (
+        <div className="rk-menu-edit">
+          <input value={txt} maxLength={20} onChange={(e) => { setTxt(e.target.value); setConfirmando(false) }} aria-label={tr('Tu nombre en el ranking')} />
+          {confirmando ? <p className="small">{tr('¿Seguro? Después no podrás cambiarlo de nuevo.')}</p> : <p className="small muted">{tr('Solo puedes cambiarlo una vez.')}</p>}
+          <div className="rk-menu-btns">
+            {confirmando ? <button type="button" className="btn pri" onClick={guardar}>{tr('Confirmar cambio')}</button> : <button type="button" className="btn pri" disabled={limpio.length < 2 || limpio === alias} onClick={() => setConfirmando(true)}>{tr('Guardar')}</button>}
+            <button type="button" className="btn ghost" onClick={() => { setEditando(false); setConfirmando(false) }}>{tr('Cancelar')}</button>
+          </div>
+        </div>
+      )}
+      {cambiado && <small className="muted">{tr('Ya usaste tu único cambio de nombre.')}</small>}
     </div>
   )
 }

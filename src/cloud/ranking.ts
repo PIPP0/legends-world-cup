@@ -18,16 +18,18 @@ export async function leerRankingNube(): Promise<EntradaRanking[]> {
 }
 
 // Suma una partida terminada a mi documento (lo crea si no existe). Devuelve true si se publicó.
-export async function publicarPartida(alias: string, pais: string, nivel: Nivel, gane: boolean): Promise<boolean> {
+export async function publicarPartida(alias: string, pais: string, nivel: Nivel, gane: boolean, aliasCambiado = false): Promise<boolean> {
   if (!NUBE_ACTIVA) return false
   try {
     const n = await nube(); const u = await uid(); if (!u) return false
     const ref = n.fs.doc(n.db, 'ranking', u)
     const previo = await n.fs.getDoc(ref)
     const p = previo.exists() ? (previo.data() as Record<string, number>) : { puntos: 0, ganadas: 0, jugadas: 0, racha: 0, mejorRacha: 0 }
+    const prev = previo.exists() ? (previo.data() as Record<string, unknown>) : null
+    const yaCambiado = prev?.aliasCambiado === true // si ya cambió su nombre en otro dispositivo, manda el de la nube
     const racha = gane ? (p.racha ?? 0) + 1 : 0
     await n.fs.setDoc(ref, {
-      alias: aliasLimpio(alias) || 'Jugador', pais: pais.slice(0, 2).toLowerCase(),
+      alias: yaCambiado ? String(prev?.alias ?? 'Jugador') : aliasLimpio(alias) || 'Jugador', pais: pais.slice(0, 2).toLowerCase(), aliasCambiado: yaCambiado || aliasCambiado,
       puntos: (p.puntos ?? 0) + (gane ? PUNTOS_VICTORIA[nivel] : 0), ganadas: (p.ganadas ?? 0) + (gane ? 1 : 0), jugadas: (p.jugadas ?? 0) + 1,
       racha, mejorRacha: Math.max(p.mejorRacha ?? 0, racha), ultimo: Date.now(),
     })
@@ -43,7 +45,8 @@ export async function cambiarAliasNube(alias: string): Promise<boolean> {
     const ref = n.fs.doc(n.db, 'ranking', u); const previo = await n.fs.getDoc(ref)
     if (!previo.exists()) return false
     const p = previo.data() as Record<string, unknown>
-    await n.fs.setDoc(ref, { ...p, alias: aliasLimpio(alias) || 'Jugador' })
+    if (p.aliasCambiado === true) return false // ya usó su único cambio
+    await n.fs.setDoc(ref, { ...p, alias: aliasLimpio(alias) || 'Jugador', aliasCambiado: true })
     return true
   } catch { return false }
 }

@@ -1139,4 +1139,10 @@ export const KEYS: string[] = [
   "Usar mi nombre",
   "Elegir otro",
   "Se mostrará públicamente solo ese nombre. Puedes cambiarlo cuando quieras.",
+  "Ya usaste tu único cambio de nombre.",
+  "Solo puedes cambiarlo una vez.",
+  "Tu nombre en el ranking",
+  "¿Seguro? Después no podrás cambiarlo de nuevo.",
+  "Confirmar cambio",
+  "Cancelar",
 ]

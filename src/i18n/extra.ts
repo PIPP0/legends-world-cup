@@ -401,4 +401,10 @@ export const EXTRA: Array<[string, string]> = [
   ['Usar mi nombre', 'Use my name'],
   ['Elegir otro', 'Choose another'],
   ['Se mostrará públicamente solo ese nombre. Puedes cambiarlo cuando quieras.', 'Only that name will be shown publicly. You can change it whenever you like.'],
+  ['Ya usaste tu único cambio de nombre.', 'You already used your only name change.'],
+  ['Solo puedes cambiarlo una vez.', 'You can only change it once.'],
+  ['Tu nombre en el ranking', 'Your name in the ranking'],
+  ['¿Seguro? Después no podrás cambiarlo de nuevo.', "Are you sure? You won't be able to change it again."],
+  ['Confirmar cambio', 'Confirm change'],
+  ['Cancelar', 'Cancel'],
 ]
