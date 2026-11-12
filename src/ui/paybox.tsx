@@ -114,7 +114,7 @@ function DonarEnModal({ alTerminar }: { alTerminar: () => void }) {
         createOrder: (_d: unknown, a: AccionesPaypal) => {
           const m = montoActual.current
           if (m === null) return Promise.reject(new Error('monto'))
-          return a.order.create({ purchase_units: [{ description: 'Apoyo voluntario', amount: { currency_code: 'USD', value: m.toFixed(2) } }] })
+          return a.order.create({ intent: 'CAPTURE', purchase_units: [{ description: 'Apoyo voluntario', amount: { currency_code: 'USD', value: m.toFixed(2) } }], application_context: { shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW', brand_name: 'Legends World Cup' } })
         },
         onApprove: (_d: unknown, a: AccionesPaypal) => a.order.capture().then(() => setGracias(true)),
         onCancel: () => setErr(tr('Cancelaste el pago. No se cobró nada.')),
