@@ -10,6 +10,7 @@ export function Privacidad() {
         <p>{tr('No guardamos tu dirección IP, no vendemos datos ni usamos publicidad de terceros.')}</p>
         <p>{tr('Si entras con Google, guardamos además tu nombre, correo y foto, solo para identificar tu voto o tu equipo.')}</p>
         <p>{tr('Tus equipos y preferencias se guardan en tu navegador (almacenamiento local). Puedes borrarlos limpiando los datos del sitio.')}</p>
+        <p>{tr('Si juegas duelos, tu nombre público elegido, tu país aproximado y tus resultados aparecen en el ranking, que es público. Puedes cambiar el nombre cuando quieras.')}</p>
       </div>
     </Section>
   )

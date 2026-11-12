@@ -98,7 +98,9 @@ export const nivelEquipo = (ganados: number): number => 1 + Math.floor(Math.sqrt
 export const bonoNivelEquipo = (ganados: number): number => Math.min(3, Math.round(0.9 * Math.sqrt(Math.max(0, ganados)) * 10) / 10)
 export const victoriasParaSubir = (ganados: number): number => nivelEquipo(ganados) ** 2 - ganados
 // La máquina tiene su propio «nivel» según la dificultad.
-export const bonoNivelMaquina = (nivel: Nivel): number => ({ bronce: 0, plata: 0.8, oro: 1.6, leyenda: 2.4 }[nivel])
+// Ajuste por dificultad de la máquina (afina el % de victorias de una persona típica: 85 / 75 / 55 / 40).
+export const BONO_MAQUINA: Record<Nivel, number> = { bronce: 0.3, plata: 0.9, oro: 6.8, leyenda: 12 }
+export const bonoNivelMaquina = (nivel: Nivel): number => BONO_MAQUINA[nivel]
 
 // ---------- la barra ----------
 // El balón cruza la barra más lento cuanto mejor encaja el jugador con la jugada (más fácil detenerlo en el centro).
@@ -113,7 +115,7 @@ export const precision = (x: number): number => {
 }
 
 // ---------- resolver una jugada ----------
-export const TURNOS = 5 // al mejor de 5 turnos, alternados (los impares ataca la persona)
+export const TURNOS = 3 // partido corto: 3 turnos alternados (1 y 3 ataca la persona; empate → penales)
 export const SESGO_ATAQUE = 8 // empuje a favor de quien ataca: meter goles no debe ser tan difícil
 export interface DetalleJugada {
   ataca: 'mio' | 'su'

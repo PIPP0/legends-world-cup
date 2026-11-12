@@ -15,6 +15,7 @@ import {
   type Ataque, type Defensa, type Estilo, type DetalleJugada, type HistorialJugada, type Aj,
 } from '../engine/jugada'
 import { weatherFactor } from '../engine/world'
+import { RankingResumen, anotarEnRanking } from './ranking'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
 import { CtxLine } from './world'
 import { favoritaActual } from '../engine/favorita'
@@ -171,7 +172,7 @@ function FilaJugador({ p, activo, estado, onClick }: { p: Player; activo?: boole
 // ======================================================================================
 // Partida en curso: solo un marcador, para saber si se abandonó (el partido es en vivo y no se retoma).
 const CLAVE_PARTIDA = 'lwc:duelo:partida'
-interface Guardada { creado: number }
+interface Guardada { creado: number; nivel?: Nivel }
 const leerPartida = (): Guardada | null => { try { const s = localStorage.getItem(CLAVE_PARTIDA); return s ? (JSON.parse(s) as Guardada) : null } catch { return null } }
 const borrarPartida = () => { try { localStorage.removeItem(CLAVE_PARTIDA) } catch { /* sin almacenamiento */ } }
 function partidaVigente(): Guardada | null {
@@ -206,13 +207,15 @@ function DueloPantallas() {
   const [vista, setVista] = useState<'inicio' | 'draft' | 'duelo'>('inicio')
   const [nivel, setNivel] = useState<Nivel>('plata')
   useEffect(() => {
-    if (!partidaVigente()) return
+    const g = partidaVigente()
+    if (!g) return
     borrarPartida()
+    anotarEnRanking(g.nivel ?? 'plata', false)
     setStats({ ...stats, jugados: stats.jugados + 1, perdidos: stats.perdidos + 1, racha: 0 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   if (vista === 'draft') return <Draft alTerminar={(e) => { setEquipo(e); setVista('inicio') }} alCancelar={() => setVista('inicio')} />
-  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} ganados={stats.ganados} alTerminar={(g) => { const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
+  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} ganados={stats.ganados} alTerminar={(g) => { anotarEnRanking(nivel, g); const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
   return <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} aviso={abandonada} armar={() => setVista('draft')} jugar={() => setVista('duelo')} />
 }
 
@@ -226,8 +229,8 @@ function Presentacion({ armar }: { armar: () => void }) {
         <div className="d-portada-txt">
           <p className="kicker">⚽ {tr('Nuevo')}</p>
           <h1>{tr('Prepárate para competir y ganar')}<br /><span>{tr('con tu equipo ideal.')}</span></h1>
-          <p className="d-bajada">{tr('Elige a las mayores leyendas de la historia, entrena en duelos de 5 rondas contra la máquina y prepárate para competir contra otras personas.')}</p>
-          <ul className="d-chips-top"><li>⏱ {tr('4 minutos por duelo')}</li><li>🎲 {tr('Cada draft es distinto')}</li><li>🔒 {tr('Tu equipo es para siempre')}</li><li className="d-pronto">🏆 {tr('Pronto: ranking y duelos contra otras personas')}</li></ul>
+          <p className="d-bajada">{tr('Elige a las mayores leyendas de la historia, entrena en duelos de 3 turnos contra la máquina y compite en el ranking.')}</p>
+          <ul className="d-chips-top"><li>⏱ {tr('2 minutos por duelo')}</li><li>🎲 {tr('Cada draft es distinto')}</li><li>🔒 {tr('Tu equipo es para siempre')}</li><li className="d-pronto">🏆 {tr('Ranking con otras personas')}</li></ul>
           <div className="cta"><button className="btn pri d-gran" onClick={armar}>{tr('Armar mi equipo')} →</button></div>
           <p className="small muted">{tr('Toma 2 minutos y es gratis.')}</p>
         </div>
@@ -294,7 +297,7 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar, aviso }: { equip
             {NIVELES.map((n) => <button key={n.id} type="button" role="radio" aria-checked={nivel === n.id} className={`d-nivel n-${n.id}${nivel === n.id ? ' on' : ''}`} onClick={() => setNivel(n.id)}><i aria-hidden className="d-estr">{'★'.repeat(NIVELES.findIndex((x) => x.id === n.id) + 1)}</i><span>{tr(n.nombre)}</span></button>)}
           </div></div>
           <div className="d-accion"><button type="button" className="btn pri d-jugar-gran" onClick={jugar}>{tr('Jugar duelo')} →</button>
-          <p className="small muted">{tr('Partidos: {j} · Ganados: {g} · Perdidos: {p} · Racha: {r} (mejor {m})', { j: stats.jugados, g: stats.ganados, p: stats.perdidos, r: stats.racha, m: stats.mejorRacha })}</p></div>
+          <p className="small muted">{tr('Partidos: {j} · Ganados: {g} · Perdidos: {p} · Racha: {r} (mejor {m})', { j: stats.jugados, g: stats.ganados, p: stats.perdidos, r: stats.racha, m: stats.mejorRacha })}</p><RankingResumen /></div>
         </div>
       </div>
     </div>
@@ -487,7 +490,7 @@ function Partida({ equipo, nivel, ganados, alTerminar, alSalir }: { equipo: Equi
   const penal = useMemo(() => (fase === 'fin' && golesMios === golesSu ? penales(seed, equipo, rival) : null), [fase, golesMios, golesSu, seed, equipo, rival])
   const gane = fase === 'fin' ? (penal ? penal.yo > penal.rival : golesMios > golesSu) : false
   useEffect(() => { if (fase === 'fin' && !guardado) { setGuardado(true); borrarPartida(); alTerminar(gane) } }, [fase, guardado, gane, alTerminar])
-  useEffect(() => { if (fase !== 'fin') { try { localStorage.setItem(CLAVE_ABIERTA, JSON.stringify({ creado: equipo.creado })) } catch { /* sin almacenamiento */ } } }, [fase, equipo.creado])
+  useEffect(() => { if (fase !== 'fin') { try { localStorage.setItem(CLAVE_ABIERTA, JSON.stringify({ creado: equipo.creado, nivel })) } catch { /* sin almacenamiento */ } } }, [fase, equipo.creado, nivel])
 
   const libres = disponibles(equipo, turno, cMio)
   const puede = (id: string) => libres.includes(id)

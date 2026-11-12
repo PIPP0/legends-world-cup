@@ -41,7 +41,7 @@ export function Home() {
         <div><b><Count to={32} /></b><span>{tr('selecciones')}</span></div>
         <div><b><Count to={STORY_MATCHES.length + ko.length} /></b><span>{tr('partidos jugados')}</span></div>
         <div><b><Count to={totalGoals} /></b><span>{tr('goles')}</span></div>
-        {fun.duelo ? <a className="live mvp-cta" href="#/duelo"><b><i />{tr('CREA TU EQUIPO')}</b><span>{tr('tu once ideal, duelos de 5 rondas y pronto ranking')}</span></a> : <a className="live mvp-cta" href="#/mvp"><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></a>}
+        {fun.duelo ? <a className="live mvp-cta" href="#/duelo"><b><i />{tr('CREA TU EQUIPO')}</b><span>{tr('tu once ideal, duelos de 3 turnos y ranking')}</span></a> : <a className="live mvp-cta" href="#/mvp"><b><i />{tr('ELIGE MVP')}</b><span>{tr('vota por tu jugador favorito')}</span></a>}
       </div>
 
       <ChampionPicker />

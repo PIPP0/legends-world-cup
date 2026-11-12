@@ -20,7 +20,7 @@ export const FUNCIONES_INFO: { clave: keyof Funciones; titulo: string; detalle: 
   { clave: 'donaciones', titulo: 'Apoyo voluntario', detalle: 'El botón «Apoyar (opcional)» al final de cada mundial (necesita un enlace configurado).' },
   { clave: 'cobro', titulo: 'Cobro por paquetes', detalle: 'Activa el pago. Solo funciona si además está conectado PayPal; no lo enciendas sin resolver lo tributario.' },
   { clave: 'animacionCuadro', titulo: 'Animación del cuadro', detalle: 'El cuadro de eliminatorias que avanza solo hasta el campeón.' },
-  { clave: 'duelo', titulo: 'Mi Once Ideal: Duelo', detalle: 'El juego de armar tu equipo y jugar duelos de 5 rondas (tarjeta de la portada y página Duelo). Apágalo si algo falla.' },
+  { clave: 'duelo', titulo: 'Mi Once Ideal: Duelo', detalle: 'El juego de armar tu equipo y jugar duelos de 3 turnos y el ranking (tarjeta de la portada y página Duelo). Apágalo si algo falla.' },
   { clave: 'cuentas', titulo: 'Entrar con Google', detalle: 'El botón del header para registrarse y guardar el avance en la nube.' },
 ]
 

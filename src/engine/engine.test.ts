@@ -193,6 +193,7 @@ describe('probabilidades de la portada', () => {
 })
 
 import { PLAYER_BY_ID } from '../data'
+import { RANKING_DEMO, armarRanking, sumarPartida, aliasLimpio, MI_RANKING0, PUNTOS_VICTORIA } from './ranking'
 import { quimicaTrio, nivelEquipo, bonoNivelEquipo, victoriasParaSubir } from './jugada'
 import { MATRIZ, ATAQUES, DEFENSAS, segundosBarra, precision, resolverJugada, eligeAtaqueMaquina, eligeDefensaMaquina, toqueMaquina, encajeAtaque, estiloJugador, disponibles as disponiblesTurno } from './jugada'
 import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, onceDeEjemplo, TOPE_SUPLENTE, bloqueados, aplicarPoderes, eligePoderMaquina, reemplazoMaquina, candidatos, todosLosPoderes, TIPOS_PODER, type Poder, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
@@ -310,5 +311,17 @@ describe('duelo «Mi Once Ideal»', () => {
     expect(bonoNivelEquipo(4) - bonoNivelEquipo(1)).toBeLessThan(bonoNivelEquipo(1) * 2) // crece de a poco
     expect(bonoNivelEquipo(400)).toBe(3)
     expect(victoriasParaSubir(0)).toBe(1); expect(victoriasParaSubir(3)).toBe(1)
+  })
+
+  it('ranking: demostración marcada, orden por puntos, puntos por nivel y nombre público limpio', () => {
+    expect(RANKING_DEMO.length).toBeGreaterThanOrEqual(30); expect(RANKING_DEMO.every((e) => e.demo)).toBe(true)
+    let r = sumarPartida(MI_RANKING0, 'leyenda', true); r = sumarPartida(r, 'bronce', true); r = sumarPartida(r, 'oro', false)
+    expect(r.puntos).toBe(PUNTOS_VICTORIA.leyenda + PUNTOS_VICTORIA.bronce); expect(r.jugadas).toBe(3); expect(r.ganadas).toBe(2); expect(r.racha).toBe(0); expect(r.mejorRacha).toBe(2)
+    const yo = { id: 'u1', alias: 'Yo', pais: 'cl', puntos: 999, ganadas: 50, jugadas: 60, mejorRacha: 9 }
+    const lista = armarRanking([{ id: 'u2', alias: 'Otra persona', pais: 'ar', puntos: 5, ganadas: 2, jugadas: 3, mejorRacha: 1 }], yo)
+    expect(lista[0].id).toBe('u1'); expect(lista[0].yo).toBe(true)
+    for (let i = 1; i < lista.length; i++) expect(lista[i - 1].puntos).toBeGreaterThanOrEqual(lista[i].puntos)
+    expect(lista.some((e) => e.id === 'u2' && !e.demo)).toBe(true)
+    expect(aliasLimpio('  <b>Ana</b> https://x.com  ')).toBe('bAnab httpsxcom'.slice(0, 20)); expect(aliasLimpio('Nombre larguísimo de más de veinte letras').length).toBeLessThanOrEqual(20)
   })
 })

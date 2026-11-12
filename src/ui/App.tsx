@@ -16,6 +16,7 @@ import { Mundial } from './mundial'
 import { Vivo } from './vivo'
 import { EncuestaHeader } from './encuesta'
 import { Admin } from './admin'
+import { RankingPagina } from './ranking'
 import { t } from '../i18n'
 import { SelectorIdioma } from './idioma'
 import { CuentaHeader } from './cuenta'
@@ -60,6 +61,7 @@ function Page({ route }: { route: string }) {
     case 'simulador': return <Simulator />
     case 'mvp': return <MvpPage />
     case 'duelo': return fun.duelo ? <Duelo /> : <Note>{t('El duelo no está disponible por ahora.')} <a href="#/">{t('Volver al inicio')}</a></Note>
+    case 'ranking': return <RankingPagina />
     case 'creditos': return <Credits />
     case 'privacidad': return <Privacidad />
     case 'mundial': return fun.simulaMundial ? <Mundial /> : <Note>{t('«Simula tu mundial» no está disponible por ahora.')} <a href="#/">{t('Volver al inicio')}</a></Note>
