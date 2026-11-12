@@ -81,6 +81,16 @@ export const abrirDonacion = () => window.dispatchEvent(new Event(EVENTO_DONAR))
 const hayEnlace = () => !!DONATE_URL && /^https:\/\//.test(DONATE_URL)
 
 // Se monta una sola vez (en App): escucha el evento y muestra la ventana encima de todo.
+// El pago se abre en una ventana emergente pequeña: la página queda abierta detrás. Si el navegador la bloquea (o en el celular), cae al comportamiento normal de nueva pestaña.
+function abrirVentanaPago(e: React.MouseEvent<HTMLAnchorElement>) {
+  try {
+    const an = 480, al = 760
+    const izq = Math.max(0, Math.round(window.screenX + (window.outerWidth - an) / 2)), arr = Math.max(0, Math.round(window.screenY + (window.outerHeight - al) / 2))
+    const w = window.open(DONATE_URL, 'lwc-paypal', `popup=yes,width=${an},height=${al},left=${izq},top=${arr},scrollbars=yes,resizable=yes`)
+    if (w) { e.preventDefault(); try { w.opener = null } catch { /* nada */ } }
+  } catch { /* se usa el enlace normal */ }
+}
+
 export function DonateModalHost() {
   const [abierto, setAbierto] = useState(false)
   const boton = useRef<HTMLAnchorElement>(null)
@@ -101,7 +111,7 @@ export function DonateModalHost() {
         <span className="donar-ic" aria-hidden>☕</span>
         <h3>{tr('Apoya el proyecto')}</h3>
         <p>{tr('Nos ayudas a crecer y seguir mejorando. Es voluntario y no desbloquea nada.')}</p>
-        <a ref={boton} className="btn pri donar-ir" href={DONATE_URL} target="_blank" rel="noopener noreferrer" onClick={() => { ocultar(); setAbierto(false) }}>{tr('Donar con PayPal')} →</a>
+        <a ref={boton} className="btn pri donar-ir" href={DONATE_URL} target="_blank" rel="noopener noreferrer" onClick={(e) => { ocultar(); setAbierto(false); abrirVentanaPago(e) }}>{tr('Donar con PayPal')} →</a>
         <button type="button" className="donar-no" onClick={() => setAbierto(false)}>{tr('Ahora no')}</button>
         <small className="muted">{tr('Pago seguro en PayPal: tú eliges el monto. Aquí no guardamos tus datos de pago.')}</small>
       </div>
