@@ -9,7 +9,7 @@ import { recordHistory } from '../engine/world'
 import { Flag, Section, useApp } from './common'
 import { CtxLine } from './world'
 import { LiveReplay } from './pages4'
-import { BracketEstatico } from './bracketAnim'
+import { BracketAnimado, BracketEstatico } from './bracketAnim'
 import { Reveal } from './mundial'
 import { Board, type Item } from './board'
 import { takePending } from './pending'
@@ -85,8 +85,19 @@ function PairDraw({ pairs, onDone }: { pairs: Pair[]; onDone: () => void }) {
 // Etapa eliminatoria: primero el cuadro con los cruces de la ronda (sin resultados) y desde ahí se pasa a los partidos.
 const NIVEL_CUADRO: Record<Round | 'final', number> = { r16: 0, qf: 1, sf: 2, final: 3 }
 function PairCuadro({ full, round, onDone }: { full: Bracket; round: Round | 'final'; onDone: () => void }) {
-  useEffect(() => { onDone() }, [onDone])
-  return <div className="vcuadro"><BracketEstatico full={full} level={NIVEL_CUADRO[round]} /></div>
+  const nivel = NIVEL_CUADRO[round]
+  const [salto, setSalto] = useState(0)
+  const [fin, setFin] = useState(false)
+  // octavos: solo el cuadro con los cruces. Cuartos en adelante: se anima cómo avanzan los ganadores (borde dorado, línea y llegada de equipos).
+  useEffect(() => { if (nivel === 0) onDone() }, [nivel, onDone])
+  const alTerminar = useMemo(() => () => { setFin(true); onDone() }, [onDone])
+  if (nivel === 0) return <div className="vcuadro"><BracketEstatico full={full} level={0} /></div>
+  return (
+    <div className="vcuadro">
+      {!fin && <div className="cta"><button className="btn ghost" onClick={() => setSalto((k) => k + 1)}>{tr('Saltar animación')}</button></div>}
+      <BracketAnimado full={full} from={nivel - 1} to={nivel} speed={600} onEnd={alTerminar} skipKey={salto} />
+    </div>
+  )
 }
 
 function Tables({ t, upTo }: { t: AltTournament; upTo: number }) {
