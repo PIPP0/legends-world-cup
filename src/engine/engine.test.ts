@@ -194,6 +194,7 @@ describe('probabilidades de la portada', () => {
 
 import { PLAYER_BY_ID } from '../data'
 import { RANKING_DEMO, armarRanking, sumarPartida, aliasLimpio, MI_RANKING0, PUNTOS_VICTORIA } from './ranking'
+import { GOL_SEGURO } from './jugada'
 import { quimicaTrio, nivelEquipo, bonoNivelEquipo, victoriasParaSubir } from './jugada'
 import { MATRIZ, ATAQUES, DEFENSAS, segundosBarra, precision, resolverJugada, eligeAtaqueMaquina, eligeDefensaMaquina, toqueMaquina, encajeAtaque, estiloJugador, disponibles as disponiblesTurno } from './jugada'
 import { equipoMaquina, eligeMaquina, jugarRonda, ofertas, onceDeEjemplo, TOPE_SUPLENTE, bloqueados, aplicarPoderes, eligePoderMaquina, reemplazoMaquina, candidatos, todosLosPoderes, TIPOS_PODER, type Poder, penales, sedeDuelo, FORMACIONES, RONDAS, N_PICKS, type Equipo, type Nivel } from './duelo'
@@ -323,5 +324,17 @@ describe('duelo «Mi Once Ideal»', () => {
     for (let i = 1; i < lista.length; i++) expect(lista[i - 1].puntos).toBeGreaterThanOrEqual(lista[i].puntos)
     expect(lista.some((e) => e.id === 'u2' && !e.demo)).toBe(true)
     expect(aliasLimpio('  <b>Ana</b> https://x.com  ')).toBe('bAnab httpsxcom'.slice(0, 20)); expect(aliasLimpio('Nombre larguísimo de más de veinte letras').length).toBeLessThanOrEqual(20)
+  })
+
+  it('jugada: por encima del 75 % de gol siempre es gol; por debajo manda la probabilidad (como una moneda cargada)', () => {
+    const yo = onceDeEjemplo('4-3-3'); const rival = equipoMaquina('bronce', 'seguro')
+    const base = { seed: 's', turno: 1, ataca: 'mio' as const, ataque: 'contra' as const, defensa: 'bloque' as const, trioA: [yo[9], yo[8], yo[10]], trioD: rival.once.slice(2, 5), ajA: { [yo[9]]: 30, [yo[8]]: 30, [yo[10]]: 30 }, ajD: {}, ejecutor: yo[9], interceptor: rival.once[2], precA: 1, precD: 0, arquero: rival.once[0], clima: 1, quimA: 6, quimD: 0, nivelA: 3, nivelD: 0 }
+    let seguros = 0
+    for (let n = 0; n < 60; n++) { const d = resolverJugada({ ...base, seed: `g${n}` }); if (d.pGol > GOL_SEGURO) { seguros++; expect(d.resultado).toBe('gol') } }
+    expect(seguros).toBe(60) // con tanta ventaja la probabilidad supera el umbral en todos los sorteos
+    // sin ventaja (efectividad en contra, toque flojo) hay mezcla de resultados
+    const flojo = { ...base, ajA: {}, quimA: 0, nivelA: 0, precA: 0.2, defensa: 'bloque' as const }
+    const res = new Set(Array.from({ length: 80 }, (_, n) => resolverJugada({ ...flojo, seed: `h${n}` }).resultado))
+    expect(res.size).toBeGreaterThan(1)
   })
 })

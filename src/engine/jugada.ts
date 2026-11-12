@@ -99,7 +99,7 @@ export const bonoNivelEquipo = (ganados: number): number => Math.min(3, Math.rou
 export const victoriasParaSubir = (ganados: number): number => nivelEquipo(ganados) ** 2 - ganados
 // La máquina tiene su propio «nivel» según la dificultad.
 // Ajuste por dificultad de la máquina (afina el % de victorias de una persona típica: 85 / 75 / 55 / 40).
-export const BONO_MAQUINA: Record<Nivel, number> = { bronce: 0.3, plata: 0.9, oro: 6.8, leyenda: 12 }
+export const BONO_MAQUINA: Record<Nivel, number> = { bronce: 5, plata: 3.7, oro: 6.5, leyenda: 9.5 }
 export const bonoNivelMaquina = (nivel: Nivel): number => BONO_MAQUINA[nivel]
 
 // ---------- la barra ----------
@@ -136,6 +136,8 @@ export interface DetalleJugada {
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x))
 const sig = (x: number) => 1 / (1 + Math.exp(-x))
 export const ESCALA_CALIDAD = 5.5
+// Si la probabilidad de gol supera este valor, es gol siempre: una jugada muy bien armada no puede fallar por suerte.
+export const GOL_SEGURO = 0.75
 export const PESO_BARRA_ATAQUE = 0.5 // cuánto de la efectividad del remate depende de tu toque
 export const PESO_BARRA_DEFENSA = 0.2 // cuánto puede frenar tu defensa un buen toque
 
@@ -161,6 +163,10 @@ export function resolverJugada(a: {
   const pRemate = clamp((1 - PESO_BARRA_ATAQUE + PESO_BARRA_ATAQUE * a.precA) * kF * a.clima * 1.2, 0.03, 0.97)
   const t1 = rng()
   const base2 = { ataca: a.ataca, est: { ataque: a.ataque, defensa: a.defensa }, nivel, trioA: a.trioA, trioD: a.trioD, ejecutor: a.ejecutor, interceptor: a.interceptor, calidadA, calidadD, precA: a.precA, precD: a.precD, pPaso, pRemate, pGol: pPaso * pRemate, rem, arq, clima: a.clima, quimA, quimD, nivelA, nivelD, t1, arquero: a.arquero }
+  if (pPaso * pRemate > GOL_SEGURO) { // por encima del umbral es gol siempre; por debajo manda la probabilidad (50 % = al azar)
+    const t2s = rng()
+    return { ...base2, t1: Math.min(t1, pPaso * 0.99), t2: Math.min(t2s, pRemate * 0.99), resultado: 'gol' }
+  }
   if (t1 >= pPaso) return { ...base2, resultado: 'corte' }
   const t2 = rng()
   return { ...base2, t2, resultado: t2 < pRemate ? 'gol' : 'atajada' }
