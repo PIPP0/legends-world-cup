@@ -253,9 +253,16 @@ function FuncionesAdmin({ email }: { email: string }) {
   return (
     <>
       <p className="muted small">Los cambios se aplican sin republicar la web. Cada visitante los lee al entrar (y cada 5 minutos).</p>
-      <ul className="admin-enc">
+      <ul className="admin-enc admin-fun">
         {FUNCIONES_INFO.map((f) => (
-          <li key={f.clave}><label className="chk"><input type="checkbox" checked={v[f.clave] as boolean} onChange={(e) => setV({ ...v, [f.clave]: e.target.checked })} /> <b>{f.titulo}</b></label><p className="muted small">{f.detalle}</p></li>
+          <li key={f.clave} className="fn-row">
+            <div className="fn-txt"><b>{f.titulo}</b><p className="muted small">{f.detalle}</p></div>
+            <label className="fn-sw" title={(v[f.clave] as boolean) ? 'Encendida' : 'Apagada'}>
+              <input type="checkbox" role="switch" aria-label={f.titulo} checked={v[f.clave] as boolean} onChange={(e) => setV({ ...v, [f.clave]: e.target.checked })} />
+              <span className="fn-track" aria-hidden="true"><i /></span>
+              <span className="fn-est" aria-hidden="true">{(v[f.clave] as boolean) ? 'Sí' : 'No'}</span>
+            </label>
+          </li>
         ))}
         <li><b>Aviso en la web</b><p className="muted small">Texto que aparece arriba de todo (vacío = sin aviso).</p><input className="search" maxLength={160} value={v.mantenimiento} onChange={(e) => setV({ ...v, mantenimiento: e.target.value })} placeholder="Ej.: Mañana abrimos los cuartos de final" /></li>
       </ul>

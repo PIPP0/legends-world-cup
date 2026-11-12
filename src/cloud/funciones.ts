@@ -17,7 +17,7 @@ export const FUNCIONES_BASE: Funciones = { simulaMundial: true, encuestas: true,
 export const FUNCIONES_INFO: { clave: keyof Funciones; titulo: string; detalle: string }[] = [
   { clave: 'simulaMundial', titulo: 'Simula tu mundial', detalle: 'El asistente de sede, fecha, clima y leyendas en su prime, con sorteo y partidos en vivo.' },
   { clave: 'encuestas', titulo: 'Encuestas', detalle: 'El icono de opinión del header y la encuesta que se abre al terminar un mundial.' },
-  { clave: 'donaciones', titulo: 'Apoyo voluntario', detalle: 'El botón «Apoyar (opcional)» al final de cada mundial (necesita un enlace configurado).' },
+  { clave: 'donaciones', titulo: 'Apoyo voluntario', detalle: 'Todo lo de donar: el ícono ☕ del header, el enlace «Apoyar (opcional)», la caja al final de cada mundial y la invitación tras la encuesta (necesita un enlace configurado).' },
   { clave: 'cobro', titulo: 'Cobro por paquetes', detalle: 'Activa el pago. Solo funciona si además está conectado PayPal; no lo enciendas sin resolver lo tributario.' },
   { clave: 'animacionCuadro', titulo: 'Animación del cuadro', detalle: 'El cuadro de eliminatorias que avanza solo hasta el campeón.' },
   { clave: 'duelo', titulo: 'Mi Once Ideal: Duelo', detalle: 'El juego de armar tu equipo y jugar duelos de 3 turnos y el ranking (tarjeta de la portada y página Duelo). Apágalo si algo falla.' },

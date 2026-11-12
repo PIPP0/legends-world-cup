@@ -1056,3 +1056,17 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .donar-tier{animation:donarFade .35s ease both}
 @keyframes donarFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.donar-tier{animation:none}}
+
+/* Administración → Funciones: cada fila con su interruptor a la derecha */
+.admin-fun .fn-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.admin-fun .fn-txt{min-width:0}.admin-fun .fn-txt b{display:block}.admin-fun .fn-txt p{margin:4px 0 0}
+.fn-sw{display:inline-flex;align-items:center;gap:10px;flex:none;cursor:pointer;position:relative}
+.fn-sw input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.fn-track{width:48px;height:28px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid var(--line);position:relative;transition:background .2s,border-color .2s}
+.fn-track i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#c9d3f2;transition:transform .2s,background .2s}
+.fn-sw input:checked+.fn-track{background:rgba(46,230,107,.28);border-color:#2ee66b}
+.fn-sw input:checked+.fn-track i{transform:translateX(20px);background:#2ee66b}
+.fn-sw input:focus-visible+.fn-track{outline:2px solid var(--cy);outline-offset:2px}
+.fn-est{width:20px;font:700 13px 'Barlow Condensed';letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+.fn-sw input:checked~.fn-est{color:#2ee66b}
+@media(prefers-reduced-motion:reduce){.fn-track,.fn-track i{transition:none}}
