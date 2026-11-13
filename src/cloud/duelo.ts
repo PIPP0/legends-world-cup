@@ -7,6 +7,7 @@ import type { Equipo } from '../engine/duelo'
 export interface StatsDuelo { jugados: number; ganados: number; perdidos: number; racha: number; mejorRacha: number }
 const K_EQUIPO = 'lwc:duelo:equipo'
 const K_STATS = 'lwc:duelo:stats'
+const K_PARTIDA = 'lwc:duelo:partida' // marcador de partido en curso (lo escribe el duelo)
 const K_RECARGA = 'lwc:duelo:sync-recarga'
 export const K_AVISO = 'lwc:duelo:aviso-editado' // marca de tiempo del último ajuste de Admin que la persona aún no ha visto
 export const K_VISTO = 'lwc:duelo:editado-visto'
@@ -37,6 +38,8 @@ let sincronizado = false // hasta que no termine la sincronización de entrada n
 export async function sincronizarDuelo(): Promise<void> {
   if (!NUBE_ACTIVA) return
   try {
+    if (sincronizado && location.hash.startsWith('#/duelo')) return // ya sincronizó al abrir: mientras la persona está en el Duelo (armando o jugando) no se cambia nada; se revisa al salir
+    if (localStorage.getItem(K_PARTIDA)) return // hay un partido en curso: no se cambia nada ni se recarga a mitad de partido (se sincroniza después)
     const c = await cuentaActual(); if (!c || c.anonimo) return
     const n = await nube(); const ref = n.fs.doc(n.db, 'duelo', c.uid)
     const d = await n.fs.getDoc(ref)
@@ -64,18 +67,34 @@ export async function sincronizarDuelo(): Promise<void> {
 }
 
 // Cada vez que cambian el equipo o las estadísticas en este dispositivo (y hay cuenta), se guardan en la nube. Nunca se envía un equipo vacío.
+// Se espera un instante para juntar cambios, pero si la persona cierra o cambia de pestaña se sube de inmediato.
 let temporizador: ReturnType<typeof setTimeout> | null = null
+let pendiente: { equipo: Equipo | null; stats: StatsDuelo | null } | null = null
+async function volcar(): Promise<void> {
+  const p = pendiente; pendiente = null; if (!p) return
+  const statsReales = esStats(p.stats) && p.stats.jugados > 0 ? p.stats : null // unas estadísticas en cero nunca pisan las de la nube
+  if (!NUBE_ACTIVA || !sincronizado || (!esEquipo(p.equipo) && !statsReales)) return
+  try {
+    const c = await cuentaActual(); if (!c || c.anonimo) return
+    const n = await nube()
+    await n.fs.setDoc(n.fs.doc(n.db, 'duelo', c.uid), { ...(esEquipo(p.equipo) ? { equipo: p.equipo } : {}), ...(statsReales ? { stats: statsReales } : {}), actualizado: Date.now() }, { merge: true })
+  } catch { /* sin conexión o reglas sin publicar: queda en este dispositivo */ }
+}
 export function guardarDueloNube(equipo: Equipo | null, stats: StatsDuelo | null): void {
-  const statsReales = esStats(stats) && stats.jugados > 0 ? stats : null // unas estadísticas en cero nunca pisan las de la nube
-  if (!NUBE_ACTIVA || !sincronizado || (!esEquipo(equipo) && !statsReales)) return
+  if (!NUBE_ACTIVA) return
+  pendiente = { equipo, stats }
   if (temporizador) clearTimeout(temporizador)
-  temporizador = setTimeout(() => { void (async () => {
-    try {
-      const c = await cuentaActual(); if (!c || c.anonimo) return
-      const n = await nube()
-      await n.fs.setDoc(n.fs.doc(n.db, 'duelo', c.uid), { ...(esEquipo(equipo) ? { equipo } : {}), ...(statsReales ? { stats: statsReales } : {}), actualizado: Date.now() }, { merge: true })
-    } catch { /* sin conexión o reglas sin publicar: queda en este dispositivo */ }
-  })() }, 1500)
+  temporizador = setTimeout(() => { temporizador = null; void volcar() }, 1500)
+}
+// Al salir de la pestaña se sube lo pendiente; al volver (o al recuperar internet) se revisa si en otro dispositivo hay un equipo más nuevo.
+if (typeof document !== 'undefined' && NUBE_ACTIVA) {
+  let ultima = 0
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { if (temporizador) { clearTimeout(temporizador); temporizador = null } void volcar() }
+    else if (Date.now() - ultima > 30_000) { ultima = Date.now(); void sincronizarDuelo() }
+  })
+  window.addEventListener('online', () => { void sincronizarDuelo() })
+  window.addEventListener('hashchange', () => { if (!location.hash.startsWith('#/duelo') && Date.now() - ultima > 30_000) { ultima = Date.now(); void sincronizarDuelo() } })
 }
 
 // Botón «Guardar mi equipo en mi cuenta» (menú Mi cuenta): sube lo de este dispositivo, lo vuelve a leer para comprobarlo y dice qué pasó.
