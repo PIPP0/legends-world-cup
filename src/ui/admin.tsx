@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { NUBE_ACTIVA, asegurarContadorCupo, asegurarVisitante, cuentaActual, entrarConClave, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { FUNCIONES_BASE, FUNCIONES_INFO, guardarFunciones, useFunciones, type Funciones } from '../cloud/funciones'
-import { borrarEncuesta, leerEncuestas, leerMundiales, leerProgresos, leerUsuarios, type EncuestaReg, type MundialReg, type ProgresoReg, type UsuarioReg } from '../cloud/datos'
+import { borrarEncuesta, importarCuentasGoogle, leerEncuestas, type CuentaAuthExport, leerMundiales, leerProgresos, leerUsuarios, type EncuestaReg, type MundialReg, type ProgresoReg, type UsuarioReg } from '../cloud/datos'
 import { HOST_BY_ID, MONTHS } from '../data/world'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Bar, Note, Section, Tabs } from './common'
@@ -76,7 +76,7 @@ export function Admin() {
           <Tabs value={sec} onChange={setSec} items={[['resumen', 'Resumen'], ['personas', `Personas (${datos.usuarios.filter((u) => !u.anonimo).length})`], ['funciones', 'Funciones'], ['encuestas', `Encuestas (${datos.encuestas.length})`], ['mundiales', `Mundiales (${datos.mundiales.length})`], ['historia', 'Historia']]} />
           <div className="cta"><button className="btn ghost" onClick={() => void cargar()} disabled={cargando}>{cargando ? 'Actualizando…' : '↻ Actualizar datos'}</button></div>
           {sec === 'resumen' && <Resumen d={datos} />}
-          {sec === 'personas' && <Personas us={datos.usuarios} />}
+          {sec === 'personas' && <Personas us={datos.usuarios} recargar={() => void cargar()} />}
           {sec === 'funciones' && <FuncionesAdmin email={cuenta.email} />}
           {sec === 'encuestas' && <Encuestas es={datos.encuestas} alBorrar={(id) => setDatos({ ...datos, encuestas: datos.encuestas.filter((e) => e.id !== id) })} />}
           {sec === 'mundiales' && <Mundiales ms={datos.mundiales} />}
@@ -230,13 +230,41 @@ function Resumen({ d }: { d: Datos }) {
   )
 }
 
-function Personas({ us }: { us: UsuarioReg[] }) {
+// Trae las cuentas de Google que están en Firebase pero no en esta lista (con el archivo de `firebase auth:export`).
+function ImportarCuentas({ us, alTerminar }: { us: UsuarioReg[]; alTerminar: () => void }) {
+  const [msg, setMsg] = useState('')
+  const [ocupado, setOcupado] = useState(false)
+  const elegir = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]; e.target.value = ''; if (!f) return
+    setOcupado(true); setMsg('')
+    try {
+      const json = JSON.parse(await f.text()) as { users?: CuentaAuthExport[] }
+      if (!Array.isArray(json.users)) throw new Error('formato')
+      const ya = new Set(us.filter((u) => !u.anonimo && u.email).map((u) => u.uid))
+      const r = await importarCuentasGoogle(json.users, ya)
+      setMsg(r.nuevas + r.completadas === 0 ? 'No faltaba ninguna: todas las cuentas de Google ya están en la lista.' : `Listo: ${r.nuevas} cuenta(s) nueva(s) y ${r.completadas} completada(s). Toca «Actualizar datos» para verlas.`)
+      alTerminar()
+    } catch { setMsg('No se pudo importar. Revisa que sea el archivo generado con «firebase auth:export» y que hayas publicado las reglas nuevas.') } finally { setOcupado(false) }
+  }
+  return (
+    <details className="eq-admin">
+      <summary className="muted small" style={{ cursor: 'pointer' }}>¿Falta alguien? Traer cuentas de Google desde Firebase</summary>
+      <p className="muted small">Genera el archivo con este comando en la terminal y elígelo aquí. Solo agrega o completa cuentas de Google; no borra nada.</p>
+      <code className="small" style={{ display: 'block', wordBreak: 'break-all', margin: '6px 0' }}>npx firebase-tools auth:export ~/Desktop/auth-users.json --format=json --project legends-world-cup</code>
+      <input type="file" accept=".json,application/json" disabled={ocupado} onChange={(e) => void elegir(e)} aria-label="Archivo auth-users.json" />
+      {msg && <Note>{msg}</Note>}
+    </details>
+  )
+}
+
+function Personas({ us, recargar }: { us: UsuarioReg[]; recargar: () => void }) {
   const [q, setQ] = useState('')
   const [todos, setTodos] = useState(false)
   const lista = useMemo(() => us.filter((u) => (todos || !u.anonimo) && `${u.nombre} ${u.email}`.toLowerCase().includes(q.toLowerCase())).sort((a, b) => b.ultimo - a.ultimo), [us, q, todos])
   const { visibles, barra } = usePaginado(lista)
   return (
     <>
+      <ImportarCuentas us={us} alTerminar={recargar} />
       <div className="filters"><input className="search" placeholder="Buscar por nombre o correo…" value={q} onChange={(e) => setQ(e.target.value)} /><label className="chk"><input type="checkbox" checked={todos} onChange={(e) => setTodos(e.target.checked)} /> Incluir visitantes anónimos ({us.filter((u) => u.anonimo).length})</label></div>
       <table className="gt"><thead><tr><th className="l">Persona</th><th className="l">Correo</th><th>Entró</th><th>Último</th><th>Visitas</th><th>Equipo</th></tr></thead>
         <tbody>{visibles.map((u) => <tr key={u.uid}><td className="l">{u.nombre || (u.anonimo ? 'Visitante anónimo' : '—')}</td><td className="l">{u.email || '—'}</td><td>{fecha(u.creado)}</td><td>{fecha(u.ultimo)}</td><td>{u.visitas}</td><td>{u.dispositivo || '—'}</td></tr>)}</tbody></table>

@@ -121,6 +121,13 @@ service cloud.firestore {
         && request.resource.data.get('seg', 0) is int && request.resource.data.get('seg', 0) <= 86400
         && request.resource.data.get('pags', 0) is int && request.resource.data.get('pags', 0) <= 200
         && request.resource.data.get('favorita', '') is string && request.resource.data.get('favorita', '').size() <= 4;
+      // Admin puede registrar o completar la ficha de una cuenta de Google (herramienta «Traer cuentas de Google desde Firebase» del panel).
+      allow create, update: if esAdmin() && request.resource.data.keys().hasOnly(['uid', 'email', 'nombre', 'foto', 'anonimo', 'creado', 'ultimo', 'visitas', 'idioma', 'dispositivo', 'pais', 'zona', 'sistema', 'navegador', 'pantalla', 'origen', 'idiomaWeb', 'favorita', 'auto', 'inter', 'seg', 'pags'])
+        && request.resource.data.uid == uid && request.resource.data.get('anonimo', false) == false
+        && request.resource.data.get('email', '') is string && request.resource.data.get('email', '').size() <= 200
+        && request.resource.data.get('nombre', '') is string && request.resource.data.get('nombre', '').size() <= 120
+        && request.resource.data.get('foto', '') is string && request.resource.data.get('foto', '').size() <= 400
+        && request.resource.data.get('creado', 0) is int && request.resource.data.get('ultimo', 0) is int;
       allow read: if (signedIn() && request.auth.uid == uid) || esAdmin();
       allow delete: if signedIn() && request.auth.uid == uid;
     }

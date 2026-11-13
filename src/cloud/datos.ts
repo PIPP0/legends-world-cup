@@ -158,3 +158,22 @@ export const leerEncuestas = async () => (await todos<EncuestaReg>('encuestas'))
 export const leerMundiales = async () => (await todos<MundialReg>('mundiales')).sort((a, b) => b.creada - a.creada)
 export const leerProgresos = () => todos<ProgresoReg>('progreso')
 export async function borrarEncuesta(id: string) { const n = await nube(); await n.fs.deleteDoc(n.fs.doc(n.db, 'encuestas', id)) }
+
+// Admin: trae a «Personas» las cuentas de Google que existen en Firebase Authentication pero no tienen ficha completa (p. ej. entraron antes de un arreglo).
+// Se usa con el archivo que genera `firebase auth:export`. Solo toca las cuentas de Google: nunca borra nada y no pisa los datos que ya existan.
+export interface CuentaAuthExport { localId: string; email?: string; displayName?: string; photoUrl?: string; createdAt?: string; providerUserInfo?: { providerId?: string; displayName?: string; email?: string; photoUrl?: string }[] }
+export async function importarCuentasGoogle(users: CuentaAuthExport[], yaRegistradas: Set<string>): Promise<{ nuevas: number; completadas: number }> {
+  const n = await nube()
+  let nuevas = 0, completadas = 0
+  for (const u of users) {
+    const g = u.providerUserInfo?.find((p) => p.providerId === 'google.com'); if (!g || !u.localId) continue
+    if (yaRegistradas.has(u.localId)) continue
+    const ref = n.fs.doc(n.db, 'usuarios', u.localId)
+    const previo = await n.fs.getDoc(ref)
+    const creado = Number(u.createdAt) || Date.now()
+    const base = { uid: u.localId, email: (u.email || g.email || '').slice(0, 200), nombre: (u.displayName || g.displayName || '').slice(0, 120), foto: (g.photoUrl || '').slice(0, 400), anonimo: false }
+    if (previo.exists()) { await n.fs.setDoc(ref, base, { merge: true }); completadas++ }
+    else { await n.fs.setDoc(ref, { ...base, creado, ultimo: creado, visitas: 1 }); nuevas++ }
+  }
+  return { nuevas, completadas }
+}
