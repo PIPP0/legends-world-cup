@@ -68,3 +68,20 @@ export function guardarDueloNube(equipo: Equipo | null, stats: StatsDuelo | null
     } catch { /* sin conexión o reglas sin publicar: queda en este dispositivo */ }
   })() }, 1500)
 }
+
+// Botón «Guardar mi equipo en mi cuenta» (menú Mi cuenta): sube lo de este dispositivo, lo vuelve a leer para comprobarlo y dice qué pasó.
+export async function subirDueloAhora(): Promise<{ ok: boolean; clave: 'sin-equipo' | 'sin-cuenta' | 'guardado' | 'error'; codigo?: string }> {
+  try {
+    const c = await cuentaActual(); if (!c || c.anonimo) return { ok: false, clave: 'sin-cuenta' }
+    const equipo = leerLocal<Equipo>(K_EQUIPO); const stats = leerLocal<StatsDuelo>(K_STATS)
+    if (!esEquipo(equipo)) {
+      // este dispositivo no tiene equipo: ¿ya está en la nube?
+      const n = await nube(); const d = await n.fs.getDoc(n.fs.doc(n.db, 'duelo', c.uid))
+      return d.exists() && esEquipo((d.data() as { equipo?: unknown }).equipo) ? { ok: true, clave: 'guardado' } : { ok: false, clave: 'sin-equipo' }
+    }
+    const n = await nube(); const ref = n.fs.doc(n.db, 'duelo', c.uid)
+    await n.fs.setDoc(ref, { equipo, ...(esStats(stats) && stats.jugados > 0 ? { stats } : {}), actualizado: Date.now() }, { merge: true })
+    const d = await n.fs.getDoc(ref)
+    return esEquipo((d.data() as { equipo?: unknown } | undefined)?.equipo) ? { ok: true, clave: 'guardado' } : { ok: false, clave: 'error', codigo: 'no-se-pudo-leer' }
+  } catch (e) { return { ok: false, clave: 'error', codigo: String((e as { code?: string }).code ?? (e as Error).message ?? 'error').replace('firestore/', '').slice(0, 40) } }
+}

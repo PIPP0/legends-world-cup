@@ -1184,5 +1184,11 @@ const D: string[] = [
   "Bagikan juaraku",
   "Piala Dunia Mustahilku: juara {c}. Final: {f}. Siapa yang menang di milikmu?",
   "Teks disalin. Tempel di mana saja!",
+  "Tim Duelmu",
+  "Simpan ke akunku",
+  "Tim Duelmu tersimpan di akunmu ✓",
+  "Perangkat ini belum memiliki tim.",
+  "Masuk dengan Google untuk menyimpan timmu.",
+  "Gagal menyimpan",
 ]
 export default D

@@ -446,4 +446,10 @@ export const EXTRA: Array<[string, string]> = [
   ['Compartir mi campeón', 'Share my champion'],
   ['Mi Mundial Imposible: campeón {c}. Final: {f}. ¿Quién gana en el tuyo?', 'My Impossible World Cup: champion {c}. Final: {f}. Who wins in yours?'],
   ['Texto copiado. ¡Pégalo donde quieras!', 'Text copied. Paste it anywhere!'],
+  ['Tu equipo del Duelo', 'Your Duel team'],
+  ['Guardar en mi cuenta', 'Save to my account'],
+  ['Tu equipo del Duelo está guardado en tu cuenta ✓', 'Your Duel team is saved in your account ✓'],
+  ['Este dispositivo no tiene un equipo armado todavía.', 'This device doesn’t have a team yet.'],
+  ['Entra con Google para guardar tu equipo.', 'Sign in with Google to save your team.'],
+  ['No se pudo guardar', 'Could not save'],
 ]

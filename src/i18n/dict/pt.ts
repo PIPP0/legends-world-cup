@@ -1184,5 +1184,11 @@ const D: string[] = [
   "Compartilhar meu campeão",
   "Meu Mundial Impossível: campeão {c}. Final: {f}. Quem ganha no seu?",
   "Texto copiado. Cole onde quiser!",
+  "Seu time do Duelo",
+  "Salvar na minha conta",
+  "Seu time do Duelo está salvo na sua conta ✓",
+  "Este dispositivo ainda não tem um time montado.",
+  "Entre com o Google para salvar seu time.",
+  "Não foi possível salvar",
 ]
 export default D

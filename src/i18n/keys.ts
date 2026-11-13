@@ -1184,4 +1184,10 @@ export const KEYS: string[] = [
   "Compartir mi campeón",
   "Mi Mundial Imposible: campeón {c}. Final: {f}. ¿Quién gana en el tuyo?",
   "Texto copiado. ¡Pégalo donde quieras!",
+  "Tu equipo del Duelo",
+  "Guardar en mi cuenta",
+  "Tu equipo del Duelo está guardado en tu cuenta ✓",
+  "Este dispositivo no tiene un equipo armado todavía.",
+  "Entra con Google para guardar tu equipo.",
+  "No se pudo guardar",
 ]

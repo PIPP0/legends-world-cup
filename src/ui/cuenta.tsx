@@ -8,7 +8,7 @@ import { favoritaActual, ponerFavorita, useFavorita } from '../engine/favorita'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Flag } from './common'
 import { ElegirFavorita } from './favorita'
-import { sincronizarDuelo } from '../cloud/duelo'
+import { sincronizarDuelo, subirDueloAhora } from '../cloud/duelo'
 import { NombreRanking } from './ranking'
 
 // Registro opcional con Google: junto al icono de opinión. Sin cuenta se juega igual (visitante anónimo).
@@ -18,6 +18,12 @@ export function CuentaHeader() {
   const [abierto, setAbierto] = useState(false)
   const [eligiendo, setEligiendo] = useState(false)
   const favorita = useFavorita()
+  const [estadoDuelo, setEstadoDuelo] = useState('')
+  const guardarEquipoAhora = async () => {
+    setEstadoDuelo(tr('Guardando…'))
+    const r = await subirDueloAhora()
+    setEstadoDuelo(r.clave === 'guardado' ? tr('Tu equipo del Duelo está guardado en tu cuenta ✓') : r.clave === 'sin-equipo' ? tr('Este dispositivo no tiene un equipo armado todavía.') : r.clave === 'sin-cuenta' ? tr('Entra con Google para guardar tu equipo.') : `${tr('No se pudo guardar')} (${r.codigo ?? 'error'})`)
+  }
   const raiz = useRef<HTMLDivElement>(null)
   // el menú se cierra al tocar fuera de él o con Esc
   useEffect(() => {
@@ -73,6 +79,11 @@ export function CuentaHeader() {
             </div>
           </div>
           <NombreRanking />
+          <div className="fav-row">
+            <span className="fav-lbl">{tr('Tu equipo del Duelo')}</span>
+            <div><button type="button" className="fav-edit" onClick={() => void guardarEquipoAhora()}>{tr('Guardar en mi cuenta')}</button></div>
+            {estadoDuelo && <small className="muted" role="status">{estadoDuelo}</small>}
+          </div>
           <button className="btn ghost" onClick={() => { setAbierto(false); void salir().then(() => asegurarVisitante()) }}>{tr('Cerrar sesión')}</button>
         </div>
       )}
