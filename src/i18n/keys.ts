@@ -1194,4 +1194,5 @@ export const KEYS: string[] = [
   "Inicia sesión para crear tu equipo",
   "Entra con tu cuenta de Google y tu equipo y tus estadísticas te seguirán en el celular, el computador y donde entres.",
   "Entrar con Google",
+  "Ese nombre no está permitido. Elige otro.",
 ]

@@ -1194,5 +1194,6 @@ const D: string[] = [
   "Melde dich an, um dein Team zu erstellen",
   "Melde dich mit deinem Google-Konto an, und dein Team und deine Statistiken folgen dir auf Handy, Computer und überall, wo du dich anmeldest.",
   "Mit Google anmelden",
+  "Dieser Name ist nicht erlaubt. Bitte wähle einen anderen.",
 ]
 export default D

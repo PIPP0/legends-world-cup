@@ -6,6 +6,7 @@ import { cuentaActual } from '../cloud/firebase'
 import { paisAproximado } from '../lib/pais'
 import { MI_RANKING0, aliasDeNombre, aliasLimpio, aliasPorDefecto, esAliasPorDefecto, armarRanking, demosActivos, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
 import type { Nivel } from '../engine/duelo'
+import { esOfensivo, nombreVisible } from '../engine/moderacion'
 
 const CLAVE_RANK = 'lwc:duelo:ranking'
 const CLAVE_ALIAS = 'lwc:duelo:alias'
@@ -25,7 +26,7 @@ export const aliasYaCambiado = (): boolean => { try { return localStorage.getIte
 export function cambiarAliasUnaVez(nuevo: string): string | null {
   if (aliasYaCambiado()) return null
   const limpio = aliasLimpio(nuevo)
-  if (limpio.length < 2) return null
+  if (limpio.length < 2 || esOfensivo(limpio)) return null
   try { localStorage.setItem(CLAVE_ALIAS, limpio); localStorage.setItem(CLAVE_ALIAS_CAMBIADO, '1') } catch { return null }
   void cambiarAliasNube(limpio)
   window.dispatchEvent(new Event('lwc-alias'))
@@ -78,7 +79,7 @@ function useRanking() {
   const [ahora, setAhora] = useState(() => Date.now())
   useEffect(() => { const t = setInterval(() => setAhora(Date.now()), 25000); return () => clearInterval(t) }, [])
   // «activo» = punto verde: yo (estoy aquí) y los de demostración que van rotando
-  const lista = useMemo(() => { const act = demosActivos(ahora, reales.filter((r) => r.id !== miId).length); return armarRanking(reales, yo).map((e) => (e.yo || (e.demo && act.has(e.id)) ? { ...e, activo: true } : e)) }, [reales, yo, ahora, miId])
+  const lista = useMemo(() => { const act = demosActivos(ahora, reales.filter((r) => r.id !== miId).length); return armarRanking(reales, yo).map((e) => { const x = e.yo ? e : { ...e, alias: nombreVisible(e.alias, e.id) }; return e.yo || (e.demo && act.has(e.id)) ? { ...x, activo: true } : x }) }, [reales, yo, ahora, miId])
   const posicion = lista.findIndex((e) => e.id === miId) + 1
   const setAlias = (a: string) => { if (cambiarAliasUnaVez(a)) setVersion((v) => v + 1) }
   return { lista, yo, posicion, cargando, alias, setAlias, hayReales: reales.some((r) => r.id !== miId) }
@@ -219,7 +220,8 @@ export function RankingPagina() {
             {abierto && (
               <div className="rk-tu">
                 <label htmlFor="rk-alias">{tr('Tu nombre público en el ranking')}</label>
-                <div className="rk-alias"><input id="rk-alias" value={editando} maxLength={20} onChange={(e) => setEditando(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') setAlias(editando) }} /><button className="btn pri" disabled={aliasLimpio(editando) === alias || aliasLimpio(editando).length < 2} onClick={() => setAlias(editando)}>{tr('Guardar')}</button></div>
+                <div className="rk-alias"><input id="rk-alias" value={editando} maxLength={20} onChange={(e) => setEditando(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') setAlias(editando) }} /><button className="btn pri" disabled={aliasLimpio(editando) === alias || aliasLimpio(editando).length < 2 || esOfensivo(editando)} onClick={() => setAlias(editando)}>{tr('Guardar')}</button></div>
+                {esOfensivo(editando) && <p className="small" role="alert" style={{ color: '#ff8a8a' }}>{tr('Ese nombre no está permitido. Elige otro.')}</p>}
                 <p className="small muted">{tr('Solo puedes cambiarlo una vez.')} {tr('Se muestra solo este nombre y tu país aproximado.')}</p>
               </div>
             )}
@@ -241,6 +243,7 @@ export function NombreRanking() {
   const [txt, setTxt] = useState(alias)
   useEffect(() => { const f = () => { setAlias(leerAlias()); setCambiado(aliasYaCambiado()) }; window.addEventListener('lwc-alias', f); return () => window.removeEventListener('lwc-alias', f) }, [])
   const limpio = aliasLimpio(txt)
+  const ofensivo = esOfensivo(txt)
   const guardar = () => { if (cambiarAliasUnaVez(txt)) { setEditando(false); setConfirmando(false) } }
   return (
     <div className="fav-row">
@@ -252,9 +255,10 @@ export function NombreRanking() {
       {editando && (
         <div className="rk-menu-edit">
           <input value={txt} maxLength={20} onChange={(e) => { setTxt(e.target.value); setConfirmando(false) }} aria-label={tr('Tu nombre en el ranking')} />
+          {ofensivo && <p className="small" role="alert" style={{ color: '#ff8a8a' }}>{tr('Ese nombre no está permitido. Elige otro.')}</p>}
           {confirmando ? <p className="small">{tr('¿Seguro? Después no podrás cambiarlo de nuevo.')}</p> : <p className="small muted">{tr('Solo puedes cambiarlo una vez.')}</p>}
           <div className="rk-menu-btns">
-            {confirmando ? <button type="button" className="btn pri" onClick={guardar}>{tr('Confirmar cambio')}</button> : <button type="button" className="btn pri" disabled={limpio.length < 2 || limpio === alias} onClick={() => setConfirmando(true)}>{tr('Guardar')}</button>}
+            {confirmando ? <button type="button" className="btn pri" onClick={guardar}>{tr('Confirmar cambio')}</button> : <button type="button" className="btn pri" disabled={limpio.length < 2 || limpio === alias || ofensivo} onClick={() => setConfirmando(true)}>{tr('Guardar')}</button>}
             <button type="button" className="btn ghost" onClick={() => { setEditando(false); setConfirmando(false) }}>{tr('Cancelar')}</button>
           </div>
         </div>

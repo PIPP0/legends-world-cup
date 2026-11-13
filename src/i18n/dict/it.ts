@@ -1194,5 +1194,6 @@ const D: string[] = [
   "Accedi per creare la tua squadra",
   "Accedi con il tuo account Google e la tua squadra e le tue statistiche ti seguiranno su telefono, computer e ovunque accedi.",
   "Accedi con Google",
+  "Questo nome non è consentito. Scegline un altro.",
 ]
 export default D

@@ -1,6 +1,7 @@
 // Ranking del duelo: puntos por victoria según el nivel del rival, con jugadores de demostración (ficticios y marcados como tales)
 // mezclados con los resultados reales de quienes juegan.
 import type { Nivel } from './duelo'
+import { esOfensivo } from './moderacion'
 
 // Ganar a un rival más difícil vale más. Estos puntos se suman en silencio: la pantalla no los declara.
 export const PUNTOS_VICTORIA: Record<Nivel, number> = { bronce: 2, plata: 3, oro: 4, leyenda: 6 }
@@ -54,9 +55,10 @@ export function aliasDeNombre(nombreCompleto: string): string {
   const w = nombreCompleto.normalize('NFC').replace(/[^\p{L}\p{N} -]/gu, ' ').trim().split(/\s+/).filter(Boolean)
   if (w.length === 0) return ''
   const primero = w[0]
-  if (w.length === 1) return aliasLimpio(primero)
+  if (w.length === 1) return esOfensivo(primero) ? '' : aliasLimpio(primero)
   const apellido = w.length >= 4 ? w[w.length - 2] : w[1]
-  return aliasLimpio(`${primero} ${apellido[0].toUpperCase()}`)
+  const a = aliasLimpio(`${primero} ${apellido[0].toUpperCase()}`)
+  return esOfensivo(a) ? '' : a // un nombre de cuenta ofensivo no se usa: queda el nombre automático
 }
 export const esAliasPorDefecto = (a: string): boolean => /^Jugador [A-Z0-9]{4}$/.test(a)
 export const aliasPorDefecto = (semilla: string): string => `Jugador ${semilla.slice(0, 4).toUpperCase()}`

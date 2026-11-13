@@ -130,12 +130,16 @@ export async function esperarCambiosDeSesion(cb: (c: Cuenta | null) => void): Pr
 }
 
 // Registro de la persona (visitante o con Google): una vez por carga de la página.
-let anotado = false
+// La ficha de cada persona se guarda una vez por cuenta y por carga, pero SE REPITE si cambia la cuenta o su tipo (p. ej. al iniciar sesión con Google sin recargar),
+// para que Administración siempre tenga a todas las personas que entran, con su correo y nombre.
+let anotado = ''
 export async function anotarUsuario(): Promise<void> {
-  if (!NUBE_ACTIVA || anotado) return
+  if (!NUBE_ACTIVA) return
   try {
     const n = await nube(); await n.auth.authStateReady(); const u = n.auth.currentUser; if (!u) return
-    anotado = true
+    const marca = `${u.uid}:${u.isAnonymous ? 'a' : 'g'}`
+    if (anotado === marca) return
+    anotado = marca
     const ref = n.fs.doc(n.db, 'usuarios', u.uid)
     const previo = await n.fs.getDoc(ref).catch(() => null)
     const ahora = Date.now()
@@ -161,12 +165,17 @@ function pareceAutomatico(): boolean {
 }
 // Actividad de la visita: si hubo interacción (clic, tecla, scroll, toque), segundos con la pestaña visible y pantallas vistas.
 // Se guarda poco (máx. 5 escrituras por visita) para no gastar.
+let refActividad: unknown = null
+let actividadActiva = false
 function seguirActividad(ref: unknown, setDoc: (r: never, d: object, o: object) => Promise<void>): void {
+  refActividad = ref // si cambia la cuenta (p. ej. al iniciar sesión), la actividad se guarda en la ficha de la cuenta actual
+  if (actividadActiva) return // los oyentes se instalan una sola vez por carga
+  actividadActiva = true
   let seg = 0, inter = false, pags = 1, sucio = false, envios = 0
   const enviar = () => {
     if (!sucio || envios >= 5) return
     sucio = false; envios++
-    void setDoc(ref as never, { inter, seg, pags }, { merge: true }).catch(() => undefined)
+    void setDoc(refActividad as never, { inter, seg, pags }, { merge: true }).catch(() => undefined)
   }
   const marca = () => { if (!inter) { inter = true; sucio = true; setTimeout(enviar, 4000) } }
   for (const e of ['pointerdown', 'keydown', 'scroll', 'touchstart']) addEventListener(e, marca, { passive: true })

@@ -1194,5 +1194,6 @@ const D: string[] = [
   "Sign in to create your team",
   "Sign in with your Google account and your team and stats will follow you on your phone, computer and wherever you log in.",
   "Sign in with Google",
+  "That name is not allowed. Please choose another.",
 ]
 export default D
