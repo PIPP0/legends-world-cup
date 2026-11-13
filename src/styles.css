@@ -1086,3 +1086,11 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 
 .huincha .hu-btn{opacity:.85}
 .admin-fun .fn-num{width:110px;flex:none;text-align:center}
+
+/* Administración → editor del equipo del Duelo */
+.eq-admin{margin-top:14px}.eq-lista{list-style:none;margin:6px 0 12px;padding:0;display:grid;gap:4px}
+.eq-fila{display:flex;align-items:center;gap:8px}.eq-fila.on .eq-sel{border-color:var(--cy);background:rgba(0,229,255,.1)}
+.eq-sel{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:left;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);cursor:pointer}
+.eq-pos{font:800 13px 'Barlow Condensed';letter-spacing:1px;color:var(--mut);width:26px;flex:none}
+.eq-buscar{display:grid;gap:8px;margin:6px 0 12px}.eq-res{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.eq-res button{width:100%;text-align:left;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer}.eq-res button:hover{border-color:var(--cy)}

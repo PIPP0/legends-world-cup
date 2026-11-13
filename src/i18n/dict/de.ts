@@ -1190,5 +1190,6 @@ const D: string[] = [
   "Dieses Gerät hat noch kein Team.",
   "Melde dich mit Google an, um dein Team zu speichern.",
   "Speichern nicht möglich",
+  "Ein Administrator hat dein Duell-Team auf deinen Wunsch angepasst. Es ist bereits in deinem Konto gespeichert.",
 ]
 export default D

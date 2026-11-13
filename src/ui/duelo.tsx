@@ -17,7 +17,7 @@ import {
 import { weatherFactor } from '../engine/world'
 import { BotonRanking, anotarEnRanking } from './ranking'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
-import { guardarDueloNube } from '../cloud/duelo'
+import { K_AVISO, K_VISTO, guardarDueloNube } from '../cloud/duelo'
 import { CtxLine } from './world'
 import { favoritaActual } from '../engine/favorita'
 import type { MatchCtx, Player } from '../types'
@@ -198,7 +198,15 @@ class DueloSeguro extends Component<{ children: ReactNode }, { error: string | n
     )
   }
 }
-export function Duelo() { return <DueloSeguro><DueloPantallas /></DueloSeguro> }
+// Si administración ajustó el equipo (a pedido de la persona), se lo avisamos una vez.
+function AvisoEquipoEditado() {
+  const [en, setEn] = useState<string | null>(() => { try { return localStorage.getItem(K_AVISO) } catch { return null } })
+  if (!en) return null
+  const visto = () => { try { localStorage.setItem(K_VISTO, en); localStorage.removeItem(K_AVISO) } catch { /* sin almacenamiento */ } setEn(null) }
+  return <div className="note" role="status"><span>{tr('Un administrador ajustó tu equipo del Duelo a pedido tuyo. Ya está guardado en tu cuenta.')}</span> <button type="button" className="btn" onClick={visto}>{tr('Entendido')}</button></div>
+}
+
+export function Duelo() { return <DueloSeguro><AvisoEquipoEditado /><DueloPantallas /></DueloSeguro> }
 
 function DueloPantallas() {
   const [equipo, setEquipo] = useLocalState<Equipo | null>(CLAVE_EQUIPO, null)

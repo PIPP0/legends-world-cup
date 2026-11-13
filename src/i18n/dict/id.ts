@@ -1190,5 +1190,6 @@ const D: string[] = [
   "Perangkat ini belum memiliki tim.",
   "Masuk dengan Google untuk menyimpan timmu.",
   "Gagal menyimpan",
+  "Administrator menyesuaikan tim Duelmu atas permintaanmu. Sudah tersimpan di akunmu.",
 ]
 export default D

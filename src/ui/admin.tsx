@@ -6,6 +6,7 @@ import { HOST_BY_ID, MONTHS } from '../data/world'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Bar, Note, Section, Tabs } from './common'
 import { nombrePais } from '../lib/pais'
+import { EquipoDueloAdmin } from './adminEquipo'
 // País de un registro: el guardado (zona horaria) o, en registros viejos, la región del idioma del navegador (es-CL → CL).
 const paisDe = (u: UsuarioReg) => { const c = u.pais || (u.idioma?.split('-')[1] ?? '').toUpperCase(); return c.length === 2 ? { cod: c, aprox: !u.pais } : null }
 const paisTxt = (u: UsuarioReg) => { const p = paisDe(u); return p ? `${nombrePais(p.cod)} (${p.cod})${p.aprox ? ' · por idioma' : ''}` : '—' }
@@ -139,6 +140,7 @@ function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: Progre
             {fila('Señal', senal(u))}{fila('Tiempo con la pestaña visible', u.seg === undefined ? undefined : `${u.seg} s`)}{fila('Pantallas vistas (última visita)', u.pags)}{fila('Llegó desde', u.origen)}{fila('Primera visita', fecha(u.creado))}{fila('Última visita', fecha(u.ultimo))}{fila('Visitas', u.visitas)}
             {fila('Avance en la historia', prog ? `${NIVELES[prog.nivel] ?? prog.nivel} (actualizado ${fecha(prog.actualizado)})` : 'Sin avance guardado')}
           </tbody></table>
+          {!u.anonimo && <EquipoDueloAdmin uid={u.uid} por="administración" />}
         </div>
       )}
     </>

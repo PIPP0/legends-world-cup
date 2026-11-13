@@ -1190,5 +1190,6 @@ const D: string[] = [
   "Este dispositivo ainda não tem um time montado.",
   "Entre com o Google para salvar seu time.",
   "Não foi possível salvar",
+  "Um administrador ajustou o seu time do Duelo a seu pedido. Já está salvo na sua conta.",
 ]
 export default D

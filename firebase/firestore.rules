@@ -22,17 +22,21 @@ service cloud.firestore {
       allow read: if false;
       allow write: if esAdmin();
     }
-    // Mi Once Ideal: el equipo y las estadísticas del duelo de cada persona con cuenta de Google (para verlos en cualquier dispositivo). Solo su dueña los lee y escribe.
+    // Mi Once Ideal: el equipo y las estadísticas del duelo de cada persona con cuenta de Google (para verlos en cualquier dispositivo).
+    // Las lee y escribe su dueña; Admin también puede leerlas y editarlas (con aviso a la persona: el campo «editado» marca el cambio).
     match /duelo/{uid} {
-      allow get: if signedIn() && request.auth.uid == uid && request.auth.token.firebase.sign_in_provider != 'anonymous';
+      function dueloOk(d) {
+        return d.keys().hasOnly(['equipo', 'stats', 'actualizado', 'editado'])
+          && (!('equipo' in d) || (d.equipo is map && d.equipo.once is list && d.equipo.once.size() == 11
+              && d.equipo.suplentes is list && d.equipo.suplentes.size() <= 3
+              && d.equipo.formacion is string && d.equipo.formacion.size() <= 12))
+          && (!('stats' in d) || d.stats is map)
+          && (!('editado' in d) || d.editado is map);
+      }
+      function esDuena() { return signedIn() && request.auth.uid == uid && request.auth.token.firebase.sign_in_provider != 'anonymous'; }
+      allow get: if esDuena() || esAdmin();
       allow list: if false;
-      allow create, update: if signedIn() && request.auth.uid == uid && request.auth.token.firebase.sign_in_provider != 'anonymous'
-        && request.resource.data.keys().hasOnly(['equipo', 'stats', 'actualizado'])
-        && (!('equipo' in request.resource.data) || (request.resource.data.equipo is map
-            && request.resource.data.equipo.once is list && request.resource.data.equipo.once.size() == 11
-            && request.resource.data.equipo.suplentes is list && request.resource.data.equipo.suplentes.size() <= 3
-            && request.resource.data.equipo.formacion is string && request.resource.data.equipo.formacion.size() <= 12))
-        && (!('stats' in request.resource.data) || request.resource.data.stats is map);
+      allow create, update: if (esDuena() || esAdmin()) && dueloOk(request.resource.data);
       allow delete: if signedIn() && request.auth.uid == uid;
     }
     // Cupo de cuentas con Google. config/cupo es un contador público de solo lectura; Admin lo crea y lo ajusta. Una persona con Google puede sumarle EXACTAMENTE 1, y solo si

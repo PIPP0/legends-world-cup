@@ -1190,4 +1190,5 @@ export const KEYS: string[] = [
   "Este dispositivo no tiene un equipo armado todavía.",
   "Entra con Google para guardar tu equipo.",
   "No se pudo guardar",
+  "Un administrador ajustó tu equipo del Duelo a pedido tuyo. Ya está guardado en tu cuenta.",
 ]
