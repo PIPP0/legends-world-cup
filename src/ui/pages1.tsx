@@ -1,4 +1,5 @@
 import { useFunciones } from '../cloud/funciones'
+import { useDueloVisible } from './sesion'
 import { rich } from '../i18n/rich'
 import { valorEquipo, type Equipo } from '../engine/duelo'
 import { nivelEquipo } from '../engine/jugada'
@@ -26,7 +27,8 @@ export function Home() {
   const level = useStoryLevel()
   const fun = useFunciones()
   // si la persona ya armó su equipo del duelo, la tarjeta pasa de «Crea tu equipo» a «Juega vs»
-  const miDuelo = useMemo(() => {
+  const dueloSesion = useDueloVisible()
+  const miDueloLocal = useMemo(() => {
     try {
       const e = JSON.parse(localStorage.getItem('lwc:duelo:equipo') ?? 'null') as Equipo | null
       if (!e || !Array.isArray(e.once) || e.once.length !== 11) return null
@@ -34,6 +36,7 @@ export function Home() {
       return { v: valorEquipo(e), n: nivelEquipo(g) }
     } catch { return null }
   }, [])
+  const miDuelo = dueloSesion.visible && !dueloSesion.cargando ? miDueloLocal : null // sin sesión de Google no se muestra el equipo ni el VS (el equipo guardado no se borra)
   const ko = revealed(level)
   const totalGoals = groupGoals + ko.reduce((a, m) => a + (m.ga ?? 0) + (m.gb ?? 0), 0)
   const top = useMemo(() => storyPlayerStats(level).filter((s) => s.goals >= 3).sort((a, b) => b.goals - a.goals), [level])

@@ -19,7 +19,7 @@ import { BotonRanking, anotarEnRanking } from './ranking'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
 import { K_AVISO, K_VISTO, guardarDueloNube } from '../cloud/duelo'
 import { CUPO_LLENO, NUBE_ACTIVA, cuentaActual, entrarConGoogle } from '../cloud/firebase'
-import { useFunciones } from '../cloud/funciones'
+import { permitirSinCuenta, useDueloVisible } from './sesion'
 import { CtxLine } from './world'
 import { favoritaActual } from '../engine/favorita'
 import type { MatchCtx, Player } from '../types'
@@ -219,8 +219,8 @@ function DueloPantallas() {
   const [vista, setVista] = useState<'inicio' | 'draft' | 'duelo'>('inicio')
   const [nivel, setNivel] = useState<Nivel>('plata')
   // Para crear un equipo hay que iniciar sesión con Google (así el equipo y las estadísticas siguen a la persona a cualquier dispositivo).
-  const funciones = useFunciones()
-  const exigeCuenta = NUBE_ACTIVA && funciones.cuentas
+  const sesionDuelo = useDueloVisible()
+  const exigeCuenta = sesionDuelo.exige
   const [pedirCuenta, setPedirCuenta] = useState(false)
   const intentarArmar = async () => {
     if (!exigeCuenta) { setVista('draft'); return }
@@ -235,12 +235,14 @@ function DueloPantallas() {
     setStats({ ...stats, jugados: stats.jugados + 1, perdidos: stats.perdidos + 1, racha: 0 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  if (sesionDuelo.cargando) return <div className="duelo"><p className="muted" role="status">…</p></div>
+  const equipoVisible = sesionDuelo.visible ? equipo : null // sin sesión de Google no se muestra el equipo guardado (no se borra)
   if (vista === 'draft') return <Draft alTerminar={(e) => { setEquipo(e); setVista('inicio') }} alCancelar={() => setVista('inicio')} />
-  if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} ganados={stats.ganados} alTerminar={(g) => { anotarEnRanking(nivel, g); const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
+  if (vista === 'duelo' && equipoVisible) return <Partida equipo={equipoVisible} nivel={nivel} ganados={stats.ganados} alTerminar={(g) => { anotarEnRanking(nivel, g); const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
   return (
     <>
-      <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} aviso={abandonada} armar={() => void intentarArmar()} jugar={() => setVista('duelo')} />
-      {pedirCuenta && <PedirCuenta alListo={() => { setPedirCuenta(false); setVista('draft') }} alCerrar={() => setPedirCuenta(false)} />}
+      <Inicio equipo={equipoVisible} stats={stats} nivel={nivel} setNivel={setNivel} aviso={abandonada} armar={() => void intentarArmar()} jugar={() => setVista('duelo')} />
+      {pedirCuenta && <PedirCuenta alListo={() => { setPedirCuenta(false); if (!equipo) setVista('draft') }} alCerrar={() => setPedirCuenta(false)} />}
     </>
   )
 }
@@ -269,7 +271,7 @@ function PedirCuenta({ alListo, alCerrar }: { alListo: () => void; alCerrar: () 
         {error && <p className="note warn">{error}</p>}
         <div className="cta">
           <button className="btn pri" disabled={entrando} onClick={() => void entrar()}>{tr('Entrar con Google')}</button>
-          {lleno && <button className="btn" onClick={alListo}>{tr('Seguir sin cuenta')}</button>}
+          {lleno && <button className="btn" onClick={() => { permitirSinCuenta(); alListo() }}>{tr('Seguir sin cuenta')}</button>}
           <button className="btn ghost" onClick={alCerrar}>{tr('Ahora no')}</button>
         </div>
       </div>
