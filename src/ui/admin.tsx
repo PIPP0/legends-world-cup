@@ -129,7 +129,7 @@ const senal = (x: UsuarioReg) => x.auto ? '🤖 Posible bot' : x.inter ? '✅ Hu
 
 function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: ProgresoReg[] }) {
   const [sel, setSel] = useState<string | null>(null)
-  const orden = useMemo(() => [...xs].sort((a, b) => b.ultimo - a.ultimo), [xs])
+  const orden = useMemo(() => [...xs].sort((a, b) => b.creado - a.creado || b.ultimo - a.ultimo), [xs]) // la última registrada, primero
   const { visibles: l, barra } = usePaginado(orden)
   if (!orden.length) return <p className="muted">Nadie en este grupo todavía.</p>
   const u = sel ? l.find((x) => x.uid === sel) : undefined
@@ -138,8 +138,8 @@ function TablaUsuarios({ xs, progresos }: { xs: UsuarioReg[]; progresos?: Progre
   return (
     <>
       <p className="muted small">Toca una fila para ver todo lo que se sabe de esa persona. El país es aproximado (por zona horaria del navegador, no por IP).</p>
-      <div className="tscroll"><table className="gt"><thead><tr><th className="l">ID</th><th className="l">Persona</th><th className="l">País</th><th>Último</th><th>Visitas</th><th className="l">Dispositivo</th><th className="l">Sistema · navegador</th><th className="l">Idioma</th><th className="l">Señal</th></tr></thead>
-        <tbody>{l.map((x) => <tr key={x.uid} className={`fila-sel${sel === x.uid ? ' on' : ''}`} onClick={() => setSel(sel === x.uid ? null : x.uid)} style={{ cursor: 'pointer' }}><td className="l" title={x.uid}>{corto(x.uid)}</td><td className="l">{x.nombre || x.email || (x.anonimo ? 'Anónimo' : '—')}</td><td className="l">{paisTxt(x)}</td><td>{fecha(x.ultimo)}</td><td>{x.visitas}</td><td className="l">{x.dispositivo || '—'}</td><td className="l">{x.sistema ? `${x.sistema} · ${x.navegador ?? ''}` : '—'}</td><td className="l">{x.idiomaWeb || x.idioma || '—'}</td><td className="l">{senal(x)}</td></tr>)}</tbody></table></div>
+      <div className="tscroll"><table className="gt"><thead><tr><th className="l">ID</th><th className="l">Persona</th><th className="l">País</th><th>Registrado</th><th>Último</th><th>Visitas</th><th className="l">Dispositivo</th><th className="l">Sistema · navegador</th><th className="l">Idioma</th><th className="l">Señal</th></tr></thead>
+        <tbody>{l.map((x) => <tr key={x.uid} className={`fila-sel${sel === x.uid ? ' on' : ''}`} onClick={() => setSel(sel === x.uid ? null : x.uid)} style={{ cursor: 'pointer' }}><td className="l" title={x.uid}>{corto(x.uid)}</td><td className="l">{x.nombre || x.email || (x.anonimo ? 'Anónimo' : '—')}</td><td className="l">{paisTxt(x)}</td><td>{fecha(x.creado)}</td><td>{fecha(x.ultimo)}</td><td>{x.visitas}</td><td className="l">{x.dispositivo || '—'}</td><td className="l">{x.sistema ? `${x.sistema} · ${x.navegador ?? ''}` : '—'}</td><td className="l">{x.idiomaWeb || x.idioma || '—'}</td><td className="l">{senal(x)}</td></tr>)}</tbody></table></div>
       {barra}
       {u && (
         <div className="detalle-stat"><h4 className="sub">{u.nombre || u.email || `Visitante ${corto(u.uid)}`}</h4>
@@ -271,7 +271,7 @@ function ImportarCuentas({ us, alTerminar }: { us: UsuarioReg[]; alTerminar: () 
 function Personas({ us, recargar }: { us: UsuarioReg[]; recargar: () => void }) {
   const [q, setQ] = useState('')
   const [todos, setTodos] = useState(false)
-  const lista = useMemo(() => us.filter((u) => (todos || !u.anonimo) && `${u.nombre} ${u.email}`.toLowerCase().includes(q.toLowerCase())).sort((a, b) => b.ultimo - a.ultimo), [us, q, todos])
+  const lista = useMemo(() => us.filter((u) => (todos || !u.anonimo) && `${u.nombre} ${u.email}`.toLowerCase().includes(q.toLowerCase())).sort((a, b) => b.creado - a.creado || b.ultimo - a.ultimo), [us, q, todos]) // la última registrada, primero
   const { visibles, barra } = usePaginado(lista)
   return (
     <>
