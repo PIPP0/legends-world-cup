@@ -10,6 +10,7 @@ import type { Nivel } from '../engine/duelo'
 const CLAVE_RANK = 'lwc:duelo:ranking'
 const CLAVE_ALIAS = 'lwc:duelo:alias'
 const CLAVE_ALIAS_CAMBIADO = 'lwc:duelo:aliasCambiado'
+const CLAVE_ALIAS_UID = 'lwc:duelo:alias-uid' // de qué cuenta es el nombre guardado en este navegador
 const leerLocal = (): MiRanking => { try { const s = localStorage.getItem(CLAVE_RANK); return s ? { ...MI_RANKING0, ...(JSON.parse(s) as MiRanking) } : MI_RANKING0 } catch { return MI_RANKING0 } }
 const guardarLocal = (r: MiRanking) => { try { localStorage.setItem(CLAVE_RANK, JSON.stringify(r)) } catch { /* sin almacenamiento */ } }
 export function leerAlias(): string {
@@ -32,10 +33,16 @@ export function cambiarAliasUnaVez(nuevo: string): string | null {
 }
 
 // Al entrar con Google, quien aún tiene el nombre automático «Jugador XXXX» pasa a llamarse como su cuenta (nombre + inicial del apellido). No gasta el único cambio manual.
-export function aplicarNombreDeCuenta(nombreCompleto: string): void {
-  if (aliasYaCambiado()) return
+export function aplicarNombreDeCuenta(nombreCompleto: string, uid: string): void {
   const nuevo = aliasDeNombre(nombreCompleto)
   if (nuevo.length < 2) return
+  try {
+    // En un navegador compartido, cada cuenta tiene su nombre: si entra otra persona distinta, el nombre local de la anterior no se hereda.
+    const dueno = localStorage.getItem(CLAVE_ALIAS_UID)
+    if (dueno && dueno !== uid) { localStorage.removeItem(CLAVE_ALIAS_CAMBIADO); localStorage.setItem(CLAVE_ALIAS, nuevo); localStorage.setItem(CLAVE_ALIAS_UID, uid); void nombreAutomaticoNube(nuevo); window.dispatchEvent(new Event('lwc-alias')); return }
+    if (!dueno) localStorage.setItem(CLAVE_ALIAS_UID, uid)
+  } catch { /* sin almacenamiento */ }
+  if (aliasYaCambiado()) return
   const actual = leerAlias()
   if (!esAliasPorDefecto(actual)) { void nombreAutomaticoNube(nuevo); return } // ya tiene nombre propio en este dispositivo: solo se reintenta alinear la nube
   try { localStorage.setItem(CLAVE_ALIAS, nuevo) } catch { return }
