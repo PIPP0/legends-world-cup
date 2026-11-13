@@ -7,6 +7,7 @@ import type { Equipo } from '../engine/duelo'
 export interface StatsDuelo { jugados: number; ganados: number; perdidos: number; racha: number; mejorRacha: number }
 const K_EQUIPO = 'lwc:duelo:equipo'
 const K_STATS = 'lwc:duelo:stats'
+const K_RESPALDO = 'lwc:duelo:equipo-respaldo' // equipo anterior de este dispositivo cuando la cuenta ya tenía otro: nunca se borra
 const K_PARTIDA = 'lwc:duelo:partida' // marcador de partido en curso (lo escribe el duelo)
 const K_RECARGA = 'lwc:duelo:sync-recarga'
 export const K_AVISO = 'lwc:duelo:aviso-editado' // marca de tiempo del último ajuste de Admin que la persona aún no ha visto
@@ -26,10 +27,13 @@ const mismoEquipo = (a: Equipo | null, b: Equipo | null): boolean => (a === null
 const mismasStats = (a: StatsDuelo | null, b: StatsDuelo | null): boolean => (a === null || b === null) ? a === b : a.jugados === b.jugados && a.ganados === b.ganados && a.perdidos === b.perdidos && a.racha === b.racha && a.mejorRacha === b.mejorRacha
 
 // Pura y probada: decide qué queda tras comparar lo local con lo de la nube.
+// Un equipo que ya existe NUNCA se pierde: el de la cuenta (nube) manda en todos los dispositivos; si este dispositivo tenía otro distinto, no se borra:
+// se devuelve como `respaldo` para guardarlo aparte. Si la nube no tiene equipo, se queda el local. En las estadísticas gana la que lleva más partidos.
 export function fusionarDuelo(local: { equipo: Equipo | null; stats: StatsDuelo | null }, nubeD: { equipo: Equipo | null; stats: StatsDuelo | null }) {
-  const equipo = !local.equipo ? nubeD.equipo : !nubeD.equipo ? local.equipo : nubeD.equipo.creado > local.equipo.creado ? nubeD.equipo : local.equipo
+  const equipo = nubeD.equipo ?? local.equipo
+  const respaldo = nubeD.equipo && local.equipo && !mismoEquipo(nubeD.equipo, local.equipo) ? local.equipo : null
   const stats = !local.stats ? nubeD.stats : !nubeD.stats ? local.stats : nubeD.stats.jugados > local.stats.jugados ? nubeD.stats : local.stats
-  return { equipo, stats }
+  return { equipo, stats, respaldo }
 }
 
 let sincronizado = false // hasta que no termine la sincronización de entrada no se sube nada (evita pisar lo que ya hay en la nube con algo viejo o vacío)
@@ -50,6 +54,7 @@ export async function sincronizarDuelo(): Promise<void> {
     if (!esStats(local.stats)) local.stats = null
     const r = fusionarDuelo(local, delaNube)
     const cambioLocal = !mismoEquipo(r.equipo, local.equipo) || !mismasStats(r.stats, local.stats)
+    if (r.respaldo) localStorage.setItem(K_RESPALDO, JSON.stringify(r.respaldo))
     if (cambioLocal) {
       if (r.equipo) localStorage.setItem(K_EQUIPO, JSON.stringify(r.equipo))
       if (r.stats) localStorage.setItem(K_STATS, JSON.stringify(r.stats))
@@ -95,23 +100,6 @@ if (typeof document !== 'undefined' && NUBE_ACTIVA) {
   })
   window.addEventListener('online', () => { void sincronizarDuelo() })
   window.addEventListener('hashchange', () => { if (!location.hash.startsWith('#/duelo') && Date.now() - ultima > 30_000) { ultima = Date.now(); void sincronizarDuelo() } })
-}
-
-// Botón «Guardar mi equipo en mi cuenta» (menú Mi cuenta): sube lo de este dispositivo, lo vuelve a leer para comprobarlo y dice qué pasó.
-export async function subirDueloAhora(): Promise<{ ok: boolean; clave: 'sin-equipo' | 'sin-cuenta' | 'guardado' | 'error'; codigo?: string }> {
-  try {
-    const c = await cuentaActual(); if (!c || c.anonimo) return { ok: false, clave: 'sin-cuenta' }
-    const equipo = leerLocal<Equipo>(K_EQUIPO); const stats = leerLocal<StatsDuelo>(K_STATS)
-    if (!esEquipo(equipo)) {
-      // este dispositivo no tiene equipo: ¿ya está en la nube?
-      const n = await nube(); const d = await n.fs.getDoc(n.fs.doc(n.db, 'duelo', c.uid))
-      return d.exists() && esEquipo((d.data() as { equipo?: unknown }).equipo) ? { ok: true, clave: 'guardado' } : { ok: false, clave: 'sin-equipo' }
-    }
-    const n = await nube(); const ref = n.fs.doc(n.db, 'duelo', c.uid)
-    await n.fs.setDoc(ref, { equipo, ...(esStats(stats) && stats.jugados > 0 ? { stats } : {}), actualizado: Date.now() }, { merge: true })
-    const d = await n.fs.getDoc(ref)
-    return esEquipo((d.data() as { equipo?: unknown } | undefined)?.equipo) ? { ok: true, clave: 'guardado' } : { ok: false, clave: 'error', codigo: 'no-se-pudo-leer' }
-  } catch (e) { return { ok: false, clave: 'error', codigo: String((e as { code?: string }).code ?? (e as Error).message ?? 'error').replace('firestore/', '').slice(0, 40) } }
 }
 
 // ---- Administración: ver y editar el equipo de una persona (las reglas solo se lo permiten a Admin) ----
