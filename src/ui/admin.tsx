@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { NUBE_ACTIVA, asegurarContadorCupo, asegurarVisitante, cuentaActual, entrarConClave, entrarConGoogle, esperarCambiosDeSesion, salir, type Cuenta } from '../cloud/firebase'
 import { FUNCIONES_BASE, FUNCIONES_INFO, guardarFunciones, useFunciones, type Funciones } from '../cloud/funciones'
-import { borrarEncuesta, importarCuentasGoogle, leerEncuestas, type CuentaAuthExport, leerMundiales, leerProgresos, leerUsuarios, type EncuestaReg, type MundialReg, type ProgresoReg, type UsuarioReg } from '../cloud/datos'
+import { borrarEncuesta, escucharTodoAdmin, importarCuentasGoogle, leerEncuestas, type CuentaAuthExport, leerMundiales, leerProgresos, leerUsuarios, type EncuestaReg, type MundialReg, type ProgresoReg, type UsuarioReg } from '../cloud/datos'
 import { HOST_BY_ID, MONTHS } from '../data/world'
 import { TEAM_BY_ID } from '../data/lookup'
 import { Bar, Note, Section, Tabs } from './common'
@@ -48,7 +48,18 @@ export function Admin() {
     void esperarCambiosDeSesion((c) => { if (c) setCuenta(c) }).then((f) => { if (activo) baja = f; else f() })
     return () => { activo = false; baja?.() }
   }, [])
-  useEffect(() => { if (cuenta && !cuenta.anonimo) void cargar() }, [cuenta, cargar])
+  // Datos EN VIVO: mientras el panel está abierto, todo lo que cambia (una persona nueva, una encuesta…) aparece solo.
+  const [enVivo, setEnVivo] = useState(false)
+  useEffect(() => {
+    if (!cuenta || cuenta.anonimo) return
+    let vivo = true; let baja: (() => void) | undefined
+    setCargando(true); setError('')
+    void escucharTodoAdmin(
+      (d) => { if (vivo) { setDatos(d); setCargando(false); setEnVivo(true); setError('') } },
+      (e) => { if (!vivo) return; setEnVivo(false); setCargando(false); setDatos(null); setError((e as { code?: string }).code === 'permission-denied' ? 'Esta cuenta no tiene permiso de administración.' : 'No se pudieron leer los datos. Revisa tu conexión.') },
+    ).then((f) => { if (vivo) baja = f; else f() })
+    return () => { vivo = false; baja?.(); setEnVivo(false) }
+  }, [cuenta])
 
   if (!NUBE_ACTIVA) return (
     <Section title="Administración">
@@ -74,7 +85,7 @@ export function Admin() {
       {datos && (
         <>
           <Tabs value={sec} onChange={setSec} items={[['resumen', 'Resumen'], ['personas', `Personas (${datos.usuarios.filter((u) => !u.anonimo).length})`], ['funciones', 'Funciones'], ['encuestas', `Encuestas (${datos.encuestas.length})`], ['mundiales', `Mundiales (${datos.mundiales.length})`], ['historia', 'Historia']]} />
-          <div className="cta"><button className="btn ghost" onClick={() => void cargar()} disabled={cargando}>{cargando ? 'Actualizando…' : '↻ Actualizar datos'}</button></div>
+          <div className="cta"><button className="btn ghost" onClick={() => void cargar()} disabled={cargando}>{cargando ? 'Actualizando…' : '↻ Actualizar datos'}</button>{enVivo && <span className="en-vivo" role="status"><i className="rk-vivo" aria-hidden /> En vivo: se actualiza solo</span>}</div>
           {sec === 'resumen' && <Resumen d={datos} />}
           {sec === 'personas' && <Personas us={datos.usuarios} recargar={() => void cargar()} />}
           {sec === 'funciones' && <FuncionesAdmin email={cuenta.email} />}

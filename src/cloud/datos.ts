@@ -153,6 +153,29 @@ async function todos<T>(col: string, max = 2000): Promise<T[]> {
   const s = await n.fs.getDocs(q)
   return s.docs.map((d) => ({ id: d.id, ...(d.data() as object) }) as T)
 }
+// Administración en VIVO: se escuchan las cuatro colecciones y cada cambio (una persona nueva que entra, una encuesta, un mundial) llega solo, sin pulsar nada.
+// Mientras el panel esté abierto, cada documento que cambia cuesta 1 lectura; al cerrar el panel se deja de escuchar.
+export async function escucharTodoAdmin(
+  cb: (d: { usuarios: UsuarioReg[]; encuestas: EncuestaReg[]; mundiales: MundialReg[]; progresos: ProgresoReg[] }) => void,
+  alError: (e: unknown) => void,
+): Promise<() => void> {
+  const n = await nube()
+  const est: { usuarios?: UsuarioReg[]; encuestas?: EncuestaReg[]; mundiales?: MundialReg[]; progresos?: ProgresoReg[] } = {}
+  const emitir = () => { if (est.usuarios && est.encuestas && est.mundiales && est.progresos) cb({ usuarios: est.usuarios, encuestas: est.encuestas, mundiales: est.mundiales, progresos: est.progresos }) }
+  const escuchar = <T,>(col: string, clave: keyof typeof est, orden?: (a: T, b: T) => number) =>
+    n.fs.onSnapshot(n.fs.query(n.fs.collection(n.db, col), n.fs.limit(2000)), (s) => {
+      const xs = s.docs.map((x) => ({ id: x.id, ...(x.data() as object) }) as T)
+      ;(est as Record<string, unknown>)[clave] = orden ? xs.sort(orden) : xs
+      emitir()
+    }, alError)
+  const bajas = [
+    escuchar<UsuarioReg>('usuarios', 'usuarios'),
+    escuchar<EncuestaReg>('encuestas', 'encuestas', (a, b) => b.creada - a.creada),
+    escuchar<MundialReg>('mundiales', 'mundiales', (a, b) => b.creada - a.creada),
+    escuchar<ProgresoReg>('progreso', 'progresos'),
+  ]
+  return () => bajas.forEach((b) => b())
+}
 export const leerUsuarios = () => todos<UsuarioReg>('usuarios')
 export const leerEncuestas = async () => (await todos<EncuestaReg>('encuestas')).sort((a, b) => b.creada - a.creada)
 export const leerMundiales = async () => (await todos<MundialReg>('mundiales')).sort((a, b) => b.creada - a.creada)
