@@ -1191,5 +1191,8 @@ const D: string[] = [
   "Sign in with Google to save your team.",
   "Could not save",
   "An administrator adjusted your Duel team at your request. It is already saved in your account.",
+  "Sign in to create your team",
+  "Sign in with your Google account and your team and stats will follow you on your phone, computer and wherever you log in.",
+  "Sign in with Google",
 ]
 export default D

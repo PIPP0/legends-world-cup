@@ -453,4 +453,7 @@ export const EXTRA: Array<[string, string]> = [
   ['Entra con Google para guardar tu equipo.', 'Sign in with Google to save your team.'],
   ['No se pudo guardar', 'Could not save'],
   ['Un administrador ajustó tu equipo del Duelo a pedido tuyo. Ya está guardado en tu cuenta.', 'An administrator adjusted your Duel team at your request. It is already saved in your account.'],
+  ['Inicia sesión para crear tu equipo', 'Sign in to create your team'],
+  ['Entra con tu cuenta de Google y tu equipo y tus estadísticas te seguirán en el celular, el computador y donde entres.', 'Sign in with your Google account and your team and stats will follow you on your phone, computer and wherever you log in.'],
+  ['Entrar con Google', 'Sign in with Google'],
 ]

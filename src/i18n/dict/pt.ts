@@ -1191,5 +1191,8 @@ const D: string[] = [
   "Entre com o Google para salvar seu time.",
   "Não foi possível salvar",
   "Um administrador ajustou o seu time do Duelo a seu pedido. Já está salvo na sua conta.",
+  "Entre para criar seu time",
+  "Entre com sua conta do Google e seu time e suas estatísticas vão com você no celular, no computador e onde entrar.",
+  "Entrar com o Google",
 ]
 export default D

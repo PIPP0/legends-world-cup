@@ -1191,5 +1191,8 @@ const D: string[] = [
   "Connecte-toi avec Google pour enregistrer ton équipe.",
   "Impossible d’enregistrer",
   "Un administrateur a ajusté ton équipe du Duel à ta demande. Elle est déjà enregistrée dans ton compte.",
+  "Connecte-toi pour créer ton équipe",
+  "Connecte-toi avec ton compte Google et ton équipe et tes statistiques te suivront sur ton téléphone, ton ordinateur et partout où tu te connectes.",
+  "Se connecter avec Google",
 ]
 export default D

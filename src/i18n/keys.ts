@@ -1191,4 +1191,7 @@ export const KEYS: string[] = [
   "Entra con Google para guardar tu equipo.",
   "No se pudo guardar",
   "Un administrador ajustó tu equipo del Duelo a pedido tuyo. Ya está guardado en tu cuenta.",
+  "Inicia sesión para crear tu equipo",
+  "Entra con tu cuenta de Google y tu equipo y tus estadísticas te seguirán en el celular, el computador y donde entres.",
+  "Entrar con Google",
 ]

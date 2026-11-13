@@ -1191,5 +1191,8 @@ const D: string[] = [
   "Accedi con Google per salvare la tua squadra.",
   "Impossibile salvare",
   "Un amministratore ha modificato la tua squadra del Duello su tua richiesta. È già salvata nel tuo account.",
+  "Accedi per creare la tua squadra",
+  "Accedi con il tuo account Google e la tua squadra e le tue statistiche ti seguiranno su telefono, computer e ovunque accedi.",
+  "Accedi con Google",
 ]
 export default D

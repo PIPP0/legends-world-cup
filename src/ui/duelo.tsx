@@ -18,6 +18,8 @@ import { weatherFactor } from '../engine/world'
 import { BotonRanking, anotarEnRanking } from './ranking'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
 import { K_AVISO, K_VISTO, guardarDueloNube } from '../cloud/duelo'
+import { CUPO_LLENO, NUBE_ACTIVA, cuentaActual, entrarConGoogle } from '../cloud/firebase'
+import { useFunciones } from '../cloud/funciones'
 import { CtxLine } from './world'
 import { favoritaActual } from '../engine/favorita'
 import type { MatchCtx, Player } from '../types'
@@ -216,6 +218,15 @@ function DueloPantallas() {
   const [abandonada] = useState(() => partidaVigente() !== null)
   const [vista, setVista] = useState<'inicio' | 'draft' | 'duelo'>('inicio')
   const [nivel, setNivel] = useState<Nivel>('plata')
+  // Para crear un equipo hay que iniciar sesión con Google (así el equipo y las estadísticas siguen a la persona a cualquier dispositivo).
+  const funciones = useFunciones()
+  const exigeCuenta = NUBE_ACTIVA && funciones.cuentas
+  const [pedirCuenta, setPedirCuenta] = useState(false)
+  const intentarArmar = async () => {
+    if (!exigeCuenta) { setVista('draft'); return }
+    const c = await cuentaActual()
+    if (c && !c.anonimo) setVista('draft'); else setPedirCuenta(true)
+  }
   useEffect(() => {
     const g = partidaVigente()
     if (!g) return
@@ -226,7 +237,43 @@ function DueloPantallas() {
   }, [])
   if (vista === 'draft') return <Draft alTerminar={(e) => { setEquipo(e); setVista('inicio') }} alCancelar={() => setVista('inicio')} />
   if (vista === 'duelo' && equipo) return <Partida equipo={equipo} nivel={nivel} ganados={stats.ganados} alTerminar={(g) => { anotarEnRanking(nivel, g); const s = { ...stats }; s.jugados++; if (g) { s.ganados++; s.racha++; s.mejorRacha = Math.max(s.mejorRacha, s.racha) } else { s.perdidos++; s.racha = 0 } setStats(s) }} alSalir={() => setVista('inicio')} />
-  return <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} aviso={abandonada} armar={() => setVista('draft')} jugar={() => setVista('duelo')} />
+  return (
+    <>
+      <Inicio equipo={equipo} stats={stats} nivel={nivel} setNivel={setNivel} aviso={abandonada} armar={() => void intentarArmar()} jugar={() => setVista('duelo')} />
+      {pedirCuenta && <PedirCuenta alListo={() => { setPedirCuenta(false); setVista('draft') }} alCerrar={() => setPedirCuenta(false)} />}
+    </>
+  )
+}
+
+// Ventana que pide iniciar sesión con Google antes de armar el equipo. Si el cupo de cuentas está lleno, se puede seguir sin cuenta.
+function PedirCuenta({ alListo, alCerrar }: { alListo: () => void; alCerrar: () => void }) {
+  const [error, setError] = useState('')
+  const [lleno, setLleno] = useState(false)
+  const [entrando, setEntrando] = useState(false)
+  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') alCerrar() }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k) }, [alCerrar])
+  const entrar = async () => {
+    setError(''); setEntrando(true)
+    try { await entrarConGoogle(); alListo() }
+    catch (e) {
+      const code = (e as { code?: string }).code ?? ''
+      if (code === CUPO_LLENO) setLleno(true)
+      else if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') setError(`${tr('No se pudo entrar. Inténtalo de nuevo.')} (${code.replace('auth/', '') || 'error'})`)
+    } finally { setEntrando(false) }
+  }
+  return createPortal(
+    <div className="modal-bg" role="dialog" aria-modal="true" aria-label={tr('Inicia sesión para crear tu equipo')} onClick={alCerrar}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h3>{tr('Inicia sesión para crear tu equipo')}</h3>
+        <p className="muted">{tr('Entra con tu cuenta de Google y tu equipo y tus estadísticas te seguirán en el celular, el computador y donde entres.')}</p>
+        {lleno && <p className="note warn">{tr('Cupos llenos por ahora. Puedes seguir jugando sin cuenta; tu avance no se guardará en la nube.')}</p>}
+        {error && <p className="note warn">{error}</p>}
+        <div className="cta">
+          <button className="btn pri" disabled={entrando} onClick={() => void entrar()}>{tr('Entrar con Google')}</button>
+          {lleno && <button className="btn" onClick={alListo}>{tr('Seguir sin cuenta')}</button>}
+          <button className="btn ghost" onClick={alCerrar}>{tr('Ahora no')}</button>
+        </div>
+      </div>
+    </div>, document.body)
 }
 
 // ---------- presentación (sin equipo todavía): lo que hay que ver para querer jugar ----------

@@ -1191,5 +1191,8 @@ const D: string[] = [
   "Masuk dengan Google untuk menyimpan timmu.",
   "Gagal menyimpan",
   "Administrator menyesuaikan tim Duelmu atas permintaanmu. Sudah tersimpan di akunmu.",
+  "Masuk untuk membuat timmu",
+  "Masuk dengan akun Google dan timmu serta statistikmu akan mengikutimu di ponsel, komputer, dan di mana pun kamu masuk.",
+  "Masuk dengan Google",
 ]
 export default D
