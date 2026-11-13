@@ -1196,5 +1196,8 @@ const D: string[] = [
   "Sign in with Google",
   "That name is not allowed. Please choose another.",
   "Swipe to see the other formations",
+  "If you sign in with Google, your Duel team and your stats are also saved in your account so they follow you across all your devices. Your other preferences are kept in your browser and you can delete them by clearing the site data.",
+  "If you play duels, your public name (your first name and the initial of your last name), your approximate country and your results appear in the ranking, which is public. You can change that name once.",
+  "If you answer a survey, your answer and comment are linked to your account, and the site administrator can see who sent it.",
 ]
 export default D

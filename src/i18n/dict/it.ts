@@ -1196,5 +1196,8 @@ const D: string[] = [
   "Accedi con Google",
   "Questo nome non è consentito. Scegline un altro.",
   "Scorri per vedere le altre formazioni",
+  "Se accedi con Google, la tua squadra del Duello e le tue statistiche vengono salvate anche nel tuo account per seguirti su tutti i tuoi dispositivi. Le altre preferenze restano nel tuo browser e puoi cancellarle svuotando i dati del sito.",
+  "Se giochi duelli, il tuo nome pubblico (il tuo nome e l’iniziale del cognome), il tuo paese approssimativo e i tuoi risultati compaiono in classifica, che è pubblica. Puoi cambiare quel nome una volta.",
+  "Se rispondi a un sondaggio, la tua risposta e il tuo commento sono associati al tuo account e l’amministratore del sito può vedere chi l’ha inviata.",
 ]
 export default D

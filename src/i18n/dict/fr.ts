@@ -1196,5 +1196,8 @@ const D: string[] = [
   "Se connecter avec Google",
   "Ce nom n’est pas autorisé. Choisis-en un autre.",
   "Fais glisser pour voir les autres formations",
+  "Si tu te connectes avec Google, ton équipe du Duel et tes statistiques sont aussi enregistrées dans ton compte pour te suivre sur tous tes appareils. Tes autres préférences restent dans ton navigateur et tu peux les effacer en supprimant les données du site.",
+  "Si tu joues des duels, ton nom public (ton prénom et l’initiale de ton nom), ton pays approximatif et tes résultats apparaissent dans le classement, qui est public. Tu peux changer ce nom une fois.",
+  "Si tu réponds à une enquête, ta réponse et ton commentaire sont associés à ton compte, et l’administrateur du site peut voir qui l’a envoyée.",
 ]
 export default D

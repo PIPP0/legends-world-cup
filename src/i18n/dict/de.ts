@@ -1196,5 +1196,8 @@ const D: string[] = [
   "Mit Google anmelden",
   "Dieser Name ist nicht erlaubt. Bitte wähle einen anderen.",
   "Wische, um die anderen Formationen zu sehen",
+  "Wenn du dich mit Google anmeldest, werden dein Duell-Team und deine Statistiken auch in deinem Konto gespeichert, damit sie dir auf all deinen Geräten folgen. Deine übrigen Einstellungen bleiben in deinem Browser; du kannst sie löschen, indem du die Websitedaten entfernst.",
+  "Wenn du Duelle spielst, erscheinen dein öffentlicher Name (dein Vorname und der Anfangsbuchstabe deines Nachnamens), dein ungefähres Land und deine Ergebnisse im Ranking, das öffentlich ist. Du kannst diesen Namen einmal ändern.",
+  "Wenn du an einer Umfrage teilnimmst, werden deine Antwort und dein Kommentar deinem Konto zugeordnet, und der Administrator der Seite kann sehen, wer sie gesendet hat.",
 ]
 export default D

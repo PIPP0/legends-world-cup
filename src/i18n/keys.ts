@@ -1196,4 +1196,7 @@ export const KEYS: string[] = [
   "Entrar con Google",
   "Ese nombre no está permitido. Elige otro.",
   "Desliza para ver las otras formaciones",
+  "Si entras con Google, tu equipo del Duelo y tus estadísticas también se guardan en tu cuenta para que te sigan a todos tus dispositivos. Tus demás preferencias se guardan en tu navegador y puedes borrarlas limpiando los datos del sitio.",
+  "Si juegas duelos, tu nombre público (tu nombre y la inicial de tu apellido), tu país aproximado y tus resultados aparecen en el ranking, que es público. Puedes cambiar ese nombre una vez.",
+  "Si respondes una encuesta, tu respuesta y tu comentario quedan asociados a tu cuenta, y el administrador de la web puede ver quién la envió.",
 ]

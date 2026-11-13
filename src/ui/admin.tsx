@@ -90,7 +90,7 @@ export function Admin() {
           {sec === 'resumen' && <Resumen d={datos} />}
           {sec === 'personas' && <Personas us={datos.usuarios} recargar={() => void cargar()} />}
           {sec === 'funciones' && <FuncionesAdmin email={cuenta.email} />}
-          {sec === 'encuestas' && <Encuestas es={datos.encuestas} alBorrar={(id) => setDatos({ ...datos, encuestas: datos.encuestas.filter((e) => e.id !== id) })} />}
+          {sec === 'encuestas' && <Encuestas es={datos.encuestas} us={datos.usuarios} alBorrar={(id) => setDatos({ ...datos, encuestas: datos.encuestas.filter((e) => e.id !== id) })} />}
           {sec === 'mundiales' && <Mundiales ms={datos.mundiales} />}
           {sec === 'ranking' && <RankingAdmin />}
           {sec === 'historia' && <HistoriaAdmin ps={datos.progresos} email={cuenta.email} />}
@@ -172,7 +172,15 @@ function TablaMundiales({ xs }: { xs: MundialReg[] }) {
   )
 }
 
-function ListaEncuestas({ xs, campo }: { xs: EncuestaReg[]; campo: 'estrellas' | 'estrellas2' }) {
+// Quién respondió: se busca a la persona por su ID. Con cuenta de Google se ve su nombre y correo; si era un visitante anónimo, su país, dispositivo e ID.
+function Quien({ uid, us }: { uid: string; us: UsuarioReg[] }) {
+  const u = us.find((x) => x.uid === uid)
+  if (!u) return <span className="muted">Persona no encontrada <span className="small">(…{uid.slice(-6)})</span></span>
+  const detalle = [paisTxt(u), u.dispositivo].filter((x) => x && x !== '—').join(' · ')
+  return <span><b>{u.nombre || (u.anonimo ? 'Visitante anónimo' : u.email || '—')}</b>{u.email && u.nombre ? <> · {u.email}</> : null}<br /><span className="muted small">{u.anonimo ? 'Sin cuenta' : 'Cuenta de Google'}{detalle ? ` · ${detalle}` : ''} · …{uid.slice(-6)}</span></span>
+}
+
+function ListaEncuestas({ xs, campo, us }: { xs: EncuestaReg[]; campo: 'estrellas' | 'estrellas2'; us: UsuarioReg[] }) {
   const con = useMemo(() => xs.filter((e) => (e[campo] ?? 0) > 0).sort((a, b) => b.creada - a.creada), [xs, campo])
   const { visibles, barra } = usePaginado(con)
   if (!con.length) return <p className="muted">Todavía no hay respuestas.</p>
@@ -183,8 +191,8 @@ function ListaEncuestas({ xs, campo }: { xs: EncuestaReg[]; campo: 'estrellas' |
       <h4 className="sub">Cuántas personas dieron cada nota</h4>
       {dist.map(([k, v]) => <Bar key={k} label={k} v={v} min={0} max={max} right={String(v)} />)}
       <h4 className="sub">Respuestas (más recientes primero)</h4>
-      <div className="tscroll"><table className="gt"><thead><tr><th>Fecha</th><th className="l">Nota</th><th className="l">Pantalla</th><th className="l">Comentario</th></tr></thead>
-        <tbody>{visibles.map((e) => <tr key={e.id}><td>{fecha(e.creada)}</td><td className="l">{estrellasTxt(e[campo] ?? 0)}</td><td className="l">{e.pantalla || '—'}</td><td className="l">{e.comentario || '—'}</td></tr>)}</tbody></table></div>
+      <div className="tscroll"><table className="gt"><thead><tr><th>Fecha</th><th className="l">Persona</th><th className="l">Nota</th><th className="l">Pantalla</th><th className="l">Comentario</th></tr></thead>
+        <tbody>{visibles.map((e) => <tr key={e.id}><td>{fecha(e.creada)}</td><td className="l"><Quien uid={e.uid} us={us} /></td><td className="l">{estrellasTxt(e[campo] ?? 0)}</td><td className="l">{e.pantalla || '—'}</td><td className="l">{e.comentario || '—'}</td></tr>)}</tbody></table></div>
       {barra}
     </>
   )
@@ -210,9 +218,9 @@ function Resumen({ d }: { d: Datos }) {
     activos: { titulo: 'Activos en 24 h', como: 'Visitantes cuya última visita fue en las últimas 24 horas.', cuerpo: <TablaUsuarios xs={activos} progresos={d.progresos} /> },
     mundiales: { titulo: 'Mundiales simulados', como: 'Cada vez que alguien juega «Simula tu mundial» hasta el final queda registrado con sus condiciones y el campeón.', cuerpo: <TablaMundiales xs={d.mundiales} /> },
     mundiales7: { titulo: 'Mundiales en 7 días', como: 'Los mundiales simulados en los últimos 7 días.', cuerpo: <TablaMundiales xs={mund7} /> },
-    satisfaccion: { titulo: 'Satisfacción general', como: 'Promedio de estrellas (1 a 5) de la encuesta general, la del ícono del encabezado.', cuerpo: <ListaEncuestas xs={g} campo="estrellas" /> },
-    entretenido: { titulo: 'Mundial entretenido', como: 'Promedio de estrellas (1 a 5) a «¿Qué tan entretenida fue la experiencia?», al terminar un mundial.', cuerpo: <ListaEncuestas xs={mu} campo="estrellas" /> },
-    realismo: { titulo: 'Realismo de los resultados', como: 'Promedio de estrellas (1 a 5) a «¿Qué tan realistas te parecieron los resultados?», al terminar un mundial.', cuerpo: <ListaEncuestas xs={mu} campo="estrellas2" /> },
+    satisfaccion: { titulo: 'Satisfacción general', como: 'Promedio de estrellas (1 a 5) de la encuesta general, la del ícono del encabezado.', cuerpo: <ListaEncuestas xs={g} campo="estrellas" us={d.usuarios} /> },
+    entretenido: { titulo: 'Mundial entretenido', como: 'Promedio de estrellas (1 a 5) a «¿Qué tan entretenida fue la experiencia?», al terminar un mundial.', cuerpo: <ListaEncuestas xs={mu} campo="estrellas" us={d.usuarios} /> },
+    realismo: { titulo: 'Realismo de los resultados', como: 'Promedio de estrellas (1 a 5) a «¿Qué tan realistas te parecieron los resultados?», al terminar un mundial.', cuerpo: <ListaEncuestas xs={mu} campo="estrellas2" us={d.usuarios} /> },
   }
   const det = abierto ? DETALLES[abierto] : null
   return (
@@ -339,7 +347,7 @@ function FuncionesAdmin({ email }: { email: string }) {
   )
 }
 
-function Encuestas({ es, alBorrar }: { es: EncuestaReg[]; alBorrar: (id: string) => void }) {
+function Encuestas({ es, us, alBorrar }: { es: EncuestaReg[]; us: UsuarioReg[]; alBorrar: (id: string) => void }) {
   const [tipo, setTipo] = useState<'todas' | 'general' | 'mundial'>('todas')
   const lista = useMemo(() => es.filter((e) => tipo === 'todas' || e.tipo === tipo).sort((a, b) => b.creada - a.creada), [es, tipo])
   const { visibles, barra } = usePaginado(lista)
@@ -349,7 +357,7 @@ function Encuestas({ es, alBorrar }: { es: EncuestaReg[]; alBorrar: (id: string)
       <p className="small muted">Promedio: {avg(lista.map((e) => e.estrellas))} ★ · {lista.length} respuestas</p>
       <ul className="admin-enc">
         {visibles.map((e) => (
-          <li key={e.id}><span className="estrellas-txt">{'★'.repeat(e.estrellas)}{'☆'.repeat(5 - e.estrellas)}{e.estrellas2 ? ` · realismo ${e.estrellas2}/5` : ''}</span>
+          <li key={e.id}><p style={{ margin: '0 0 4px' }}><Quien uid={e.uid} us={us} /></p><span className="estrellas-txt">{'★'.repeat(e.estrellas)}{'☆'.repeat(5 - e.estrellas)}{e.estrellas2 ? ` · realismo ${e.estrellas2}/5` : ''}</span>
             <span className="muted small"> {e.tipo === 'general' ? 'General' : 'Fin del mundial'} · {fecha(e.creada)}{e.datos ? ` · ${e.datos}` : ''}{e.pantalla ? ` · pantalla ${e.pantalla}` : ''}</span>
             {e.comentario && <p>{e.comentario}</p>}
             <button className="btn ghost" onClick={() => { if (confirm('¿Borrar esta respuesta? No se puede deshacer.')) void borrarEncuesta(e.id).then(() => alBorrar(e.id)) }}>Borrar</button></li>

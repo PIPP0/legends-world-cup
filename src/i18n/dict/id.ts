@@ -1196,5 +1196,8 @@ const D: string[] = [
   "Masuk dengan Google",
   "Nama itu tidak diizinkan. Pilih nama lain.",
   "Geser untuk melihat formasi lainnya",
+  "Jika kamu masuk dengan Google, tim Duel dan statistikmu juga disimpan di akunmu agar mengikutimu di semua perangkat. Preferensi lainnya disimpan di browsermu dan bisa kamu hapus dengan membersihkan data situs.",
+  "Jika kamu bermain duel, nama publikmu (namamu dan inisial nama belakangmu), perkiraan negaramu, dan hasilmu muncul di peringkat yang bersifat publik. Kamu bisa mengganti nama itu satu kali.",
+  "Jika kamu menjawab survei, jawaban dan komentarmu terkait dengan akunmu, dan administrator situs dapat melihat siapa yang mengirimnya.",
 ]
 export default D

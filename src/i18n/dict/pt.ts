@@ -1196,5 +1196,8 @@ const D: string[] = [
   "Entrar com o Google",
   "Esse nome não é permitido. Escolha outro.",
   "Deslize para ver as outras formações",
+  "Se você entra com o Google, seu time do Duelo e suas estatísticas também são salvos na sua conta para acompanhá-lo em todos os seus dispositivos. Suas outras preferências ficam no seu navegador e você pode apagá-las limpando os dados do site.",
+  "Se você joga duelos, seu nome público (seu nome e a inicial do sobrenome), seu país aproximado e seus resultados aparecem no ranking, que é público. Você pode mudar esse nome uma vez.",
+  "Se você responde a uma pesquisa, sua resposta e seu comentário ficam associados à sua conta, e o administrador do site pode ver quem a enviou.",
 ]
 export default D
