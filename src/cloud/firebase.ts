@@ -29,7 +29,13 @@ export function nube(): Promise<Nube> {
 }
 
 export interface Cuenta { uid: string; email: string; nombre: string; foto: string; anonimo: boolean }
-const deUsuario = (u: User): Cuenta => ({ uid: u.uid, email: u.email ?? '', nombre: u.displayName ?? '', foto: u.photoURL ?? '', anonimo: u.isAnonymous })
+// Al enlazar una cuenta de Google a un visitante anónimo, Firebase deja el nombre, el correo y la foto en los datos del proveedor (providerData) y puede dejar vacíos
+// los campos principales hasta recargar: se leen de ahí para que la ficha y el nombre del ranking salgan completos.
+const datosDe = (u: User): { email: string; nombre: string; foto: string } => {
+  const g = u.providerData.find((p) => p.providerId === 'google.com') ?? u.providerData[0]
+  return { email: u.email || g?.email || '', nombre: u.displayName || g?.displayName || '', foto: u.photoURL || g?.photoURL || '' }
+}
+const deUsuario = (u: User): Cuenta => { const d = datosDe(u); return { uid: u.uid, email: d.email, nombre: d.nombre, foto: d.foto, anonimo: u.isAnonymous } }
 
 // Quien entra al sitio queda como visitante anónimo (cuenta sin datos personales) para poder guardar encuestas y métricas.
 export async function asegurarVisitante(): Promise<Cuenta | null> {
@@ -96,7 +102,9 @@ async function conCupo(u: Parameters<typeof deUsuario>[0], aplicaCupo: boolean):
     await salir().catch(() => undefined); await asegurarVisitante().catch(() => undefined)
     throw Object.assign(new Error(CUPO_LLENO), { code: CUPO_LLENO })
   }
-  return deUsuario(u)
+  const cuenta = deUsuario(u)
+  if (typeof window !== 'undefined') setTimeout(() => window.dispatchEvent(new Event(EVENTO_SESION)), 0) // avisa que cambió la cuenta aunque Firebase no lo haga (enlace)
+  return cuenta
 }
 
 export async function entrarConGoogle(opciones: { vincular?: boolean } = {}): Promise<Cuenta> {
@@ -125,8 +133,15 @@ export async function entrarConClave(correo: string, clave: string): Promise<Cue
 }
 
 export async function salir(): Promise<void> { const n = await nube(); await n.fa.signOut(n.auth) }
+// Firebase no avisa (onAuthStateChanged) cuando un visitante anónimo enlaza su cuenta de Google: la misma persona, el mismo uid. Por eso, tras entrar con Google se emite
+// este aviso propio, y quien escucha la sesión se entera al instante (ficha en Administración, nombre del ranking, equipo del Duelo).
+export const EVENTO_SESION = 'lwc-sesion'
 export async function esperarCambiosDeSesion(cb: (c: Cuenta | null) => void): Promise<() => void> {
-  const n = await nube(); return n.fa.onAuthStateChanged(n.auth, (u) => cb(u ? deUsuario(u) : null))
+  const n = await nube()
+  const baja = n.fa.onAuthStateChanged(n.auth, (u) => cb(u ? deUsuario(u) : null))
+  const propio = () => { const u = n.auth.currentUser; cb(u ? deUsuario(u) : null) }
+  window.addEventListener(EVENTO_SESION, propio)
+  return () => { baja(); window.removeEventListener(EVENTO_SESION, propio) }
 }
 
 // Registro de la persona (visitante o con Google): una vez por carga de la página.
@@ -148,7 +163,7 @@ export async function anotarUsuario(): Promise<void> {
     const movil = !tablet && /Mobi|Android|iPhone/i.test(ua)
     const sn = sistemaYNavegador()
     await n.fs.setDoc(ref, {
-      uid: u.uid, email: u.email ?? '', nombre: (u.displayName ?? '').slice(0, 120), foto: (u.photoURL ?? '').slice(0, 400), anonimo: u.isAnonymous,
+      uid: u.uid, email: datosDe(u).email, nombre: datosDe(u).nombre.slice(0, 120), foto: datosDe(u).foto.slice(0, 400), anonimo: u.isAnonymous,
       creado: previo?.exists() ? (previo.data().creado as number) : ahora, ultimo: ahora, visitas: Math.min(100000, (previo?.exists() ? (previo.data().visitas as number) : 0) + 1),
       idioma: (navigator.language || '').slice(0, 12), dispositivo: tablet ? 'tablet' : movil ? 'móvil' : 'computador',
       // Datos técnicos del navegador (sin IP): país aproximado por zona horaria, sistema, navegador, pantalla, de dónde llegó e idioma elegido en la web.
