@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { tr } from '../i18n'
 import { NUBE_ACTIVA } from '../cloud/firebase'
-import { cambiarAliasNube, leerRankingNube, miIdRanking, publicarPartida } from '../cloud/ranking'
+import { cambiarAliasNube, leerRankingNube, nombreAutomaticoNube, miIdRanking, publicarPartida } from '../cloud/ranking'
 import { cuentaActual } from '../cloud/firebase'
 import { paisAproximado } from '../lib/pais'
-import { MI_RANKING0, aliasLimpio, aliasPorDefecto, armarRanking, demosActivos, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
+import { MI_RANKING0, aliasDeNombre, aliasLimpio, aliasPorDefecto, esAliasPorDefecto, armarRanking, demosActivos, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
 import type { Nivel } from '../engine/duelo'
 
 const CLAVE_RANK = 'lwc:duelo:ranking'
@@ -29,6 +29,18 @@ export function cambiarAliasUnaVez(nuevo: string): string | null {
   void cambiarAliasNube(limpio)
   window.dispatchEvent(new Event('lwc-alias'))
   return limpio
+}
+
+// Al entrar con Google, quien aún tiene el nombre automático «Jugador XXXX» pasa a llamarse como su cuenta (nombre + inicial del apellido). No gasta el único cambio manual.
+export function aplicarNombreDeCuenta(nombreCompleto: string): void {
+  if (aliasYaCambiado()) return
+  const nuevo = aliasDeNombre(nombreCompleto)
+  if (nuevo.length < 2) return
+  const actual = leerAlias()
+  if (!esAliasPorDefecto(actual)) { void nombreAutomaticoNube(nuevo); return } // ya tiene nombre propio en este dispositivo: solo se reintenta alinear la nube
+  try { localStorage.setItem(CLAVE_ALIAS, nuevo) } catch { return }
+  void nombreAutomaticoNube(nuevo)
+  window.dispatchEvent(new Event('lwc-alias'))
 }
 
 // Se llama al terminar (o abandonar) un partido: suma el resultado a mi ranking y, si hay nube, lo publica.

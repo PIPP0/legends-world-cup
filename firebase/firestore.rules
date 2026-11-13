@@ -84,7 +84,9 @@ service cloud.firestore {
       // El nombre público solo se puede cambiar una vez: al cambiarlo, aliasCambiado pasa a true y ya no vuelve a cambiar.
       function nombreOk(d, prev) {
         return (d.alias == prev.alias && d.get('aliasCambiado', false) == prev.get('aliasCambiado', false))
-          || (prev.get('aliasCambiado', false) == false && d.get('aliasCambiado', false) == true);
+          || (prev.get('aliasCambiado', false) == false && d.get('aliasCambiado', false) == true)
+          // el nombre automático «Jugador XXXX» puede pasar al nombre de la cuenta (nombre + inicial) sin gastar el cambio manual
+          || (prev.alias.matches('Jugador [A-Z0-9]{4}') && prev.get('aliasCambiado', false) == false && d.get('aliasCambiado', false) == false);
       }
       allow read: if true;
       allow create: if signedIn() && request.auth.uid == uid && rankOk(request.resource.data)

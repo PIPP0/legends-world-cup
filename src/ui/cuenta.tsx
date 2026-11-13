@@ -9,6 +9,7 @@ import { TEAM_BY_ID } from '../data/lookup'
 import { Flag } from './common'
 import { ElegirFavorita } from './favorita'
 import { sincronizarDuelo } from '../cloud/duelo'
+import { aplicarNombreDeCuenta } from './ranking'
 import { NombreRanking } from './ranking'
 
 // Registro opcional con Google: junto al icono de opinión. Sin cuenta se juega igual (visitante anónimo).
@@ -37,7 +38,7 @@ export function CuentaHeader() {
         setC(cuenta)
         if (cuenta) { void anotarUsuario(); void sincronizarNivel() }
         // la selección favorita es de quien tiene cuenta: se trae de la nube y, si aún no eligió una, se le pide
-        if (cuenta && !cuenta.anonimo) void sincronizarDuelo()
+        if (cuenta && !cuenta.anonimo) { void sincronizarDuelo(); if (cuenta.nombre) aplicarNombreDeCuenta(cuenta.nombre) }
         if (cuenta && !cuenta.anonimo) void leerFavoritaNube().then((f) => {
           const local = favoritaActual()
           if (f) ponerFavorita(f) // la nube manda

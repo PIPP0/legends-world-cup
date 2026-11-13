@@ -48,6 +48,17 @@ export function sumarPartida(r: MiRanking, nivel: Nivel, gane: boolean): MiRanki
 export function aliasLimpio(a: string): string {
   return a.normalize('NFC').replace(/[^\p{L}\p{N} _-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 20)
 }
+// Nombre público de una persona con cuenta: su nombre y la inicial de su apellido (p. ej. «Cristian A»). En nombres chilenos «Nombre Apellido1 Apellido2» se toma
+// el primer apellido; con dos palabras, la segunda; con cuatro o más, la penúltima. Si hay una sola palabra, se usa tal cual.
+export function aliasDeNombre(nombreCompleto: string): string {
+  const w = nombreCompleto.normalize('NFC').replace(/[^\p{L}\p{N} -]/gu, ' ').trim().split(/\s+/).filter(Boolean)
+  if (w.length === 0) return ''
+  const primero = w[0]
+  if (w.length === 1) return aliasLimpio(primero)
+  const apellido = w.length >= 4 ? w[w.length - 2] : w[1]
+  return aliasLimpio(`${primero} ${apellido[0].toUpperCase()}`)
+}
+export const esAliasPorDefecto = (a: string): boolean => /^Jugador [A-Z0-9]{4}$/.test(a)
 export const aliasPorDefecto = (semilla: string): string => `Jugador ${semilla.slice(0, 4).toUpperCase()}`
 
 // Mezcla las entradas reales (de la nube), la propia y las de demostración; ordena por puntos y desempata por victorias.

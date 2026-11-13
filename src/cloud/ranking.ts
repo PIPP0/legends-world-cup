@@ -1,5 +1,5 @@
 import { NUBE_ACTIVA, nube } from './firebase'
-import { PUNTOS_VICTORIA, aliasLimpio, type EntradaRanking } from '../engine/ranking'
+import { PUNTOS_VICTORIA, aliasLimpio, esAliasPorDefecto, type EntradaRanking } from '../engine/ranking'
 import type { Nivel } from '../engine/duelo'
 
 // Ranking público del duelo: un documento por persona (ranking/{uid}) con su nombre público elegido, país aproximado y totales.
@@ -60,6 +60,21 @@ export async function cambiarAliasNube(alias: string): Promise<boolean> {
     const p = previo.data() as Record<string, unknown>
     if (p.aliasCambiado === true) return false // ya usó su único cambio
     await n.fs.setDoc(ref, { ...p, alias: aliasLimpio(alias) || 'Jugador', aliasCambiado: true })
+    vaciarCacheRanking()
+    return true
+  } catch { return false }
+}
+
+// Al entrar con Google, si el nombre público sigue siendo el automático «Jugador XXXX», se cambia al nombre de la cuenta SIN gastar el único cambio manual.
+export async function nombreAutomaticoNube(alias: string): Promise<boolean> {
+  if (!NUBE_ACTIVA) return false
+  try {
+    const n = await nube(); const u = await uid(); if (!u) return false
+    const ref = n.fs.doc(n.db, 'ranking', u); const previo = await n.fs.getDoc(ref)
+    if (!previo.exists()) return false
+    const p = previo.data() as Record<string, unknown>
+    if (p.aliasCambiado === true || !esAliasPorDefecto(String(p.alias ?? ''))) return false
+    await n.fs.setDoc(ref, { ...p, alias: aliasLimpio(alias) || 'Jugador' })
     vaciarCacheRanking()
     return true
   } catch { return false }
