@@ -7,11 +7,12 @@ import { TEAM_BY_ID } from '../data/lookup'
 import { Bar, Note, Section, Tabs } from './common'
 import { nombrePais } from '../lib/pais'
 import { EquipoDueloAdmin } from './adminEquipo'
+import { RankingAdmin } from './adminRanking'
 // País de un registro: el guardado (zona horaria) o, en registros viejos, la región del idioma del navegador (es-CL → CL).
 const paisDe = (u: UsuarioReg) => { const c = u.pais || (u.idioma?.split('-')[1] ?? '').toUpperCase(); return c.length === 2 ? { cod: c, aprox: !u.pais } : null }
 const paisTxt = (u: UsuarioReg) => { const p = paisDe(u); return p ? `${nombrePais(p.cod)} (${p.cod})${p.aprox ? ' · por idioma' : ''}` : '—' }
 
-type Seccion = 'resumen' | 'personas' | 'funciones' | 'encuestas' | 'mundiales' | 'historia'
+type Seccion = 'resumen' | 'personas' | 'funciones' | 'ranking' | 'encuestas' | 'mundiales' | 'historia'
 const NIVELES = ['Ninguna fase (solo se ven los cruces de octavos)', 'Hasta octavos jugados', 'Hasta cuartos jugados', 'Hasta semifinales jugadas', 'Todo, hasta el campeón']
 const fecha = (n: number) => (n ? new Date(n).toLocaleString('es-CL', { dateStyle: 'short', timeStyle: 'short' }) : '—')
 const avg = (xs: number[]) => (xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(2) : '—')
@@ -84,13 +85,14 @@ export function Admin() {
       {!datos && !error && <p className="muted">{cargando ? 'Leyendo datos…' : ''}</p>}
       {datos && (
         <>
-          <Tabs value={sec} onChange={setSec} items={[['resumen', 'Resumen'], ['personas', `Personas (${datos.usuarios.filter((u) => !u.anonimo).length})`], ['funciones', 'Funciones'], ['encuestas', `Encuestas (${datos.encuestas.length})`], ['mundiales', `Mundiales (${datos.mundiales.length})`], ['historia', 'Historia']]} />
+          <Tabs value={sec} onChange={setSec} items={[['resumen', 'Resumen'], ['personas', `Personas (${datos.usuarios.filter((u) => !u.anonimo).length})`], ['funciones', 'Funciones'], ['ranking', 'Ranking'], ['encuestas', `Encuestas (${datos.encuestas.length})`], ['mundiales', `Mundiales (${datos.mundiales.length})`], ['historia', 'Historia']]} />
           <div className="cta"><button className="btn ghost" onClick={() => void cargar()} disabled={cargando}>{cargando ? 'Actualizando…' : '↻ Actualizar datos'}</button>{enVivo && <span className="en-vivo" role="status"><i className="rk-vivo" aria-hidden /> En vivo: se actualiza solo</span>}</div>
           {sec === 'resumen' && <Resumen d={datos} />}
           {sec === 'personas' && <Personas us={datos.usuarios} recargar={() => void cargar()} />}
           {sec === 'funciones' && <FuncionesAdmin email={cuenta.email} />}
           {sec === 'encuestas' && <Encuestas es={datos.encuestas} alBorrar={(id) => setDatos({ ...datos, encuestas: datos.encuestas.filter((e) => e.id !== id) })} />}
           {sec === 'mundiales' && <Mundiales ms={datos.mundiales} />}
+          {sec === 'ranking' && <RankingAdmin />}
           {sec === 'historia' && <HistoriaAdmin ps={datos.progresos} email={cuenta.email} />}
         </>
       )}

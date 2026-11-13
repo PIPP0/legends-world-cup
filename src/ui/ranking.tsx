@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { tr } from '../i18n'
 import { NUBE_ACTIVA } from '../cloud/firebase'
-import { cambiarAliasNube, leerRankingNube, nombreAutomaticoNube, miIdRanking, publicarPartida } from '../cloud/ranking'
+import { cambiarAliasNube, leerMiRegistro, leerRankingNube, nombreAutomaticoNube, miIdRanking, publicarPartida } from '../cloud/ranking'
 import { cuentaActual } from '../cloud/firebase'
 import { paisAproximado } from '../lib/pais'
 import { MI_RANKING0, aliasDeNombre, aliasLimpio, aliasPorDefecto, esAliasPorDefecto, armarRanking, demosActivos, sumarPartida, type EntradaRanking, type MiRanking } from '../engine/ranking'
@@ -53,8 +53,9 @@ export function aplicarNombreDeCuenta(nombreCompleto: string, uid: string): void
 
 // Se llama al terminar (o abandonar) un partido: suma el resultado a mi ranking y, si hay nube, lo publica.
 export function anotarEnRanking(nivel: Nivel, gane: boolean): void {
-  guardarLocal(sumarPartida(leerLocal(), nivel, gane))
-  void publicarPartida(leerAlias(), paisAproximado(), nivel, gane, aliasYaCambiado())
+  const nuevo = sumarPartida(leerLocal(), nivel, gane)
+  guardarLocal(nuevo)
+  void publicarPartida(leerAlias(), paisAproximado(), nivel, gane, aliasYaCambiado(), nuevo)
 }
 
 // Ranking completo: reales (nube) + yo + demostración.
@@ -64,18 +65,25 @@ function useRanking() {
   const [cargando, setCargando] = useState(NUBE_ACTIVA)
   const [alias, setAliasEstado] = useState(leerAlias)
   const [version, setVersion] = useState(0)
+  const [miReg, setMiReg] = useState<EntradaRanking | null>(null)
   useEffect(() => { const f = () => setAliasEstado(leerAlias()); window.addEventListener('lwc-alias', f); return () => window.removeEventListener('lwc-alias', f) }, [])
   useEffect(() => {
     let vivo = true
-    void (async () => { const [lista, id] = await Promise.all([leerRankingNube(), miIdRanking()]); if (!vivo) return; setReales(lista); if (id) setMiId(id); setCargando(false) })()
+    void (async () => { const [lista, id, mio] = await Promise.all([leerRankingNube(), miIdRanking(), leerMiRegistro()]); if (!vivo) return; setReales(lista); setMiReg(mio); if (id) setMiId(id); setCargando(false) })()
     return () => { vivo = false }
   }, [version])
+  // Lo que ve cada persona debe ser lo mismo que ven los demás: cuando su registro ya está en la nube, su nombre local se alinea con el de la nube.
+  useEffect(() => {
+    const mio = miReg ?? reales.find((r) => r.id === miId); if (!mio || !mio.alias || mio.alias === leerAlias()) return
+    try { localStorage.setItem(CLAVE_ALIAS, mio.alias); if (mio.aliasCambiado) localStorage.setItem(CLAVE_ALIAS_CAMBIADO, '1') } catch { return }
+    window.dispatchEvent(new Event('lwc-alias'))
+  }, [reales, miId, miReg])
   const local = leerLocal()
   const yo: EntradaRanking = useMemo(() => {
-    const enNube = reales.find((r) => r.id === miId)
+    const enNube = miReg ?? reales.find((r) => r.id === miId)
     // si ya estoy en la nube, valen sus números; si no (sin conexión o reglas sin publicar), valen los míos
     return { id: miId, alias, pais: paisAproximado(), puntos: enNube?.puntos ?? local.puntos, ganadas: enNube?.ganadas ?? local.ganadas, jugadas: enNube?.jugadas ?? local.jugadas, mejorRacha: enNube?.mejorRacha ?? local.mejorRacha, yo: true }
-  }, [reales, miId, alias, local.puntos, local.ganadas, local.jugadas, local.mejorRacha])
+  }, [reales, miReg, miId, alias, local.puntos, local.ganadas, local.jugadas, local.mejorRacha])
   const [ahora, setAhora] = useState(() => Date.now())
   useEffect(() => { const t = setInterval(() => setAhora(Date.now()), 25000); return () => clearInterval(t) }, [])
   // «activo» = punto verde: yo (estoy aquí) y los de demostración que van rotando

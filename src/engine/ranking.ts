@@ -15,6 +15,7 @@ export interface EntradaRanking {
   ganadas: number
   jugadas: number
   mejorRacha: number
+  aliasCambiado?: boolean // ya usó su único cambio de nombre (dato de la nube)
   demo?: boolean // jugador de demostración (ficticio)
   yo?: boolean
   activo?: boolean // punto verde «jugando ahora»

@@ -89,8 +89,12 @@ service cloud.firestore {
           || (prev.alias.matches('Jugador [A-Z0-9]{4}') && prev.get('aliasCambiado', false) == false && d.get('aliasCambiado', false) == false);
       }
       allow read: if true;
+      // Al crear el registro se puede traer el historial que la persona ya tenía en su dispositivo (así no se pierde), con topes razonables.
       allow create: if signedIn() && request.auth.uid == uid && rankOk(request.resource.data)
-        && request.resource.data.jugadas == 1 && request.resource.data.ganadas <= 1 && request.resource.data.puntos <= 7;
+        && request.resource.data.jugadas >= 1 && request.resource.data.jugadas <= 60 && request.resource.data.ganadas <= request.resource.data.jugadas
+        && request.resource.data.puntos <= 6 * request.resource.data.ganadas && request.resource.data.mejorRacha <= request.resource.data.jugadas;
+      // Admin puede corregir cualquier registro del ranking (herramienta del panel).
+      allow create, update: if esAdmin() && rankOk(request.resource.data);
       allow update: if signedIn() && request.auth.uid == uid && rankOk(request.resource.data) && nombreOk(request.resource.data, resource.data)
         && ((request.resource.data.jugadas == resource.data.jugadas + 1
               && request.resource.data.ganadas >= resource.data.ganadas && request.resource.data.ganadas <= resource.data.ganadas + 1
