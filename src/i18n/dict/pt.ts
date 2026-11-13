@@ -1195,5 +1195,6 @@ const D: string[] = [
   "Entre com sua conta do Google e seu time e suas estatísticas vão com você no celular, no computador e onde entrar.",
   "Entrar com o Google",
   "Esse nome não é permitido. Escolha outro.",
+  "Deslize para ver as outras formações",
 ]
 export default D

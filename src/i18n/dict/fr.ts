@@ -1195,5 +1195,6 @@ const D: string[] = [
   "Connecte-toi avec ton compte Google et ton équipe et tes statistiques te suivront sur ton téléphone, ton ordinateur et partout où tu te connectes.",
   "Se connecter avec Google",
   "Ce nom n’est pas autorisé. Choisis-en un autre.",
+  "Fais glisser pour voir les autres formations",
 ]
 export default D

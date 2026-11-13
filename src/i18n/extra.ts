@@ -457,4 +457,5 @@ export const EXTRA: Array<[string, string]> = [
   ['Entra con tu cuenta de Google y tu equipo y tus estadísticas te seguirán en el celular, el computador y donde entres.', 'Sign in with your Google account and your team and stats will follow you on your phone, computer and wherever you log in.'],
   ['Entrar con Google', 'Sign in with Google'],
   ['Ese nombre no está permitido. Elige otro.', 'That name is not allowed. Please choose another.'],
+  ['Desliza para ver las otras formaciones', 'Swipe to see the other formations'],
 ]

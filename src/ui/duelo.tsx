@@ -290,7 +290,7 @@ function Presentacion({ armar }: { armar: () => void }) {
           <h1>{tr('Prepárate para competir y ganar')}<br /><span>{tr('con tu equipo ideal.')}</span></h1>
           <p className="d-bajada">{tr('Elige a las mayores leyendas de la historia, entrena en duelos de 3 turnos contra la máquina y compite en el ranking.')}</p>
           <ul className="d-chips-top"><li>⏱ {tr('2 minutos por duelo')}</li><li>🎲 {tr('Cada draft es distinto')}</li><li>🔒 {tr('Tu equipo es para siempre')}</li><li className="d-pronto">🏆 {tr('Ranking con otras personas')}</li></ul>
-          <div className="cta"><button className="btn pri d-gran" onClick={armar}>{tr('Armar mi equipo')} →</button></div>
+          <Fija className="cta"><button className="btn pri d-gran" onClick={armar}>{tr('Armar mi equipo')} →</button></Fija>
           <p className="small muted">{tr('Toma 2 minutos y es gratis.')}</p>
         </div>
         <figure className="d-portada-img">
@@ -355,8 +355,8 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar, aviso }: { equip
           <div className="d-niveles" role="radiogroup" aria-label={tr('Nivel del rival')}>
             {NIVELES.map((n) => <button key={n.id} type="button" role="radio" aria-checked={nivel === n.id} className={`d-nivel n-${n.id}${nivel === n.id ? ' on' : ''}`} onClick={() => setNivel(n.id)}><i aria-hidden className="d-estr">{'★'.repeat(NIVELES.findIndex((x) => x.id === n.id) + 1)}</i><span>{tr(n.nombre)}</span></button>)}
           </div></div>
-          <div className="d-accion"><button type="button" className="btn pri d-jugar-gran" onClick={jugar}>{tr('Jugar duelo')} →</button>
-          <p className="small muted">{tr('Partidos: {j} · Ganados: {g} · Perdidos: {p} · Racha: {r} (mejor {m})', { j: stats.jugados, g: stats.ganados, p: stats.perdidos, r: stats.racha, m: stats.mejorRacha })}</p></div>
+          <Fija className="d-accion"><button type="button" className="btn pri d-jugar-gran" onClick={jugar}>{tr('Jugar duelo')} →</button>
+          <p className="small muted">{tr('Partidos: {j} · Ganados: {g} · Perdidos: {p} · Racha: {r} (mejor {m})', { j: stats.jugados, g: stats.ganados, p: stats.perdidos, r: stats.racha, m: stats.mejorRacha })}</p></Fija>
         </div>
       </div>
     </div>
@@ -365,6 +365,17 @@ function Inicio({ equipo, stats, nivel, setNivel, armar, jugar, aviso }: { equip
 
 // ---------- draft: armar el equipo ----------
 // La persona elige el puesto en la cancha, toca «Sacar jugadores» y le tocan tres al azar (con un reveal); elige uno. Cada puesto guarda lo que le tocó.
+// Botón de acción principal: en computador va en su lugar; en celular se dibuja fijo sobre la barra de abajo (fuera de cualquier contenedor, para que nunca quede tapado ni fuera de pantalla).
+function useMovil(): boolean {
+  const [m, setM] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width:860px)').matches)
+  useEffect(() => { const q = window.matchMedia('(max-width:860px)'); const f = () => setM(q.matches); q.addEventListener('change', f); return () => q.removeEventListener('change', f) }, [])
+  return m
+}
+function Fija({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const movil = useMovil()
+  return movil ? createPortal(<div className={`d-fija ${className}`}>{children}</div>, document.body) : <div className={className}>{children}</div>
+}
+
 function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; alCancelar: () => void }) {
   const [formacion, setFormacion] = useState<string | null>(null)
   const [seed] = useState(() => nuevaSemilla('draft'))
@@ -374,10 +385,18 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
   const [vista, setVista] = useState<string | null>(null)
   const [barajando, setBarajando] = useState(false)
   useCerrarFuera(vista !== null, () => setVista(null))
+  // En celular, al salir las tres opciones se baja hasta ellas (quedaban fuera de la pantalla), y al elegir se vuelve a la cancha para ver al jugador en su puesto.
+  const ofertaVisible = slot !== null && !barajando && !!sacadas[slot]
+  useEffect(() => {
+    if (!ofertaVisible || window.innerWidth > 860) return
+    const t = setTimeout(() => document.querySelector('.d-toco')?.scrollIntoView({ block: 'start' }), 80)
+    return () => clearTimeout(t)
+  }, [ofertaVisible, slot])
   if (!formacion) {
     return (
       <div className="duelo">
         <header className="d-hero"><p className="kicker">{tr('Armar mi equipo')}</p><h1>{tr('Elige tu formación')}</h1><p className="muted">{tr('Después elegirás a cada jugador entre tres leyendas. Tu equipo no se podrá cambiar.')}</p></header>
+        <p className="d-desliza small muted" aria-hidden>{tr('Desliza para ver las otras formaciones')} →</p>
         <div className="d-formaciones">{NOMBRES_FORMACION.map((f) => (
           <button key={f} type="button" className="d-form" onClick={() => setFormacion(f)}><Cancha formacion={f} ids={[]} etiqueta={f} /><b>{f}</b></button>
         ))}</div>
@@ -401,6 +420,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
     if (slot === null) return
     setPicks((x) => { const y = [...x]; y[slot] = id; return y })
     setSlot(null); setVista(null)
+    if (window.innerWidth <= 860) window.scrollTo(0, 0)
   }
   if (completo) {
     const e: Equipo = { formacion, once, suplentes: sup, creado: Date.now() }
@@ -412,7 +432,7 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
           <div>
             {vista && <Detalle p={PLAYER_BY_ID[vista]} />}
             <p className="note warn">{tr('Este equipo no se podrá cambiar una vez que lo confirmes.')}</p>
-            <div className="cta"><button className="btn pri" onClick={() => alTerminar(e)}>{tr('Confirmar mi equipo')}</button><button className="btn ghost" onClick={() => { setPicks(new Array(N_PICKS).fill(undefined)); setSacadas({}); setSlot(null); setFormacion(null) }}>{tr('Empezar de nuevo')}</button></div>
+            <Fija className="cta"><button className="btn pri" onClick={() => alTerminar(e)}>{tr('Confirmar mi equipo')}</button><button className="btn ghost" onClick={() => { setPicks(new Array(N_PICKS).fill(undefined)); setSacadas({}); setSlot(null); setFormacion(null) }}>{tr('Empezar de nuevo')}</button></Fija>
           </div>
         </div>
       </div>
@@ -437,20 +457,20 @@ function Draft({ alTerminar, alCancelar }: { alTerminar: (e: Equipo) => void; al
             <div className="d-vacio d-ini">
               <span className="d-dado" aria-hidden>🎲</span>
               <h3>{tr('¡Hora de armar tu once!')}</h3>
-              <button className="btn pri d-gran" onClick={() => sacar(siguienteVacio)}>🎲 {tr('Sacar jugadores')} · {siguienteVacio < 11 ? nombreSlot(siguienteVacio) : tr('Suplente')}</button>
+              <Fija><button className="btn pri d-gran" onClick={() => sacar(siguienteVacio)}>🎲 {tr('Sacar jugadores')} · {siguienteVacio < 11 ? nombreSlot(siguienteVacio) : tr('Suplente')}</button></Fija>
               <p className="d-o"><span>{tr('o elige tú el puesto')}</span></p>
               <p className="small muted">← {tr('Toca un puesto vacío de la cancha para sacar jugadores.')}</p>
             </div>
           ) : barajando ? (
             <div className="d-vacio d-baraja"><span aria-hidden>🎲</span><p>{tr('Sacando jugadores…')}</p></div>
           ) : !ofrecidos ? (
-            <div className="d-vacio"><p><b>{slot < 11 ? nombreSlot(slot) : tr('Suplente')}</b></p><button className="btn pri d-gran" onClick={() => sacar()}>🎲 {tr('Sacar jugadores')}</button><p className="small muted">{tr('Te tocarán tres leyendas al azar para este puesto.')}</p></div>
+            <div className="d-vacio"><p><b>{slot < 11 ? nombreSlot(slot) : tr('Suplente')}</b></p><Fija><button className="btn pri d-gran" onClick={() => sacar()}>🎲 {tr('Sacar jugadores')}</button></Fija><p className="small muted">{tr('Te tocarán tres leyendas al azar para este puesto.')}</p></div>
           ) : (
             <>
               <p className="d-toco">{tr('Te tocaron estos tres. ¡Elige a uno!')}</p>
               <div className="d-lista d-sobre">{ofrecidos.map((id) => <FilaJugador key={id} p={PLAYER_BY_ID[id]} activo={vista === id} onClick={() => setVista(id)} />)}</div>
               {preview && esOferta ? (
-                <Detalle p={preview}><div className="cta"><button className="btn pri" onClick={() => elegir(preview.id)}>{tr('Elegir a {n}', { n: apellido(preview.name) })}</button></div></Detalle>
+                <Detalle p={preview}><Fija className="cta"><button className="btn pri" onClick={() => elegir(preview.id)}>{tr('Elegir a {n}', { n: apellido(preview.name) })}</button></Fija></Detalle>
               ) : <p className="muted small">{tr('Toca a un jugador para ver su detalle y elegirlo.')}</p>}
             </>
           )}
@@ -722,7 +742,7 @@ function PanelTrio({ ataca, est, trio, quitar, fit, quim, onVolver, onConfirmar 
           </div>) })}
       </div>
       {trio.length >= 2 && <div className={`d-quim ${quim.total > 0 ? 'pos' : quim.total < 0 ? 'neg' : ''}`}><b>🧪 {tr('Química del trío')} {quim.total > 0 ? '+' : ''}{Math.round(quim.total * 10) / 10}</b>{quim.razones.map((r, i) => <span key={i}>{razonQuimica(r)}</span>)}{!quim.razones.length && <span>{tr('Sin combinaciones especiales')}</span>}{quim.razones.reduce((x, r) => x + r.pts, 0) > 6 && <span className="tope">{tr('Tope +{n}', { n: 6 })}</span>}</div>}
-      <button className={`btn pri d-jugar${trio.length === 3 ? ' d-gran' : ''}`} disabled={trio.length !== 3} onClick={onConfirmar}>{trio.length === 3 ? `▶ ${tr('Confirmar jugada')}` : tr('Elige 3 jugadores')}</button>
+      <Fija><button className={`btn pri d-jugar${trio.length === 3 ? ' d-gran' : ''}`} disabled={trio.length !== 3} onClick={onConfirmar}>{trio.length === 3 ? `▶ ${tr('Confirmar jugada')}` : tr('Elige 3 jugadores')}</button></Fija>
     </div>
   )
 }

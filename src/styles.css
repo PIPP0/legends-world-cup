@@ -1095,3 +1095,22 @@ body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area
 .eq-buscar{display:grid;gap:8px;margin:6px 0 12px}.eq-res{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .eq-res button{width:100%;text-align:left;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer}.eq-res button:hover{border-color:var(--cy)}
 .en-vivo{display:inline-flex;align-items:center;gap:6px;font:600 13px Inter,sans-serif;color:#7be39b}.en-vivo .rk-vivo{margin:0}
+
+/* ===== Duelo en celular: acciones principales siempre a mano, formaciones en carrusel, zonas de toque cómodas ===== */
+.d-desliza{display:none}
+@media(max-width:860px){
+  /* el botón principal de cada paso queda fijo sobre la barra de abajo: ya no hay que buscarlo al final de la pantalla */
+  .d-fija{position:fixed!important;left:10px;right:10px;bottom:calc(80px + env(safe-area-inset-bottom));z-index:24;display:flex;gap:8px;margin:0!important;padding:8px;border-radius:16px;background:rgba(5,10,28,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.55)}
+  .d-fija .btn{flex:1;margin:0!important;min-height:52px;padding:12px 14px;font-size:20px;letter-spacing:2px}
+  .d-fija .btn.pri.d-jugar-gran{margin-top:0;font-size:22px;clip-path:none;border-radius:12px}
+  .d-fija p{display:none}
+  .duelo{padding-bottom:96px}
+  /* formaciones: tarjetas deslizables (una por pantalla) en lugar de tres pantallas de alto */
+  .d-desliza{display:block;text-align:right;margin:0 4px 6px}
+  .d-formaciones{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:2px 2px 12px;-webkit-overflow-scrolling:touch}
+  .d-formaciones .d-form{flex:0 0 86%;scroll-snap-align:center}
+  /* zonas de toque de al menos 44 px */
+  .duelo .d-link{display:inline-flex;align-items:center;min-height:44px;padding:0 8px}
+  .duelo .d-red{width:44px;height:44px}
+  .d-toco{scroll-margin-top:84px}
+}

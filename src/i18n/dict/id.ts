@@ -1195,5 +1195,6 @@ const D: string[] = [
   "Masuk dengan akun Google dan timmu serta statistikmu akan mengikutimu di ponsel, komputer, dan di mana pun kamu masuk.",
   "Masuk dengan Google",
   "Nama itu tidak diizinkan. Pilih nama lain.",
+  "Geser untuk melihat formasi lainnya",
 ]
 export default D
