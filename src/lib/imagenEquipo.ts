@@ -51,7 +51,9 @@ export async function dibujarEquipo(equipo: Equipo, f: Formato): Promise<HTMLCan
     texto = { x: pad, y: pad, w: W - pad * 2 - pitch.w - pad }
     bench = { cx: texto.x + texto.w / 2, cy: H * 0.66, r: H * 0.075 }
   } else {
-    const headH = H * (f.id === 'historia' ? 0.15 : 0.17), footH = H * 0.07, benchH = H * (f.id === 'historia' ? 0.12 : 0.14)
+    // la cabecera (título + «4-3-3 · Valoración media») ocupa lo que necesita: antes la cancha se dibujaba encima de esa línea
+    const tt = Math.min(W * 0.115, 140), cabeceraMin = pad * 0.9 + tt * 1.25 + tt * 0.38 + H * 0.016
+    const headH = Math.max(H * (f.id === 'historia' ? 0.15 : 0.17), cabeceraMin), footH = H * 0.07, benchH = H * (f.id === 'historia' ? 0.12 : 0.14)
     const libre = H - headH - footH - benchH - pad
     pitch.w = Math.min(W - pad * 2, libre / 1.18); pitch.h = pitch.w * 1.18; pitch.x = (W - pitch.w) / 2; pitch.y = headH + (libre - pitch.h) / 2
     bench = { cx: W / 2, cy: pitch.y + pitch.h + benchH * 0.52, r: Math.min(benchH * 0.34, pitch.w * 0.075) }
