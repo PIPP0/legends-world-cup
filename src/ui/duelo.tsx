@@ -17,6 +17,7 @@ import {
 import { weatherFactor } from '../engine/world'
 import { BotonRanking, anotarEnRanking } from './ranking'
 import { Avatar, Bar, Flag, usePhoto, useLocalState } from './common'
+import { guardarDueloNube } from '../cloud/duelo'
 import { CtxLine } from './world'
 import { favoritaActual } from '../engine/favorita'
 import type { MatchCtx, Player } from '../types'
@@ -202,6 +203,7 @@ export function Duelo() { return <DueloSeguro><DueloPantallas /></DueloSeguro> }
 function DueloPantallas() {
   const [equipo, setEquipo] = useLocalState<Equipo | null>(CLAVE_EQUIPO, null)
   const [stats, setStats] = useLocalState<Stats>(CLAVE_STATS, STATS0)
+  useEffect(() => { guardarDueloNube(equipo, stats) }, [equipo, stats]) // con cuenta, el equipo y las estadísticas también quedan en la nube
   // El partido es en vivo: si se sale o se actualiza la página a mitad de partido, queda abandonado (cuenta como derrota) y no se retoma.
   const [abandonada] = useState(() => partidaVigente() !== null)
   const [vista, setVista] = useState<'inicio' | 'draft' | 'duelo'>('inicio')
